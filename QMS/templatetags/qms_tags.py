@@ -159,12 +159,11 @@ def get_chapter_component_name(obj):
 @register.simple_tag
 def get_fixed_status(obj):
     status = (('', '------'), ('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
-    if obj == "":
-        return ""
-    else:
+    try:
         status = dict(status)
-        status[obj]
         return status[obj]
+    except:
+        return ""
 
 
 @register.simple_tag

@@ -1057,9 +1057,10 @@ class ReviewListView(ListView):
                     Q(member=self.request.user) | Q(project__projectManager=self.request.user)).values('project'),
                                                     endDate__gte=datetime.date.today())).\
                 values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
-                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+                       'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
         else:
-            context['review_list'] = QASheetHeader.objects.filter(Q(author=self.request.user)|Q(reviewed_by=self.request.user))\
+            context['review_list'] = QASheetHeader.objects.filter(Q(project__endDate__gte=datetime.date.today()) &
+                                                                   (Q(author=self.request.user)|Q(reviewed_by=self.request.user)))\
                 .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
                         'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
         return context
