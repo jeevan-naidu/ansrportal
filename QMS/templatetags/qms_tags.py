@@ -172,13 +172,18 @@ def get_alias(obj):
 
 
 @register.simple_tag
-def can_review(project_id, order, chapter_component):
+def can_review(user, project_id, order, chapter_component):
+    is_pm = Project.objects.filter(pk=project_id, projectManager=user).exists()
     color = "blue"
     cur_obj = QASheetHeader.objects.filter(project_id=project_id, chapter_component=chapter_component,
                                            order_number=order)[0]
     if cur_obj.review_group_status is True and cur_obj.author_feedback_status is True:
         color = "green"
-
+    if cur_obj.review_group_status is False and cur_obj.author_feedback_status is False:
+        if cur_obj.reviewed_by == user or is_pm:
+            color = "blue"
+        else:
+            color = "orange"
     if int(order) == 1:
         return True, color
     else:

@@ -52,10 +52,25 @@
                             <td>{{obj.project__name}}</td>
                             <td>{% get_alias obj.review_group_id %}</td>
                              <td>{% get_chapter_component_name obj.chapter_component%}</td>
-                            {% can_review  obj.project_id obj.order_number obj.chapter_component  as status %}
+                            {% can_review request.user obj.project_id obj.order_number obj.chapter_component  as status %}
                             <td>
-                                {% if status.0 %} <a {% if status.1 == "green" %}title="review completed"    class="btn vd_btn vd_bg-green" {%else%} class="btn vd_btn vd_bg-blue" {%endif%} href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} " >Review</a>
-                                {% else%} <a class="btn vd_btn vd_bg-red "   title="please wait till previous review is completed" >Review</a> {%endif%}
+                                {% if status.0 %}
+                                    <a
+                                        {% if status.1 == "green" %}title="review completed"
+                                            class="btn vd_btn vd_bg-green"
+                                 href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} "
+                                        {%else%}
+                                            {% if status.1 == "orange" %}
+                                                class="btn vd_btn vd_bg-yellow" title="please wait till  review is completed"
+                                            {%else %}
+                                                class="btn vd_btn vd_bg-blue"
+                                 href="{% url 'review_redirect_view' obj.id  obj.chapter_component_id obj.review_group_id %} "
+                                            {%endif%}
+                                        {%endif%}
+
+                                    >Review</a>
+                                {% else%}
+                                    <a class="btn vd_btn vd_bg-red "   title="please wait till previous review is completed" >Review</a> {%endif%}
 
 
 
