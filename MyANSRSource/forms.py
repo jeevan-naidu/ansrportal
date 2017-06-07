@@ -633,7 +633,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     name = forms.ModelChoiceField(
         queryset=Milestone.objects.all(),
         label="Select Milestone Name",
-        required=True, )
+        required=False, )
     description = forms.CharField(required=False,)
     class Meta:
         model = ProjectMilestone
@@ -647,6 +647,15 @@ class CloseProjectMilestoneForm(forms.ModelForm):
             # 'MilestoneName': autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
             # 'data-placeholder': 'Type Milestone Type...'})
         }
+
+    def clean(self):
+        submitted_value = super(CloseProjectMilestoneForm, self).clean()
+        is_closed = submitted_value.get("closed")
+        name = submitted_value.get("name")
+        if not is_closed and not name:
+            raise forms.ValidationError("milestone name is a required field.")
+        return submitted_value
+
 
     def __init__(self, *args, **kwargs):
         super(CloseProjectMilestoneForm, self).__init__(*args, **kwargs)

@@ -2145,6 +2145,8 @@ class TrackMilestoneWizard(SessionWizardView):
                     for eachForm in form:
                         if eachForm.is_valid():
                             totalRate += eachForm.cleaned_data['amount']
+                            if eachForm['closed'].value():
+                                continue
                             milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
                                 milestone_type.\
                                 milestone_type
@@ -2410,7 +2412,6 @@ class CreateProjectWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         basicInfo = [form.cleaned_data for form in form_list][0]
-        # import ipdb; ipdb.set_trace()
         upload = [form.cleaned_data for form in form_list][2]
         pm = [int(pm.id) for pm in basicInfo['projectManager']]
         flagData = {}
