@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from views import StartProcess,\
-    process,\
     ProcessListView,\
     ProcessApproval,\
     ApproveListView,\
@@ -11,7 +10,6 @@ from views import StartProcess,\
 
 
 urlpatterns = [
-    url(r'^$', process, name='taskprocess'),
     url(
         r'^(?P<app_name>\w+)$',
         login_required(ProcessListView.as_view()),

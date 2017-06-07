@@ -14,7 +14,7 @@ def get_request_params(name, request=None, **kwargs):
 
 
 def get_model(**kwargs):
-    """Returns model"""
+    """Returns model name"""
     args = [get_request_params(
         key, **kwargs) for key in ('app_name', 'model_name')]
 
@@ -22,12 +22,17 @@ def get_model(**kwargs):
 
 
 def get_model_instance(**kwargs):
-    """Returns model instance"""
+    """
+    Returns model instance based on primary key
+    """
     return get_model(**kwargs).objects.get(id=kwargs.get("pk"))
 
 
 def flow_config(module):
-    """Returns flow configuration"""
+    """
+    Returns flow configuration
+    Importing process file from respective app
+    """
     return import_module('{}.process'.format(apps.get_app_config(module).name))
 
 

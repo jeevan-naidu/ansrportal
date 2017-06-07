@@ -2,7 +2,9 @@ from Invoice.models import Invoice, Transaction
 from Invoice.serializers import InvoiceSerializer, TransactionSerializer
 from helpers import manager, hr
 
-
+"""
+Process dicti
+"""
 PROCESS = {
     'invoice_raise': {
         'name': 'Raising For Invoice',
