@@ -145,7 +145,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
         clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
         severity_type = forms.ModelChoiceField(widget=forms.Select(), required=True,
-                                               queryset=DefectTypeMaster.objects.all(), )
+                                               queryset=DefectTypeMaster.objects.all().order_by('name'), )
         # defect_severity_level = forms.CharField()
         # defect_classification = forms.CharField()
 
@@ -161,6 +161,7 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
         remarks = forms.CharField(required=False,)
         screen_shot = forms.FileField(required=False,label="clear")
         instruction = forms.CharField(required=False,)
+        export = forms.FileField(required=False,)
 
         class Meta:
             model = ReviewReport

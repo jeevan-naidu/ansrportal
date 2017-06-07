@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Project, Chapter
 from simple_history.models import HistoricalRecords
 
-fixed_status = (('', '------'), ('fixed', 'Fixed'), ('fix_not_required', 'Fix Not Required'))
+fixed_status = (('', '------'), ('Fixed', 'Fixed'), ('FixNotRequired', 'Fix Not Required'))
 team_choices = ((0, 'assessment'), ('1', 'learning'))
 
 

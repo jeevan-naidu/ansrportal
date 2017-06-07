@@ -22,6 +22,7 @@ class SetCurrentUserFormsetMixin(object):
         if obj is None:
             formset.created_by = self.created_by
         else:
+            formset.created_by = self.created_by
             formset.updated_by = self.updated_by
         return formset
 

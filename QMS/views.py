@@ -657,6 +657,8 @@ class ReviewReportManipulationView(AssessmentView):
         # print request.POST
         # print q_form.is_valid()
         # print q_form.errors
+        if request.POST.get('export') == "export":
+            print "yup"
         if q_form.is_valid():
 
             for form_elements in q_form:
@@ -827,7 +829,7 @@ def fetch_severity(request):
                 s = DefectSeverityLevel.objects.filter(severity_type=severity).values_list("defect_classification__name",
                                                                                            "defect_classification__id")
                 classification_dict = dict((str(x), int(y)) for x, y in s)
-                classification_dict["fghg"] =5
+                # classification_dict["fghg"] =5
                 context_data = {'classification_dict': classification_dict, "triggered_by": request.GET.get('triggered_by')}
 
             except:
@@ -1096,7 +1098,7 @@ class ReviewRedirectView(View):
                 order_number = int(obj.order_number) - 1
                 prev_tab_obj = QASheetHeader.objects.filter(project=project,
                                                             chapter_component=self.request.session['chapter_component'],
-                                                            order_number=order_number)[0]
+                                                            order_number=order_number).first()
                 if is_pm:
                     if prev_tab_obj.review_group_status is True and \
                                     prev_tab_obj.author_feedback_status is True:
@@ -1149,3 +1151,62 @@ class ReviewRedirectView(View):
             return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                           {'form': BaseAssessmentTemplateForm(), })
 
+
+from shutil import copyfile
+from MyANSRSource.reportviews import generateDownload
+from openpyxl import Workbook
+from openpyxl import load_workbook
+
+
+class ExportReview(View):
+    def get(self, request, *args, **kwargs):
+        review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'], is_active=True). \
+            values_list('review_item', 'defect', 'defect_severity_level__severity_type__name',
+                   'defect_severity_level__severity_level__name', 'defect_severity_level__defect_classification__name',
+                   'is_fixed', 'fixed_by__username', 'remarks')
+        src = "QMS/QMS-Bala.xlsx"
+        dst = "QMS/s.xlsx"
+        copyfile(src, dst)
+        wb = load_workbook(filename=dst)
+        ws1 = wb.active
+        review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
+        ws1.title = review_group.alias
+        header_column = list(string.ascii_uppercase)[:header_length]
+        c = 3
+        s = 1
+        for row in review_obj:
+            c = str(c)
+            # for i, header in enumerate(header)
+            ws1["A" + c] = s
+            ws1["B"+c].value = row[0]
+            ws1["C"+c].value = row[1]
+            ws1["D"+c].value = row[2]
+            ws1["E"+c].value = row[3]
+            ws1["F"+c].value = row[4]
+            ws1["G"+c].value = row[5]
+            ws1["H"+c].value = row[6]
+            ws1["I"+c].value = row[7]
+            c = int(c)
+            c += 1
+            s += 1
+        wb.save(filename=dst)
+
+        return generateDownload(self.request, dst)
+
+import xlrd
+
+#
+# def import_review(file):
+#     book = xlrd.open_workbook(file_contents=file.read())
+#     sheets = book.sheet_names()
+#     current_sheet = sheets[0]
+#     classification_master = DefectClassificationMaster.objects.all().values_list('id','name')
+#     classification_master = dict((str(y), x) for x, y in classification_master)
+#     severity_level_master = DefectSeverityLevel.objects.all().values_list('id','name')
+#     severity_level_master = dict((str(y), x) for x, y in severity_level_master)
+#     defect_type_master = DefectTypeMaster
+#     for r in range(1, current_sheet.nrows):
+#         try:
+#             if str(classification_master[str(current_sheet.row(r)[2].value)]) == "ansr Defect Classification" or \
+#                             str(severity_level_master[str(current_sheet.row(r)[1].value)]) == "Severity level" or \
+#                             str(defect_type_master[str(current_sheet.row(r)[0].value)]) == "Defect Type":

@@ -32,4 +32,5 @@ urlpatterns = [
         name='AutoCompleteChapterSpecificComponent', ),
     url(r'^dashboard/$', login_required(DashboardView.as_view()),  name='qms_dashboard'),# TemplateView.as_view(template_name='qms_dashboard.html')),
     url(r'^review_list/$', login_required(ReviewListView.as_view()), name='review_list'),
+    url(r'^export_review/$', login_required(ExportReview.as_view()), name='export_review'),
                        ]

@@ -165,7 +165,16 @@
                     </div>
                     <!-- /.modal-dialog -->
                   </div>
-                       {% if review_formset %}  <div class="no_questions">
+                       {% if review_formset %}
+                            {% for form_obj in review_formset %}
+                                {% if forloop.first %}
+                         <div><label> Import</label>{{form_obj.export}}</div>
+                                {% endif %}
+                           {% endfor %}
+                         <div>
+                             <a href= "/qms/export_review" class="btn vd_btn vd_bg-blue" > Export</a>
+                         </div>
+                         <div class="no_questions">
                              <label>Questions : </label>
                            {% if request.session.is_pm or request.session.author_logged_in == False %}
                                 <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
@@ -1085,6 +1094,15 @@ $(document).ready(function(){
 
 
     $(document).ready(function(){
+
+      $('#export').click(function(e){
+        e.preventDefault();
+        $(this).val("export");
+        $('#review_report_form').submit();
+    })
+
+
+
         if ( $("[id$='review_item']").is(':disabled') ) {
 
             $("[id$='DELETE'], [id$='clear_screen_shot']").prop('disabled','disabled');
