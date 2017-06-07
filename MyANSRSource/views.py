@@ -3088,13 +3088,13 @@ class ProjectChangeApproval(View):
                 update_project_table = []
                 emailnotifier = []
                 for val in reject:
-                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('project')[0]
+                    rejection_date = date.today()
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('project', 'reason', 'project__name')[0]
                     emailvalues = ProjectDetail.objects.filter(project_id=update_project_table['project']).values('deliveryManager__email', 'pmDelegate__email', 'project__projectManager__email')[0]
                     emailnotifier.append(emailvalues['project__projectManager__email'].encode("utf-8"))
                     emailnotifier.append(emailvalues['deliveryManager__email'].encode("utf-8"))
-                    emailnotifier.append(emailvalues['pmDelegate__email'].encode("utf-8"))
                     emailnotifier = list(set(emailnotifier))
-                    ProjectChangeRejection.delay(emailnotifier, val)
+                    ProjectChangeRejection.delay(emailnotifier, val, update_project_table['reason'], update_project_table['project__name'], rejection_date)
                 for val in approve:
                     update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('startDate',
                                                                                              'endDate',
