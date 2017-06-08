@@ -367,7 +367,7 @@ def TimesheetFormset(currentUser,enddate):
 # Form Class to create milestones for project
 class changeProjectLeaderForm(forms.ModelForm):
     DeliveryManager = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         label="Delivery Manager",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             'data-placeholder': 'Type Delievery Manager Name ...',
@@ -376,7 +376,7 @@ class changeProjectLeaderForm(forms.ModelForm):
                                          ),
         )
     pmDelegate = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         label="PM Delegate",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             'data-placeholder': 'Type PM Delegate Name ...',
@@ -415,7 +415,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         required=True, )
 
     DeliveryManager = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         label="Delivery Manager",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             'data-placeholder': 'Type Delievery Manager Name ...',
@@ -424,7 +424,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         ),
         required=True, )
     pmDelegate = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         label="PM Delegate",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             'data-placeholder': 'Type PM Delegate Name ...',
@@ -482,6 +482,8 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             "form-control"
         self.fields['projectManager'].widget.attrs['class'] = \
             "form-control coordinatorcount"
+        self.fields['projectManager'].queryset = \
+            User.objects.filter(is_active=True)
         self.fields['bu'].widget.attrs['class'] = \
             "form-control"
         self.fields['customer'].widget.attrs['class'] = \
@@ -580,7 +582,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
     member = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         # label="Project Leader",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
@@ -793,7 +795,7 @@ class TeamMemberPerfomanceReportForm(forms.ModelForm):
             'data-placeholder': 'Enter a Project Name /Project Id ...',
         }, ), required=False,)
     member = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             'data-placeholder': 'Type Employee Name ...',
         }, ), required=True, )
