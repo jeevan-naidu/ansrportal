@@ -84,7 +84,7 @@ def weeklyavg(user, week, month):
     for time in total:
         if time == 0:
             pass
-        else:
+        elif time is not None:
             total_avg.append(time)
     if sum(total_avg) == 0:
         avg = 0
@@ -103,14 +103,17 @@ def timecheck(user, date):
     if not userattendance:
         att_day = 0
     for att in userattendance:
-        att_day = att.swipe_out - att.swipe_in
-        delta = att_day
-        sec = delta.seconds
-        hours = sec // 3600
-        minutes = (sec // 60) - (hours * 60)
-        att_day = ('{0}.{1}'.format(hours,minutes))
-        att_day = float(att_day)
-    return round(att_day, 2)
+        # print type(att.swipe_out)
+        # print type(att.swipe_in)
+        if att.swipe_out and att.swipe_in is not None:
+            att_day = att.swipe_out - att.swipe_in
+            delta = att_day
+            sec = delta.seconds
+            hours = sec // 3600
+            minutes = (sec // 60) - (hours * 60)
+            att_day = ('{0}.{1}'.format(hours, minutes))
+            att_day = float(att_day)
+        return round(att_day, 2)
 
 def weekwisedata(request):
     if request.user.groups.filter(name__in=['myansrsourcePM']).exists():
