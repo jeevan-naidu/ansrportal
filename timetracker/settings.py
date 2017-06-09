@@ -155,6 +155,7 @@ INSTALLED_APPS = [
     'TimeInOffice',
     'LaptopAvail'
 ]
+SESSION_SECURITY_PASSIVE_URLS = ["qms"]
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',

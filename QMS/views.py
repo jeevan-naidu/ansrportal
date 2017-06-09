@@ -1,3 +1,6 @@
+import os.path
+import collections
+import xlrd
 from django.views.generic import View , TemplateView ,ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib import messages
@@ -11,13 +14,12 @@ import datetime
 from django.shortcuts import render
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
-from MyANSRSource.views import   GetChapters
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import transaction
 import logging
 logger = logging.getLogger('MyANSRSource')
-import os.path
-import collections
+
 
 try:
     dict.iteritems
@@ -657,8 +659,9 @@ class ReviewReportManipulationView(AssessmentView):
         # print request.POST
         # print q_form.is_valid()
         # print q_form.errors
-        if request.POST.get('export') == "export":
-            print "yup"
+        if request.FILES['import_file']:
+            return import_review(self.request, self.request.FILES['import_file'])
+
         if q_form.is_valid():
 
             for form_elements in q_form:
@@ -1171,7 +1174,6 @@ class ExportReview(View):
         ws1 = wb.active
         review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         ws1.title = review_group.alias
-        header_column = list(string.ascii_uppercase)[:header_length]
         c = 3
         s = 1
         for row in review_obj:
@@ -1193,20 +1195,67 @@ class ExportReview(View):
 
         return generateDownload(self.request, dst)
 
-import xlrd
 
-#
-# def import_review(file):
-#     book = xlrd.open_workbook(file_contents=file.read())
-#     sheets = book.sheet_names()
-#     current_sheet = sheets[0]
-#     classification_master = DefectClassificationMaster.objects.all().values_list('id','name')
-#     classification_master = dict((str(y), x) for x, y in classification_master)
-#     severity_level_master = DefectSeverityLevel.objects.all().values_list('id','name')
-#     severity_level_master = dict((str(y), x) for x, y in severity_level_master)
-#     defect_type_master = DefectTypeMaster
-#     for r in range(1, current_sheet.nrows):
-#         try:
-#             if str(classification_master[str(current_sheet.row(r)[2].value)]) == "ansr Defect Classification" or \
-#                             str(severity_level_master[str(current_sheet.row(r)[1].value)]) == "Severity level" or \
-#                             str(defect_type_master[str(current_sheet.row(r)[0].value)]) == "Defect Type":
+@transaction.atomic
+def import_review(request, form_file):
+
+    xl_workbook = xlrd.open_workbook(file_contents=form_file.read())
+
+    sheet_names = xl_workbook.sheet_names()
+
+    current_sheet = xl_workbook.sheet_by_name(sheet_names[0])
+    classification_master = DefectClassificationMaster.objects.all().values_list('id','name')
+    classification_master = dict((y.rstrip(), x) for x, y in classification_master)
+    severity_level_master = SeverityLevelMaster.objects.all().values_list('id', 'name')
+    severity_level_master = dict((y.rstrip(), x) for x, y in severity_level_master)
+    defect_type_master = DefectTypeMaster.objects.all().values_list('id', 'name')
+    defect_type_master = dict((y.rstrip(), x) for x, y in defect_type_master)
+    ReviewReport.objects.filter(QA_sheet_header_id=request.session['QA_sheet_header_id']).update(is_active=False)
+
+    l = current_sheet.nrows
+    for r in range(2, l):
+        if current_sheet.row(r)[3].value == "":
+            break
+        try:
+            fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
+        except:
+            fixed_by = None
+
+        try:
+            dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
+        except :
+            dtm, created = DefectTypeMaster.objects.get_or_create(name=current_sheet.row(r)[3].value.rstrip(),
+                                                                  defaults={'created_by': request.user})
+            dtm = dtm.id
+
+        try:
+            cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
+
+        except :
+            cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
+                                                                           defaults={'created_by': request.user})
+            cm = cm.id
+
+        try:
+            slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
+
+        except :
+            slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
+                                                                     penalty_count=0,
+                                                                     defaults={'created_by': request.user})
+            slm = slm.id
+
+        dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
+                                                                 severity_level_id=slm,
+                                                                 defaults={'created_by': request.user})
+
+        ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
+                                    review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
+                                    defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
+                                    fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value, created_by=request.user)
+    qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+
+    return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
+                                        'chapter_component_id': qa_obj.chapter_component.id,
+                                                                            'review_group_id': qa_obj.review_group.id}))
+    # return HttpResponseRedirect(reverse_lazy(u'review_list'))
