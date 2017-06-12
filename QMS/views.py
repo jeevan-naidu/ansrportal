@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 import logging
 logger = logging.getLogger('MyANSRSource')
-
+import magic
 
 try:
     dict.iteritems
@@ -635,7 +635,7 @@ class AssessmentView(TemplateView):
 
 
 class ReviewReportManipulationView(AssessmentView):
-
+    @transaction.atomic
     def post(self, request):
         # print request.POST
         # print request.FILES
@@ -659,10 +659,19 @@ class ReviewReportManipulationView(AssessmentView):
         # print request.POST
         # print q_form.is_valid()
         # print q_form.errors
+        forbidden_file = False
         if 'import_file' in request.FILES and request.FILES['import_file']:
-            return import_review(self.request, self.request.FILES['import_file'])
+            # mime = magic.Magic(mime=True)
+            # print mime.from_file(self.request.FILES['import_file'])
+            print "ex", self.request.FILES['import_file'].name.split(".")[-1]
+            if self.request.FILES['import_file'].name.split(".")[-1] == "xlsx":
+                print "in if"
+                return import_review(self.request, self.request.FILES['import_file'])
+            else:
+                print "im in else"
+                forbidden_file = True
 
-        if q_form.is_valid():
+        if q_form.is_valid() and not forbidden_file:
 
             for form_elements in q_form:
                 # print form_elements
@@ -751,8 +760,15 @@ class ReviewReportManipulationView(AssessmentView):
 
         else:
             logger.error(" {0} ".format(str(q_form.errors)))
-            messages.error(request, "Sorry please try again")
-            return HttpResponseRedirect(reverse('qms'))
+            if forbidden_file:
+                messages.error(self.request, "please upload only xlsx file")
+            else:
+                messages.error(request, "Sorry please try again")
+            qa_obj = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
+            return HttpResponseRedirect(
+                reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
+                                                         'chapter_component_id': qa_obj.chapter_component.id,
+                                                         'review_group_id': qa_obj.review_group.id}))
             # messages.error(request, q_form.errors)
             # return HttpResponseRedirect(reverse('qms'))
             # return render_common(obj, qms_form, self.request)
