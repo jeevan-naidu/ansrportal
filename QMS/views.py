@@ -19,7 +19,6 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 import logging
 logger = logging.getLogger('MyANSRSource')
-import magic
 
 try:
     dict.iteritems
