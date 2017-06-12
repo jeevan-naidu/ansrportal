@@ -2865,7 +2865,7 @@ def project_summary(project_id, show_header=True):
         project=projectObj).values(
         'reason', 'endDate', 'revisedEffort', 'revisedTotal',
         'closed', 'closedOn', 'signed',
-        'updatedOn'
+        'updatedOn','approved'
     ).order_by('updatedOn')
     data = {
         'basicInfo': basicInfo,
