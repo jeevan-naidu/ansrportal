@@ -659,7 +659,7 @@ class ReviewReportManipulationView(AssessmentView):
         # print request.POST
         # print q_form.is_valid()
         # print q_form.errors
-        if request.FILES['import_file']:
+        if 'import_file' in request.FILES and request.FILES['import_file']:
             return import_review(self.request, self.request.FILES['import_file'])
 
         if q_form.is_valid():
@@ -1163,15 +1163,26 @@ from openpyxl import load_workbook
 
 class ExportReview(View):
     def get(self, request, *args, **kwargs):
-        review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'], is_active=True). \
+        review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'],
+                                                 is_active=True). \
             values_list('review_item', 'defect', 'defect_severity_level__severity_type__name',
-                   'defect_severity_level__severity_level__name', 'defect_severity_level__defect_classification__name',
-                   'is_fixed', 'fixed_by__username', 'remarks')
-        src = "QMS/QMS-Bala.xlsx"
-        dst = "QMS/s.xlsx"
+                        'defect_severity_level__severity_level__name',
+                        'defect_severity_level__defect_classification__name',
+                        'is_fixed', 'fixed_by__username', 'remarks')
+
+        ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
+                                                           (pk=self.request.session['QA_sheet_header_id']).values_list
+                                                           ('project', flat=True).first())
+        try:
+            file_name = ptpm_obj.template.actual_name
+        except Exception as e:
+            logger.error(" failed to find template {0} ".format(str(e)))
+            file_name = "QMS-T1"
+        src = "QMS/master_templates/"+file_name+".xlsx"
+        dst = "QMS/"+file_name+"_copy.xlsx"
         copyfile(src, dst)
         wb = load_workbook(filename=dst)
-        ws1 = wb.active
+        ws1 = wb["Template1"]
         review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         ws1.title = review_group.alias
         c = 3
