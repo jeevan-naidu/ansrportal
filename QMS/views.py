@@ -663,12 +663,9 @@ class ReviewReportManipulationView(AssessmentView):
         if 'import_file' in request.FILES and request.FILES['import_file']:
             # mime = magic.Magic(mime=True)
             # print mime.from_file(self.request.FILES['import_file'])
-            print "ex", self.request.FILES['import_file'].name.split(".")[-1]
             if self.request.FILES['import_file'].name.split(".")[-1] == "xlsx":
-                print "in if"
                 return import_review(self.request, self.request.FILES['import_file'])
             else:
-                print "im in else"
                 forbidden_file = True
 
         if q_form.is_valid() and not forbidden_file:
@@ -1281,7 +1278,7 @@ def import_review(request, form_file):
                                     defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
                                     fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value, created_by=request.user)
     qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-
+    messages.success(request, "successfully imported")
     return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                         'chapter_component_id': qa_obj.chapter_component.id,
                                                                             'review_group_id': qa_obj.review_group.id}))
