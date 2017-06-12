@@ -1172,7 +1172,7 @@ from shutil import copyfile
 from MyANSRSource.reportviews import generateDownload
 from openpyxl import Workbook
 from openpyxl import load_workbook
-
+import os.path
 
 class ExportReview(View):
     def get(self, request, *args, **kwargs):
@@ -1186,18 +1186,20 @@ class ExportReview(View):
         ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
-        try:
-            file_name = ptpm_obj.template.actual_name
-        except Exception as e:
-            logger.error(" failed to find template {0} ".format(str(e)))
-            file_name = "QMS-T1"
+        actual_name = file_name = ptpm_obj.template.actual_name
         src = "QMS/master_templates/"+file_name+".xlsx"
+        if not os.path.isfile(src):
+            file_name = "generic_template"
+            src = "QMS/master_templates/QMS-T1.xlsx"
+            logger.error(" failed to find template {0} ".format(actual_name))
+
         dst = "QMS/"+file_name+"_copy.xlsx"
         copyfile(src, dst)
         wb = load_workbook(filename=dst)
         ws1 = wb["Template1"]
         review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         ws1.title = review_group.alias
+        wb.active = 0
         c = 3
         s = 1
         for row in review_obj:
