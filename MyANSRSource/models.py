@@ -327,6 +327,7 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
+    remark = models.CharField(verbose_name="Project Rejection message", null=True, blank=True, default='Nothing', max_length=100)
     active = models.BooleanField(verbose_name="Is Active", default=False)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

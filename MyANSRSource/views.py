@@ -3040,8 +3040,14 @@ class NewCreatedProjectApproval(View):
 
     def post(self, request):
         try:
+            feedback_ist = []
             approve = request.POST.getlist('approve[]')
             reject = request.POST.getlist('reject[]')
+            feedback = request.POST.getlist('feedback[]')
+            for val in feedback:
+                feedback_ist.append(val.split('_'))
+                Project.objects.filter(id=feedback_ist[0][1]).update(remark=feedback_ist[0][0])
+                feedback_ist = []
             approve = approve if approve else []
             reject = reject if reject else []
             Project.objects.filter(id__in=approve).update(active=True)
