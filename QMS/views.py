@@ -1214,13 +1214,14 @@ class ExportReview(View):
             ws1["C"+c].value = row[1]
             ws1["D"+c].value = row[2]
             # dv.add(ws1["D"+c])
-            ws1["E"+c].value = row[3]
             severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
             ws1.add_data_validation(severity_formula)
+            # ws1["E" + c].value = row[3]
             severity_formula.add(ws1["E" + c])
-            ws1["F"+c].value = row[4]
+
             classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
             ws1.add_data_validation(classification_formula)
+            # ws1["F" + c].value = row[4]
             classification_formula.add(ws1["E" + c])
             ws1["G"+c].value = row[5]
             ws1["H"+c].value = row[6]
