@@ -1259,7 +1259,7 @@ def import_review(request, form_file):
         try:
             fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
         except:
-            fixed_by = None
+            fixed_by = request.user
 
         try:
             dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
@@ -1297,5 +1297,6 @@ def import_review(request, form_file):
     messages.success(request, "successfully imported")
     return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                         'chapter_component_id': qa_obj.chapter_component.id,
-                                                                            'review_group_id': qa_obj.review_group.id}))
+                                                                         'review_group_id': qa_obj.review_group.id}))
+
     # return HttpResponseRedirect(reverse_lazy(u'review_list'))
