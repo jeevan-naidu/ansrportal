@@ -683,9 +683,9 @@
         });
         $("#import_file").on('change', function() {
             if($(this).val() !=='')
-                $('.defect').prop('disabled',false);
+                $('.defect').prop('required',false);
             else
-               $('.defect').prop('disabled',true);
+               $('.defect').prop('required',true);
         });
 
         $('#review_report_form').submit(function() {

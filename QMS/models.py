@@ -63,7 +63,7 @@ class ProjectTemplateProcessModel(TimeStampAbstractModel):
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % (str(self.project) + " - " + str(self.template))
+        return '%s' % (unicode(self.project) + " - " + unicode(self.template))
 
 
 class DefectTypeMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -103,7 +103,7 @@ class ReviewGroup(models.Model):
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % str(self.alias)
+        return '%s' % unicode(self.alias)
 
     def save(self, *args, **kwargs):
         if self.pk is None:
@@ -134,8 +134,8 @@ class DefectSeverityLevel(TimeStampAbstractModel):
     def __unicode__(self):
         """ return unicode strings """
         return '%s' % self.id
-        return '%s' % (str(self.severity_type)+": " + str(self.severity_level) + ": "
-                       + str(self.defect_classification))
+        return '%s' % (unicode(self.severity_type)+": " + unicode(self.severity_level) + ": "
+                       + unicode(self.defect_classification))
 
 
 class DSLTemplateReviewGroup(TimeStampAbstractModel):
@@ -190,9 +190,9 @@ class QASheetHeader(TimeStampAbstractModel):
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % (str(self.project) +
-                       " : " + str(self.review_group) +
-                       " : " + str(self.chapter)
+        return '%s' % (unicode(self.project) +
+                       " : " + unicode(self.review_group) +
+                       " : " + unicode(self.chapter)
                        )
 
 
@@ -211,7 +211,7 @@ class ReviewReport(TimeStampAbstractModel):
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % str(self.QA_sheet_header)
+        return '%s' % unicode(self.QA_sheet_header)
 
 
 class TemplateProcessReview(TimeStampAbstractModel):
