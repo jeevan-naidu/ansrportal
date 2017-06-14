@@ -947,7 +947,8 @@ def review_completed(request):
             # print "existing_remark",  existing_remark
             if len(str(existing_remark['review_group_feedback'])) > 0 and existing_remark['author_feedback_status'] == 1 and \
                             existing_remark['review_group_status'] == 0:
-                review_feedback = "first review feedback :"+str(existing_remark)+"\n" + "final review feedback : " + str(request.GET.get('review_feedback'))
+                review_feedback = "first review feedback :"+existing_remark['review_group_feedback']+"\n" +\
+                                  "final review feedback : " + request.GET.get('review_feedback')
                 print "rf", review_feedback
             QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
                                          review_group_id=review_group).update(review_group_status=True,
