@@ -1172,7 +1172,7 @@ from MyANSRSource.reportviews import generateDownload
 from openpyxl import Workbook
 from openpyxl import load_workbook
 import os.path
-
+from openpyxl.worksheet.datavalidation import DataValidation
 class ExportReview(View):
     def get(self, request, *args, **kwargs):
         review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'],
@@ -1194,11 +1194,16 @@ class ExportReview(View):
 
         dst = "QMS/"+file_name+"_copy.xlsx"
         copyfile(src, dst)
-        wb = load_workbook(filename=dst)
+        wb = load_workbook(filename=dst, data_only=False)
+
         ws1 = wb["Template1"]
+
         review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         ws1.title = review_group.alias
         wb.active = 0
+        dv = DataValidation(type="list", formula1='Ref!$D$25:$D$100', allow_blank=True)
+        ws1.add_data_validation(dv)
+
         c = 3
         s = 1
         for row in review_obj:
@@ -1208,14 +1213,20 @@ class ExportReview(View):
             ws1["B"+c].value = row[0]
             ws1["C"+c].value = row[1]
             ws1["D"+c].value = row[2]
-            ws1["E"+c].value = row[3]
-            ws1["F"+c].value = row[4]
+            # dv.add(ws1["D"+c])
+            # ws1["E"+c].value = row[3]
+            # severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
+            # ws1.add_data_validation(severity_formula)
+            # severity_formula.add(ws1["E" + c])
+            # ws1["F"+c].value = row[4]
             ws1["G"+c].value = row[5]
             ws1["H"+c].value = row[6]
             ws1["I"+c].value = row[7]
             c = int(c)
             c += 1
             s += 1
+        # dv.add(ws1)
+        dv.ranges.append('D3:D500')
         wb.save(filename=dst)
 
         return generateDownload(self.request, dst)
