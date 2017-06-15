@@ -932,7 +932,6 @@ def review_completed(request):
     submitted_by = request.GET.get('submitted_by')
     # print "submitted_by" , submitted_by
     try:
-        # print project_id,chapter_id,review_group,review_feedback
         if submitted_by == "author":
             QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
                                          review_group_id=review_group).update(author_feedback_status=True,
