@@ -1,0 +1,77 @@
+{% extends 'modifyProjectMaster.inc' %}
+
+{% block createProjectActive %}class="active"{% endblock %}
+{% block MPactiveClass %}active{% endblock %}
+
+{% block pageTitle %}Manage/Rejected project{% endblock %}
+
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %}
+		{% if field.errors %}
+            <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+		{% endif %}
+		{% endfor %}
+        </ul>
+	</div>
+{% endif %}
+<style type="text/css">
+
+    .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 5px;
+}
+</style>
+
+
+<div class="panel clearfix">
+<div class="panel-body">
+    <button type="button" class="btn btn-success disabled">Project Name:- {{request.session.name}}</button>
+    <div class="row">
+        <div class="col-sm-6 center-block">
+            <div class="table-responsive col-lg-12">
+            <h3><small><b>{{ projectName }}</b></small></h3>
+            <table class="table">
+                {% for field in form %}
+                    <tr>
+                        <td class="col-lg-6">
+                                {% if field.label != 'BasicInfoId' %}
+                                    {% if field.label != 'Remark' %}
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="required">*</span>
+                                    {% endif %}
+                                        {% endif %}
+                                {% endif %}
+                        </td>
+                        <td class="col-lg-7">
+                            {% if field.label == 'Revised Effort' %}
+
+                                <span class="col-lg-10">{{ field }}</span>
+
+                                <span class="col-lg-2"><b><span class="label label-default form-control">PH(s)</span></b></span>
+                            {% else %}
+                                {% if field.label == 'Remark' %}
+                                    <span class="col-lg-10 remark_span">{{ field }}</span>
+                                    {% else %}
+                                    <span class="col-lg-10">{{ field }}</span>
+                                    {% endif %}
+
+                                <span class="col-lg-2"></span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+
+</script>
+
+{% endblock %}{% endblock %}
+

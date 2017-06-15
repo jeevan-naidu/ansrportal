@@ -40,7 +40,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm, UploadForm
+    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
@@ -63,10 +63,22 @@ CFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Change Basic Information", ChangeProjectBasicInfoForm),
 ]
+
+MFORMS = [
+    ("Rejected Projects", RejectProjectForm),
+    ("Modify Basic Information", ModifyProjectInfoForm),
+]
+
 CTEMPLATES = {
     "My Projects": "MyANSRSource/changeProject.html",
     "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
 }
+
+MTEMPLATES = {
+    "Rejected Projects": "MyANSRSource/modifyProject.html",
+    "Modify Basic Information": "MyANSRSource/modifyProjectBasicInfo.html",
+}
+
 
 TMFORMS = [
     ("My Projects", ChangeProjectForm),
@@ -969,6 +981,87 @@ class ChangeProjectWizard(SessionWizardView):
             'MyANSRSource/changeProjectId.html',
             data)
 
+
+class ModifyProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectChangeDocument'))
+
+    def get_template_names(self):
+        return [MTEMPLATES[self.steps.current]]
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ModifyProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        return context
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(ModifyProjectWizard, self).get_form(step, data, files)
+        step = step if step else self.steps.current
+        if step == 'Rejected Projects':
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False,project__rejected=True).filter(project__active=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.queryset = project
+        return form
+
+    def get_form_initial(self, step):
+        data = self.storage.get_step_data('Rejected Projects')
+        if data is not None:
+            currentProject = []
+            if step == 'Modify Basic Information':
+
+                projectId = data['projectid']
+                if projectId is not None:
+                    pm = Project.objects.filter(id=projectId).values(
+                        'projectManager',
+                    )
+                    l = []
+                    for eachData in pm:
+                        l.append(eachData['projectManager'])
+                    currentProject = Project.objects.filter(
+                        pk=projectId).values(
+                        'id',
+                        'signed',
+                        'endDate',
+                        'plannedEffort',
+                        'totalValue',
+                        'startDate',
+                        'salesForceNumber',
+                        'plannedEffort',
+                        'po',
+                        'customer',
+                        'bu',
+                        'customerContact',
+                        'projectType',
+                        'book',
+                        'totalValue',
+                        'name',
+                    )[0]
+                    additional_detail = ProjectDetail.objects.filter(project_id=projectId).values('projectFinType',
+                                                                                                  'PracticeName',
+                                                                                                  'deliveryManager',
+                                                                                                  'outsource_contract_value',
+                                                                                                  'pmDelegate')[0]
+                    currentProject['projectFinType'] = additional_detail['projectFinType']
+                    currentProject['practicename'] = additional_detail['PracticeName']
+                    currentProject['DeliveryManager'] = additional_detail['deliveryManager']
+                    currentProject['pmDelegate'] = additional_detail['pmDelegate']
+                    currentProject['outsource_contract_value'] = additional_detail['outsource_contract_value']
+                    currentProject['projectManager'] = l
+                    self.request.session['name'] = currentProject['name']
+
+            return self.initial_dict.get(step, currentProject,)
+
+    def done(self, form_list, **kwargs):
+        self.request.session['modifiedsow'] = self.request.FILES.get('Modify Basic Information-Sowdocument', "")
+        self.request.session['modifiedstimation'] = self.request.FILES.get('Modify Basic Information-Estimationdocument', "")
+        data = modifyProjectInfo(
+            self.request, [
+                form.cleaned_data for form in form_list])
+        return render(
+            self.request,
+            'MyANSRSource/modifyProjectId.html',
+            data)
 
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
@@ -2274,13 +2367,62 @@ def UpdateProjectInfo(request, newInfo):
         return {'crId': None}
 
 
+def modifyProjectInfo(request, newInfo):
+    try:
+        ProjectName = Project.objects.filter(id=newInfo[1]['id']).values('name')[0]
+        Project.objects.filter(id=newInfo[1]['id']).update(plannedEffort=newInfo[1]['plannedEffort'],
+                                                           totalValue=newInfo[1]['totalValue'],
+                                                           endDate=newInfo[1]['endDate'],
+                                                           startDate=newInfo[1]['startDate'],
+                                                           bu=newInfo[1]['bu'],
+                                                           customerContact=newInfo[1]['customerContact'],
+                                                           salesForceNumber=newInfo[1]['salesForceNumber'],
+                                                           book=newInfo[1]['book'],
+                                                           projectType=newInfo[1]['projectType'],
+                                                           rejected=False,)
+        ProjectDetail.objects.filter(project_id=newInfo[1]['id']).update(PracticeName=newInfo[1]['practicename'],
+                                                                         projectFinType=newInfo[1]['projectFinType'],
+                                                                         deliveryManager=newInfo[1]['DeliveryManager'],
+                                                                         pmDelegate=newInfo[1]['pmDelegate'],
+                                                                         Estimationdocument=request.session['modifiedstimation'],
+                                                                         Sowdocument=request.session['modifiedsow'],
+                                                                         )
+        myProject = Project.objects.get(id=newInfo[1]['id'])
+        allData = ProjectManager.objects.filter(
+            project=myProject).values('id', 'user')
+        updateDataId = [eachData.id for eachData in newInfo[1]['projectManager']]
+        for eachData in allData:
+            if eachData['user'] not in updateDataId:
+                ProjectManager.objects.get(pk=eachData['id']).delete()
+        for eachData in newInfo[1]['projectManager']:
+            pm = ProjectManager()
+            oldData = ProjectManager.objects.filter(
+                project=myProject, user=eachData).values('id')
+            if len(oldData):
+                pass
+            else:
+                pm.project = myProject
+                pm.user = eachData
+                pm.save()
+
+        return {'name': ProjectName['name']}
+    except (ProjectTeamMember.DoesNotExist,
+            ProjectMilestone.DoesNotExist) as e:
+        messages.error(request, 'Could not save change request information')
+        logger.error('Exception in ModifyProjectInfo :' + str(e))
+        return {'name': None}
+
 changeProject = ChangeProjectWizard.as_view(CFORMS)
+modifyProject =ModifyProjectWizard.as_view(MFORMS)
 
 
 @login_required
 @permission_required('MyANSRSource.manage_project')
 def WrappedChangeProjectView(request):
     return changeProject(request)
+
+def WrappedModifyProjectView(request):
+    return modifyProject(request)
 
 
 class CreateProjectWizard(SessionWizardView):
@@ -3031,7 +3173,7 @@ class NewCreatedProjectApproval(View):
 
     def get_queryset(self, request):
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
-        queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False)
+        queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
         return queryset
 
     def get(self, request):
@@ -3051,7 +3193,7 @@ class NewCreatedProjectApproval(View):
             approve = approve if approve else []
             reject = reject if reject else []
             Project.objects.filter(id__in=approve).update(active=True)
-            Project.objects.filter(id__in=reject).update(closed=True)
+            Project.objects.filter(id__in=reject).update(rejected=True)
             return HttpResponse()
         except Exception as E:
             return HttpResponse(E)

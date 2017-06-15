@@ -532,6 +532,151 @@ class UploadForm(forms.ModelForm):
         self.fields['Estimationdocument'].widget.attrs['class'] = \
             "form-control"
 
+# Modify rejected Project
+
+
+class RejectProjectForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectDetail
+        id = forms.IntegerField(label="Project id", required=False, widget=forms.HiddenInput())
+        fields = ('id',)
+
+
+
+
+    def __init__(self, *args, **kwargs):
+        super(RejectProjectForm, self).__init__(*args, **kwargs)
+        # self.fields['project'].empty_label = None
+
+class ModifyProjectInfoForm(forms.ModelForm):
+    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
+
+    projectFinType = forms.ChoiceField(choices=PROJECTFINTYPE, required=True,
+                                       label=('Project Fin Type'), )
+    book = forms.ModelChoiceField(
+        queryset=Book.objects.all(),
+        label="Book/Title",
+        widget=autocomplete.ModelSelect2(url='AutocompleteBook', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Type Book/Title Name ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=False, )
+
+    DeliveryManager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="Delivery Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+                                         ),
+        required=False, )
+    practicename = forms.ModelChoiceField(
+        queryset=Practice.objects.all(),
+        label="Select Practice",
+        widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
+            'data-placeholder': 'Type Practice Name ...',
+            'class': 'practicevalue',
+        }, ),
+        required=False, )
+    pmDelegate = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="PM Delegate",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type PM Delegate Name ...',
+        }
+                                         ),
+        required=False, )
+    Sowdocument = forms.FileField(label='Sow Attachment', required=False, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, eml, jpeg.<br>Maximum allowed file size: 1MB"))
+    Sowdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                'data-iconName': 'glyphicon glyphicon-paperclip'}
+
+    Estimationdocument = forms.FileField(label='Estimation Attachment', required=False, help_text=mark_safe(
+        "Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, eml, jpeg.<br>Maximum allowed file size: 1MB"))
+    Estimationdocument.widget.attrs = {'class': 'filestyle', 'data-buttonBefore': 'true',
+                                       'data-iconName': 'glyphicon glyphicon-paperclip'}
+
+    customerContact = forms.EmailField(required=False)
+
+    class Meta:
+        model = Project
+        fields = (
+            'id',
+            'projectType',
+            'projectFinType',
+            'customer',
+            'startDate',
+            'endDate',
+            'bu',
+            'customerContact',
+            'book',
+            'plannedEffort',
+            'totalValue',
+            'salesForceNumber',
+            'practicename',
+            'DeliveryManager',
+            'projectManager',
+            'pmDelegate',
+            'signed',
+            'currentProject',
+            'Sowdocument',
+            'Estimationdocument',
+
+
+        )
+        widgets = {
+            'endDate': DateTimePicker(options=dateTimeOption),
+            'startDate': DateTimePicker(options=dateTimeOption),
+            'currentProject': forms.RadioSelect(
+                choices=[(True, 'New Development'), (False, 'Revision')]
+            ),
+            'signed': forms.RadioSelect(
+                choices=[(True, 'Yes'), (False, 'No')]
+            ),
+            'projectManager': autocomplete.ModelSelect2Multiple(
+                attrs={'data-placeholder': 'Type Additional manager...'}),
+
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ModifyProjectInfoForm, self).__init__(*args, **kwargs)
+        self.fields['projectType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectType'].queryset = \
+            projectType.objects.filter(active=True).order_by('description')
+        self.fields['bu'].queryset = \
+            BusinessUnit.objects.all().order_by('name')
+        self.fields['customer'].queryset = \
+            Customer.objects.filter(active=True).order_by('name')
+        self.fields['projectFinType'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['projectManager'].widget.attrs['class'] = \
+            "form-control coordinatorcount"
+        self.fields['projectManager'].queryset = \
+            User.objects.filter(is_active=True)
+        self.fields['bu'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['customer'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['book'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['book'].widget.attrs['id'] = \
+            "id_Define_Project-book"
+        self.fields['currentProject'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['customerContact'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['signed'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['startDate'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['endDate'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['id'].widget.attrs['class'] = \
+            "form-control"
 
 # Change Project Basic Form
 class ChangeProjectForm(forms.ModelForm):
