@@ -939,14 +939,15 @@ def review_completed(request):
                                                                               review_group_status=False,
                                                                               author_feedback=review_feedback)
         else:
-            print "im in else"
             existing_remark = QASheetHeader.objects.filter(project_id=project_id,
                                                            chapter_component=request.session['chapter_component'],
                                                            review_group_id=review_group).values(
                 "review_group_feedback", "author_feedback_status", "review_group_status")[0]
             # print "existing_remark",  existing_remark
-            if len(str(existing_remark['review_group_feedback'])) > 0 and existing_remark['author_feedback_status'] == 1 and \
-                            existing_remark['review_group_status'] == 0:
+            if len(str(existing_remark['review_group_feedback'])) > 0 and \
+                        existing_remark['author_feedback_status'] == 1 and \
+                        existing_remark['review_group_status'] == 0:
+
                 review_feedback = "first review feedback :"+existing_remark['review_group_feedback']+"\n" +\
                                   "final review feedback : " + request.GET.get('review_feedback')
                 print "rf", review_feedback

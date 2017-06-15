@@ -208,6 +208,10 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                                     qa_obj.reviewed_by == request_obj.user:
                         for field in self.fields:
                             self.fields[field].widget.attrs['disabled'] = True
+                    if not qa_obj.review_group_status and qa_obj.author_feedback_status and \
+                                    qa_obj.reviewed_by == request_obj.user:
+                        for field in self.fields:
+                            self.fields[field].widget.attrs['disabled'] = False
                     # print qa_obj.review_group_status , qa_obj.author_feedback_status
                     if qa_obj.review_group_status and qa_obj.author_feedback_status:
                         for field in self.fields:
