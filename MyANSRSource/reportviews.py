@@ -7,7 +7,7 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     BTGReportForm, InvoiceForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
-    BTGReport
+    BTGReport, ProjectDetail
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
@@ -864,9 +864,10 @@ def getProjectData(request, startDate, endDate, projects, start, end):
             data['type'] = eachProject.projectType.description
             data['bu'] = eachProject.bu.name
             data['customer'] = eachProject.customer.name
-            pm = ProjectManager.objects.filter(project=eachProject)
+            #pm = ProjectManager.objects.filter(project=eachProject)
+            pm = ProjectDetail.objects.filter(project=eachProject)
             if len(pm):
-                data['pm'] = [eachPM.user.username for eachPM in pm]
+                data['pm'] = [eachPM.deliveryManager.username for eachPM in pm]
             else:
                 data['pm'] = []
             data['startDate'] = eachProject.startDate
