@@ -429,7 +429,8 @@ function mark_as_complete(element=null) {
                         } else {
                             if (data['result'] == true) {
                                 sweetAlert("Heya...", success_msg, "success");
-                                $(element).removeClass("btn-danger").addClass("btn-white").prop("disabled",true);
+                                $(element).removeClass("btn-danger").addClass("btn-white").prop('onclick',null).off('click');
+                                $('#reviewComplete').hide();
                             }
 
                             }
