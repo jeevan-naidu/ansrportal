@@ -431,6 +431,7 @@ function mark_as_complete(element=null) {
                                 sweetAlert("Heya...", success_msg, "success");
                                 $(element).removeClass("btn-danger").addClass("btn-white").prop('onclick',null).off('click');
                                 $('#reviewComplete').hide();
+                                $('#review_modal').prop('disabled',true)
                             }
 
                             }
