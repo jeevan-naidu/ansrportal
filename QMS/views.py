@@ -908,6 +908,79 @@ def fetch_author(request):
     )
 
 
+def c_get_severity_count(project, name, template_id):
+    s = 0
+    try:
+        if name.lower() == "s0":
+            return s
+        severity_level_obj = SeverityLevelMaster.objects.get(name__icontains=name)
+        review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=QASheetHeader.objects.filter(
+            project=project).values_list('id', flat=True),
+                                                        defect_severity_level__severity_level=severity_level_obj). \
+            values('id', 'defect_severity_level__severity_level__name').exclude(is_active=False). \
+            annotate(s_count=Count('defect_severity_level'))
+        # dsl = DSLTemplateReviewGroup.objects.filter(template_id=template_id,
+        # obj = DefectSeverityLevel.objects.filter(template_id=template_id,
+        #                                          severity_level=severity_level_obj)
+        # review_report = ReviewReport.objects.filter(defect_severity_level__in=obj,
+        #                                             QA_sheet_header=QASheetHeader.objects.filter(project=project)[0]).\
+        #     values('id', 'defect_severity_level__severity_level__name').\
+        #     annotate(s_count=Count('defect_severity_level'))
+        for v in review_report_obj:
+            for key, value in v.iteritems():
+                if key is 's_count':
+                    s += value
+    except Exception as e:
+        logger.error("qms format{0}", str(e))
+    return s
+
+
+def c_get_question_count(project):
+    s = 0
+    try:
+        qa_object = QASheetHeader.objects.filter(project=project).values_list('count', flat=True)
+        for v in qa_object:
+            s += v
+    except Exception as e:
+        logger.error("qms format{0}", str(e))
+    return s
+
+
+def c_get_project_status(project):
+    can_show_button = QASheetHeader.objects.filter(
+        (Q(review_group_status=False) | Q(author_feedback_status=False)),
+
+        project=project).exists()
+    obj = None
+    if not can_show_button:
+        obj = ProjectTemplateProcessModel.objects.get(project=project)
+        if obj.lead_review_status is False:
+            can_show_button = True
+    chapter_count = Chapter.objects.filter(book__project=project).count()
+    qa_chapter_count = QASheetHeader.objects.filter(project=project).values('chapter').distinct().count()
+    if chapter_count != qa_chapter_count:
+        difference = chapter_count - qa_chapter_count
+    else:
+        difference = 0
+    if obj is not None and obj.lead_review_status is True:
+        difference = 0
+    return can_show_button, difference
+
+def c_get_defect_density(s1, s2, s3, q_count):
+    # print s1, s2, s3, q_count
+    if q_count == 0:
+        return 0
+    else:
+        s1_dd = (s1 * 0.5)/q_count
+        s2_dd = (s2 * 0.3)/q_count
+        s3_dd = (s3 * 0.2)/q_count
+        return str(round(((s1_dd + s2_dd + s3_dd)*100), 2))
+
+
+import xlsxwriter
+import string
+
+
 class DashboardView(ListView):
     model = ReviewReport
     template_name = 'qms_dashboard.html'
@@ -922,6 +995,50 @@ class DashboardView(ListView):
             annotate(chapter_count=Count('project__book__chapter'))
         # print context['projects'].query
         return context
+
+    def post(self, request, *args, **kwargs):
+        workbook = xlsxwriter.Workbook('qms_project_summary.xlsx')
+        worksheet = workbook.add_worksheet()
+        header = ['Project Id', 'Project', 'Manager', 'Chapters', 'S1', 'S2', 'S3', 'Questions',
+                  'Defect Density', 'Status']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+        project_details = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
+                                                                         filter(user=self.request.user).
+                                                                         values('project')).\
+            values_list('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
+            annotate(chapter_count=Count('project__book__chapter'))
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in project_details:
+            worksheet.write(row, 0, s[3])#id
+            worksheet.write(row, 1, s[4])#name
+            worksheet.write(row, 2, self.request.user.get_full_name())#lead
+            worksheet.write(row, 3, s[7])#chap count
+            s1 = c_get_severity_count(s[1], "S1", s[5])
+            s2 = c_get_severity_count(s[1], "S2", s[5])
+            s3 = c_get_severity_count(s[1], "S3", s[5])
+            worksheet.write(row, 4, s1)#s1
+            worksheet.write(row, 5, s2)  # s2
+            worksheet.write(row, 6, s3)  # s3
+            q_count = c_get_question_count(s[1])
+            worksheet.write(row, 7, q_count ) #q count
+            worksheet.write(row, 8, c_get_defect_density(s1, s2, s3, q_count ))
+
+            if c_get_project_status(s[1])[1] != 0:
+                status = "Active"
+            else:
+                status = "Completed"
+            worksheet.write(row, 9, status)
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, 'qms_project_summary.xlsx')
+
 
 
 def review_completed(request):

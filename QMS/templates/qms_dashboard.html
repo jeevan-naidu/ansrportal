@@ -34,7 +34,10 @@
                     <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-dot-circle-o"></i> </span> Data Tables Example </h3>
                   </div> -->
                   <div class="panel-body table-responsive">
-                      <button type="button"  style="float: right; margin-bottom: 10px;" class="btn vd_btn vd_bg-green" data-dismiss="modal" id="project_level">Export to Excel</button>
+              <form method="post" action="/qms/dashboard/" >{%csrf_token%}
+              <input type="submit"  style="float: right; margin-bottom: 10px;" class="btn vd_btn vd_bg-green" data-dismiss="modal" name="project_level"id="project_level" value="Export to Excel"/>
+              </form>
+
                     <table class="table table-striped leave-report-table qms-dashboard-table" id="data-tables">
                       <thead>
                         <tr>
@@ -257,8 +260,8 @@ $(document).ready(function() {
     jQuery(document).ready(function() {
 
     $('#chapter_level').on('click', function(e){
-        e.preventDefault();
-        ResultsToTable();
+        <!--e.preventDefault();-->
+        <!--ResultsToTable();-->
     });
 
     function ResultsToTable(){
@@ -271,8 +274,8 @@ $(document).ready(function() {
 
 
      $('#project_level').on('click', function(e){
-        e.preventDefault();
-        ResultsToTable2();
+        <!--e.preventDefault();-->
+        <!--ResultsToTable2();-->
     });
 
     function ResultsToTable2(){
