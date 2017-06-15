@@ -1091,9 +1091,12 @@ def tree():
     return collections.defaultdict(tree)
 
 
-def chapter_summary(request):
-    project_id = request.GET.get('project_id')
-    # print project_id
+def chapter_summary(request, p_id=None,export=False):
+    if p_id is None:
+        project_id = request.GET.get('project_id')
+    else:
+        project_id = p_id
+    print project_id
     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
         values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().\
         annotate(cc_count=Count('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id'))
@@ -1172,11 +1175,48 @@ def chapter_summary(request):
                         # qms_data[obj.id]['severity_level'] = tmp_dict
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
+    #return write_qms_chapter_level_summary(request, qms_data_list)
     # print json.dumps(qms_data_list)
-    return HttpResponse(
-        json.dumps(qms_data_list),
-        content_type="application/json"
-    )
+    if not export:
+        return HttpResponse(
+            json.dumps(qms_data_list),
+            content_type="application/json"
+        )
+    else:
+        return qms_data_list
+
+
+def write_qms_chapter_level_summary(request):
+    # print"write_qms_chapter_level_summary",  request.POST.get("project_id")
+    qms_data_list = chapter_summary(request, p_id=request.POST.get("project_id"), export=True)
+    workbook = xlsxwriter.Workbook('qms_project_chapter_level_summary.xlsx')
+    worksheet = workbook.add_worksheet()
+    header = [' Chapter', "Component", "Author", 'S1', 'S2', 'S3', 'Questions',
+              'Defect Density']
+    header_length = len(header)
+    header_column = list(string.ascii_uppercase)[:header_length]
+    header_column = [s + "1" for s in header_column]
+    header = zip(header_column, header)
+    for k, v in header:
+        worksheet.write(k, v)
+    row = 1
+    for l in qms_data_list:
+        for k, v in l.iteritems():
+            for sub_key, sub_value in v.iteritems():
+                worksheet.write(row, 0, sub_value['chapter_name'])
+                worksheet.write(row, 1, sub_value['component_name'])# id
+                worksheet.write(row, 2, sub_value['author'])
+                worksheet.write(row, 3, sub_value["severity_level"][u'S1'])
+                worksheet.write(row, 4, sub_value["severity_level"][u'S2'])
+                worksheet.write(row, 5, sub_value["severity_level"][u'S3'])
+                worksheet.write(row, 6, sub_value['questions'])
+                worksheet.write(row, 7, sub_value['defect_density'])
+
+        row += 1
+
+    workbook.close()
+
+    return generateDownload(request, 'qms_project_chapter_level_summary.xlsx')
 
 
 class ReviewListView(ListView):
