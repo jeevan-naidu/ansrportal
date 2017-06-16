@@ -29,39 +29,39 @@
 <div class="panel-body">
     <button type="button" class="btn btn-success disabled">Project Name:- {{request.session.name}}</button>
     <div class="row">
-        <div class="col-sm-6 center-block">
+        <div class="col-sm-10 center-block">
             <div class="table-responsive col-lg-12">
             <h3><small><b>{{ projectName }}</b></small></h3>
             <table class="table">
                 {% for field in form %}
                     <tr>
-                        <td class="col-lg-6">
-                                {% if field.label != 'BasicInfoId' %}
-                                    {% if field.label != 'Remark' %}
-                                    {{ field.label }}
-                                    {% if field.field.required %}
-                                        <span class="required">*</span>
-                                    {% endif %}
+                                <td class="col-lg-6">
+                                        {% if field.label == 'New Development' %}
+                                             Project Stage
+                                        {% else %}
+                                            {{ field.label }}
                                         {% endif %}
-                                {% endif %}
-                        </td>
-                        <td class="col-lg-7">
-                            {% if field.label == 'Revised Effort' %}
-
-                                <span class="col-lg-10">{{ field }}</span>
-
-                                <span class="col-lg-2"><b><span class="label label-default form-control">PH(s)</span></b></span>
-                            {% else %}
-                                {% if field.label == 'Remark' %}
-                                    <span class="col-lg-10 remark_span">{{ field }}</span>
-                                    {% else %}
-                                    <span class="col-lg-10">{{ field }}</span>
-                                    {% endif %}
-
-                                <span class="col-lg-2"></span>
-                            {% endif %}
-                        </td>
-                    </tr>
+                                        {% if field.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
+                                </td>
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'New Development' %}
+                                <td class="col-lg-6">
+						{% for radio in field %}
+							{% if field.label == 'New Development' %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
+							{% else %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
+							{% endif %}
+						{% endfor %}
+					{% else %}
+                                <td class="col-lg-6">
+						{{ field }}
+					{% endif %}
+				</td>
+                            </tr>
                 {% endfor %}
             </table>
             </div>

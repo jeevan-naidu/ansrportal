@@ -28,7 +28,7 @@ from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
-from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, ProjectChangeRejection
+from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, ProjectChangeRejection, ProjectRejection
 from fb360.models import Respondent
 from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
@@ -1036,6 +1036,7 @@ class ModifyProjectWizard(SessionWizardView):
                         'book',
                         'totalValue',
                         'name',
+                        'currentProject',
                     )[0]
                     additional_detail = ProjectDetail.objects.filter(project_id=projectId).values('projectFinType',
                                                                                                   'PracticeName',
@@ -2379,6 +2380,8 @@ def modifyProjectInfo(request, newInfo):
                                                            salesForceNumber=newInfo[1]['salesForceNumber'],
                                                            book=newInfo[1]['book'],
                                                            projectType=newInfo[1]['projectType'],
+                                                           customer=newInfo[1]['customer'],
+                                                           currentProject=newInfo[1]['currentProject'],
                                                            rejected=False,)
         ProjectDetail.objects.filter(project_id=newInfo[1]['id']).update(PracticeName=newInfo[1]['practicename'],
                                                                          projectFinType=newInfo[1]['projectFinType'],
@@ -3194,6 +3197,10 @@ class NewCreatedProjectApproval(View):
             reject = reject if reject else []
             Project.objects.filter(id__in=approve).update(active=True)
             Project.objects.filter(id__in=reject).update(rejected=True)
+            for val in reject:
+                rejection_date = date.today()
+                emailvalues = ProjectDetail.objects.filter(project_id=val).values('deliveryManager__email', 'deliveryManager__username', 'project__remark', 'project__name')[0]
+                ProjectRejection.delay(emailvalues['deliveryManager__email'], emailvalues['project__remark'], emailvalues['deliveryManager__username'],  emailvalues['project__name'], rejection_date)
             return HttpResponse()
         except Exception as E:
             return HttpResponse(E)

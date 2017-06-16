@@ -1509,7 +1509,6 @@ def generateDownload(request, fileName):
     response['Content-Disposition'] = u'attachment; filename="{0}"'.format(
         fileName
     )
-    os.system('rm {0}'.format(fileName))
     return response
 
 

@@ -37,8 +37,19 @@
     </li>
 </ul>
 <div>
+<style type="text/css">
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+.yourlabs-autocomplete{
+    max-height: 200px !important;
+    max-width: 350px !important;
+    overflow: auto;
+}
+</style>
  <div id="create">
-    <form id="changeProject" method="post" action="" enctype="multipart/form-data">
+    <form id="modifyProject" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 	
         {{ wizard.management_form }}

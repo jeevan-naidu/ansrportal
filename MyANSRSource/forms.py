@@ -549,6 +549,7 @@ class RejectProjectForm(forms.ModelForm):
         super(RejectProjectForm, self).__init__(*args, **kwargs)
         # self.fields['project'].empty_label = None
 
+
 class ModifyProjectInfoForm(forms.ModelForm):
     id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
 
@@ -634,8 +635,7 @@ class ModifyProjectInfoForm(forms.ModelForm):
                 choices=[(True, 'New Development'), (False, 'Revision')]
             ),
             'signed': forms.RadioSelect(
-                choices=[(True, 'Yes'), (False, 'No')]
-            ),
+                choices=[(True, 'Yes'), (False, 'No')]),
             'projectManager': autocomplete.ModelSelect2Multiple(
                 attrs={'data-placeholder': 'Type Additional manager...'}),
 
@@ -677,6 +677,7 @@ class ModifyProjectInfoForm(forms.ModelForm):
             "form-control"
         self.fields['id'].widget.attrs['class'] = \
             "form-control"
+
 
 # Change Project Basic Form
 class ChangeProjectForm(forms.ModelForm):
