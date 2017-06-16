@@ -2808,7 +2808,7 @@ def saveProject(request):
                 pr.totalValue = float(request.POST.get('totalValue'))
                 pr.plannedEffort = int(request.POST.get('plannedEffort'))
                 pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
-                pr.currentProject = request.POST.get('currentProject')
+                pr.currentProject = True if request.POST.get('currentProject') == 'True' else False
                 pr.signed = (request.POST.get('signed') == 'True')
                 pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
                     pk=int(request.POST.get('bu'))
