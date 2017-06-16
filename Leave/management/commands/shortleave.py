@@ -40,7 +40,7 @@ def shortLeave():
         try:
             reason = ""
             shortLeaveType = ""
-            employee = Employee.objects.filter(user_id = user.id)
+            employee = Employee.objects.filter(user_id=user.id)
             appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate,
                                                                  to_date__gte=checkdate,
                                                                  user=user.id,
@@ -50,7 +50,7 @@ def shortLeave():
             if manager:
                 manager_d = User.objects.get(id=manager[0]['user_id'])
             else:
-                manager_d = User.objects.get(id= 35)
+                manager_d = User.objects.get(id=35)
             if employee:
                 attendance = Attendance.objects.filter(attdate=checkdate, employee_id=employee[0].employee_assigned_id)
                 if attendance:
@@ -83,7 +83,7 @@ def shortLeave():
                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                     reason = "you were absent"
                     shortLeaveType = 'full_day'
-                if  len(appliedLeaveCheck)>1:
+                if len(appliedLeaveCheck)>1:
                     pass
                 elif len(appliedLeaveCheck)==1 and shortLeaveType == 'half_day':
                     pass

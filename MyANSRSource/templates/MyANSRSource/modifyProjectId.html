@@ -1,0 +1,32 @@
+{% extends 'changeProjectMaster.inc' %}
+{% block pageTitle %}Modify Project{% endblock %}
+{% load fontawesome %}
+{% block content %}
+<ul class="form-steps clearfix">
+    <li class="form-step one-third {% block MPactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">1</span>
+        <label class="form-step-label">Rejected Projects</label>
+    </li>
+    <li class="form-step one-third {% block CBIactiveClass %}{% endblock %}">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">2</span>
+        <label class="form-step-label">Modify Basic Information</label>
+    </li>
+    <li class="form-step one-third active">
+        <span class="form-step-bor"></span>
+        <span class="form-step-no">3</span>
+        <label class="form-step-label">Summary</label>
+    </li>
+</ul>
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+	<legend>Congrats!!!</legend>
+	<div><h4><b>Project Updated Successfully</b></h4></div>
+	<div><h5>Project Name is : <b>{{ name }}</b></h5></div>
+<a href="modifyproject" class="btn btn-success pull-right">
+        <i class="fa fa-check fa-lg"></i>
+	<b>Complete</b>
+</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'modifyProjectMaster.inc' %}
+
+{% block createProjectActive %}class="active"{% endblock %}
+{% block MPactiveClass %}active{% endblock %}
+
+{% block pageTitle %}Manage/Rejected project{% endblock %}
+
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %}
+		{% if field.errors %}
+            <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+		{% endif %}
+		{% endfor %}
+        </ul>
+	</div>
+{% endif %}
+
+    <div class="panel clearfix">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-8 center-block">
+                    <div class="table-responsive col-lg-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <th class="text-center">Choose</th>
+                                <th class="text-center">Project</th>
+                                <th class="text-center">Remarks</th>
+                            </thead>
+                            {% for field in form.queryset %}
+                                <tr>
+                                    <td class="col-lg-1 text-center">
+                                        <input type="radio" value="{{field.id}}" name="projectid">
+                                    </td>
+                                    <td class="col-lg-7">
+                                        {{ field.name }}
+                                    </td>
+                                    <td class="col-lg-7">
+                                        {{ field.remark }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+
+
+</script>
+
+{% endblock %}{% endblock %}
