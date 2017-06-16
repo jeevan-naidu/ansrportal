@@ -150,9 +150,12 @@ INSTALLED_APPS = [
     'ExitApp',
     'Invoice',
     'skillset',
+    'QMS',
+    'simple_history',
     'TimeInOffice',
     'LaptopAvail'
 ]
+SESSION_SECURITY_PASSIVE_URLS = ["qms"]
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -164,7 +167,9 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
+    'QMS.middleware.qms_middleware.QMSPermissionCheckMiddleware',
     'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
