@@ -1,6 +1,10 @@
 import os.path
 import collections
 import xlrd
+import json
+import xlsxwriter
+import string
+import datetime
 from django.views.generic import View , TemplateView ,ListView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.contrib import messages
@@ -9,14 +13,17 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
-import json
-import datetime
 from django.shortcuts import render
 from .forms import *
 from MyANSRSource.models import ProjectTeamMember
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
+
+from shutil import copyfile
+from MyANSRSource.reportviews import generateDownload
+from openpyxl import load_workbook, Workbook
+from openpyxl.worksheet.datavalidation import DataValidation
 import logging
 logger = logging.getLogger('MyANSRSource')
 
@@ -308,7 +315,6 @@ def get_template_process_review(request):
                     if review_report_obj:
                         can_edit[str(ele.review_group.id)] = False
                     else:
-                        print "else"
                         if tab_user.review_group_status and tab_user.author_feedback_status:
                             can_edit[str(ele.review_group.id)] = False
                         else:
@@ -966,6 +972,7 @@ def c_get_project_status(project):
         difference = 0
     return can_show_button, difference
 
+
 def c_get_defect_density(s1, s2, s3, q_count):
     # print s1, s2, s3, q_count
     if q_count == 0:
@@ -977,8 +984,6 @@ def c_get_defect_density(s1, s2, s3, q_count):
         return str(round(((s1_dd + s2_dd + s3_dd)*100), 2))
 
 
-import xlsxwriter
-import string
 
 
 class DashboardView(ListView):
@@ -1327,12 +1332,8 @@ class ReviewRedirectView(View):
                           {'form': BaseAssessmentTemplateForm(), })
 
 
-from shutil import copyfile
-from MyANSRSource.reportviews import generateDownload
-from openpyxl import Workbook
-from openpyxl import load_workbook
-import os.path
-from openpyxl.worksheet.datavalidation import DataValidation
+
+
 class ExportReview(View):
     def get(self, request, *args, **kwargs):
         review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'],
