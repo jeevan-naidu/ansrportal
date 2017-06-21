@@ -203,6 +203,7 @@
 			<th>Project End Date</th>
 			<th>Signed</th>
 			<th>Closed</th>
+			<th>Status</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
@@ -236,6 +237,7 @@
                        No
                 {% endif %}
 			</td>
+			<td>{%if eachChange.approved == '0' %}Active{% endif %}{% if eachChange.approved == '1' %}Approved{% endif %}{% if eachChange.approved == '2' %} Rejected {% endif %} </td>
 		</tr>
 		{% endfor %}
         {% if closedOn %}
@@ -246,6 +248,7 @@
         {% else %}
         <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
         {% endif %}
+
 	</table>
 </div>
 </div>

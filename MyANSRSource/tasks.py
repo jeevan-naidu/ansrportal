@@ -72,6 +72,31 @@ class ProjectChangeRejection(Task):
         else:
             logger.debug('send successful')
 
+
+class ProjectRejection(Task):
+    def run(self, email_list, remark, username, projectname, rejection_date):
+        msg_html = render_to_string('email/projectbu_rejection.html',
+                                    {
+                                     'username': username,
+                                     'reason': remark,
+                                     'projectname': projectname,
+                                      'rejectiondate' : rejection_date,
+                                    })
+        mail_obj = EmailMessage(projectname+' Rejected',
+                                msg_html, settings.EMAIL_HOST_USER, [email_list],
+                                cc=[])
+
+        mail_obj.content_subtype = 'html'
+        email_status = mail_obj.send()
+        if email_status == 0:
+            logger.error(
+                "Unable To send Mail To The Authorities For"
+                "The Following Exit Applicant : Date time : ")
+            return "failed"
+        else:
+            logger.debug('send successful')
+
 tasks.register(TimeSheetWeeklyReminder)
 tasks.register(TimeSheetRejectionNotification)
 tasks.register(ProjectChangeRejection)
+tasks.register(ProjectRejection)
