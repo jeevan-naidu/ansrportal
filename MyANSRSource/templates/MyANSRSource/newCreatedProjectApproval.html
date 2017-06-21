@@ -30,6 +30,7 @@
                                 <th><b>Planned Effort</b></th>
                                 <th><b>Total Value</b></th>
                                 <th><b>Action</b></th>
+                                <th><b>Remarks</b></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -61,12 +62,37 @@
                                 </label>
                             </div>
                                  </td>
-
+                                 <td><button type="button" id="Modal_{{process.id}}" class="btn btn-default feedback_{{process.id}}" data-toggle="modal" data-target="#myModal_{{process.id}}"><span class="glyphicon glyphicon-comment"></span></button>
+                                 <div class="modal fade" id="myModal_{{process.id}}" tabindex="-1" role="dialog" aria-labelledby="myModal_{{process.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModal_{{process.id}}" >Reason</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <div class="form-group">
+                                <label class="col-sm-4 control-label">Enter Your Reason</label>
+                                <div class="col-sm-7 controls">
+                                  <input class="input-border-btm" id="feedback_{{process.id}}" name="feedback_{{process.id}}" type="text"></input>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div></td>
                         </tr>
-
-
-
-                        {% endfor %}
+ {% endfor %}
 
                         </table>
 {%if  queryset  %}
@@ -77,16 +103,9 @@
                         </div>
 
                     </div>{% endif %}
-
                     </div>
-
-
-
-
 </div>
      </div>
-
-
 <div class="modal fade" id="modal-container-detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -111,10 +130,6 @@
                 </div>
 
             </div>
-
-
-
-
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
@@ -161,11 +176,14 @@ $(".submit").on("click", function(){
                             var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
                             var approve_list = [];
                             var reject_list = [];
+                            var feedbackval =[]
                             for(var i=0; i<checkedBoxId.length; i++){
                              var checkbox_detail = checkedBoxId[i].split("_")
                              if(checkbox_detail[0] == "approve"){
+                                feedbackval.push($('#feedback_'+checkbox_detail[1]).val()+'_'+checkbox_detail[1])
                                 approve_list.push(checkbox_detail[1]);
                              }else{
+                             feedbackval.push($('#feedback_'+checkbox_detail[1]).val()+'_'+checkbox_detail[1])
                              reject_list.push(checkbox_detail[1])
                              }
                             }
@@ -183,7 +201,7 @@ $(".submit").on("click", function(){
 								if (isConfirm) {
                                             $.ajax({
                                                 url:"{% url 'new_created_project_approval' %}",
-                                                data:{"approve": approve_list, "reject": reject_list},
+                                                data:{"approve": approve_list, "reject": reject_list, "feedback":feedbackval},
                                                 type:"post",
                                                 success: function(data){
                                                     window.location=window.location;
