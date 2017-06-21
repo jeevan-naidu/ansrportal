@@ -31,7 +31,7 @@ def shortLeave():
     holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
     morningInTimeLimit = datetime.strptime("10:15:00", FMT)
-    fullDayOfficeStayTimeLimit = timedelta(hours=9, minutes=00, seconds=00)
+    fullDayOfficeStayTimeLimit = timedelta(hours=8, minutes=50, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=4, minutes=30, seconds=00)
     if checkdate in [datedata['date'] for datedata in holiday] or checkdate.weekday() >= 5:
         return
@@ -67,9 +67,9 @@ def shortLeave():
                     elif tdelta < fullDayOfficeStayTimeLimit:
                         reason = "you had put {0} hours which is below 9 hours".format(stayInTime)
                         shortLeaveType = 'half_day'
-                    elif morningInTime > morningInTimeLimit:
-                        reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
-                        shortLeaveType = 'half_day'
+                    # elif morningInTime > morningInTimeLimit:
+                    #     reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
+                    #     shortLeaveType = 'half_day'
                 else:
                     swipeIn = datetime.now(pytz.timezone("Asia/Kolkata"))\
                         .replace(hour=0, minute=0, second=0, microsecond=0)\
@@ -111,7 +111,10 @@ def shortLeave():
                                                               swipe_in=swipeInTime,
                                                               swipe_out=swipeOutTime
                                                               )
-                        send_mail(user, shortLeaveType, checkdate, dueDate, reason, "open")
+                        try:
+                            send_mail(user, shortLeaveType, checkdate, dueDate, reason, "open")
+                        except:
+                            logger.debug('email send issue user id' + user.id)
 
             else:
                 print(user.first_name + user.last_name + " hr need to take care")
