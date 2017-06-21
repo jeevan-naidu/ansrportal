@@ -15,7 +15,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from .forms import *
-from MyANSRSource.models import ProjectTeamMember
+from MyANSRSource.models import ProjectTeamMember, ProjectDetail
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
@@ -563,7 +563,8 @@ class AssessmentView(TemplateView):
                 request.session['template_id'] = ptpm_obj.template_id
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
-                is_pm = ProjectManager.objects.filter(project=project, user=request.user).exists()
+                is_pm = ProjectDetail.objects.filter(Q(deliveryManager=request.user)|Q(pmDelegate=request.user),
+                                                     project=project).exists()
                 request.session['is_pm'] = is_pm
                 # print obj.order_number
                 #  previous tab completion check
@@ -1232,12 +1233,12 @@ class ReviewListView(ListView):
         context = super(ReviewListView, self).get_context_data(**kwargs)
         is_pm = False
         # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
-        if self.request.user.groups.filter(name='myansrsourcePM').exists():
+        if self.request.user.groups.filter(name='DeliveryManager').exists():
             is_pm = True
             context['review_list'] = QASheetHeader.objects.filter\
-                (project__in=Project.objects.filter(closed=False, id__in=ProjectTeamMember.objects.filter(
-                    Q(member=self.request.user) | Q(project__projectManager=self.request.user)).values('project'),
-                                                    endDate__gte=datetime.date.today())).\
+                (project__in=Project.objects.filter(closed=False, id__in=ProjectDetail.objects.filter(
+                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).values('project'),
+                                                    project__endDate__gte=datetime.date.today())).\
                 values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
         else:
@@ -1271,7 +1272,8 @@ class ReviewRedirectView(View):
             ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
             self.request.session['template_id'] = ptpm_obj.template_id
             obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
-            is_pm = ProjectManager.objects.filter(project=project, user=self.request.user).exists()
+            is_pm = ProjectDetail.objects.filter(Q(deliveryManager=request.user) |
+                                                  Q(pmDelegate=request.user), project=project).exists()
             # print "is_pm" , is_pm
             self.request.session['is_pm'] = is_pm
             if obj.order_number != 1:
