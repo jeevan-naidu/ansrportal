@@ -28,8 +28,11 @@ def content_file_name(instance, filename):
     os_path = os.path.join(path, filename)
     return os_path
 
+
 class AbstractEntity(Model):
-    """Common attributes for all models"""
+    """
+    Common fields for all the apps for storing created request
+    """
     role = CharField(verbose_name="role", max_length=30, default="submitter")
     creation_date = DateTimeField('Creation Date', auto_now_add=True)
     last_updated = DateTimeField('Last Updated', auto_now=True)
@@ -61,6 +64,9 @@ class AbstractEntity(Model):
 
 
 class AbstractProcess(AbstractEntity):
+    """
+    Common fields for all the apps for storing transactions
+    """
     user = ForeignKey(User, related_name='%(class)s_requested_by')
     is_active = BooleanField('Is Active', default=True)
     process_status = CharField(choices=TASK_STATUS, max_length=40, default="In Progress")
@@ -71,17 +77,36 @@ class AbstractProcess(AbstractEntity):
 
 
 def get_app_detail(request, **kwargs):
+    """
+    Method use for import process file(configuration file)
+    :param request: 
+    :param kwargs: 
+    :return: return configuration of app
+    """
     app_title = get_request_params('app_name', request, **kwargs)
     config = flow_config(app_title)
     return config
 
 
 def manager_queryset(request, **kwargs):
+    """
+    Method use for getting queryset for approver
+    :param request: 
+    :param kwargs: 
+    :return: 
+    """
     config = get_app_detail(request, **kwargs)
     queryset = can_approve(request, config)
     return queryset
 
+
 def user_queryset(request, config):
+    """
+    Method use for getting data for user dashboard
+    :param request: 
+    :param config: 
+    :return: 
+    """
     queryset = {}
     model = config.PROCESS[config.INITIAL]['model']
     queryset['active'] = model.objects.filter(user=request.user,
@@ -94,6 +119,12 @@ def user_queryset(request, config):
 
 
 def can_approve(request, config):
+    """
+    Method return queryset for approver for their approval dashboard
+    :param request: 
+    :param config: 
+    :return: 
+    """
     model = config.PROCESS[config.INITIAL]['model']
     role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
@@ -112,6 +143,13 @@ def can_approve(request, config):
 
 
 def get_role(config, status, current_role):
+    """
+    Method use for get role of current transaction, text transaction and comment for transaction.
+    :param config: 
+    :param status: 
+    :param current_role: 
+    :return: 
+    """
     result_role = config.PROCESS[config.INITIAL]['role']
     transition = config.PROCESS[config.INITIAL]['transitions']
     role = result_role
@@ -170,6 +208,12 @@ def get_final_role(config):
 
 
 def get_app_name(request, **kwargs):
+    """
+    Method return the name of app
+    :param request: 
+    :param kwargs: 
+    :return: 
+    """
     app_title = get_request_params('app_name', request, **kwargs)
     return app_title
 
@@ -189,6 +233,12 @@ def get_process_transactions(fields_to_show, view_type):
 
 
 def get_process_detail(fields_to_show, view_type):
+    """
+    
+    :param fields_to_show: List of fields to display
+    :param view_type: Type of dashboard view
+    :return: filter list of fields to show in dashboard
+    """
     if view_type == "user":
         if "user" in fields_to_show:
             fields_to_show.remove("user")

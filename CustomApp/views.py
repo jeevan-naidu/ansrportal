@@ -21,13 +21,12 @@ from models import get_app_detail,\
     get_process_detail
 
 
-def process(request):
-    return render(request, 'templates/landingpage.html', {'taskprocess': WORKFLOW_APPS})
-
-
 class ProcessListView(generics.ListAPIView, LoginRequiredMixin):
 
     def list(self, request, **kwargs):
+        """
+        Method use for all the request which currently active
+        """
         config = get_app_detail(request, **kwargs)
         model = config.PROCESS[config.INITIAL]['model']
         serializer = config.PROCESS[config.INITIAL]['serializer']
@@ -41,8 +40,13 @@ class ProcessListView(generics.ListAPIView, LoginRequiredMixin):
 class StartProcess(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
 
-
     def get(self, request, **kwargs):
+        """
+        Method use for returning user dashboard uses user_dashboard.html to render
+        queryset: Three queryset (Active, Completed, Approved)
+        serializer: User Serializer to render it as form.
+        fields: Based app configuration display the fields in detail page and dashboard 
+        """
         config = get_app_detail(request, **kwargs)
         serializer = config.PROCESS[config.INITIAL]['serializer']
         app_name = get_app_name(request, **kwargs)
@@ -53,6 +57,10 @@ class StartProcess(APIView):
                         template_name='templates/user_dashboard.html')
 
     def post(self, request, **kwargs):
+        """
+        Method use for form submission and saving it in master table.
+        In case of error, send error for render it in form.
+        """
         config = get_app_detail(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
@@ -65,7 +73,7 @@ class StartProcess(APIView):
                 serializer.save_as(request)
                 return Response({'record_added': True}, status.HTTP_201_CREATED)
             except:
-                return Response({'serializer': serializer},status.HTTP_400_BAD_REQUEST)
+                return Response({'serializer': serializer}, status.HTTP_400_BAD_REQUEST)
         elif not attachment:
             attachment = "Attachment Required"
 
@@ -76,34 +84,44 @@ class StartProcess(APIView):
                        'app_name': app_name,
                        'attachment': attachment})
 
+
 class GetProcess(APIView):
     """
-    Get Process details
+    Method use for getting detail for update the certain request
     """
     parser_classes = (FileUploadParser,MultiPartParser, FormParser)
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'templates/update_form.html'
 
     def get_object(self, pk, model):
+        """
+        Method use to get request instance for update
+        """
         try:
             return model.objects.get(pk=pk)
         except model.DoesNotExist:
             raise Http404
 
     def get_process(self, request, **kwargs):
+        """
+        Method use for getting model and serializer of master table
+        """
         config = get_app_detail(request, **kwargs)
         serializer = config.PROCESS[config.INITIAL]['serializer']
         modal = config.PROCESS[config.INITIAL]['model']
         return serializer, modal
 
     def get(self, request, pk, **kwargs):
+        """
+        Method use for get request for update
+        """
         app_name = get_app_name(request, **kwargs)
         process = self.get_process(request, **kwargs)
         process_object = self.get_object(pk, process[1])
         serializer = process[0](process_object, partial=True)
-        return Response({"serializer":serializer,
-                         "pk":pk,
-                         "app_name":app_name},)
+        return Response({"serializer": serializer,
+                         "pk": pk,
+                         "app_name": app_name},)
 
 
 
@@ -114,18 +132,27 @@ class UpdateProcess(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
 
     def get_object(self, pk, model):
+        """
+        Getting the request object.
+        """
         try:
             return model.objects.get(pk=pk)
         except model.DoesNotExist:
             raise Http404
 
     def get_process(self, request, **kwargs):
+        """
+        Returns current app master model with its serializer
+        """
         config = get_app_detail(request, **kwargs)
         serializer = config.PROCESS[config.INITIAL]['serializer']
         modal = config.PROCESS[config.INITIAL]['model']
         return serializer, modal
 
     def get(self, request, pk, **kwargs):
+        """
+        Method use for rendering request in template for update/delete
+        """
         action = request.GET.get("action")
         config = get_app_detail(request, **kwargs)
         process = self.get_process(request, **kwargs)
@@ -135,6 +162,9 @@ class UpdateProcess(APIView):
                       {'queryset': process_object, 'fields': fields,})
 
     def put(self, request, pk, **kwargs):
+        """
+        Method use for update the request by user.
+        """
         process = self.get_process(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
@@ -150,6 +180,9 @@ class UpdateProcess(APIView):
                           {'serializer': serializer, 'app_name': app_name, 'pk':pk})
 
     def delete(self, request, pk, **kwargs):
+        """
+        Method use for delete the request by user
+        """
         process = self.get_process(request, **kwargs)
         app_name = get_app_name(request, **kwargs)
         process_object = self.get_object(pk, process[1])
@@ -170,6 +203,9 @@ class ProcessApproval(APIView):
     template_name = 'templates/approval_dashboard.html'
 
     def get_object(self, request, pk, **kwargs):
+        """
+        Method used for getting process object from master table
+        """
         try:
             config = get_app_detail(request, **kwargs)
             model = config.PROCESS[config.INITIAL]['model']
@@ -178,6 +214,9 @@ class ProcessApproval(APIView):
             raise Http404
 
     def get_process_detail(self, request, **kwargs):
+        """
+        Method returns list of steps available for app
+        """
         config = get_app_detail(request, **kwargs)
         process_details = list()
         process_details.append(config.INITIAL)
@@ -188,6 +227,9 @@ class ProcessApproval(APIView):
         return process_details
 
     def get_object_detail(self, request, pk, **kwargs):
+        """
+        Method returns tuple with process request name and value
+        """
         try:
             config = get_app_detail(request, **kwargs)
             display_fields = config.LIST_VIEW
@@ -203,6 +245,9 @@ class ProcessApproval(APIView):
             pass
 
     def process_status_detail(self, request, pk, **kwargs):
+        """
+        Method use for returning current role, next role and current status of process
+        """
         try:
             config = get_app_detail(request, **kwargs)
             modal = config.PROCESS[config.INITIAL]['model']
@@ -237,6 +282,10 @@ class ProcessApproval(APIView):
             pass
 
     def get(self, request, pk, **kwargs):
+        """
+        Method use for getting available all the request available for approval 
+        by login user.
+        """
         app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         process_serializer = config.PROCESS[config.INITIAL]['serializer']
@@ -254,6 +303,9 @@ class ProcessApproval(APIView):
                          'app_name': app_name})
 
     def post(self, request, pk, **kwargs):
+        """
+        Method use for taking action on a request(approve/reject)
+        """
         app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         transition = config.PROCESS[config.INITIAL]['transitions']
@@ -285,6 +337,9 @@ class ProcessApproval(APIView):
                          'app_name': app_name})
 
     def delete(self, request, pk, **kwargs):
+        """
+        delete the request(no use) 
+        """
         activity = self.get_object(request, pk, **kwargs)
         activity.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -295,6 +350,12 @@ class ApproveListView(APIView):
     template_name = 'templates/process_form.html'
 
     def get(self, request, **kwargs):
+        """
+        Method use for getting queryset approver based on role
+        It get render in process_form.html file.
+        Serializer we provide for our approval form.
+        A list of fields based on configuration to render in detail and dashboard page.
+        """
         app_name = get_app_name(request, **kwargs)
         config = get_app_detail(request, **kwargs)
         transition = config.PROCESS[config.INITIAL]['transitions']
