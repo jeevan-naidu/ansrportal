@@ -155,7 +155,7 @@ INSTALLED_APPS = [
     'TimeInOffice',
     'LaptopAvail'
 ]
-SESSION_SECURITY_PASSIVE_URLS = ["qms"]
+SESSION_SECURITY_PASSIVE_URL_NAMES = ["qms_dashboard", "review_list", "export_review", "qms", "choose_tabs"]
 
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -207,16 +207,14 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60*60
 # Settings for Django-session-security
-SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
-SESSION_SECURITY_EXPIRE_AFTER = 10*60
+SESSION_SECURITY_WARN_AFTER = 10*60  # Time Given in seconds
+SESSION_SECURITY_EXPIRE_AFTER = 14*60
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
 ROOT_URLCONF = 'timetracker.urls'
 
 WSGI_APPLICATION = 'timetracker.wsgi.application'
-
-
 
 
 DATABASES = {

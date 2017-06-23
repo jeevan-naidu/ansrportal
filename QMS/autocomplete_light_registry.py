@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import ProjectTeamMember, ProjectManager
+from MyANSRSource.models import ProjectTeamMember, ProjectManager, ProjectDetail
 from .models import *
 from dal import autocomplete
 import datetime
@@ -19,8 +19,10 @@ class AutocompleteUser(autocomplete.Select2QuerySetView):
 class AutocompleteProjectsManager(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = Project.objects.filter(id__in=ProjectManager.objects.filter(user=self.request.user).values('project')
-                                         , endDate__gte=datetime.date.today())
+        choices = ProjectDetail.objects.filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                               project__endDate__gte=datetime.date.today()).values('project')
+        # choices = Project.objects.filter(id__in=ProjectManager.objects.filter(user=self.request.user).values('project')
+        #                                  , endDate__gte=datetime.date.today())
         choices = choices.filter(name__icontains=q)
         return choices
 

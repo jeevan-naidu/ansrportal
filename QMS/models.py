@@ -160,6 +160,9 @@ class ChapterComponent(TimeStampAbstractModel):
         """ return unicode strings """
         return '%s' % self.id
 
+    def get_combination_name(self):
+        return '%s' % (unicode(self.chapter.name+" : "+self.component.name))
+
 
 class QASheetHeader(TimeStampAbstractModel):
     project = models.ForeignKey(Project)
@@ -186,7 +189,7 @@ class QASheetHeader(TimeStampAbstractModel):
     )
     order_number = models.IntegerField(blank=False,
                                        verbose_name="Review tab Order", null=False)
-    history = HistoricalRecords()
+    #history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """
@@ -207,7 +210,7 @@ class ReviewReport(TimeStampAbstractModel):
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
     remarks = models.TextField(blank=True, null=True,)
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
-    history = HistoricalRecords()
+    #history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """

@@ -144,8 +144,15 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
 
         clear_screen_shot = forms.BooleanField(label='clear screen shot', required=False, initial=False)
 
-        severity_type = forms.ModelChoiceField(widget=forms.Select(), required=True,
-                                               queryset=DefectTypeMaster.objects.all().order_by('name'), )
+        severity_type = forms.ModelChoiceField(widget=forms.Select(),
+                                               required=True,
+                                               queryset=DefectTypeMaster.objects.filter(id__in=
+                                               DSLTemplateReviewGroup.objects.filter(template_id=template_id).
+                                               values_list('defect_severity_level__severity_type_id', flat=True)), )
+
+
+
+
         # defect_severity_level = forms.CharField()
         # defect_classification = forms.CharField()
 

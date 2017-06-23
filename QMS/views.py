@@ -1102,7 +1102,6 @@ def chapter_summary(request, p_id=None,export=False):
         project_id = request.GET.get('project_id')
     else:
         project_id = p_id
-    print project_id
     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
         values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().\
         annotate(cc_count=Count('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id'))
@@ -1235,17 +1234,20 @@ class ReviewListView(ListView):
         # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
         if self.request.user.groups.filter(name='DeliveryManager').exists():
             is_pm = True
-            context['review_list'] = QASheetHeader.objects.filter\
-                (project__in=Project.objects.filter(closed=False, id__in=ProjectDetail.objects.filter(
-                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).values('project'),
-                                                    project__endDate__gte=datetime.date.today())).\
-                values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
-                       'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+            context['review_list'] = QASheetHeader.objects.filter(project__endDate__gte=datetime.date.today(),
+                                                                  project__closed=False,
+                                                                  project__in=ProjectDetail.objects.filter(
+                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).values('project'))\
+                .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
+                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
         else:
             context['review_list'] = QASheetHeader.objects.filter(Q(project__endDate__gte=datetime.date.today()) &
                                                                    (Q(author=self.request.user)|Q(reviewed_by=self.request.user)))\
                 .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
                         'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+        # print "li",context['review_list']
+        context['review_list'] = context['review_list'].filter().exclude(review_group_status=True,
+                                                                         author_feedback_status=True)
         return context
 
 
@@ -1334,8 +1336,6 @@ class ReviewRedirectView(View):
                           {'form': BaseAssessmentTemplateForm(), })
 
 
-
-
 class ExportReview(View):
     def get(self, request, *args, **kwargs):
         review_obj = ReviewReport.objects.filter(QA_sheet_header_id=self.request.session['QA_sheet_header_id'],
@@ -1348,20 +1348,23 @@ class ExportReview(View):
         ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
-        actual_name = file_name = ptpm_obj.template.actual_name
-        src = "QMS/master_templates/"+file_name+".xlsx"
+        # actual_name = file_name = ptpm_obj.template.actual_name
+        actual_name = ptpm_obj.template.actual_name
+        # src = "QMS/master_templates/"+file_name+".xlsx"
+        src = "QMS/master_templates/"+actual_name+".xlsx"
         if not os.path.isfile(src):
-            file_name = "generic_template"
+            # file_name = "generic_template"
             src = "QMS/master_templates/QMS-T1.xlsx"
             logger.error(" failed to find template {0} ".format(actual_name))
-
+        review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
+        # cc_obj = ChapterComponent.objects.get(id=self.request.session['chapter_component'])
+        file_name = unicode(ptpm_obj.project)+" : " +self.request.session['chapter_component'].get_combination_name()\
+                    + " : "+review_group.alias
         dst = "QMS/"+file_name+"_copy.xlsx"
         copyfile(src, dst)
         wb = load_workbook(filename=dst, data_only=False)
 
         ws1 = wb["Template1"]
-
-        review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         ws1.title = review_group.alias
         wb.active = 0
         dv = DataValidation(type="list", formula1='Ref!$D$25:$D$100', allow_blank=True)
