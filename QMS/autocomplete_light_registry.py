@@ -20,9 +20,13 @@ class AutocompleteProjectsManager(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = ProjectDetail.objects.filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                               project__endDate__gte=datetime.date.today()).values('project')
-        # choices = Project.objects.filter(id__in=ProjectManager.objects.filter(user=self.request.user).values('project')
+                                               project__endDate__gte=datetime.date.today())\
+            .exclude(id__in=ProjectTemplateProcessModel.objects.filter(lead_review_status=True)).values('project')
+
+        # choices = Project.objects.filter(id__in=ProjectManager.objects.filter(user=self.request.user).
+        # values('project')
         #                                  , endDate__gte=datetime.date.today())
+
         choices = choices.filter(name__icontains=q)
         return choices
 
@@ -35,7 +39,8 @@ class AutocompleteProjects(autocomplete.Select2QuerySetView):
             id__in=ProjectTeamMember.objects.filter(
                 Q(member=self.request.user) |
                 Q(project__projectManager=self.request.user)
-            ).values('project'), endDate__gte=datetime.date.today()
+            ).exclude(id__in=ProjectTemplateProcessModel.objects.filter(lead_review_status=True)).values('project'),
+            endDate__gte=datetime.date.today()
         ).order_by('name')
         choices = choices.filter(name__icontains=q)
         return choices
