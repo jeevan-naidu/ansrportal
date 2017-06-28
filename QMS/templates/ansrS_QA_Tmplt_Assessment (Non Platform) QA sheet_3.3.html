@@ -241,9 +241,9 @@
                                             {{form_obj.instruction}}
                                         </td>
                                          <td class="" id="screen_shot-{{forloop.counter}}-td">
-                                            {{form_obj.screen_shot}}
+                                       {% if request.session.reviewer_logged_in  or request.session.is_pm %}     {{form_obj.screen_shot}} {% endif %}
                                         {% if form_obj.screen_shot_url.value %}
-                                             <label>clear </label>  {{form_obj.clear_screen_shot }}
+                                              {% if request.session.reviewer_logged_in  or request.session.is_pm %}  <label>clear </label>  {{form_obj.clear_screen_shot }} {% endif %}
                                              <span class="screen_shot">{% if form_obj.screen_shot_url.value %}
 
                         <a target="_blank" href="{{form_obj.screen_shot_url.value}}">

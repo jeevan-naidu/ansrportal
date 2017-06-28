@@ -207,8 +207,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60*60
 # Settings for Django-session-security
-SESSION_SECURITY_WARN_AFTER = 10*60  # Time Given in seconds
-SESSION_SECURITY_EXPIRE_AFTER = 14*60
+SESSION_SECURITY_WARN_AFTER = 9*60  # Time Given in seconds
+SESSION_SECURITY_EXPIRE_AFTER = 10*60
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 

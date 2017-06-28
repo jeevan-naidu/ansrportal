@@ -708,7 +708,7 @@ class ReviewReportManipulationView(AssessmentView):
                     report.screen_shot = None
                 else:
 
-                    if obj['screen_shot']:
+                    if 'screen_shot' in obj and obj['screen_shot']:
                         # extension = os.path.splitext(obj['screen_shot'])[1]
                         # if request.FILES['admin_action_attachment'].name.split(".")[-1] not in AllowedFileTypes:
                         if obj['screen_shot'].name.split(".")[-1] not in AllowedFileTypes:
