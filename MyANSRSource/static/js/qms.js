@@ -7,7 +7,6 @@ var globalObj;
 var clearDom = function(){
     $('.form-group').remove();
 }
-setInterval(function(){ console.log("im called");sessionSecurity.activity();}, 119000);
  function populateNames(theObj){
 
     $('.qms-allocators select').html('');
