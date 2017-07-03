@@ -40,7 +40,7 @@ PROCESS = {
 }
 
 INITIAL = 'reimburse_raise'
-
+ATTACHMENT = True
 LIST_VIEW = ["bill_no", "bill_date", "user", "vendor_name",'process_status', 'amount', 'attachment']
 DETAIL_VIEW = ["bill_no", "bill_date", "user", "vendor_name", 'nature_of_expenses', 'amount', 'process_status', 'request_status', 'attachment']
 TITLE = 'Reimbursement for ANSR Source'
