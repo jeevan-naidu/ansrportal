@@ -19,13 +19,16 @@ from MyANSRSource.models import ProjectTeamMember, ProjectDetail
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
-
 from shutil import copyfile
 from MyANSRSource.reportviews import generateDownload
 from openpyxl import load_workbook, Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 import logging
 logger = logging.getLogger('MyANSRSource')
+
+s1_penalty_count = 0.5
+s2_penalty_count = 0.3
+s3_penalty_count = 0.2
 
 try:
     dict.iteritems
@@ -979,12 +982,10 @@ def c_get_defect_density(s1, s2, s3, q_count):
     if q_count == 0:
         return 0
     else:
-        s1_dd = (s1 * 0.5)/q_count
-        s2_dd = (s2 * 0.3)/q_count
-        s3_dd = (s3 * 0.2)/q_count
+        s1_dd = (s1 * s1_penalty_count)/q_count
+        s2_dd = (s2 * s2_penalty_count)/q_count
+        s3_dd = (s3 * s3_penalty_count)/q_count
         return str(round(((s1_dd + s2_dd + s3_dd)*100), 2))
-
-
 
 
 class DashboardView(ListView):
@@ -994,10 +995,13 @@ class DashboardView(ListView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
-        context['projects'] = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
-                                                                         filter(user=self.request.user).
+        context['projects'] = ProjectTemplateProcessModel.objects.filter(project__endDate__gte=datetime.date.today(),
+                                                                         project__closed=False,
+                                                                         project__in=ProjectDetail.objects.filter(
+                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).
                                                                          values('project')).\
-            values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
+            values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id',
+                   'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
         # print context['projects'].query
         return context
@@ -1012,9 +1016,10 @@ class DashboardView(ListView):
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
         project_details = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
-                                                                         filter(user=self.request.user).
-                                                                         values('project')).\
-            values_list('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id', 'lead_review_status').\
+                                                                     filter(user=self.request.user).
+                                                                     values('project')).\
+            values_list('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id',
+                        'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
         for k, v in header:
             worksheet.write(k, v)
@@ -1044,7 +1049,6 @@ class DashboardView(ListView):
         workbook.close()
 
         return generateDownload(self.request, 'qms_project_summary.xlsx')
-
 
 
 def review_completed(request):
