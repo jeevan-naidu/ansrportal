@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+
+<body>
+
+<p>Hi, {{user}},</p>
+
+<p>{{ approved_by }} has cancelled your laptop application. </p>
+<p>Please raise it again with new request.</p>
+<p>From Date : {{from_date}}</p>
+<p>To Date : {{to_date}}</p>
+<p>Laptop No. : {{ laptop_id }}</p>
+{% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+
+<p></p><p></p>
+<p>Regards,<br>
+ HR Support<br>
+</body>

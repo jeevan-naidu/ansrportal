@@ -1,10 +1,27 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
-
 from employee.models import Employee, PreviousEmployment, EmpAddress,\
     FamilyMember, Education, Designation, TeamMember, Attendance, EmployeeCompanyInformation
 from forms import EmployeeChoiceField, DesignationChoiceField
 import CompanyMaster
+from .forms import SetCurrentUserFormset
+
+
+class SetCurrentUserFormsetMixin(object):
+    """
+    Use a generic formset which populates the 'created_by, updated_by' model field
+    with the currently logged in user.
+    """
+    formset = SetCurrentUserFormset
+    created_by = "created_by"
+    updated_by = "updated_by"  # default user field name, override this to fit your model
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(SetCurrentUserFormsetMixin, self).get_formset(request, obj, **kwargs)
+        formset.request = request
+        formset.created_by = self.created_by
+        formset.updated_by = self.updated_by
+        return formset
 
 
 class EmpAddressInline(admin.StackedInline):
@@ -72,7 +89,7 @@ class PreviousEmploymentInline(admin.StackedInline):
         return self.extra
 
 
-class UserInline(admin.StackedInline):
+class UserInline(SetCurrentUserFormsetMixin, admin.StackedInline):
     extra = 0
     verbose_name = 'Click to open/close...'
     verbose_name_plural = 'Employee Information'
@@ -81,7 +98,7 @@ class UserInline(admin.StackedInline):
     # Grappelli stylesheets
     classes = ('grp-collapse grp-open',)
     inline_classes = ('grp-collapse grp-closed',)
-    
+    fk_name = "user"
 
     max_num = 1
     min_num = 1
@@ -103,7 +120,7 @@ class UserInline(admin.StackedInline):
         ('Role and Job', {
             'fields': (('employee_assigned_id', 'designation'),
                        ('business_unit', 'location'),
-                       ('category', 'idcard'),)}),
+                       ('category', 'idcard', 'practice'),)}),
         ('Financial Information', {
             'fields': (('PAN', 'PF_number', 'uan'),
                        ('group_insurance_number', 'esi_number',),

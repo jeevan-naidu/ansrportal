@@ -871,6 +871,38 @@ app.getSum = function($elements, $outputElement) {
             // Increment the id and name value
             $formFields.each(function(index) {
                 $element = $(this);
+                // following added to removed disabled attribute for hours input field while cloning
+                if($element.hasClass('b-hours')) $element.removeAttr("disabled readonly")
+
+//              following patch is added for remark
+                tmp = this.id.split('-');
+                if(tmp[3] =='remarks') {
+                    var form_type = tmp[1].split('_');
+                    if(form_type[1]== "at") {
+                        target ="#actModal-";
+                        label = "activity_myModalLabel_actModal-";
+                        name = "at-";
+
+                    }else{
+                        target ="#myModal-";
+                        label = "myModalLabel_myModal-";
+                        name= "form-";
+
+                    }
+                    $child = $(this).find('textarea');
+                    var r_id = tmp[1]+'-'+newRowId+'-remarks';
+                    console.log(tmp[1])
+
+                    $(this).attr("aria-labelledby" ,label+r_id);
+                    $child.val("");
+                    $child.attr({ name:name+newRowId+'-remarks', id:r_id});
+                    cur_button = newRow.find('button');
+                    $(cur_button).attr({ name:"bt_"+r_id, id:"bt_"+r_id});
+                    $(cur_button).attr('data-target',target+r_id);
+                }
+//                remark patch ends here
+
+
                 curId = $element.attr('id');
                 curName = $element.attr('name');
 
@@ -1786,3 +1818,16 @@ is_changed =false;
 //    var tmp_is_internal_id = tmp_id[0]+'-'+tmp_id[1]+'-is_internal';
 //    $('#'+tmp_is_internal_id).data('prev_value', $('#'+tmp_is_internal_id).val());
 //});
+
+/* codr for not allowing more than 3 Additional Manger */
+$('.coordinatorcount').on('change', function(e){
+            var selected = $(e.target).val();
+            if (selected.length >3)
+                {
+                    $('.btn.btn-info.pull-right').prop('disabled', true);
+                    swal("can't select More than 3 Additional Manager")
+                }
+            else {
+                    $('.btn.btn-info.pull-right').prop('disabled', false);
+                  }
+        })

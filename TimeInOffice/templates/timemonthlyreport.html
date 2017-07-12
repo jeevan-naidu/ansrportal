@@ -1,0 +1,81 @@
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
+<!-- Bar chart -->
+
+
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+        <div class="col-lg-4 col-sm-5 pd-25"  style="width:100%">
+          <table class="table  table-striped leave-report-table" id="data-tables1">
+<thead> <h4>Monthly Data</h4>
+              <tr>
+              <th>Person</th>
+              {% for val in weekreport %}
+                <th> week {{ forloop.counter }}</th>
+              {% endfor %}
+
+            </tr>
+</thead>
+              <tbody>
+
+                  {% for person in weekly_average%}
+                <tr class="gradeX">
+                  {% for val in person%}
+                  <td>{{ val }}</td>
+                  {% endfor %}
+                </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
+
+<script type="text/javascript" src="/static/plugins/raphael/raphael.min.js"></script>
+<script type="text/javascript" src="/static/plugins/morris/morris.min.js"></script>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+
+
+
+$(document).ready(function() {
+    "use strict";
+
+    $('#data-tables').dataTable({
+        searching: true,
+        scrollCollapse: true,
+        destroy: true,
+
+    });
+
+     $('#data-tables1').dataTable({
+        searching: true,
+        scrollCollapse: true,
+        destroy: true,
+
+    });
+
+
+
+
+    // Go to summary function
+
+    $('#get-summary').click(function(){
+      $('html, body').animate({scrollTop: 9999}, 'slow');
+    });
+
+
+});
+</script>

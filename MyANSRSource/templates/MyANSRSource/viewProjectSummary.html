@@ -3,6 +3,13 @@
 {% load fontawesome %}
 {% block pageTitle %}View Project Summary{% endblock %}
 {% block PSactiveClass %}active{% endblock %}
+{% block steps %}
+    {% if show_header %}
+        {{ block.super }}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
 {% block viewProjectContent %}
 <legend><b>Summary</b>
     <span class="float-right"><h3><small><b>{{ basicInfo.projectId }} :  {{ basicInfo.name }}</b></small></h3></span>
@@ -59,7 +66,28 @@
 		</tbody>
 	</table>
 	</div>
-</div>
+		<div class="panel panel-default">
+	<div class="panel-heading overflowHidden">
+		<b>
+			<span class="col-lg-6">Project Additional detail</span>
+		</b>
+	</div>
+			<div class="panel-body">
+		<table class="table table-condensed">
+		<thead>
+				<th>Delivery manager</th>
+				<th>PM Delegate</th>
+				<th>Project Finance Type</th>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{{ basicInfo.deliveryManager}}</td>
+			<td>{{ basicInfo.pmDelegate }}</td>
+			<td>{{ basicInfo.projectFinType }}</td>
+		</tr>
+		</tbody>
+	</table>
+	</div>
 <div class="panel panel-default">
 	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Project Basic Information</span></b></div>
 	<div class="panel-body">
@@ -175,7 +203,7 @@
 			<th>Project End Date</th>
 			<th>Signed</th>
 			<th>Closed</th>
-			<th>SalesForce Number</th>
+			<th>Status</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
@@ -209,9 +237,7 @@
                        No
                 {% endif %}
 			</td>
-			<td>
-				{{ eachChange.salesForceNumber }}
-			</td>
+			<td>{%if eachChange.approved == '0' %}Active{% endif %}{% if eachChange.approved == '1' %}Approved{% endif %}{% if eachChange.approved == '2' %} Rejected {% endif %} </td>
 		</tr>
 		{% endfor %}
         {% if closedOn %}
@@ -222,11 +248,24 @@
         {% else %}
         <td colspan="6" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
         {% endif %}
+
 	</table>
 </div>
 </div>
+{% if show_header %}
 <a href="view-project" class="btn btn-info">
         <i class="fa fa-arrow-circle-left"></i>
 	<b>Choose another project</b>
-</a>
+</a> {% endif %}
+
+ {% if not show_header %}
+<script type="text/javascript">
+
+$(function() {
+       $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+
+});
+
+</script>
+{% endif %}
 {% endblock %}

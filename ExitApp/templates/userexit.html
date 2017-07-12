@@ -73,7 +73,7 @@ ul{list-style: none;padding-left: 0px;}
                   <label class="col-sm-4 control-label" >Resignation Date<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
                       {{ form.start_date }}
-                    <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div> 
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@ ul{list-style: none;padding-left: 0px;}
                   <label class="col-sm-4 control-label" >Reason For Exit<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
                      {{ form.reason_dropdown }}
-                    <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div> 
                     </div>
                 </div>
 
@@ -91,17 +91,17 @@ ul{list-style: none;padding-left: 0px;}
                   <label class="col-sm-4 control-label" >Last Date<span class="mandatory-field"> *</span></label>
                   <div class="col-sm-6 controls mxw-250">
                       {{ form.last_date }}
-                    <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div> 
                     </div>
                 </div>
-
+                
                 <div class="form-group col-sm-6">
                   <label class="col-sm-4 control-label" >Comments</label>
                   <div class="col-sm-6 controls mxw-250">
                       {{ form.comment }}
-                    <div class="help-block with-errors"></div>
+                    <div class="help-block with-errors"></div> 
                     </div>
-                </div>
+                </div>              
               </div>
               <div class="row submit-holder">
                 <div class="form-group col-sm-12">
@@ -173,9 +173,9 @@ ul{list-style: none;padding-left: 0px;}
       // Date Validation
 
       $('body').on('click', function(key) {
+            
 
-
-        if ($('#id_last_date').val() != '' ) {
+        if ($('#id_last_date').val() != '' ) {            
             var today = new Date();
             var dd = today.getDate();
             var mm = today.getMonth()+1; //January is 0!
@@ -183,11 +183,11 @@ ul{list-style: none;padding-left: 0px;}
 
             if(dd<10) {
                 dd='0'+dd
-            }
+            } 
 
             if(mm<10) {
                 mm='0'+mm
-            }
+            } 
 
             today = mm+'/'+dd+'/'+yyyy;
 
@@ -208,3 +208,4 @@ ul{list-style: none;padding-left: 0px;}
     </script>
 
 {% endblock %}
+

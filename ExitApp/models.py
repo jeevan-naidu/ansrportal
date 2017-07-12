@@ -20,7 +20,7 @@ Department = (
 
 
 class ResignationInfo(models.Model):
-    User = models.ForeignKey(User, unique=True)
+    User = models.OneToOneField(User)
     emp_reason = models.CharField(verbose_name="Reason", blank=False, max_length=250,)
     hr_accepted = models.NullBooleanField(verbose_name="HR clearance", null=True, blank=True)
     rehire_hr = models.NullBooleanField(verbose_name="HR Concent fo rehire", null=True, blank=True)
@@ -43,7 +43,7 @@ class ResignationInfo(models.Model):
         return unicode(self.User)
 
     class Meta:
-        verbose_name = 'Regignation info'
+        verbose_name = 'Resignation info'
 
 
 '''Database for clearance from all Dept...'''

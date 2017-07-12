@@ -64,7 +64,6 @@ def choose_reportee(user):
         is_manager = 1
     return is_manager
 
-
 @register.filter('IsManager')
 def IsManager(user):
     UserGroupsList = user.groups.all().values_list('name', flat=True)
@@ -80,6 +79,7 @@ def DirectReportee(user, request):
         reportee_flag = 0
 
     return reportee_flag
+
 
 @register.filter
 def get_item(dictionary, key):

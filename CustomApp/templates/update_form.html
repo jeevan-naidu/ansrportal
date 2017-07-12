@@ -1,0 +1,92 @@
+{% block pageTitle %}{% endblock %}
+
+{% block content  %}
+    <style type="text/css">
+
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+   padding: 5px 8px;
+}
+
+</style>
+    <link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+    <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+{% load rest_framework %}
+
+{% load process_tags %}
+<form method="POST" id="process_update" enctype="multipart/form-data" data-dirty="true" >
+    {% csrf_token %}
+    {% render_form serializer template_pack='rest_framework/vertical' %}
+
+    <input type="submit" class="btn vd_btn vd_bg-green" value="Update">
+</form>
+
+{% endblock %}
+<script>
+    $('document').ready(function(){
+        {% if serializer.attachment %}
+            attach = $(".attachment");
+            $("<span><a target='_blank' href='{{serializer.attachment.value }}'>Attachment </a></span>").insertAfter(attach[1]);
+        {% endif %}
+{#        console.log({{serializer.attachment.value}});#}
+});
+$(".attachment").change(function(){
+   var filename = $(this).val();
+   var re = /(\.jpg|\.jpeg|\.gif|\.GIF|\.png|\.JPG|\.JPGEG|\.JPG|\.PNG|\.XLSX|\.xlsx|\.xls|\.XLS|\.DOCX|\.docx|\.doc|\.DOC|\.eml|\.EML)$/i;
+   if(!re.exec(filename)){
+       alert("File extension not supported");
+       $(this).val('');
+   }
+
+});
+ $("form#process_update").submit(function(){
+						 var formData = new FormData($(this)[0]);
+
+
+						 swal({   title: "Are you sure?",
+							text: "Do you want to submit?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+
+								 $.ajax({
+									url: "/process/{{ app_name }}/update/{{ pk }}/",
+									type: 'put',
+									data: formData,
+									success: function (data) {
+									    if (data.record_added) {
+                                            window.onbeforeunload = null;
+											 swal("Done!", "Updated", "success");
+                                           window.location=window.location;
+                                        }
+                                        else{
+									       $("#modal_body_update").html();
+
+									        $("#modal_body_update").html(data);
+                                        }
+
+
+									},
+									error: function(XMLHttpRequest, textStatus, errorThrown) {
+{#									    alert({{errors  }});#}
+												$("#modal_body_update").html();
+
+											},
+									cache: false,
+									contentType: false,
+									processData: false
+								 });
+								}
+							   });
+						 return false;
+					 });
+
+$(".datepicker").datetimepicker({"pickTime": false, "language": "en", "format": "YYYY-MM-DD"});
+</script>

@@ -1,7 +1,11 @@
 import logging
 
-logger = logging.getLogger('MyANSRSource')
 import json
+import CompanyMaster
+import employee
+import os
+import xlsxwriter
+from decimal import Decimal
 from collections import OrderedDict
 from django.contrib.auth.decorators import permission_required
 
@@ -12,40 +16,36 @@ from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
 from formtools.wizard.views import SessionWizardView
 from django.forms.formsets import formset_factory
+from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee
+from employee.models import Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
-from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification
+from django.core.exceptions import PermissionDenied
+from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, ProjectChangeRejection, ProjectRejection
 from fb360.models import Respondent
-
+from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm, UploadForm
+    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm
 
-import CompanyMaster
-import employee
-import os
-from employee.models import Remainder
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from django.core.urlresolvers import reverse_lazy
-
 from ldap import LDAPError
-
+logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
 FORMS = [
@@ -63,10 +63,22 @@ CFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Change Basic Information", ChangeProjectBasicInfoForm),
 ]
+
+MFORMS = [
+    ("Rejected Projects", RejectProjectForm),
+    ("Modify Basic Information", ModifyProjectInfoForm),
+]
+
 CTEMPLATES = {
     "My Projects": "MyANSRSource/changeProject.html",
     "Change Basic Information": "MyANSRSource/changeProjectBasicInfo.html",
 }
+
+MTEMPLATES = {
+    "Rejected Projects": "MyANSRSource/modifyProject.html",
+    "Modify Basic Information": "MyANSRSource/modifyProjectBasicInfo.html",
+}
+
 
 TMFORMS = [
     ("My Projects", ChangeProjectForm),
@@ -110,9 +122,8 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday',
 
 def getheadid(request):
     practicename = request.GET['practicename']
-    head = Practice.objects.get(id=practicename)
-    head_name = User.objects.get(id=head.head_id)
-    return HttpResponse(head_name.first_name)
+    practice = Practice.objects.select_related('head').get(id=practicename)
+    return HttpResponse(practice.head.first_name + " " + practice.head.last_name)
 
 
 def soplink(request):
@@ -120,6 +131,11 @@ def soplink(request):
     soplink  = qualitysop.objects.get(id=sopid)
     return HttpResponse(soplink.SOPlink)
 
+
+def milestonename(request):
+    type_id = request.GET['milestone_type_id']
+    name = Milestone.objects.get(id=type_id).milestone_type
+    return HttpResponse(name)
 
 def index(request):
     if request.user.is_authenticated():
@@ -200,9 +216,8 @@ def Timesheet(request):
     # Week Calculation.
     leaveDayWork = False
     # Getting the form values and storing it to DB.
-
-
     if request.method == 'POST':
+
         # Getting the forms with submitted values
         hold_button = False
 
@@ -446,6 +461,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
+                            elif k == 'remarks':
+                                nonbillableTS.remarks = v
                         nonbillableTS.save()
                         global dbSave
                         dbSave = True
@@ -528,6 +545,8 @@ def Timesheet(request):
                                 nonbillableTS.feedback = v
                             elif k == 'activity':
                                 nonbillableTS.activity = v
+                            elif k == 'remarks':
+                                nonbillableTS.remarks = v
                         nonbillableTS.save()
                         global dbSave
                         dbSave = True
@@ -818,51 +837,28 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def date_range_picker(request):
-    mondays_list = [x for x in get_mondays_list_till_date()]
-    weeks_timesheetEntry_list = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart__in=mondays_list). \
-        values('wkstart', 'wkend', 'hold', 'approved').distinct()
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
+                            include_activity=False):
 
-    mondays_list = [str(x.strftime("%b") + "-" + str(x.day)) for x in mondays_list]
+    ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
+                                           teamMember=request_object.user)
 
-    weeks_list = [x for x in weeks_list_till_date(False)]
-
-    ts_week_info_dict = {}
-    for dict_obj in weeks_timesheetEntry_list:
-        for_week = str(str(dict_obj['wkstart'].day) + "-" + dict_obj['wkstart'].strftime("%b")) + " - " + \
-                   str(str(dict_obj['wkend'].day) + "-" + dict_obj['wkend'].strftime("%b"))
-        dict_obj['for_week'] = for_week
-        dict_obj['filled'] = True
-        wkstart = str(dict_obj['wkstart']).split('-')[::-1]
-        dict_obj['wkstart'] = "".join([x for x in wkstart])
-        wkend = str(dict_obj['wkend']).split('-')[::-1]
-        dict_obj['wkend'] = "".join([x for x in wkend])
-
-        ts_week_info_dict[for_week] = dict_obj
-
-    ts_final_list = []
-
-    for tup in weeks_list:
-        for_week = str(tup[0].day) + "-" + str(tup[0].strftime("%b")) + " - " + str(tup[1].day) + \
-                   "-" + str(tup[1].strftime("%b"))
-        if for_week in ts_week_info_dict:
-            ts_final_list.append(ts_week_info_dict[for_week])
-        else:
-            wkstart = str(tup[0]).split('-')[::-1]
-            wkend = str(tup[1]).split('-')[::-1]
-            ts_final_list.append({'for_week': for_week, 'wkstart': "".join([x for x in wkstart]),
-                                  'wkend': "".join([x for x in wkend]), 'filled': False})
-    return ts_final_list, mondays_list, ts_week_info_dict
-
-
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False):
     if approve_time_sheet:
-        ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                               teamMember=request_object.user, hold=True)
 
-    else:
-        ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                               teamMember=request_object.user)
+        ts_obj = ts_obj.filter(hold=True)
+
+        if include_activity:
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
+            else:
+                ts_obj = ts_obj.filter(Q(project__isnull=True))
+
+        else:
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(project__in=dm_projects)
+
+            else:
+                ts_obj = []
     return ts_obj
 
 
@@ -910,6 +906,7 @@ def getHours(request, wstart, wend, mem, project, label):
 
 
 class ChangeProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectChangeDocument'))
     def get_template_names(self):
         return [CTEMPLATES[self.steps.current]]
 
@@ -936,10 +933,12 @@ class ChangeProjectWizard(SessionWizardView):
         form = super(ChangeProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
+
         if step == 'Change Basic Information':
             signed = Project.objects.filter(
                 id=self.storage.get_step_data(
@@ -965,15 +964,15 @@ class ChangeProjectWizard(SessionWizardView):
                     'endDate',
                     'plannedEffort',
                     'totalValue',
-                    'salesForceNumber',
-                    'po'
+                    'startDate',
                 )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
-                currentProject['revisedEffort'] = currentProject[
-                    'plannedEffort']
+                currentProject['revisedEffort'] = currentProject['plannedEffort']
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
+        self.request.session['revisedsow'] = self.request.FILES.get('Change Basic Information-Sowdocument', "")
+        self.request.session['revisedestimation'] = self.request.FILES.get('Change Basic Information-estimationDocument', "")
         data = UpdateProjectInfo(
             self.request, [
                 form.cleaned_data for form in form_list])
@@ -982,6 +981,88 @@ class ChangeProjectWizard(SessionWizardView):
             'MyANSRSource/changeProjectId.html',
             data)
 
+
+class ModifyProjectWizard(SessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectChangeDocument'))
+
+    def get_template_names(self):
+        return [MTEMPLATES[self.steps.current]]
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ModifyProjectWizard, self).get_context_data(
+            form=form, **kwargs)
+        return context
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(ModifyProjectWizard, self).get_form(step, data, files)
+        step = step if step else self.steps.current
+        if step == 'Rejected Projects':
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False,project__rejected=True).filter(project__active=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.queryset = project
+        return form
+
+    def get_form_initial(self, step):
+        data = self.storage.get_step_data('Rejected Projects')
+        if data is not None:
+            currentProject = []
+            if step == 'Modify Basic Information':
+
+                projectId = data['projectid']
+                if projectId is not None:
+                    pm = Project.objects.filter(id=projectId).values(
+                        'projectManager',
+                    )
+                    l = []
+                    for eachData in pm:
+                        l.append(eachData['projectManager'])
+                    currentProject = Project.objects.filter(
+                        pk=projectId).values(
+                        'id',
+                        'signed',
+                        'endDate',
+                        'plannedEffort',
+                        'totalValue',
+                        'startDate',
+                        'salesForceNumber',
+                        'plannedEffort',
+                        'po',
+                        'customer',
+                        'bu',
+                        'customerContact',
+                        'projectType',
+                        'book',
+                        'totalValue',
+                        'name',
+                        'currentProject',
+                    )[0]
+                    additional_detail = ProjectDetail.objects.filter(project_id=projectId).values('projectFinType',
+                                                                                                  'PracticeName',
+                                                                                                  'deliveryManager',
+                                                                                                  'outsource_contract_value',
+                                                                                                  'pmDelegate')[0]
+                    currentProject['projectFinType'] = additional_detail['projectFinType']
+                    currentProject['practicename'] = additional_detail['PracticeName']
+                    currentProject['DeliveryManager'] = additional_detail['deliveryManager']
+                    currentProject['pmDelegate'] = additional_detail['pmDelegate']
+                    currentProject['outsource_contract_value'] = additional_detail['outsource_contract_value']
+                    currentProject['projectManager'] = l
+                    self.request.session['name'] = currentProject['name']
+
+            return self.initial_dict.get(step, currentProject,)
+
+    def done(self, form_list, **kwargs):
+        self.request.session['modifiedsow'] = self.request.FILES.get('Modify Basic Information-Sowdocument', "")
+        self.request.session['modifiedstimation'] = self.request.FILES.get('Modify Basic Information-Estimationdocument', "")
+        data = modifyProjectInfo(
+            self.request, [
+                form.cleaned_data for form in form_list])
+        return render(
+            self.request,
+            'MyANSRSource/modifyProjectId.html',
+            data)
 
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
@@ -1007,23 +1088,32 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         )
     ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
              'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
-             'managerFeedback', 'approved', 'hold'
+             'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
+             'teamMember__employee__employee_assigned_id', 'remarks'
              )
+
     if user_id:
-        cwTimesheetData = TimeSheetEntry.objects.filter(
-            Q(
-                wkstart=weekstartDate,
-                wkend=ansrEndDate,
-                teamMember=user,
-                activity__isnull=True
-            )
-        ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
-                 'tuesdayH', 'wednesdayH',
-                 'thursdayH', 'fridayH', 'hold',
-                 'saturdayH', 'sundayH', 'approved',
-                 'totalH', 'managerFeedback', 'project__internal',
-                 'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
-                 )
+        if request.session['dm_projects'] and request.session['dm_projects'] is not None:
+            cwTimesheetData = TimeSheetEntry.objects.filter(
+                Q(
+                    wkstart=weekstartDate,
+                    wkend=ansrEndDate,
+                    teamMember=user, project__in=request.session['dm_projects'],
+                    activity__isnull=True
+                )
+            ).values('id', 'project', 'project__name', 'task__name', 'mondayH',
+                     'tuesdayH', 'wednesdayH',
+                     'thursdayH', 'fridayH', 'hold',
+                     'saturdayH', 'sundayH', 'approved',
+                     'totalH', 'managerFeedback', 'project__internal',
+                     'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                     'remarks'
+                     )
+        else:
+            cwTimesheetData = []
+
+        if not request.session['include_activity'][int(user_id)]:
+            cwActivityData = {}
     else:
         cwTimesheetData = TimeSheetEntry.objects.filter(
             Q(
@@ -1037,9 +1127,10 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                  'thursdayH', 'fridayH', 'hold',
                  'saturdayH', 'sundayH', 'approved',
                  'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
-                 'teamMember__employee__employee_assigned_id',
+                 'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
+                 'remarks'
                  )
-
+    # print cwActivityData
     # Changing data TS data
     tsData = {}
     tsDataList = []
@@ -1056,7 +1147,7 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
         for k, v in eachData.iteritems():
             # print k,v
             if user_id:
-                if k != 'project__internal':
+                if isinstance(v, Decimal):
                     v = str(v)
             if user_id:
 
@@ -1101,7 +1192,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 tsData['tsId'] = v
 
             if k == 'project__internal':
-                # print type(v)
                 tsData['is_internal'] = int(v)
 
             if k == 'project__projectType__code':
@@ -1118,6 +1208,8 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                 v = str(v)
             if k == 'activity':
                 atData['activity'] = v
+            if k == 'hold':
+                atData['hold'] = v
             if 'monday' in k:
                 atData['activity_monday'] = v
                 monday_total += float(v)
@@ -1142,19 +1234,19 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
             if 'total' in k:
                 atData['activity_total'] = v
             if k == 'managerFeedback':
-                atData['feedback'] = v
+                atData['managerFeedback'] = v
             if k == 'activity__name':
                 atData['activity__name'] = v
             if k == 'id':
                 atData['atId'] = v
+            atData[k] = v
         atDataList.append(atData.copy())
         atData.clear()
     if user_id:
-        total_list.append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
-                           'wednesday_total': str(round(wednesday_total, 2)),
-                           'thursday_total': str(round(thursday_total, 2)),
-                           'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
-                           'sunday_total': str(round(sunday_total, 2))})
+        total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
+                            'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
+                            'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
+                            'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
@@ -1180,8 +1272,10 @@ def status_member(team_members, ignore_previous_year=False):
         for members in team_members:
             status[for_week]['status'][members.user.id] = {}
             try:
+
                 result = TimeSheetEntry.objects.filter(teamMember=members.user, wkstart=s[0], wkend=s[1],
                                                        approved=True).exists()
+                # print members.user, result
             except:
                 result = False
             status[for_week]['status'][members.user.id] = result
@@ -1226,6 +1320,10 @@ def date_range_picker(request, employee=None):
         dict_obj['for_week'] = for_week
         dict_obj['filled'] = True
         wkstart = str(dict_obj['wkstart']).split('-')[::-1]
+        not_submitted = TimeSheetEntry.objects.filter(teamMember=request.user, wkstart=dict_obj['wkstart'],
+                                                      hold=False).exists()
+        if not_submitted:
+            dict_obj['hold'] = False
         dict_obj['wkstart'] = "".join([x for x in wkstart])
         wkend = str(dict_obj['wkend']).split('-')[::-1]
         dict_obj['wkend'] = "".join([x for x in wkend])
@@ -1440,21 +1538,55 @@ def pull_members_week(employee, start_date, end_date):
 
 def send_reminder_mail(request):
     email_list = []
-    user_id = request.GET.get('user_id')
     start_date = datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
     end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
-    user = User.objects.get(id=user_id)
-    team_members = Employee.objects.filter(manager_id=user.employee.employee_assigned_id,
-                                           user__is_active=True)
-    for members in team_members:
-        result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                               teamMember=members.user, hold=True).exists()
-        if not result:
-            user_obj = User.objects.get(id=int(members.user.id))
-            email_list.append(user_obj.email)
-    TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
-    json_obj = {'status': True}
+    manager_team_members, team_members = dem_members(request)
+    try:
+        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        own_team = {members.user: members.user.email for members in team_members}
+        # updated_dict = team_dict.copy()
+        # updated_dict.update(own_team)
+        for user, email in own_team.iteritems():
+            result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                   teamMember=user, hold=True).exists()
+            if not result and email not in email_list:
+                email_list.append(email)
+        TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+        json_obj = {'status': True}
+    except Exception as e:
+        logger.error(
+            u'send_reminder_mail function error {0}'.format(
+                str(e))
+        )
+        json_obj = {'status': False}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
+
+
+def dem_members(request):
+    # delivery manager's project list
+    dm_projects = ProjectDetail.objects.filter(Q(deliveryManager=request.user) | Q(pmDelegate=request.user)).values_list('project', flat=True)
+    manager = Employee.objects.get(user_id=request.user)
+    # to fetch non project activities for their respective team
+    manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                    Q(employee_assigned_id=manager)),
+                                                   user__is_active=True).values_list('user_id', 'user__email')
+    if 'dm_projects' not in request.session:
+        if dm_projects:
+            request.session['dm_projects'] = dm_projects
+        else:
+            request.session['dm_projects'] = None
+    if dm_projects:
+        # allowing DM to approve their ts entry for their own project by removing exclude condition
+        team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
+                                                                                         member__is_active=True).
+                                               values_list('member', flat=True))  # .exclude(user=request.user)
+
+    else:
+        # their own team
+        team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
+                                               user__is_active=True)  # .exclude(user=request.user)
+
+    return manager_team_members, team_members
 
 
 class ApproveTimesheetView(TemplateView):
@@ -1463,22 +1595,37 @@ class ApproveTimesheetView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-        manager = Employee.objects.get(user_id=self.request.user)
-        team_members = Employee.objects.filter((Q(manager_id=manager) |
-                                                Q(employee_assigned_id=manager)), user__is_active=True)
-        if team_members:
+        manager_team_members, team_members = dem_members(self.request)
+        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        own_team = {members.user_id: members.user.email for members in team_members}
+        updated_dict = team_dict.copy()
+        updated_dict.update(own_team)
+
+        user_id_collection = [k[0] for k in manager_team_members]
+        if updated_dict:
             dates = switchWeeks(self.request)
             ts_data_list = {}
-
+            self.request.session['include_activity'] = {}
             start_date = dates['start']
             end_date = dates['end']
-            status, week_collection, unapproved_count = status_member(team_members)
-            # print status
-            # print start_date, end_date
-            # print start_date, end_date
-            for members in team_members:
+            status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+                user_id__in=updated_dict.keys()))
+            for user_id, name in updated_dict.iteritems():
                 non_billable_total = 0.0
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True)
+                if user_id not in user_id_collection:
+                    include_activity = False
+                    self.request.session['include_activity'][int(user_id)] = False
+                else:
+                    include_activity = True
+                    self.request.session['include_activity'][int(user_id)] = True
+
+                # exclude dm non project activities from dashboard
+                if user_id == self.request.user.id and self.request.user.id in updated_dict:
+                    self.request.session['include_activity'][int(self.request.user.id)] = False
+
+                members = Employee.objects.get(user=user_id)
+                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
+                                                 self.request.session['dm_projects'], include_activity)
                 if ts_obj:
                     ts_data_list[members] = {}
                     for s in ts_obj:
@@ -1486,10 +1633,12 @@ class ApproveTimesheetView(TemplateView):
                         while a == 0:
                             ts_data_list[members]['approved_status'] = s.approved
                             a += 1
-
-                    non_billable_obj = non_billable_hours(ts_obj)
-                    for others in non_billable_obj:
-                        non_billable_total += float(others['totalH'])
+                    if members.user_id not in user_id_collection:
+                        non_billable_total = 0
+                    else:
+                        non_billable_obj = non_billable_hours(ts_obj)
+                        for others in non_billable_obj:
+                            non_billable_total += float(others['totalH'])
                     ts_data_list[members]['non_billable_total'] = non_billable_total
                     billable_hours_obj = billable_hours(ts_obj)
                     internal_value, external_value, b_total = billable_value(billable_hours_obj)
@@ -1510,17 +1659,11 @@ class ApproveTimesheetView(TemplateView):
             for k, v in ts_data_list.iteritems():
 
                 if v['approved_status']:
-                    # print  k,v
                     ts_data_list_approved_true[k] = v
-                    # print ts_data_list_reordered
                 else:
-                    # print "else",  k, v
                     ts_data_list_approved_false[k] = v
             context['ts_data_list_approved_false'] = ts_data_list_approved_false
             context['ts_data_list_approved_true'] = ts_data_list_approved_true
-            # print "false",ts_data_list_approved_false
-            # print "true",ts_data_list_approved_true
-            # print ts_data_list_approved_true
         else:
             context['exception_message'] = "you don't have any team members"
         return context
@@ -1544,27 +1687,88 @@ class ApproveTimesheetView(TemplateView):
         if approve_list:
             for user_id in approve_list:
                 try:
-                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                  teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
-                                                                                approved=True)
+                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
+                        if not request.session["include_activity"][int(user_id)]:
+                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                          project__in=request.session['dm_projects'],
+                                                          teamMember_id=user_id).update(
+                                managerFeedback=feedback_dict[user_id], approved=True)
 
+                        else:
+                            TimeSheetEntry.objects.filter(Q(project__in=request.session['dm_projects'])
+                                                          |Q(project__isnull=True), wkstart=start_date,
+                                                          wkend=end_date, teamMember_id=user_id).update(
+                                managerFeedback=feedback_dict[user_id], approved=True)
+                    else:
+                        # get manager obj
+                        emp = Employee.objects.get(user=request.user)
+                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
+                            TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
+                                                          wkend=end_date, teamMember_id=user_id).update(
+                                managerFeedback=feedback_dict[user_id], approved=True)
+                        else:
+                            fail += 1
                 except Exception as e:
                     fail += 1
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))
         if reject_list:
+            present_id = []
             for user_id in reject_list:
                 try:
-                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                  teamMember_id=user_id).update(managerFeedback=feedback_dict[user_id],
-                                                                                hold=False)
+                    activities = TimeSheetEntry.objects.filter(teamMember_id=user_id, wkstart=start_date, hold=True,
+                                                               wkend=end_date, project__isnull=True). \
+                        values_list('activity__name', flat=True)
+                    a = [str(s) for s in activities]
+                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
+                        for proj in request.session['dm_projects']:
+
+                            if TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                             teamMember_id=user_id, project_id=proj).exists():
+                                present_id.append(proj)
+                        if present_id:
+                            projects = Project.objects.filter(pk__in=present_id)
+                            p = [str(s) for s in projects]
+                        else:
+                            p = []
+                        if not request.session["include_activity"][int(user_id)]:
+                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                          teamMember_id=user_id, project__in=present_id
+                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
+
+                        else:
+                            TimeSheetEntry.objects.filter(Q(project__in=present_id) |
+                                                          Q(project__isnull=True), wkstart=start_date, wkend=end_date,
+                                                          teamMember_id=user_id,
+                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
+
+                            p.extend(a)
+
+                    else:
+                        # get manager obj
+                        emp = Employee.objects.get(user=request.user)
+                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
+                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
+                                                          teamMember_id=user_id).update(
+                                managerFeedback=feedback_dict[user_id],
+                                hold=False)
+                            p = a
+                        else:
+                            p = []
+
+                    fail = 0
                     user_obj = User.objects.get(id=user_id)
-                    TimeSheetRejectionNotification.delay(request.user,
-                                                         str(user_obj.email), start_date,
-                                                         end_date, feedback_dict[user_id])
+                    if p:
+                        projects = ",".join(p)
+                        TimeSheetRejectionNotification.delay(request.user,
+                                                             str(user_obj.email), start_date,
+                                                             end_date, projects, feedback_dict[user_id])
+                    else:
+                        fail += 1
                 except Exception as e:
                     fail += 1
+                    # print str(e)
                     logger.error(
                         u'Unable to make changes(reject) for time sheet approval  {0}{1}{2} and the error is  {3}'
                         u' '.format(start_date, end_date, user_id, str(e)))
@@ -1596,6 +1800,15 @@ def getHours(request, wstart, wend, mem, project, label):
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
+    currentTime = datetime.now()
+    current_hour = currentTime.hour
+    if current_hour < 12:
+        greeting = "Good Morning, "+request.user.get_full_name()
+    elif 12 <= current_hour < 16:
+        greeting = "Good Afternoon, " + request.user.get_full_name()
+    else:
+        greeting = "Good Evening, " + request.user.get_full_name()
+
     birthdays_list = Employee.objects.filter(date_of_birthO__day=todays_date.day,
                                              date_of_birthO__month=todays_date.month, user_id__is_active=True)
     if request.method == 'POST':
@@ -1672,11 +1885,11 @@ def Dashboard(request):
 
     financialM = pm.filter(
         financial=True).values(
-        'description',
+        'name',
         'milestoneDate')
     nonfinancialM = pm.filter(
         financial=False).values(
-        'description',
+        'name',
         'milestoneDate')
 
     for eachRec in financialM:
@@ -1828,6 +2041,7 @@ def Dashboard(request):
                                             Q(employee_assigned_id=request.user.employee)), user__is_active=True)
     request.session['unapprovedts'] = status_member(myReportee, True)[2]
     data = {
+        'greeting' : greeting,
         'username': request.user.username,
         'firstname': request.user.first_name,
         'cp': cp,
@@ -1925,9 +2139,11 @@ class ManageTeamLeaderWizard(SessionWizardView):
         form = super(ManageTeamLeaderWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            projects = Project.objects.filter(projectManager=self.request.user,
-                                              closed=False)
-            form.fields['project'].queryset = projects
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail)
+            form.fields['project'].queryset = project
         return form
 
     def get_form_initial(self, step):
@@ -1940,21 +2156,26 @@ class ManageTeamLeaderWizard(SessionWizardView):
             l = []
             for eachData in pm:
                 l.append(eachData['projectManager'])
-            projectMS = {'projectManager': l}
+            delivery_delegate_mgr = ProjectDetail.objects.filter(project=myProject.id).values('deliveryManager','pmDelegate')[0]
+            projectMS = {'projectManager': l, 'DeliveryManager': delivery_delegate_mgr['deliveryManager'], 'pmDelegate': delivery_delegate_mgr['pmDelegate']}
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        updatedData = [form.cleaned_data for form in form_list][
-            1]['projectManager']
+        updatedData = [form.cleaned_data for form in form_list][1]
         myProject = self.get_cleaned_data_for_step('My Projects')['project']
         myProject = Project.objects.get(id=myProject.id)
         allData = ProjectManager.objects.filter(
             project=myProject).values('id', 'user')
-        updateDataId = [eachData.id for eachData in updatedData]
+        updateDataId = [eachData.id for eachData in updatedData['projectManager']]
+        try:
+            ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
+                                                                      pmDelegate=updatedData['pmDelegate'])
+        except Exception as error:
+            print error
         for eachData in allData:
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
-        for eachData in updatedData:
+        for eachData in updatedData['projectManager']:
             pm = ProjectManager()
             oldData = ProjectManager.objects.filter(
                 project=myProject, user=eachData).values('id')
@@ -1997,10 +2218,11 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                closed=False,
-                projectManager=self.request.user
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
         if step == 'Manage Milestones':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2017,14 +2239,20 @@ class TrackMilestoneWizard(SessionWizardView):
                     for eachForm in form:
                         if eachForm.is_valid():
                             totalRate += eachForm.cleaned_data['amount']
-                            if eachForm.cleaned_data['financial'] is False:
-                                if eachForm.cleaned_data['amount'] > 0:
-                                    amount = eachForm.cleaned_data['amount']
-                                    errors = eachForm._errors.setdefault(
-                                        amount, ErrorList())
-                                    errors.append(u'Please select milestone as \
-                                                  financial')
-                            elif eachForm.cleaned_data['amount'] == 0:
+                            if eachForm['closed'].value():
+                                continue
+                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
+                                milestone_type.\
+                                milestone_type
+                            if eachForm.cleaned_data['amount'] > 0 and milestone_type not in \
+                                    ['Financial', 'Delivery cum Financial']:
+                                amount = eachForm.cleaned_data['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount, ErrorList())
+                                errors.append(u'Please select milestone as \
+                                              financial')
+                            elif eachForm.cleaned_data['amount'] == 0 and milestone_type in \
+                                    ['Financial', 'Delivery cum Financial']:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount, ErrorList())
@@ -2047,7 +2275,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 project__id=selectedProjectId,
             ).values(
                 'id',
-                'financial',
+                'name',
                 'milestoneDate',
                 'description',
                 'amount',
@@ -2083,12 +2311,12 @@ def saveData(self, pm, eachData, projectObj):
         pass
     else:
         pm.project = projectObj
+        pm.name = eachData['name']
         pm.description = eachData['description']
-        pm.financial = eachData['financial']
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
-        pm.save()
+        pm.save(self.request)
 
 
 TrackMilestone = TrackMilestoneWizard.as_view(TMFORMS)
@@ -2108,27 +2336,21 @@ def UpdateProjectInfo(request, newInfo):
     """
     try:
         pru = newInfo[0]['project']
-        pru.plannedEffort = newInfo[1]['revisedEffort']
-        pru.totalValue = newInfo[1]['revisedTotal']
-        pru.closed = newInfo[1]['closed']
-        pru.signed = newInfo[1]['signed']
-        pru.po = newInfo[1]['po']
-        pru.endDate = newInfo[1]['endDate']
-        pru.salesForceNumber = newInfo[1]['salesForceNumber']
-        pru.save()
-
         pci = ProjectChangeInfo()
         pci.project = pru
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
         else:
             pci.reason = newInfo[1]['reason']
-
         pci.endDate = newInfo[1]['endDate']
-        pci.salesForceNumber = newInfo[1]['salesForceNumber']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
+        pci.startDate = newInfo[1]['startDate']
+        pci.estimationDocument = request.session['revisedestimation']
+        pci.sowdocument = request.session['revisedsow']
+        pci.bu = pru.bu
+        pci.approved = 0
         if pci.closed is True:
             pci.closedOn = datetime.now().replace(tzinfo=utc)
         pci.signed = newInfo[1]['signed']
@@ -2146,7 +2368,55 @@ def UpdateProjectInfo(request, newInfo):
         return {'crId': None}
 
 
+def modifyProjectInfo(request, newInfo):
+    try:
+        ProjectName = Project.objects.filter(id=newInfo[1]['id']).values('name')[0]
+        Project.objects.filter(id=newInfo[1]['id']).update(plannedEffort=newInfo[1]['plannedEffort'],
+                                                           totalValue=newInfo[1]['totalValue'],
+                                                           endDate=newInfo[1]['endDate'],
+                                                           startDate=newInfo[1]['startDate'],
+                                                           bu=newInfo[1]['bu'],
+                                                           customerContact=newInfo[1]['customerContact'],
+                                                           salesForceNumber=newInfo[1]['salesForceNumber'],
+                                                           book=newInfo[1]['book'],
+                                                           projectType=newInfo[1]['projectType'],
+                                                           customer=newInfo[1]['customer'],
+                                                           currentProject=newInfo[1]['currentProject'],
+                                                           rejected=False,)
+        ProjectDetail.objects.filter(project_id=newInfo[1]['id']).update(PracticeName=newInfo[1]['practicename'],
+                                                                         projectFinType=newInfo[1]['projectFinType'],
+                                                                         deliveryManager=newInfo[1]['DeliveryManager'],
+                                                                         pmDelegate=newInfo[1]['pmDelegate'],
+                                                                         Estimationdocument=request.session['modifiedstimation'],
+                                                                         Sowdocument=request.session['modifiedsow'],
+                                                                         )
+        myProject = Project.objects.get(id=newInfo[1]['id'])
+        allData = ProjectManager.objects.filter(
+            project=myProject).values('id', 'user')
+        updateDataId = [eachData.id for eachData in newInfo[1]['projectManager']]
+        for eachData in allData:
+            if eachData['user'] not in updateDataId:
+                ProjectManager.objects.get(pk=eachData['id']).delete()
+        for eachData in newInfo[1]['projectManager']:
+            pm = ProjectManager()
+            oldData = ProjectManager.objects.filter(
+                project=myProject, user=eachData).values('id')
+            if len(oldData):
+                pass
+            else:
+                pm.project = myProject
+                pm.user = eachData
+                pm.save()
+
+        return {'name': ProjectName['name']}
+    except (ProjectTeamMember.DoesNotExist,
+            ProjectMilestone.DoesNotExist) as e:
+        messages.error(request, 'Could not save change request information')
+        logger.error('Exception in ModifyProjectInfo :' + str(e))
+        return {'name': None}
+
 changeProject = ChangeProjectWizard.as_view(CFORMS)
+modifyProject =ModifyProjectWizard.as_view(MFORMS)
 
 
 @login_required
@@ -2154,9 +2424,13 @@ changeProject = ChangeProjectWizard.as_view(CFORMS)
 def WrappedChangeProjectView(request):
     return changeProject(request)
 
+def WrappedModifyProjectView(request):
+    return modifyProject(request)
+
 
 class CreateProjectWizard(SessionWizardView):
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
@@ -2178,12 +2452,11 @@ class CreateProjectWizard(SessionWizardView):
                         ] = 'True'
                 else:
                     logger.error("Basic Information step has signed as none")
-                if form.is_valid():
-                    a=0
         if step == 'Uploads':
             if form.is_valid():
-                self.request.session['sow'] = (form.cleaned_data['Sowdocument'])
-                self.request.session['estimation'] = (form.cleaned_data['Estimationdocument'])
+                self.request.session['sow'] = self.request.FILES.get('Uploads-Sowdocument', "")
+                self.request.session['estimation'] = self.request.FILES.get('Uploads-Estimationdocument', "")
+
 
             else:
                 logger.error(
@@ -2218,7 +2491,8 @@ class CreateProjectWizard(SessionWizardView):
                                 for eachForm in form:
                                     if eachForm.is_valid():
                                         totalRate += eachForm.cleaned_data['amount']
-                                        if eachForm.cleaned_data['financial'] is False:
+                                        if eachForm.cleaned_data['name'].milestone_type.milestone_type in\
+                                                ['Financial',]:
                                             if eachForm.cleaned_data['amount'] > 0:
                                                 amount = eachForm.cleaned_data[
                                                     'amount']
@@ -2296,7 +2570,13 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-
+        if flagData['practicename']:
+            head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+            head = User.objects.get(id=head_id);
+            head_name = head.first_name + " " + head.last_name
+            practicehead_name = head_name
+        else:
+            practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2308,6 +2588,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
+            'practicehead_name':practicehead_name,
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2338,10 +2619,11 @@ class ManageTeamWizard(SessionWizardView):
         context = super(ManageTeamWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'My Projects':
-            form.fields['project'].queryset = Project.objects.filter(
-                projectManager=self.request.user,
-                closed=False
-            )
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
         if self.steps.current == 'Manage Team':
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
@@ -2498,138 +2780,137 @@ def saveProject(request):
     # Please go back and clean up error handling - for example a int() call
     # with throw ValueError.  You ahve to handle it.  Once you handle how do
     # you send them back to the summary page?
+    for i in range(0, 1):
+        if request.method == 'POST':
+            try:
+                #: code to check not more than 3 PM per project
+                pm = []
+                for eachId in eval(request.POST.get('pm')):
+                    pm.append(eachId)
+                pm_count = len(pm)
+                if pm_count > 3:
+                    messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                    return render(
+                        request,
+                        'MyANSRSource/projectCreationFailure.html',
+                        {})
+                pr = Project()
+                pr.name = request.POST.get('name')
+                pType = projectType.objects.get(
+                    id=int(request.POST.get('projectType'))
+                )
+                pr.projectType = pType
+                startDate = request.session['PStartDate']
+                endDate = request.session['PEndDate']
+                pr.startDate = startDate
+                pr.endDate = endDate
+                pr.po = request.POST.get('po')
+                pr.totalValue = float(request.POST.get('totalValue'))
+                pr.plannedEffort = int(request.POST.get('plannedEffort'))
+                pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
+                pr.currentProject = True if request.POST.get('currentProject') == 'True' else False
+                pr.signed = (request.POST.get('signed') == 'True')
+                pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
+                    pk=int(request.POST.get('bu'))
+                )
+                pr.customer = CompanyMaster.models.Customer.objects.get(
+                    pk=int(request.POST.get('customer'))
+                )
+                pr.internal = pr.customer.internal
+                pr.customerContact = request.POST.get('customerContact')
+                pr.book = Book.objects.get(
+                    pk=int(request.POST.get('book'))
+                )
+                try:
+                    projectIdPrefix = u"{0}-{1}-{2}".format(
+                        pr.customer.customerCode,
+                        datetime.now().year,
+                        str(pr.customer.seqNumber).zfill(3)
+                    )
+                    pr.projectId = projectIdPrefix
+                    pr.save()
+                except Exception as er:
+                    print er
+                pr.customer.seqNumber = pr.customer.seqNumber + 1
+                pr.customer.save()
 
-    if request.method == 'POST':
-        try:
-            #: code to check not more than 3 PM per project
-            pm = []
-            for eachId in eval(request.POST.get('pm')):
-                pm.append(eachId)
-            pm_count = len(pm)
-            if pm_count > 3:
-                messages.error(request, "OOPS can't select more than 3 ProjectManger")
+                pci = ProjectChangeInfo()
+                pci.project = pr
+                pci.crId = u"BL-{0}".format(pr.id)
+                pci.reason = 'Base Line data'
+                pci.endDate = endDate
+                pci.revisedEffort = int(request.POST.get('plannedEffort'))
+                pci.revisedTotal = float(request.POST.get('totalValue'))
+                pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
+                pci.save()
+
+                for eachId in eval(request.POST.get('pm')):
+                    pm = ProjectManager()
+                    pm.user = User.objects.get(pk=eachId)
+                    pm.project = pr
+                    pm.save()
+                if request.user.id not in eval(request.POST.get('pm')):
+                    pm = ProjectManager()
+                    pm.user = request.user
+                    pm.project = pr
+                    pm.save()
+                if pr.internal == False:
+                    context = {
+                        'projectId': pr.projectId,
+                        'projectName': pr.name,
+                    }
+                    senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
+                    for eachRecp in senderEmail:
+                        SendMail(context, eachRecp, 'externalproject')
+
+                try:
+                    pd = ProjectDetail()
+                    pd.project_id = pr.id
+                    pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
+                    pd.projectFinType = request.POST.get('projectFinType')
+                    practice_name = request.POST.get('practicename')
+                    practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
+                    pd.PracticeName_id = practice_id
+                    del_mgr = request.POST.get('DeliveryManager')
+                    del_mgr_id = User.objects.get(username=del_mgr).id
+                    pd.deliveryManager_id = del_mgr_id
+                    pd.Sowdocument = request.session['sow']
+                    pd.Estimationdocument = request.session['estimation']
+                    sop = request.POST.get('sopname')
+                    sop_id = qualitysop.objects.get(name=sop).id if sop != 'None' else None
+                    pd.SOP_id = sop_id
+                    scope = request.POST.get('ProjectScope')
+                    scope_id = ProjectScope.objects.get(scope=scope).id if scope != 'None' else None
+                    pd.Scope_id = scope_id
+                    asset = request.POST.get('projectasset')
+                    asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
+                    try:
+                        pd.Asset_id = asset_id
+                    except Exception as e:
+                        print e
+                    pd.save()
+
+                except ValueError as e:
+                    pr.delete()
+                    pm.delete()
+                    pci.delete()
+                    pr.customer.delete()
+                    logger.exception(e)
+
+            except ValueError as e:
+                logger.exception(e)
                 return render(
                     request,
                     'MyANSRSource/projectCreationFailure.html',
                     {})
-            pr = Project()
-            pr.name = request.POST.get('name')
-            pType = projectType.objects.get(
-                id=int(request.POST.get('projectType'))
-            )
-            pr.projectType = pType
-            startDate = request.session['PStartDate']
-            endDate = request.session['PEndDate']
-            pr.startDate = startDate
-            pr.endDate = endDate
-            pr.po = request.POST.get('po')
-            pr.totalValue = float(request.POST.get('totalValue'))
-            pr.plannedEffort = int(request.POST.get('plannedEffort'))
-            pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
-            pr.currentProject = request.POST.get('currentProject')
-            pr.signed = (request.POST.get('signed') == 'True')
-            pr.bu = CompanyMaster.models.BusinessUnit.objects.get(
-                pk=int(request.POST.get('bu'))
-            )
-            pr.customer = CompanyMaster.models.Customer.objects.get(
-                pk=int(request.POST.get('customer'))
-            )
-            pr.internal = pr.customer.internal
-            pr.customerContact = request.POST.get('customerContact')
-            pr.book = Book.objects.get(
-                pk=int(request.POST.get('book'))
-            )
 
-            projectIdPrefix = u"{0}-{1}-{2}".format(
-                pr.customer.customerCode,
-                datetime.now().year,
-                str(pr.customer.seqNumber).zfill(3)
-            )
-
-            pr.projectId = projectIdPrefix
-            pr.save()
-            pr.customer.seqNumber = pr.customer.seqNumber + 1
-            pr.customer.save()
-
-            pci = ProjectChangeInfo()
-            pci.project = pr
-            pci.crId = u"BL-{0}".format(pr.id)
-            pci.reason = 'Base Line data'
-            pci.endDate = endDate
-            pci.revisedEffort = int(request.POST.get('plannedEffort'))
-            pci.revisedTotal = float(request.POST.get('totalValue'))
-            pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
-            pci.save()
-
-            for eachId in eval(request.POST.get('pm')):
-                pm = ProjectManager()
-                pm.user = User.objects.get(pk=eachId)
-                pm.project = pr
-                pm.save()
-            if request.user.id not in eval(request.POST.get('pm')):
-                pm = ProjectManager()
-                pm.user = request.user
-                pm.project = pr
-                pm.save()
-            if pr.internal == False:
-                context = {
-                    'projectId': pr.projectId,
-                    'projectName': pr.name,
-                }
-                senderEmail = settings.EXTERNAL_PROJECT_NOTIFIERS
-                for eachRecp in senderEmail:
-                    SendMail(context, eachRecp, 'externalproject')
-
-            try:
-                pd = ProjectDetail()
-                pd.project_id = pr.id
-                pd.projectFinType = request.POST.get('projectFinType')
-                pd.ProjectCost = request.POST.get('projectCost')
-                sub_practice = request.POST.get('subpractice')
-                sub_practice_id = SubPractice.objects.get(name=sub_practice).id
-                pd.SubPractice_id = sub_practice_id
-                practice_name = request.POST.get('practicename')
-                practice_id = Practice.objects.get(name=practice_name).id
-                pd.PracticeName_id = practice_id
-                del_mgr = request.POST.get('DeliveryManager')
-                del_mgr_id = User.objects.get(username=del_mgr).id
-                pd.deliveryManager_id = del_mgr_id
-                sop = request.POST.get('sopname')
-                sop_id = qualitysop.objects.get(name=sop).id
-                pd.SOP_id = sop_id
-                scope = request.POST.get('ProjectScope')
-                scope_id = ProjectScope.objects.get(scope=scope).id
-                pd.Scope_id = scope_id
-                asset = request.POST.get('projectasset')
-                asset_id = ProjectAsset.objects.get(Asset=asset).id
-                pd.Asset_id = asset_id
-                pd.save()
-
-            except ValueError as e:
-                logger.exception(e)
-            # try:
-            #     pd_id = pd.id
-            #     pd_id.Sowdocument = request.session['sow']
-            #     pd_id.Estimationdocument = request.session['estimation']
-            #     pd_id.save()
-            #     # FileSystemStorage.delete()
-            # except ValueError as e:
-            #     logger.exception(e)
-
-        except ValueError as e:
-            logger.exception(e)
-            return render(
-                request,
-                'MyANSRSource/projectCreationFailure.html',
-                {})
-
-        data = {'projectCode': projectIdPrefix, 'projectId': pr.id,
-                'projectName': pr.name, 'customerId': pr.customer.id}
-        return render(request, 'MyANSRSource/projectSuccess.html', data)
-    # This is not a post request.  This cannot be possible unless someone is
-    # trying to hack things.  Let us just send them back to dashboard.
-    else:
-        return HttpResponseRedirect(request, '/myansrsource/dashboard')
+            data = {'projectCode': projectIdPrefix, 'projectId': pr.id,
+                    'projectName': pr.name, 'customerId': pr.customer.id}
+            return render(request, 'MyANSRSource/projectSuccess.html', data)
+        # This is not a post request.  This cannot be possible unless someone is
+        # trying to hack things.  Let us just send them back to dashboard.
+        else:
+            return HttpResponseRedirect(request, '/myansrsource/dashboard')
 
 
 createProject = CreateProjectWizard.as_view(FORMS)
@@ -2689,60 +2970,101 @@ def deleteProject(request):
     return HttpResponseRedirect('add')
 
 
+def project_summary(project_id, show_header=True):
+    projectObj = Project.objects.filter(id=project_id)
+    basicInfo = projectObj.values(
+        'projectType__description', 'bu__name', 'customer__name',
+        'name', 'book__name', 'signed', 'internal', 'currentProject',
+        'projectId', 'customerContact'
+    )[0]
+    projdetailobj = ProjectDetail.objects.filter(project_id=project_id)
+    if projdetailobj:
+        projdetailvalue = projdetailobj.values('projectFinType', 'deliveryManager__username', 'pmDelegate__username')[0]
+        basicInfo['projectFinType'] = projdetailvalue['projectFinType']
+        basicInfo['deliveryManager'] = projdetailvalue['deliveryManager__username']
+        basicInfo['pmDelegate'] = projdetailvalue['pmDelegate__username']
+    else:
+        basicInfo['projectFinType'] = None
+        basicInfo['deliveryManager'] = None
+        basicInfo['pmDelegate'] = None
+    if basicInfo['customerContact']:
+        customerObj = basicInfo['customerContact']
+        basicInfo['customerContact__username'] = customerObj
+    flagData = projectObj.values(
+        'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
+        'totalValue', 'po', 'salesForceNumber'
+    )[0]
+    cleanedTeamData = ProjectTeamMember.objects.filter(
+        project=projectObj).values(
+        'member__username', 'startDate', 'endDate',
+        'plannedEffort', 'rate'
+    )
+    if basicInfo['internal']:
+        cleanedMilestoneData = []
+    else:
+        cleanedMilestoneData = ProjectMilestone.objects.filter(
+            project=projectObj).values('milestoneDate', 'description',
+                                       'amount', 'name')
+
+    changeTracker = ProjectChangeInfo.objects.filter(
+        project=projectObj).values(
+        'reason', 'endDate', 'revisedEffort', 'revisedTotal',
+        'closed', 'closedOn', 'signed',
+        'updatedOn','approved'
+    ).order_by('updatedOn')
+    data = {
+        'basicInfo': basicInfo,
+        'flagData': flagData,
+        'teamMember': cleanedTeamData,
+        'milestone': cleanedMilestoneData,
+        'changes': changeTracker,
+    }
+    if len(changeTracker):
+        closedOn = [
+            eachRec
+            ['closedOn']
+            for eachRec in changeTracker if eachRec['closedOn'] is not None]
+        if len(closedOn):
+            data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+    data['show_header']= show_header
+    return data
+
+
 @login_required
 @permission_required('MyANSRSource.create_project')
 def ViewProject(request):
     if request.method == 'POST':
         projectId = int(request.POST.get('project'))
-        projectObj = Project.objects.filter(id=projectId)
-        basicInfo = projectObj.values(
-            'projectType__description', 'bu__name', 'customer__name',
-            'name', 'book__name', 'signed', 'internal', 'currentProject',
-            'projectId', 'customerContact'
-        )[0]
-        if basicInfo['customerContact']:
-            customerObj = basicInfo['customerContact']
-            basicInfo['customerContact__username'] = customerObj
-        flagData = projectObj.values(
-            'startDate', 'endDate', 'plannedEffort', 'contingencyEffort',
-            'totalValue', 'po', 'salesForceNumber'
-        )[0]
-        cleanedTeamData = ProjectTeamMember.objects.filter(
-            project=projectObj).values(
-            'member__username', 'startDate', 'endDate',
-            'plannedEffort', 'rate'
-        )
-        if basicInfo['internal']:
-            cleanedMilestoneData = []
-        else:
-            cleanedMilestoneData = ProjectMilestone.objects.filter(
-                project=projectObj).values('milestoneDate', 'description',
-                                           'amount', 'financial')
-
-        changeTracker = ProjectChangeInfo.objects.filter(
-            project=projectObj).values(
-            'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-            'closed', 'closedOn', 'signed', 'salesForceNumber',
-            'updatedOn'
-        ).order_by('updatedOn')
-        data = {
-            'basicInfo': basicInfo,
-            'flagData': flagData,
-            'teamMember': cleanedTeamData,
-            'milestone': cleanedMilestoneData,
-            'changes': changeTracker,
-        }
-        if len(changeTracker):
-            closedOn = [
-                eachRec
-                ['closedOn']
-                for eachRec in changeTracker if eachRec['closedOn'] is not None]
-            if len(closedOn):
-                data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+        data = project_summary(projectId)
         return render(request, 'MyANSRSource/viewProjectSummary.html', data)
-    data = Project.objects.filter(projectManager=request.user).values(
-        'name', 'id', 'closed', 'projectId'
-    )
+
+    data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
+                                                                   | Q(pmDelegate=request.user) |
+                                                                   Q(PracticeName__head=request.user.id))
+    allproj =[]
+    bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+    for val in data2:
+        allproj.append(val.project_id)
+    project_status = request.GET.get('approve')
+    if project_status == 'False':
+        data = Project.objects.filter(closed=True,active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                      | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                      | Q(bu__in=bu_list)).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+    elif project_status == 'True':
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                                           | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                        |Q(bu__in=bu_list)).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+    else:
+        data = Project.objects.filter(closed=False, active=True).filter(Q(projectManager=request.user) | Q(id__in=allproj)
+                                                          | Q(customer__Crelation=request.user.id) | Q(customer__Cdelivery=request.user.id)
+                                                                       |Q(bu__in=bu_list) ).values(
+            'name', 'id', 'closed', 'projectId'
+        ).distinct()
+
     return render(request, 'MyANSRSource/viewProject.html', {'projects': data})
 
 
@@ -2847,3 +3169,264 @@ def is_internal(request):
     except:
         internal = 0
     return HttpResponse(json.dumps({'is_internal': int(internal)}), content_type="application/json")
+
+
+class NewCreatedProjectApproval(View):
+    template_name = "newCreatedProjectApproval.html"
+
+    def get_queryset(self, request):
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+        return queryset
+
+    def get(self, request):
+        queryset = self.get_queryset(request)
+        return render(request, self.template_name, {'queryset':queryset})
+
+    def post(self, request):
+        try:
+            feedback_ist = []
+            approve = request.POST.getlist('approve[]')
+            reject = request.POST.getlist('reject[]')
+            feedback = request.POST.getlist('feedback[]')
+            for val in feedback:
+                feedback_ist.append(val.split('_'))
+                Project.objects.filter(id=feedback_ist[0][1]).update(remark=feedback_ist[0][0])
+                feedback_ist = []
+            approve = approve if approve else []
+            reject = reject if reject else []
+            Project.objects.filter(id__in=approve).update(active=True)
+            Project.objects.filter(id__in=reject).update(rejected=True)
+            for val in reject:
+                rejection_date = date.today()
+                emailvalues = ProjectDetail.objects.filter(project_id=val).values('deliveryManager__email', 'deliveryManager__username', 'project__remark', 'project__name')[0]
+                ProjectRejection.delay(emailvalues['deliveryManager__email'], emailvalues['project__remark'], emailvalues['deliveryManager__username'],  emailvalues['project__name'], rejection_date)
+            return HttpResponse()
+        except Exception as E:
+            return HttpResponse(E)
+
+
+def project_detail(request):
+    project_id = request.GET.get('id')
+    try:
+        project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
+        return render(request, 'project_detail.html', {'project_detail': project_details})
+    except Exception as e:
+        return render(request, 'project_detail.html', {'project_detail': 'Nothing'})
+
+
+
+'''project Change Bu approval screen'''
+
+
+class ProjectChangeApproval(View):
+    template_name = "projectchangeapproval.html"
+
+    def get_queryset(self, request):
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        return queryset
+
+    def get(self, request):
+        queryset = self.get_queryset(request)
+        return render(request, self.template_name, {'queryset': queryset})
+
+    def post(self, request):
+        try:
+            approve = request.POST.getlist('approve[]')
+            reject = request.POST.getlist('reject[]')
+            approve = approve if approve else []
+            reject = reject if reject else []
+            try:
+                ProjectChangeInfo.objects.filter(crId__in=approve).update(approved=1)
+                ProjectChangeInfo.objects.filter(crId__in=reject).update(approved=2)
+                update_project_table = []
+                emailnotifier = []
+                for val in reject:
+                    rejection_date = date.today()
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('project', 'reason', 'project__name')[0]
+                    emailvalues = ProjectDetail.objects.filter(project_id=update_project_table['project']).values('deliveryManager__email', 'pmDelegate__email', 'project__projectManager__email')[0]
+                    emailnotifier.append(emailvalues['project__projectManager__email'].encode("utf-8"))
+                    emailnotifier.append(emailvalues['deliveryManager__email'].encode("utf-8"))
+                    emailnotifier = list(set(emailnotifier))
+                    ProjectChangeRejection.delay(emailnotifier, val, update_project_table['reason'], update_project_table['project__name'], rejection_date)
+                for val in approve:
+                    update_project_table = ProjectChangeInfo.objects.filter(crId=val).values('startDate',
+                                                                                             'endDate',
+                                                                                             'revisedEffort',
+                                                                                             'revisedTotal',
+                                                                                             'project', 'signed',
+                                                                                             'closed',
+                                                                                             )[0]
+                    try:
+                        Project.objects.filter(id=update_project_table['project']).update(plannedEffort=update_project_table['revisedEffort'],
+                                                                                          totalValue=update_project_table['revisedTotal'],
+                                                                                          closed=update_project_table['closed'],
+                                                                                          signed=update_project_table['signed'],
+                                                                                          endDate=update_project_table['endDate'],
+                                                                                          startDate=update_project_table['startDate'],
+                                                                                          )
+
+                    except Exception as error:
+                        return HttpResponse(error)
+
+            except Exception as error:
+                return HttpResponse(error)
+            return HttpResponse()
+        except Exception as E:
+            return HttpResponse(E)
+
+
+def project_change_detail(request):
+    cr_id = request.GET.get('id')
+    project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
+    project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
+    return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail})
+
+month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
+                 (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]
+
+
+class ActiveEmployees(TemplateView):
+    template_name = "MyANSRSource/active_employees.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveEmployees, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['employees_list'] = Employee.objects.filter(
+                user__is_active=True).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+            context['month_list'] = month
+
+            return context
+        else:
+            raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        now = datetime.now()
+        dict_month = dict(month)
+        if request.POST.get('month') != "":
+            file_name = str(dict_month[int(request.POST.get('month'))]) + '_active_employees.xlsx'
+        else:
+            file_name = now.strftime('%B') + '_active_employees.xlsx'
+
+        workbook = xlsxwriter.Workbook(file_name)
+        worksheet = workbook.add_worksheet()
+        header = ['Employee Id', 'Name', 'Manager', 'Designation', 'Practice', 'Business Unit',  'Location']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+
+        if request.POST.get('month') != "":
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=int(request.POST.get('month')),
+                                                    archive_date__year=now.year).values_list(
+                 'employee_assigned_id', 'user__first_name', 'user__last_name', 'manager__user__first_name',
+                 'manager__user__last_name',  'designation__name', 'practice__name', 'business_unit__name',
+                 'location__name')
+        else:
+            result = EmployeeArchive.objects.filter(user__is_active=True,
+                                                    archive_date__year=now.year).values_list(
+                'employee_assigned_id',
+                'user__first_name', 'user__last_name', 'manager__user__first_name',
+                'manager__user__last_name', 'designation__name', 'practice__name', 'business_unit__name',
+                'location__name')
+
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in result:
+            worksheet.write(row, 0, s[0])
+            worksheet.write(row, 1, s[1]+" "+s[2])
+            worksheet.write(row, 2, s[3]+" "+s[4])
+            worksheet.write(row, 3, s[5])
+            worksheet.write(row, 4, s[6])
+            worksheet.write(row, 5, s[7])
+            worksheet.write(row, 6, s[8])
+
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, file_name)
+
+
+@login_required()
+def month_wise_active_employees(request):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        try:
+            now = datetime.now()
+            result = EmployeeArchive.objects.filter(user__is_active=True, archive_date__month=request.GET.get('month'),
+                                                    archive_date__year=now.year).values(
+                                                       'business_unit__name', 'employee_assigned_id',
+                                                       'user__first_name', 'user__last_name',
+                                                       'manager__user__first_name',
+                                                       'manager__user__last_name', 'designation__name',
+                                                       'location__name')
+
+            result = json.dumps(list(result), cls=DjangoJSONEncoder)
+
+        except Exception as e:
+            logger.error(str(e))
+    # print  result
+    else:
+        raise PermissionDenied
+
+    return HttpResponse(result, content_type="application/json")
+
+
+class ActiveProjects(TemplateView):
+    template_name = "MyANSRSource/active_projects.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ActiveProjects, self).get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
+            context['projects_list'] = ProjectDetail.objects.filter(
+                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                                              'project__customer__name',  'project__bu__name','project__endDate')
+            return context
+        else:
+            raise PermissionDenied
+
+    def post(self, request, *args, **kwargs):
+        workbook = xlsxwriter.Workbook('active_projects.xlsx')
+        worksheet = workbook.add_worksheet()
+        header = ['Project Id', 'Project', 'Practice', 'Customer', 'Business Unit', 'End Date']
+        header_length = len(header)
+        header_column = list(string.ascii_uppercase)[:header_length]
+        header_column = [s+"1" for s in header_column]
+        header = zip(header_column, header)
+        date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
+        project_details = ProjectDetail.objects.filter(
+                project__closed=False).values_list('project__projectId',  'project__name',  'PracticeName',
+                                                   'project__customer__name',
+                                                   'project__bu__name', 'project__endDate')
+        for k, v in header:
+            worksheet.write(k, v)
+        row = 1
+        for s in project_details:
+            worksheet.write(row, 0, s[0])
+            worksheet.write(row, 1, s[1])
+            worksheet.write(row, 2, s[2])
+            worksheet.write(row, 3, s[3])
+            worksheet.write(row, 4, s[4])
+            worksheet.write(row, 5, s[5], date_format)
+            row += 1
+
+        workbook.close()
+
+        return generateDownload(self.request, 'active_projects.xlsx')
+
+
+@login_required()
+def get_project_summary(request, project_id):
+    if request.user.groups.filter(name='myansrsourcebuhead').exists():
+        if request.method == "GET":
+            data = project_summary(project_id, show_header=False)
+            return render(request, 'MyANSRSource/viewProjectSummary.html', data)
+    else:
+        raise PermissionDenied

@@ -13,7 +13,7 @@
         <span class="form-step-no">2</span>
         <label class="form-step-label">Basic Information</label>
     </li>
-	<li class="form-step one-fifth active">
+	<li class="form-step one-fifth">
         <span class="form-step-bor"></span>
         <span class="form-step-no">3</span>
         <label class="form-step-label">Uploads</label>
@@ -121,11 +121,11 @@
 			<td>{{ basicInfo.startDate }}</td>
 			<td>{{ basicInfo.endDate }}</td>
 			<td>{{ flagData.totalValue }}</td>
-			<td>{{ flagData.projectCost }}</td>
+			<td>{{ flagData.outsource_contract_value }}</td>
 			<td>{{ flagData.po }}</td>
 			<td>{{ flagData.salesForceNumber }}</td>
 			<td>{{flagData.practicename}}</td>
-			<td>{{flagData.PracticeHead}}</td>
+			<td>{{practicehead_name}}</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}
@@ -138,10 +138,16 @@
         <span class="glyphicon glyphicon-remove"></span>
 	<b>Cancel Project</b>
 </a>
-<button type="submit" value="submit" class="btn btn-success pull-right">
+<button type="submit" value="submit" class="btn btn-success pull-right onetime">
         <i class="fa fa-upload"></i>
 	<b>Create Project</b>
 </button>
 </form>
 </div>
+<script type="text/javascript">
+	 $("form").submit(function(){
+	 $(".onetime").attr("disabled", true);
+
+	});
+</script>
 {% endblock %}

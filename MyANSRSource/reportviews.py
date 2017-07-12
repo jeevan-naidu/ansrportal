@@ -7,12 +7,12 @@ from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     BTGReportForm, InvoiceForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
-    BTGReport
+    BTGReport, ProjectDetail
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from datetime import timedelta, datetime, date
-from django.db.models import Sum, Avg, Min, Max
+from django.db.models import Sum, Avg, Min, Max, F
 from employee.models import Employee
 from wsgiref.util import FileWrapper
 from dateutil import relativedelta as rdelta
@@ -35,7 +35,7 @@ days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
 def SingleTeamMemberReport(request):
-    
+
     report, newReport, minProd, maxProd, avgProd = {}, {}, {}, {}, {}
     projectH, nonProjectH = [], []
     member, startDate, endDate , for_project = '', '', '', ''
@@ -73,11 +73,11 @@ def SingleTeamMemberReport(request):
                 endDate__gte=weekEnd,
             ).values('plannedEffort')
             plannedHours = sum([eachRec['plannedEffort'] for eachRec in tm])
-            
+
             # if project field exists, query for that project only else query for all
             if request.POST.get('project', ""):
                 for_project = reportData.cleaned_data['project']
-                report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'], 
+                report = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'],
                     teamMember=reportData.cleaned_data['member'],
                     #project__id__in=helper.get_my_project_list(request.user),
                     wkstart__gte=weekStart,
@@ -113,7 +113,7 @@ def SingleTeamMemberReport(request):
                                                   endWeekData, report)
             else:
                 newReport = report
-            
+
             # if project field exists, query for that project only else query for all
             if request.POST.get('project', ""):
                 ts = TimeSheetEntry.objects.filter(project=reportData.cleaned_data['project'],
@@ -202,7 +202,7 @@ def SingleTeamMemberReport(request):
                 'endDate': reportData.cleaned_data['endDate'],
                 'member': reportData.cleaned_data['member'],
                 'project':reportData.cleaned_data['project'],
-                
+
             })
             for eachRec in newReport:
                 if eachRec['project__name'] != ' - ':
@@ -267,15 +267,18 @@ def SingleProjectReport(request):
             taskData = TimeSheetEntry.objects.filter(
                 project=cProject
             ).values(
-                'task__name'
+                'task__name',  'teamMember', 'teamMember__first_name', 'teamMember__last_name'
             ).annotate(monday=Sum('mondayQ'),
                        tuesday=Sum('tuesdayQ'),
                        wednesday=Sum('wednesdayQ'),
                        thursday=Sum('thursdayQ'),
                        friday=Sum('fridayQ'),
                        saturday=Sum('saturdayQ'),
-                       sunday=Sum('sundayQ')
-                       ).order_by('task__name')
+                       sunday=Sum('sundayQ'),
+                       total_hours=Sum(F('mondayH') + F('tuesdayH')
+                       +F('wednesdayH') + F('thursdayH')
+                       +F('fridayH') + F('saturdayH')+F('sundayH'))
+                       ).order_by('task__name', 'teamMember_id')
             orderbyList = ['task__name']
             ts = TimeSheetEntry.objects.filter(
                 project=cProject).values('task__name')
@@ -324,10 +327,11 @@ def SingleProjectReport(request):
                         eId[0]['employee_assigned_id']
                     )
                 topPerformer.append(d)
+            exclude_list = ['task__name', 'teamMember__first_name', 'teamMember__last_name']
             for eachData in taskData:
                 units = []
                 for k, v in eachData.iteritems():
-                    if k != 'task__name':
+                    if k not in exclude_list:
                         units.append(v)
                 eachData['min'] = min(units)
                 eachData['max'] = max(units)
@@ -454,7 +458,7 @@ def SingleProjectReport(request):
                         for eachTopData in topPerformer:
                             if eachData['task__name'] == eachTopData['taskName']:
                                 eachData['norm'] = eachTopData['norm']
-                                eachData['top'] = eachTopData['top']
+                        eachData['top'] = eachData['teamMember__first_name'] + ' ' + eachData['teamMember__last_name']
                 report = [basicData, newCR, msData, tsData, taskData, topPerformer]
                 sheetName = ['Basic Information',
                              'Change Requests',
@@ -471,8 +475,7 @@ def SingleProjectReport(request):
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
                      'Actual Effort'],
-                    ['Task Name', 'Min.', 'Max.', 'Median', 'Avg.',
-                     'Norm', 'Top Performer']
+                    ['Task Name', 'Total Hours', 'Team Member']
                 ]
                 grdTotal = [plannedTotal, actualTotal]
                 if cProject.closed:
@@ -743,9 +746,9 @@ def ProjectPerfomanceReport(request):
                 reportbu = BusinessUnit.objects.filter(id=bu).values_list('id')
                 for eachData in BusinessUnit.objects.filter(id=bu).values('name'):
                     buName = eachData['name']
-            
+
             # for super user get all the projects irrespective of what project he is related to.
-            # changed: date: 4-Feb-206 -By Amol 
+            # changed: date: 4-Feb-206 -By Amol
             if request.user.is_superuser:
                 eProjects = Project.objects.filter(
                     startDate__lte=endDate, endDate__gte=startDate,
@@ -861,9 +864,10 @@ def getProjectData(request, startDate, endDate, projects, start, end):
             data['type'] = eachProject.projectType.description
             data['bu'] = eachProject.bu.name
             data['customer'] = eachProject.customer.name
-            pm = ProjectManager.objects.filter(project=eachProject)
+            #pm = ProjectManager.objects.filter(project=eachProject)
+            pm = ProjectDetail.objects.filter(project=eachProject)
             if len(pm):
-                data['pm'] = [eachPM.user.username for eachPM in pm]
+                data['pm'] = [eachPM.deliveryManager.username for eachPM in pm]
             else:
                 data['pm'] = []
             data['startDate'] = eachProject.startDate
@@ -1409,12 +1413,12 @@ def generateProjectContent(request, header, report, worksheet,
 
             if 'task__name' in eachRec:
                 worksheet.write(row, 0, eachRec['task__name'], content)
-                worksheet.write(row, 1, eachRec['min'], content)
-                worksheet.write(row, 2, eachRec['max'], content)
-                worksheet.write(row, 3, '  ', content)
-                worksheet.write(row, 4, eachRec['avg'], content)
-                worksheet.write(row, 5, eachRec['norm'], content)
-                worksheet.write(row, 6, eachRec['top'], content)
+                worksheet.write(row, 1, eachRec['total_hours'], content)
+                # worksheet.write(row, 2, eachRec['max'], content)
+                # worksheet.write(row, 3, '  ', content)
+                # worksheet.write(row, 4, eachRec['avg'], content)
+                # worksheet.write(row, 5, eachRec['norm'], content)
+                worksheet.write(row, 2, eachRec['top'], content)
                 row += 1
 
         row, msg = 1, ''

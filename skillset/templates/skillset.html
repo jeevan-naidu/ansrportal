@@ -1,0 +1,268 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Skillset{% endblock %}
+{% block pageTitle %}Skill Set{% endblock %}
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+{% block content  %}
+
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<style type="text/css">
+    #data-tables_filter{ display:none; }
+</style>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel widget">
+                    {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                  <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
+                  </div>
+                    {% endif %}
+                            {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                              <div class="panel-body">
+                              <div class="row">
+
+
+                                <div class="col-sm-2 pull-right">
+
+                                  <select name="" class="input-sm" id="department">
+                                      <option value="-----------" id="dept">Department</option>
+                                    {% for department in department %}
+                                        <option value="{{department}}">{{department}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+
+                                <div class="col-sm-2 pull-right">
+                                  <select name="" class="input-sm" id="designation">
+                                       <option value="-----------" id="desg">Designation</option>
+                                    {% for designation in designation_all %}
+
+                                        <option value="{{designation}}">{{designation}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-sm-2 pull-right">
+
+                                  <select name="" class="input-sm" id="skills">
+                                       <option value="-----------" id="skill">Skills</option>
+                                    {% for skills in skills_all %}
+
+                                        <option value="{{skills}}">{{skills}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+
+                                  <div class="col-sm-2 pull-left">
+
+                                    <input type="text" id="searchbox" placeholder="Search User">
+                                </div>
+
+                              </div>
+                              </div>
+                                  {% endif %}
+
+<hr>
+
+
+                    <table class="table table-striped" id="data-tables">
+                          {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                    <input type="button" id="export" class="btn btn-sm vd_bg-green vd_white pull-right" value="Export">
+                    {% endif %}
+                        {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+                        <p> Total count:<b id="count"></b></p>
+                    {% endif %}
+                      <thead id ="data-table-head" style="color: #fff;background: #444">
+
+                        <tr>
+                          <!--<th class="hidden">ID</th>-->
+                          <th>Name</th>
+                          <th>Department</th>
+                          <th>Designation</th>
+                          <th>Skills</th>
+                          <th>Level</th>
+                          <th>Joining date</th>
+
+                        </tr>
+                      </thead>
+                      <tbody id="data-table-body">
+                      {% for element in lists %}
+                        <tr>
+                          <!--<td class="hidden">{{element.id}}</td>-->
+                          <td>{{element.name}}</td>
+                          <td>{{element.department}}</td>
+                          <td>{{element.designation}}</td>
+                          <td>{% for skill in element.skills %}{{ skill.skills_name }}</br>{% endfor %}</td>
+                          <td>{% for skill in element.skills %}{{ skill.skills_type }}</br>{% endfor %}</td>
+                          <td>{{element.doj}}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+
+                    </table>
+
+                    <hr>
+
+
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+    $("#data-tables_filter").hide();
+    var dataTable = $('#data-tables').DataTable( {
+        "info":     false,
+        "paging":   false,
+        "ordering": false,
+    } );
+
+    $("#searchbox").keyup(function() {
+        dataTable.search(this.value).draw();
+        var rowCount = $('#data-table-body tr').length;
+        $('#data-table-body tr td').text() != "No matching records found" ? document.getElementById("count").innerHTML = rowCount : document.getElementById("count").innerHTML = 0;
+        temp = $("#dept").val()
+        $("#department").val(temp);
+        $("#designation").val(temp);
+        $("#skills").val(temp);
+    });
+    } );
+
+    {% if request.user|has_group:'myansrsourceHR' == True or request.user|has_group:'myansrsourcePM' == True  %}
+    var json_lists = {{ json_list|safe }}
+    var arr_len = json_lists.length;
+    document.getElementById("count").innerHTML = arr_len;
+    {% endif %}
+
+    $("#department").on('change', function() {
+    $("#dept").hide();
+    temp = $("#dept").val()
+    $("#designation").val(temp);
+    $("#skills").val(temp);
+    $("#searchbox").val('');
+    $('#data-table-body').empty();
+    dept = $('#department option:selected').val();
+    var skills_name = [];
+    var skills_type = [];
+    z = 0;
+    for(i=0;i<arr_len ;i++){
+        json_dept = json_lists[i].department
+        if(json_dept == dept){
+            z++;
+            document.getElementById("count").innerHTML = z;
+            var len_of_skills = json_lists[i].skills.length;
+            for(j=0;j<len_of_skills;j++){
+                skills_name.push(json_lists[i].skills[j].skills_name)
+                skills_type.push(json_lists[i].skills[j].skills_type)
+            }
+            $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+            skills_name = []
+            skills_type = []
+        }
+        else{
+        document.getElementById("count").innerHTML = z;
+        }
+    }
+    });
+
+    $("#designation").on('change', function() {
+    $("#desg").hide();
+    temp = $("#dept").val()
+    $("#department").val(temp);
+    $("#skills").val(temp);
+    $("#searchbox").val('');
+    desg = $('#designation option:selected').val();
+    $('#data-table-body').empty();
+    var skills_name = [];
+    var skills_type = [];
+    z=0;
+    for(i=0;i<arr_len ;i++){
+        json_desg = json_lists[i].designation
+        if(json_desg == desg){
+            z++;
+            document.getElementById("count").innerHTML = z;
+            var len_of_skills = json_lists[i].skills.length;
+            for(j=0;j<len_of_skills;j++){
+                skills_name.push(json_lists[i].skills[j].skills_name)
+                skills_type.push(json_lists[i].skills[j].skills_type)
+            }
+        $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>"+skills_name.join().split(",").join("<br />")+ "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+        skills_name = []
+        skills_type = []
+        }
+        else{
+        document.getElementById("count").innerHTML = z;
+        }
+    }
+    });
+
+    $("#skills").on('change', function() {
+    $("#skill").hide();
+    temp = $("#dept").val()
+    $("#department").val(temp);
+    $("#searchbox").val('');
+    $("#designation").val(temp);
+    $('#data-table-body').empty();
+    var skills_name = [];
+    var skills_type = [];
+    skill = $('#skills option:selected').val();
+    z = 0;
+    for(i=0;i<arr_len ;i++){
+            var len_of_skills = json_lists[i].skills.length;
+            for(j=0;j<len_of_skills;j++){
+                if(skill == json_lists[i].skills[j].skills_name){
+                    skills_name.push(json_lists[i].skills[j].skills_name)
+                    skills_type.push(json_lists[i].skills[j].skills_type)
+                    }
+            }
+            if(skills_name.length != 0){
+                z++;
+                document.getElementById("count").innerHTML = z;
+                $('#data-table-body').append("<tr><td>" + json_lists[i].name + "</td><td>" + json_lists[i].department + "</td><td>" + json_lists[i].designation + "</td><td>" + skills_name.join().split(",").join("<br />") + "</td><td>" + skills_type.join().split(",").join("<br />") + "</td><td>" + json_lists[i].doj + "</td></tr>");
+            }
+            else{
+            document.getElementById("count").innerHTML = z;
+            }
+        skills_name = []
+        skills_type = []
+        }
+    });
+
+    jQuery(document).ready(function() {
+
+    $('#export').on('click', function(e){
+        e.preventDefault();
+        ResultsToTable();
+    });
+
+    function ResultsToTable(){
+        $("#data-tables").table2excel({
+            exclude: ".noExl",
+            name: "Results"
+        });
+    }
+});
+
+
+
+</script>
+
+
+{% endblock %}

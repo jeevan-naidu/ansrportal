@@ -1,0 +1,242 @@
+
+{% extends 'master.html' %}
+{% block siteTitle %}Manage {{ app_name }}{% endblock %}
+
+{% load static from staticfiles %}
+{% load process_tags %}
+{% load rest_framework %}
+
+{% block pageTitle %}Manage {{ app_name }}{% endblock %}
+
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+
+
+     <div class="panel pb-15">
+                  <div class="panel-heading vd_bg-grey clearfix">
+                    <h2 class="panel-title pull-left" style="font-size: 15px;line-height: 30px">Basic List Group</h2>
+                    <select class="form-control input-sm pull-right hidden" style="width: auto">
+                      <option>2017</option>
+                      <option>2016</option>
+                      <option>2015</option>
+                    </select>
+                  </div>
+    <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#tab1" data-toggle="tab">Active</a></li>
+                      <li><a href="#tab2" data-toggle="tab">Approved</a></li>
+                    </ul>     
+                    <br/>               
+                    <div class="tab-content mgbt-xs-20">
+                      <div class="tab-pane active" id="tab1">
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <thead>
+                            <tr>
+                                <th><b>S. No</b></th>
+                                {% for field in fields %}
+
+
+                                    {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
+                                    {% endif %}
+
+
+
+                                {% endfor %}
+                                <th><b>Action</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                        {% for process in queryset.0 %}
+                             <tr>
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
+                                class="pull-right ">
+                                                    {{ forloop.counter }}
+                                                  </a></td>
+                         {% for field in fields %}
+
+                             {% if field == "id" %}
+                                  {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
+                                {% else %}
+                              <td class="ws-mw">{{ process| field_name:field }}</td>
+                             {% endif %}
+
+
+                        {% endfor %}
+                             <th><a id="{{ app_name }}-{{ process| field_name:"id" }}"
+                                 href="#modal-container-process" data-toggle="modal" title="Action"
+                                class="pull-right btn btn-sm btn-success">
+                                                    Action
+                                                  </a></th>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </table>
+
+                      </div><!-- ./tab -->
+                      <div class="tab-pane" id="tab2">
+                          <table class="table table-striped reimburse-table myansr-table" id="data-tables_1">
+                          <thead>
+                            <tr>
+                                <th><b>S. No</b></th>
+                                {% for field in fields %}
+
+                                   {% if field != 'id' %}
+
+                                   <th><b>{{ field|transaction_name_split }}</b></th>
+                                    {% endif %}
+
+
+                                {% endfor %}
+
+                            </tr>
+                          </thead>
+                          <tbody>
+                        {% for process in queryset.1 %}
+                             <tr>
+                                 <td><a id="{{ app_name }}-{{ process| field_name:"id" }}-manage" href="#modal-container-Detail" data-toggle="modal" title="Details"
+                                class="pull-right ">
+                                                    {{ forloop.counter }}
+                                                  </a></td>
+                         {% for field in fields %}
+
+
+                             {% if field == "id" %}
+                                  {% elif field == 'attachment' %}
+                                 <td class="ws-mw">
+                                 <div class="" >
+         <!-- Attachments start -->
+                 <a target="_blank" href="{{process| field_name:field }}">
+                       Attachment
+                   </a>
+                 </div>
+                                 </td>
+                                {% else %}
+                              <td class="ws-mw">{{ process| field_name:field }}</td>
+                             {% endif %}
+
+
+                        {% endfor %}
+
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </table>
+                      </div><!-- ./tab -->
+
+                    </div>
+
+
+
+
+</div>
+     </div>
+
+
+
+<div class="modal fade" id="modal-container-process" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
+
+
+   <div class="modal fade" id="modal-container-Detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body_detail">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<script src='{% static 'js/customapp.js' %}' type="text/javascript"></script>
+
+<script type="text/javascript">
+
+$('document').ready(function(){
+  $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+});
+
+$("#modal-container-Detail").on('shown.bs.modal', function(e) {
+      button = e.relatedTarget;
+      button_details = button.id.split("-");
+
+          $.ajax({
+         type: "GET",
+          url: '/process/'+ button_details[0] + '/update/' + button_details[1] + "/" ,
+            data: {"action":button_details[2]},
+          success : function (data) {
+              $("#modal_body_detail").html(data);
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#modal_body_detail").html("<p style='color:red'>Oops! Something went wrong on the server. " +
+                "The details are below: " + "<br>Status : "+ textStatus + "<br>Exception : "
+                + errorThrown +
+                "<br><br> Please take a screenshot of this message and send it to " +
+                "<a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+          }
+      });
+
+
+  });
+
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load static from staticfiles %}
+
+<div class="LeaveDetails" >
+    {% if project_detail == 'Nothing' %}
+        <p>Sorry.. No Data Found</p>
+    {% else %}
+
+<table class=" table table-hover view_details" >
+    </tr>
+         <td style="width: 200px;" ><b> Project Name:</b></td>
+         <td>{{ project_detail.project.name }}</td>
+    </tr>
+     <tr >
+         <td style="width: 200px;" ><b> Project Delivery Manager:</b></td>
+         <td>{{ project_detail.deliveryManager }}</td>
+{% if project_detail.pmDelegate %}
+    </tr>
+         <td style="width: 200px;" ><b> PM Delegate:</b></td>
+         <td>{{ project_detail.pmDelegate }}</td>
+    </tr>
+{% endif %}
+    <tr>
+         <td style="width: 200px;" ><b> SFID:</b></td>
+         <td>{{ project_detail.project.salesForceNumber }}</td>
+    </tr>
+{% if project_detail.pmDelegate %}
+    </tr>
+         <td style="width: 200px;" ><b> Practice:</b></td>
+         <td>{{ project_detail.PracticeName }}</td>
+    </tr>
+{% endif %}
+         <td style="width: 200px;" ><b> Customer:</b></td>
+         <td>{{ project_detail.project.customer }}</td>
+    </tr>
+         <td style="width: 200px;" > <b>Start Date:</b></td>
+         <td>{{ project_detail.project.startDate }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> End Date:</b></td>
+         <td>{{ project_detail.project.endDate }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Book:</b></td>
+         <td>{{ project_detail.project.book }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Total Value:</b></td>
+         <td>{{ project_detail.project.totalValue }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Planned Effort:</b></td>
+         <td>{{ project_detail.project.plannedEffort }}</td>
+    </tr>
+         <td style="width: 200px;" > <b>Outsource Contract Value:</b></td>
+         <td>{{ project_detail.outsource_contract_value }}</td>
+
+     </tr>
+
+
+ </table>
+    {% endif %}
+</div>

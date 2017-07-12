@@ -1,0 +1,27 @@
+{% load static from staticfiles %}
+{% load process_tags %}
+{% load rest_framework %}
+
+
+ <div class="LeaveDetails" >
+
+<table class=" table table-hover view_details" >
+    {% for field in fields %}
+        {% if field == "attachment" %}
+            <td style="width: 200px;" >{{ field|transaction_name_split }} :</td>
+         <td>
+         <a target="_blank" href="{{ queryset| field_name:field }}">
+                       <b>Attachment</b>
+                   </a>
+         </td>
+        {% else %}
+     <tr >
+         <td style="width: 200px;" >{{ field|transaction_name_split }} :</td>
+         <td><b>{{ queryset| field_name:field }}</b></td>
+     </tr>
+        {% endif %}
+
+     {% endfor %}
+
+ </table>
+</div>

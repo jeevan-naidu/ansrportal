@@ -1,0 +1,97 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% block siteTitle %}Active Projects{% endblock %}
+
+{% load permissions %}
+{% block pageTitle %}
+Active Projects
+
+{% endblock %}
+
+
+
+
+
+
+{% block content %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+  <form action="" method="post">
+    {% csrf_token %}
+<div class="panel pb-15">
+
+    <div class="panel-body">
+
+
+<table class="table table-striped myansr-table" id="active_projects">
+
+    <input type="submit" id="" class="btn btn-sm vd_bg-green vd_white pull-right active_projects" style="margin-bottom:4px" value="Export">
+
+
+
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Business Unit </th>
+      <th >Practice</th>
+      <th >Customer</th>
+      <th> End Date </th>
+    </tr>
+  </thead>
+  <tbody>
+{% for obj in projects_list %}
+    <tr class=>
+      <td >{{obj.projectId}}
+        <a href="{% url 'get_project_summary' obj.project__id %}" target="_blank" >{{obj.project__projectId}} : {{obj.project__name}} </a></td>
+      <td >{{obj.project__bu__name}} </td>
+      <td >{{obj.practice__name|default_if_none:""}}</td>
+        <td >{{obj.project__customer__name}} </td>
+      <td>{{obj.project__endDate}}</td>
+</tr>
+{% endfor %}
+
+
+  </tbody>
+</table>
+
+
+
+</div>
+</div>
+
+  </form>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/export_excel.js"></script>
+
+
+<script type="text/javascript">
+$(function() {
+       $('body').addClass("nav-left-hide remove-navbar nav-left-medium");
+   dataTable =$('#active_projects').dataTable({
+          "searching": true,
+          "pageLength": 30,
+          "autoWidth": false,
+           "bInfo" : false,
+          "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "All"]],
+          <!--"columnDefs": [-->
+            <!--{ "searchable": false, "targets": 4 }-->
+            <!--]-->
+    });
+});
+
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,190 @@
+{% extends 'master.html' %}
+{% block siteTitle %}ApproveCR {{ app_name }}{% endblock %}
+
+{% load static from staticfiles %}
+{% load process_tags %}
+{% load rest_framework %}
+
+{% block pageTitle %}Project Change Approval{% endblock %}
+
+{% block content  %}
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+<div class="panel pb-15">
+    <div class="panel-body">
+
+                    <br/>
+                    <div class="tab-content mgbt-xs-20">
+
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <thead>
+                            <tr>
+                                <th><b>Project CRId</b></th>
+                                <th><b>Project Name</b></th>
+                                <th><b>Reason</b></th>
+                                <th><b>Revised Total</b></th>
+                                <th><b>Action</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                        {% for process in queryset %}
+                             <tr><td class="ws-mw">
+                                 <a id="{{process.crId}}"
+                                 href="#modal-container-detail" data-toggle="modal" title="Action"
+                                class="pull-left detail">
+                                                    {{process.crId}}
+                                                  </a></td>
+                                <!--<td class="ws-mw">{{process.projectId}}</td>-->
+                                 <td class="ws-mw">{{process.project}}</td>
+                                 <td class="ws-mw">{{process.reason}}</td>
+                                 <td class="ws-mw">{{process.revisedTotal}}</td>
+                                 <td class="ws-mw">
+                                     <div class="checkbox checkbox-success radio-mod btn-xs">
+                                <input id="approve_{{process.crId}}" type="checkbox" name="approve" class="approve" value="approved">
+                                <label for="approve_{{process.crId}}" class="ansr-orange-mod">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                <input id="reject_{{process.crId}}" type="checkbox" name="reject"
+                                       class="reject" value="rejected_1">
+                                <label for="reject_{{process.crId}}">
+                                Reject
+                                </label>
+                            </div>
+                                 </td>
+                        </tr>
+
+
+
+                        {% endfor %}
+
+                        </table>
+{%if  queryset  %}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange submit">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+
+                    </div>
+
+
+
+
+</div>
+     </div>
+
+
+<div class="modal fade" id="modal-container-detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
+
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript">
+
+$('document').ready(function(){
+  $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+});
+
+
+      $(".detail").click(function(){
+        var project_id = this.id
+        $.ajax({
+            url:"{% url 'project_change_detail' %}",
+            data: {"id": project_id},
+            type: "get",
+            success: function(data){
+            $("#modal_body").html(data);
+            },
+        });
+    });
+
+    $("input:checkbox").click(function(){
+    var checkbox_id = this.id;
+    var checkbox_detail = checkbox_id.split("_");
+    var flag = {"approve":"reject", "reject":"approve"};
+    var next_flag = flag[checkbox_detail[0]] + "_" + checkbox_detail[1];
+    if($(this).attr("checked")){
+
+        $(this).attr("checked", false);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+    else{
+
+    $(this).attr("checked", true);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+});
+$(".submit").on("click", function(){
+                            var idSelect = function(){ return this.id;};
+                            var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
+                            var approve_list = [];
+                            var reject_list = [];
+                            var crId_list = [];
+                            for(var i=0; i<checkedBoxId.length; i++){
+                             var checkbox_detail = checkedBoxId[i].split("_")
+                             if(checkbox_detail[0] == "approve"){
+                                approve_list.push(checkbox_detail[1]);
+                             }else{
+                             var remark = $('.'+checkedBoxId[i]).val()
+                             reject_list.push(checkbox_detail[1])
+
+
+                             }
+                            }
+                            swal({   title: "Are you sure?",
+							text: "Do you want to submit your approval?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+                                            $.ajax({
+                                                url:"{% url 'ProjectChangeApproval' %}",
+                                                data:{"approve": approve_list, "reject": reject_list},
+                                                type:"post",
+                                                success: function(data){
+                                                    window.location=window.location;
+                                                },
+
+                                            });
+                                            }
+							   });
+						 return false;
+					 });
+</script>
+{% endblock %}

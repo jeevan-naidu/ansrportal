@@ -26,7 +26,7 @@
 
   <script type="text/javascript" src="/static/js/jquery.js"></script>
     {# Load Pace JS #}
-
+<script type="text/javascript" src='/static/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js'></script>
        <script src="{% static 'js/pace.js' %}"></script>
 
     {# Load Bootstrap CSS and JS #}
@@ -390,7 +390,14 @@
                                                         </a>
                                                  </li>
                                             {% endif %}
+                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
 
+                                            <li>
+                                                    <a href="/timein/">
+                                                        <span class="menu-text">Time in Office</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </li>
@@ -414,14 +421,31 @@
                                                             <ul class="clearfix">
 
 
-                                                {% if user|create_project or user|manage_project %}
+                                                {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/add">
                                                         <span class="menu-text">Create Project</span>
                                                     </a>
                                                 </li>
                                                 {% endif %}
-
+                                               {% if request.user|has_group:'myansrsourcebuhead' %}
+                                                <li>
+                                                    <a href="{% url 'new_created_project_approval' %}">
+                                                        <span class="menu-text">Approve Project</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'ProjectChangeApproval' %}">
+                                                        <span class="menu-text">Approve ChangeReq</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'changeproject' %}">
+                                                        <span class="menu-text">Rejected Project</span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                                {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
                                                         <span class="menu-text">Manage Project/Enter Change Request</span>
@@ -432,6 +456,7 @@
                                                         {% endif %}
                                                     </a>
                                                 </li>
+                                                 {% endif %}
                                                 <li>
                                                     <a href="/myansrsource/project/view-project">
                                                         <span class="menu-text">View Project</span>
@@ -442,6 +467,7 @@
                                                         {% endif %}
                                                     </a>
                                                 </li>
+                                                 {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/manage-projectleader">
                                                         <span class="menu-text">Manage Project Leader</span>
@@ -469,6 +495,7 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
+                                                                {% endif %}
                                                             </ul>
                                                         </div>
                                                     </li><!--  -->
@@ -508,8 +535,21 @@
                                                                         <a href="/reports/milestones/">
                                                                             <span class="menu-text">Milestone Report</span>
                                                                         </a>
+                                                                    </li>{% endif %}
+                                                                {% if request.user|has_group:"myansrsourcebuhead" %}
+                                                                <li>
+                                                                        <a href="{% url 'active_employees'%}">
+                                                                            <span class="menu-text">Active Employees</span>
+                                                                        </a>
                                                                     </li>
-                                                                 {% endif %}
+                                                                <li>
+                                                                        <a href="{% url 'active_projects'%}">
+                                                                            <span class="menu-text">Active Projects</span>
+                                                                        </a>
+                                                                    </li>
+
+                                                                {%endif %}
+
                                                             </ul>
                                                         </div>
                                                     </li>
@@ -538,6 +578,11 @@
                                                             Manage Employee(s)
                                                             <span class="badge vd_bg-yellow">{{ totalemp }}</span>
                                                         </span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/skillset/">
+                                                        <span class="menu-text">Skillset</span>
                                                     </a>
                                                 </li>
                                             </ul>
@@ -638,40 +683,95 @@
                                                     </ul>
                                                 </div>
                                             </li>
-
-                                         {% if request.user|has_group:'HireRecruiter' %}
+                                    {% if request.user|has_group:"TestGroup1" %}
                                         <li>
                                                 <a href="javascript:" data-action="click-trigger" class="open">
-
-                                                    <span class="menu-text">Daily Interview Report</span>
-
+                                                    <span class="menu-text">Reimburse</span>
                                                     <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                                 </a>
                                                 <div class="child-menu" data-action="click-target" style="display: block;">
                                                     <ul class="clearfix">
                                                         <li>
-                                                                <a href="/hire/addmrf">
-                                                                    <span class="menu-text">MRF Details</span>
-                                                                </a>
-                                                            </li>
-                                                        <li>
-                                                            <a href="/hire/">
-                                                                <span class="menu-text">Candidate Application</span>
+                                                            <a href="/process/Reimburse/create/">
+                                                                <span class="menu-text">Reimburse Dashboard</span>
                                                             </a>
                                                         </li>
-
-                                                            <li>
-                                                                <a href="/hire/candidatesearch">
-                                                                    <span class="menu-text">Dashboard</span>
-                                                                </a>
-                                                            </li>
-
+                                                        <li>
+                                                            <a href="/process/Reimburse/approve_list/">
+                                                                <span class="menu-text">Reimburse Action</span>
+                                                            </a>
+                                                        </li>
 
 
 
                                                     </ul>
                                                 </div>
                                             </li>
+                                            {% endif %}
+                                            {% if request.user|has_group:"TestGroup2" %}
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Invoice</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="/process/Invoice/create/">
+                                                                <span class="menu-text">Invoice Dashboard</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/process/Invoice/approve_list/">
+                                                                <span class="menu-text">Invoice Action</span>
+                                                            </a>
+                                                        </li>
+
+                                                        <!-- <li>
+                                                                <a href="/Reimburse/update/1/">
+                                                                    <span class="menu-text">Reimburse Action</span>
+                                                                </a>
+                                                            </li> -->
+
+
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        {% endif %}
+
+                                         {% if request.user|has_group:'HireRecruiter' %}
+                                        <!--<li>-->
+                                                <!--<a href="javascript:" data-action="click-trigger" class="open">-->
+
+                                                    <!--<span class="menu-text">Daily Interview Report</span>-->
+
+                                                    <!--<span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>-->
+                                                <!--</a>-->
+                                                <!--<div class="child-menu" data-action="click-target" style="display: block;">-->
+                                                    <!--<ul class="clearfix">-->
+                                                        <!--<li>-->
+                                                                <!--<a href="/hire/addmrf">-->
+                                                                    <!--<span class="menu-text">MRF Details</span>-->
+                                                                <!--</a>-->
+                                                            <!--</li>-->
+                                                        <!--<li>-->
+                                                            <!--<a href="/hire/">-->
+                                                                <!--<span class="menu-text">Candidate Application</span>-->
+                                                            <!--</a>-->
+                                                        <!--</li>-->
+
+                                                            <!--<li>-->
+                                                                <!--<a href="/hire/candidatesearch">-->
+                                                                    <!--<span class="menu-text">Dashboard</span>-->
+                                                                <!--</a>-->
+                                                            <!--</li>-->
+
+
+
+
+                                                    <!--</ul>-->
+                                                <!--</div>-->
+                                            <!--</li>-->
 {% endif %}
 
 
@@ -717,49 +817,83 @@
                                                     </ul>
                                                 </div>
                                             </li>
-                                            <li>
+                                             {% if request.user|has_group:"TestGroup3" %}
+                                            <!--<li>-->
 
-                                                <a href="javascript:" data-action="click-trigger" class="open">
-                                                    <span class="menu-text">Exit</span>
-                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
-                                                </a>
-                                                <div class="child-menu" data-action="click-target">
-                                        <ul>
-                                            <li>
-                                                <a href="/exitapp/exit-peer/">
-                                                    <span class="menu-text">Enter Resignation</span>
-                                                </a>
-                                            </li>
-                                                 {% if user|IsManager %}
-                                            <li>
+                                                <!--<a href="javascript:" data-action="click-trigger" class="open">-->
+                                                    <!--<span class="menu-text">Exit</span>-->
+                                                    <!--<span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>-->
+                                                <!--</a>-->
+                                                <!--<div class="child-menu" data-action="click-target">-->
+                                        <!--<ul>-->
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/exit-peer/">-->
+                                                    <!--<span class="menu-text">Enter Resignation</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                                 <!--{% if user|IsManager %}-->
+                                            <!--<li>-->
 
-                                                <a href="/exitapp/exit-acceptance/">
-                                                    <span class="menu-text">Manager Approval</span>
-                                                </a>
-                                            </li>
-                                            {% endif %}
-                                            {% if request.user|has_group:'myansrsourceHR' %}
-                                            <li>
-                                                <a href="/exitapp/hr-acceptance/">
-                                                    <span class="menu-text">HR Approval</span>
-                                                </a>
-                                            </li>
-                                            {% endif %}
-                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
-                                            <li>
-                                                <a href="/exitapp/clearance-list/">
-                                                    <span class="menu-text">Resigned Candidate List</span>
-                                                </a>
-                                            </li>
+                                                <!--<a href="/exitapp/exit-acceptance/">-->
+                                                    <!--<span class="menu-text">Manager Approval</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                            <!--{% endif %}-->
+                                            <!--{% if request.user|has_group:'myansrsourceHR' %}-->
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/hr-acceptance/">-->
+                                                    <!--<span class="menu-text">HR Approval</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                            <!--{% endif %}-->
+                                            <!--{% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}-->
+                                            <!--<li>-->
+                                                <!--<a href="/exitapp/clearance-list/">-->
+                                                    <!--<span class="menu-text">Resigned Candidate List</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
                                             {% endif %}
                                         </ul>
+                                                    {% endif %}
+
+
+
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="">
+                                                    <span class="menu-text">Laptop Apply</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: none;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                            <a href="/process/LaptopAvail/create/">
+                                                                <span class="menu-text">Laptop Dashboard</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/laptop/return">
+                                                                <span class="menu-text">Laptop Return</span>
+                                                            </a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a href="/process/LaptopAvail/approve_list/">
+                                                                <span class="menu-text">Laptop Action</span>
+                                                            </a>
+                                                        </li>
+
+                                                        <!-- <li>
+                                                                <a href="/Reimburse/update/1/">
+                                                                    <span class="menu-text">Reimburse Action</span>
+                                                                </a>
+                                                            </li> -->
+
+
+                                                    </ul>
                                                 </div>
                                             </li>
 
-                                        </ul>
-                                    </div>
-                                </li>
-
+                            </ul>
 
                                 <!--<li>-->
                                     <!--<a href="javascript:void(0);" data-action="click-trigger">-->
@@ -789,7 +923,7 @@
                                     <!--</div>-->
                                 <!--</li>      -->
 
-                                                          
+
 
                             </ul>
                             {% endif %}
@@ -870,7 +1004,7 @@
                     {% endblock %}
                     <!-- menu -->
                 </div>
-                <h4>{% block pageTitle %}my<b>ansr</b>source{% endblock %}</h4>
+                <h4>{% block pageTitle %} <b>{{greeting}}</b>{% endblock %}</h4>
             </div>
 
 

@@ -3,7 +3,6 @@
 {% block siteTitle %}Timesheet{% endblock %}
 
 {% load permissions %}
-<!-- {% load emoticons_tags %} -->
 {% block pageTitle %}
 Approve Timesheet
 
@@ -222,9 +221,7 @@ Approve Timesheet
 </table>
             <input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">
         {% else %}
-            <!--{% emoticons %}-->
         <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week </span>
-            <!--{% endemoticons %}-->
         {% endif %}
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
@@ -264,6 +261,7 @@ Approve Timesheet
                           <th>Fri</th>
                           <th>Sat</th>
                           <th>Sun</th>
+                            <th>Remarks</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -279,6 +277,11 @@ Approve Timesheet
                           <td class="fridayH">0</td>
                           <td class="saturdayH">0</td>
                           <td class="sundayH">0</td>
+                           <td class="menu-action remarks">
+                                <a  class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
 
 
@@ -297,6 +300,7 @@ Approve Timesheet
                           <th><span class="invisible">Fri</span></th>
                           <th><span class="invisible">Sat</span></th>
                           <th><span class="invisible">Sun</span></th>
+                            <th><span class="invisible">Remarks</span></th>
                         </tr>
                       </thead>
 
@@ -311,6 +315,11 @@ Approve Timesheet
                           <td class="activity_friday">0</td>
                           <td class="activity_saturday">0</td>
                           <td class="activity_sunday">0</td>
+                            <td class="menu-action activity_remarks">
+                                <a class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown " >
+                                    <i class="fa fa-comments-o"></i>
+                                </a>
+                            </td>
                         </tr>
                       </tbody>
                     </table>
@@ -380,7 +389,7 @@ var time_iterate = function(e){
   $('.activity-time-row').html('');
 
   // Append employee name to modal header
-
+if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
   // tsdata iteration
@@ -408,11 +417,16 @@ var time_iterate = function(e){
         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-
+        if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
+            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
+        else
+            {  $('.project-time-row:last-child td.remarks').hide();}
     }
   } // ./ ts data iteration
 
-
+} else {
+    $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
+}
 
   // atdata iteration
 
@@ -435,6 +449,10 @@ var time_iterate = function(e){
         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
+         if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
+            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
+         else
+           $('.activity-time-row:last-child td.activity_remarks').hide();
 
     }else{
         $('.activity-time-row').append(activity_time_row);
@@ -446,6 +464,8 @@ var time_iterate = function(e){
         $('.activity-time-row:last-child td.activity_friday').html('nil');
         $('.activity-time-row:last-child td.activity_saturday').html('nil');
         $('.activity-time-row:last-child td.activity_sunday').html('nil');
+        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
+        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
     }
 
   } // ./ at data iteration
@@ -497,7 +517,14 @@ var employeeTime = function(){
 $(document).ready(function() {
                 "use strict";
 
-            $('#timesheet-approve-table').dataTable();
+            <!--$('#timesheet-approve-table').dataTable();-->
+             $('#timesheet-approve-table').dataTable( {
+    "order": [],
+    "columnDefs": [ {
+      "targets"  : 'no-sort',
+      "orderable": false,
+    }]
+});
             $("[data-toggle='tooltip']").tooltip();
 
             /* Toggle checkbox */
@@ -559,7 +586,10 @@ $(document).ready(function() {
                           dataType :'json',
                           data: {"user_id":{{request.user.id}} ,"start_date":$('#weekstartDate').val(),"end_date":$('#weekendDate').val() },
                           success: function (data) {
-                              swal("Ok", "Reminder Mail is sent Successfully!", "success")
+                                if (data['status'] == true )
+                                    swal("Ok", "Reminder Mail is sent Successfully!", "success");
+                                else
+                                sweetAlert("Oops...", "Something went wrong!", "error");
                           },
 
                         });

@@ -31,7 +31,7 @@ def shortLeave():
     holiday = Holiday.objects.all().values('date')
     dueDate = checkdate + timedelta(days=30)
     morningInTimeLimit = datetime.strptime("10:15:00", FMT)
-    fullDayOfficeStayTimeLimit = timedelta(hours=9, minutes=00, seconds=00)
+    fullDayOfficeStayTimeLimit = timedelta(hours=8, minutes=50, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=4, minutes=30, seconds=00)
     if checkdate in [datedata['date'] for datedata in holiday] or checkdate.weekday() >= 5:
         return
@@ -40,7 +40,7 @@ def shortLeave():
         try:
             reason = ""
             shortLeaveType = ""
-            employee = Employee.objects.filter(user_id = user.id)
+            employee = Employee.objects.filter(user_id=user.id)
             appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=checkdate,
                                                                  to_date__gte=checkdate,
                                                                  user=user.id,
@@ -50,7 +50,7 @@ def shortLeave():
             if manager:
                 manager_d = User.objects.get(id=manager[0]['user_id'])
             else:
-                manager_d = User.objects.get(id= 35)
+                manager_d = User.objects.get(id=35)
             if employee:
                 attendance = Attendance.objects.filter(attdate=checkdate, employee_id=employee[0].employee_assigned_id)
                 if attendance:
@@ -67,9 +67,9 @@ def shortLeave():
                     elif tdelta < fullDayOfficeStayTimeLimit:
                         reason = "you had put {0} hours which is below 9 hours".format(stayInTime)
                         shortLeaveType = 'half_day'
-                    elif morningInTime > morningInTimeLimit:
-                        reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
-                        shortLeaveType = 'half_day'
+                    # elif morningInTime > morningInTimeLimit:
+                    #     reason = "you came at {0}, you came late".format(morningInTime.time().isoformat())
+                    #     shortLeaveType = 'half_day'
                 else:
                     swipeIn = datetime.now(pytz.timezone("Asia/Kolkata"))\
                         .replace(hour=0, minute=0, second=0, microsecond=0)\
@@ -83,7 +83,7 @@ def shortLeave():
                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                     reason = "you were absent"
                     shortLeaveType = 'full_day'
-                if  len(appliedLeaveCheck)>1:
+                if len(appliedLeaveCheck)>1:
                     pass
                 elif len(appliedLeaveCheck)==1 and shortLeaveType == 'half_day':
                     pass
@@ -111,7 +111,10 @@ def shortLeave():
                                                               swipe_in=swipeInTime,
                                                               swipe_out=swipeOutTime
                                                               )
-                        send_mail(user, shortLeaveType, checkdate, dueDate, reason, "open")
+                        try:
+                            send_mail(user, shortLeaveType, checkdate, dueDate, reason, "open")
+                        except:
+                            logger.debug('email send issue user id' + user.id)
 
             else:
                 print(user.first_name + user.last_name + " hr need to take care")

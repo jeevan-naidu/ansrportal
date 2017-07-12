@@ -399,7 +399,6 @@ class ClearanceList(View):
             final_val = d + timedelta(days=1)
             allresignee = ResignationInfo.objects.filter(last_date_accepted__lte=final_val).exclude(
                 User_id=request.user.id)
-            print allresignee
             context['approved_candidate'] = allresignee
         else:
             mgrid = Employee.objects.get(user_id=request.user.id)

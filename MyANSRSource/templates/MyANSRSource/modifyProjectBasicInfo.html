@@ -1,0 +1,77 @@
+{% extends 'modifyProjectMaster.inc' %}
+
+{% block createProjectActive %}class="active"{% endblock %}
+{% block MPactiveClass %}active{% endblock %}
+
+{% block pageTitle %}Manage/Rejected project{% endblock %}
+
+{% block childform %}{% block masterform %}
+{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+        <ul>
+		{% for field in form %}
+		{% if field.errors %}
+            <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+		{% endif %}
+		{% endfor %}
+        </ul>
+	</div>
+{% endif %}
+<style type="text/css">
+
+    .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 5px;
+}
+</style>
+
+
+<div class="panel clearfix">
+<div class="panel-body">
+    <button type="button" class="btn btn-success disabled">Project Name:- {{request.session.name}}</button>
+    <div class="row">
+        <div class="col-sm-10 center-block">
+            <div class="table-responsive col-lg-12">
+            <h3><small><b>{{ projectName }}</b></small></h3>
+            <table class="table">
+                {% for field in form %}
+                    <tr>
+                                <td class="col-lg-6">
+                                        {% if field.label == 'New Development' %}
+                                             Project Stage
+                                        {% else %}
+                                            {{ field.label }}
+                                        {% endif %}
+                                        {% if field.field.required %}
+                                            <span class="required">*</span>
+                                        {% endif %}
+                                </td>
+					{% if field.label == 'Contract Signed' or field.label == 'Internal Project' or field.label == 'New Development' %}
+                                <td class="col-lg-6">
+						{% for radio in field %}
+							{% if field.label == 'New Development' %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
+							{% else %}
+								<span class="col-lg-1">{{ radio.tag }}</span>
+								<span class="col-lg-4"><small><b>{{ radio.choice_label }}</b></small></span>
+							{% endif %}
+						{% endfor %}
+					{% else %}
+                                <td class="col-lg-6">
+						{{ field }}
+					{% endif %}
+				</td>
+                            </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+
+</script>
+
+{% endblock %}{% endblock %}
+

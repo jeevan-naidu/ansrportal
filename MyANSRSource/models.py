@@ -10,7 +10,8 @@ import datetime, os
 from django.core.validators import URLValidator
 from CompanyMaster.models import Practice, SubPractice
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
+from datetime import date
+import Invoice
 
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
@@ -35,11 +36,47 @@ PROJECTFINTYPE = (
     ('FP', 'Fixed Price'),
     ('T&M', 'T&M')
 )
+APRROVECHOICES = (
+    ('0', 'ACTIVE'),
+    ('1', 'APPROVED'),
+    ('2','REJECTED')
+)
 
 #upload path for sow and estimation
 
 
-file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'ProjectDocument'))
+def change_file_path(instance, filename):
+    ''' This function generates a random string of length 16 which will be a combination of (4 digits + 4
+    characters(lowercase) + 4 digits + 4 characters(uppercase)) seperated 4 characters by hyphen(-) '''
+
+    import random
+    import string
+
+    # random_str length will be 16 which will be combination of (4 digits + 4 characters + 4 digits + 4 characters)
+    random_str = "".join([random.choice(string.uppercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)]) + \
+                 "".join([random.choice(string.lowercase) for i in range(0, 4)]) + "".join(
+        [random.choice(string.digits) for i in range(0, 4)])
+
+    # return string seperated by hyphen eg:
+    random_str = random_str[:4] + "-" + random_str[4:8] + "-" + random_str[8:12] + "-" + random_str[12:]
+    filetype = filename.split(".")[-1].lower()
+    filename = random_str + "." + filetype
+    path = "MyANSRSource/uploads/" + str(datetime.datetime.now().year) + "/" + str(
+        datetime.datetime.now().month) + "/" + str(datetime.datetime.now().day) + "/"
+    os_path = os.path.join(path, filename)
+    return os_path
+
+
+class TimeStampAbstractModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
 
 class Book(models.Model):
     name = models.CharField(max_length=100, null=False,
@@ -273,7 +310,7 @@ class Project(models.Model):
                                             validators=[MinValueValidator(0)])
     projectManager = models.ManyToManyField(User,
                                             through='ProjectManager',
-                                            verbose_name="Delievery CO-ordinator")
+                                            verbose_name="Additional Manager")
     # Chapters to be worked on in the project
     book = models.ForeignKey(Book,
                              verbose_name="Book/Title",
@@ -290,7 +327,9 @@ class Project(models.Model):
         null=False,
         verbose_name="Project Closed"
     )
-
+    remark = models.CharField(verbose_name="Project Rejection message", null=True, blank=True, default='Nothing', max_length=100)
+    active = models.BooleanField(verbose_name="Is Active", default=False)
+    rejected = models.BooleanField(verbose_name="Rejected or not", default=False)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
@@ -311,22 +350,29 @@ class Project(models.Model):
 
 
 class ProjectDetail(models.Model):
-    project = models.ForeignKey(Project)
+    project = models.OneToOneField(Project)
     PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
-    ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
-    SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
-    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager', blank=True, null=True)
-    Sowdocument = models.FileField(upload_to=file_storage, blank=True, null=True, verbose_name="Upload Project SOW")
-    Estimationdocument = models.FileField(upload_to=file_storage, blank=True, null=True,
+    # ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
+    # SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
+    deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager')
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
     SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
     Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
+    outsource_contract_value = models.DecimalField(default=0.0,
+                                                   max_digits=12,
+                                                   decimal_places=2,
+                                                   verbose_name="Outsource Contract Value",
+                                                   validators=[MinValueValidator(0.0)])
+    pmDelegate = models.ForeignKey(User, verbose_name="PM Delegate", related_name='pmDelegate', default=None,
+                                   null=True, blank=True)
 
     def __unicode__(self):
-        return self.id
+        return self.project.projectId + u' : ' + self.project.name
 
     class Meta:
         verbose_name = "Project Additional Detail Table"
@@ -336,17 +382,6 @@ class ProjectManager(models.Model):
     # Creating Explicit M2M, to copy existing FK to M2M
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
-
-# on Hold Since need clearifications
-# class ProjectType(models.Model):
-#     Project_type = models.CharField(verbose_name="ProjectType", max_length="100")
-#     Is_Active = models.BooleanField(verbose_name="Active")
-#
-#     def __unicode__(self):
-#         return self.Project_type
-#
-#     class Meta:
-#         verbose_name = 'ProjectType Table'
 
 
 class TimeSheetEntry(models.Model):
@@ -411,6 +446,8 @@ class TimeSheetEntry(models.Model):
     managerFeedback = models.CharField(default=None, null=True, blank=True,
                                        max_length=1000,
                                        verbose_name="Manager Feedback")
+    remarks = models.CharField(default=None, null=True, blank=True, max_length=255,  verbose_name="Employee Remarks")
+
     teamMember = models.ForeignKey(User, editable=False)
     exception = models.CharField(default="No Exception", max_length=75)
     billable = models.BooleanField(default=False, verbose_name="Billable")
@@ -447,9 +484,8 @@ class Milestone(UpdateDate):
     is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
     check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation", default=False)
 
-
     def __unicode__(self):
-        return self.name
+        return self.name + " | " + self.milestone_type.milestone_type
 
     class Meta:
         verbose_name_plural = "Project Milestones"
@@ -462,7 +498,7 @@ class ProjectMilestone(models.Model):
                                      default=timezone.now)
     description = models.CharField(default=None, blank=False, max_length=1000,
                                    null=True, verbose_name="Description")
-    # name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name")
+    name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name", null=True)
     amount = models.DecimalField(default=0.0,
                                  max_digits=12,
                                  decimal_places=2,
@@ -477,7 +513,7 @@ class ProjectMilestone(models.Model):
                                     verbose_name="Closed On",
                                     editable=False)
     financial = models.BooleanField(default=False,
-                                    verbose_name="Financial",
+                                    verbose_name="Deviation",
                                     blank=False,
                                     null=False
                                     )
@@ -488,6 +524,20 @@ class ProjectMilestone(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+    def save(self, request=None):
+        used_user = request.user if request else User.objects.get(id=35)
+        if self.closed and self.financial:
+            Invoice.models.Invoice.objects.get_or_create(
+                project=self.project,
+                milestone_date=self.milestoneDate,
+                milestone_name=self.description,
+                description=self.description,
+                closed_on_date=date.today(),
+                amount=self.amount,
+                user=used_user
+            )
+        super(ProjectMilestone, self).save()
 
 
 class ProjectTeamMember(models.Model):
@@ -532,9 +582,9 @@ class ProjectChangeInfo(models.Model):
                               verbose_name="Reason for change")
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
-    po = models.CharField(max_length=60, null=False,
-                          blank=False, default=0,
-                          verbose_name="P.O.", validators=[alphanumeric])
+    # po = models.CharField(max_length=60, null=False,
+    #                       blank=False, default=0,
+    #                       verbose_name="P.O.", validators=[alphanumeric])
     revisedEffort = models.IntegerField(default=0,
                                         validators=[MinValueValidator(0)],
                                         verbose_name="Revised Effort")
@@ -543,20 +593,22 @@ class ProjectChangeInfo(models.Model):
                                        validators=[MinValueValidator(0)],
                                        decimal_places=2,
                                        verbose_name="Revised amount")
-    salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
-                                           verbose_name="Sales Force \
-                                           Opportunity Number",
-                                           validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     closed = models.BooleanField(default=False,
                                  verbose_name="Close the Project")
     closedOn = models.DateTimeField(default=None, blank=True, null=True)
     signed = models.BooleanField(default=False,
                                  verbose_name="Contract Signed")
     # Record Entered / Updated Date
+    #New Model Field As per New Project Creation Screen
+    startDate = models.DateField(verbose_name="Revised Project Start Date", blank=True, null=True)
+    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
+    Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
+    estimationDocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Estimation Document")
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+    approved = models.CharField(verbose_name="Approved", choices=APRROVECHOICES, default=0, max_length=1)
 
     def __unicode__(self):
         return self.crId

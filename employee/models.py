@@ -83,6 +83,17 @@ NATURE_OF_EDUCATION = (
 )
 
 
+# used for employee without auto_now_add for date time field
+class TimeStampAbstractModel(models.Model):
+    created_on = models.DateTimeField(blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    updated_on = models.DateTimeField(blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
 class Designation(models.Model):
     name = models.CharField(
         verbose_name="Title",
@@ -139,7 +150,7 @@ User model can be found here.
 https://docs.djangoproject.com/en/dev/ref/contrib/auth/ """
 
 
-class Employee(models.Model):
+class Employee(TimeStampAbstractModel):
     # User model will have the usual fields.  We will have the remaining ones
     # here
     user = models.OneToOneField(User, verbose_name="User")
@@ -147,6 +158,7 @@ class Employee(models.Model):
                                 blank=True, null=True,
                                 related_name="Manager", default=None)
     status = models.BooleanField(default=True)
+    practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
     '''
     ================================================
     Basic Employee Attributes
@@ -317,6 +329,29 @@ class Employee(models.Model):
             self.user.first_name,
             self.user.last_name)
 
+    def get_full_name(self):
+        return self.first_name+''+self.last_name
+
+
+class EmployeeArchive(TimeStampAbstractModel):
+    user = models.ForeignKey(User, verbose_name="User")
+    employee_assigned_id = models.CharField(
+        "Employee ID",
+        max_length=15,
+        blank=True)
+
+    manager = models.ForeignKey(Employee, verbose_name="Manager",
+                                blank=True, null=True, to_field="employee_assigned_id",
+                                related_name="archive_Manager", default=None)
+    designation = models.ForeignKey(Designation)
+    archive_date = models.DateField("Archive Date", auto_now_add=True)
+    business_unit = models.ForeignKey('CompanyMaster.BusinessUnit')
+    location = models.ForeignKey('CompanyMaster.OfficeLocation')
+    practice = models.ForeignKey(Practice, default=None, verbose_name="Practice", blank=True, null=True)
+
+    def __unicode__(self):
+        return unicode(self.user)
+
 
 def DefaultPermission(sender, instance, **kwargs):
     try:
@@ -485,3 +520,4 @@ class EmployeeCompanyInformation(UpdateDate, UpdateBy):
     class Meta:
         verbose_name = 'Employee Company Information'
         verbose_name_plural = 'Employees Company Information'
+

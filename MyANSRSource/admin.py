@@ -5,7 +5,7 @@ from django.contrib import messages
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
-    TimeSheetEntry, Milestone, MilestoneType
+    TimeSheetEntry, Milestone, MilestoneType,  ProjectDetail, ProjectAsset, qualitysop, ProjectScope
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -77,8 +77,7 @@ class ProjectAdmin(admin.ModelAdmin):
         'endDate',
         'plannedEffort',
         'contingencyEffort',
-        'totalValue',
-    )
+        'totalValue')
     fieldsets = [
         ('Basic Information', {
             'fields': [
@@ -195,6 +194,23 @@ class MilestoneAdmin(admin.ModelAdmin):
     list_display = ('name', 'milestone_type', 'is_final_milestone', 'check_schedule_deviation')
 
 
+class ProjectDetailAdmin(admin.ModelAdmin):
+    list_display = ['project', 'PracticeName', 'projectFinType', 'deliveryManager', 'Sowdocument',
+                    'Estimationdocument', 'SOP', 'Scope', 'Asset']
+
+
+class ProjectScopeAdmin(admin.ModelAdmin):
+    list_display = ['scope', 'IsActive', 'createdOn', 'updatedOn', 'created_by']
+
+
+class qualitysopAdmin(admin.ModelAdmin):
+    list_display = ['name', 'SOPlink', 'createdOn', 'updatedOn', 'created_by']
+
+
+class ProjectAssetAdmin(admin.ModelAdmin):
+    list_display = ['Asset', 'Is_Active', 'createdOn', 'updatedOn', 'created_by']
+
+
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Report, ReportAdmin)
 admin.site.register(Book, BookAdmin)
@@ -204,4 +220,7 @@ admin.site.register(Task, TaskAdmin)
 admin.site.register(TimeSheetEntry, TimeSheetEntryAdmin)
 admin.site.register(MilestoneType, MilestoneTypeAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
-
+admin.site.register(ProjectDetail, ProjectDetailAdmin)
+admin.site.register(ProjectScope, ProjectScopeAdmin)
+admin.site.register(qualitysop, qualitysopAdmin)
+admin.site.register(ProjectAsset, ProjectAssetAdmin)
