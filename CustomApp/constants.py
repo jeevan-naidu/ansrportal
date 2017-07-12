@@ -23,6 +23,13 @@ PROCESS_STATUS = (
     ('reject', 'Reject')
 )
 
+"""Money Approval flags available for action"""
+PAYMENT_STATUS = (
+    ('yes', 'Yes'),
+    ('no', 'No')
+)
+
+
 """ All the registered apps using framework"""
 WORKFLOW_APPS = [
     'Reimburse',
