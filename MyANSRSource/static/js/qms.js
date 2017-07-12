@@ -564,7 +564,7 @@ if($(':input[name$=project]').val() !='' &&  $(':input[name$=chapter]').val() !=
     $('#qms-add-field').click(function(e){
         e.preventDefault();
         optCount = $('#select-field > option').length; // The bug
-
+        $('#qms-submit').prop('disabled',false);
         if (optCount > 1) {
 
             theField = $('#select-field').val();

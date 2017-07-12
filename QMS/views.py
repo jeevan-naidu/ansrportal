@@ -306,7 +306,6 @@ def get_template_process_review(request):
                 team_members[int(members.member_id)] = str(members.member.username)
 
         for ele in obj:
-            # print ele.review_group
             tabs[str(ele.review_group)] = bool(ele.is_mandatory)
             tab_name[str(ele.review_group)] = int(ele.review_group.id)
             if qa_obj_count > 0:
@@ -314,11 +313,11 @@ def get_template_process_review(request):
                     tab_user = qa_obj.get(review_group=ele.review_group)
                     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__in=qa_obj,
                                                                     QA_sheet_header__review_group=ele.review_group)
-                    # print "review_report_obj", review_report_obj
                     if review_report_obj:
                         can_edit[str(ele.review_group.id)] = False
                     else:
                         if tab_user.review_group_status and tab_user.author_feedback_status:
+
                             can_edit[str(ele.review_group.id)] = False
                         else:
                             can_edit[str(ele.review_group.id)] = True
@@ -334,10 +333,10 @@ def get_template_process_review(request):
             show_lead_complete = True
 
     except Exception as e:
-        print "outer", str(e)
+        logger.error(" {0} ".format(str(e)))
         tabs = team_members = tab_name = ''
         config_missing = True
-    if not is_completed:
+    if is_completed:  # mark all tabs as  disabled when qms for the project is marked completed
         can_edit = {x: False for x in can_edit}
     exclude_list = [k for k, v in can_edit.iteritems() if v is False]
     current_tab = False
