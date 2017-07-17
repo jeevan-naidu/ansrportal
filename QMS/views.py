@@ -1375,6 +1375,7 @@ class ExportReview(View):
         if not os.path.isfile(src):
             # file_name = "generic_template"
             src = "QMS/master_templates/QMS-T1.xlsx"
+
             logger.error(" failed to find template {0} ".format(actual_name))
         review_group = ReviewGroup.objects.get(pk=self.request.session['active_tab'])
         # cc_obj = ChapterComponent.objects.get(id=self.request.session['chapter_component'])
@@ -1387,7 +1388,7 @@ class ExportReview(View):
         ws1 = wb["Template1"]
         ws1.title = review_group.alias
         wb.active = 0
-        dv = DataValidation(type="list", formula1='Ref!$D$25:$D$100', allow_blank=True)
+        dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
         ws1.add_data_validation(dv)
 
         c = 3
@@ -1442,10 +1443,13 @@ def import_review(request, form_file):
     for r in range(2, l):
         if current_sheet.row(r)[3].value == "":
             break
-        try:
-            fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
-        except:
-            fixed_by = request.user
+        if len(current_sheet.row(r)[6].value) > 0:
+            try:
+                fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
+            except:
+                fixed_by = request.user
+        else:
+            fixed_by = None
 
         try:
             dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
