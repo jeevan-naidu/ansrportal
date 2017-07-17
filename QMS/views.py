@@ -724,7 +724,7 @@ class ReviewReportManipulationView(AssessmentView):
                 #     report.screen_shot = None
                 report.is_fixed = obj['is_fixed']
                 report.remarks = obj['remarks']
-                if len(obj['remarks']) > 0 or obj['is_fixed']:
+                if len(obj['remarks']) > 0 or obj['is_fixed'] and len(obj['is_fixed']) > 0:
                     report.fixed_by = request.user
                 # print request.session['template_id']
                 #
