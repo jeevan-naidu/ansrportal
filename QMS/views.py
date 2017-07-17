@@ -1233,24 +1233,39 @@ class ReviewListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ReviewListView, self).get_context_data(**kwargs)
-        is_pm = False
-        # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
+        self.request.session['is_pm'] = False
         if self.request.user.groups.filter(name='DeliveryManager').exists():
-            is_pm = True
-            context['review_list'] = QASheetHeader.objects.filter(project__endDate__gte=datetime.date.today(),
-                                                                  project__closed=False,
-                                                                  project__in=ProjectDetail.objects.filter(
-                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).values('project'))\
-                .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
-                        'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
+            self.request.session['is_pm'] = True
+            context['review_list'] = QASheetHeader.objects.filter((Q(author=self.request.user)|
+                                                                   Q(reviewed_by=self.request.user)
+                                                                   | Q(project__in=ProjectDetail.objects.filter(
+                                                                    Q(deliveryManager=self.request.user) |
+                                                                    Q(pmDelegate=self.request.user)).values('project'))),
+                                                                  project__endDate__gte=datetime.date.today(),
+                                                                  project__closed=False,).values('id', 'project',
+                                                                                                 'project_id',
+                                                                                                 'project__projectId',
+                                                                                                 'project__name',
+                                                                                                 'order_number',
+                                                                                                 'chapter_component',
+                                                                                                 'chapter_component_id',
+                                                                                                 'review_group_id',
+                                                                                                 'review_group__name')
+
         else:
             context['review_list'] = QASheetHeader.objects.filter(Q(project__endDate__gte=datetime.date.today()) &
-                                                                   (Q(author=self.request.user)|Q(reviewed_by=self.request.user)))\
+                                                                   (Q(author=self.request.user) |
+                                                                    Q(reviewed_by=self.request.user)),
+                                                                  project__closed=False, project__active=True, )\
                 .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
                         'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
         # print "li",context['review_list']
-        context['review_list'] = context['review_list'].filter().exclude(review_group_status=True,
-                                                                         author_feedback_status=True)
+        context['review_list'] = context['review_list'].exclude((Q(review_group_status=True) &
+                                                                Q(author_feedback_status=True)) |
+                                                                Q(project__qms_project__lead_review_status=True))
+
+
+        print context['review_list'].query
         return context
 
 
