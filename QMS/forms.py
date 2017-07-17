@@ -9,8 +9,8 @@ from dal import autocomplete
 
 class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
-                queryset=Project.objects.filter(endDate__gte=datetime.date.today(), closed=False,  active=True,
-                                                qms_project__lead_review_status=False),
+                queryset=Project.objects.filter(endDate__gte=datetime.date.today(), closed=False,  active=True,),
+
                 widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
                  'data-placeholder': 'Project ', }, ), required=True, )
 
@@ -73,8 +73,8 @@ class BaseAssessmentTemplateForm(forms.Form):
 
 class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
     project = forms.ModelChoiceField(
-        queryset=Project.objects.filter(endDate__gte=datetime.date.today(), closed=False, active=True,
-                                        qms_project__lead_review_status=False),
+        queryset=Project.objects.filter(endDate__gte=datetime.date.today(), closed=False, active=True, ),
+
         widget=autocomplete.ModelSelect2(url='AutocompleteDMProjects', attrs={
             'data-placeholder': 'Project ', }, ), required=True, )
     qms_process_model = forms.ModelChoiceField(
