@@ -31,17 +31,27 @@ class AutocompleteProjectsManager(autocomplete.Select2QuerySetView):
         return choices
 
 
+# qms_project , project_detail_project are  related_name
+class AutocompleteDMProjects(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+
+        choices = Project.objects.filter(Q(project_detail_project__deliveryManager=self.request.user) |
+                                         Q(project_detail_project__pmDelegate=self.request.user),
+                                         endDate__gte=datetime.date.today(), closed=False,  active=True).exclude(
+                                         qms_project__lead_review_status=True).order_by('name')
+        choices = choices.filter(name__icontains=q)
+        return choices
+
+
 class AutocompleteProjects(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = Project.objects.filter(
-            closed=False,
-            id__in=ProjectTeamMember.objects.filter(
-                Q(member=self.request.user) |
-                Q(project__projectManager=self.request.user)
-            ).exclude(id__in=ProjectTemplateProcessModel.objects.filter(lead_review_status=True)).values('project'),
-            endDate__gte=datetime.date.today()
-        ).order_by('name')
+        choices = Project.objects.filter(Q(project_detail_project__deliveryManager=self.request.user) |
+                                         Q(project_detail_project__pmDelegate=self.request.user) |
+                                         Q(project_team_member_project__member=self.request.user),
+                                         endDate__gte=datetime.date.today(), closed=False,  active=True,
+                                         qms_project__lead_review_status=False).order_by('name')
         choices = choices.filter(name__icontains=q)
         return choices
 

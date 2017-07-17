@@ -45,7 +45,7 @@ class QMSProcessModel(NameMasterAbstractModel, TimeStampAbstractModel):
 
 class ProjectTemplateProcessModel(TimeStampAbstractModel):
 
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, related_name="qms_project")
     template = models.ForeignKey(TemplateMaster)
     lead_review_status = models.BooleanField(
         default=False,
