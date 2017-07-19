@@ -8,7 +8,7 @@ from django.core.validators import MinValueValidator, RegexValidator, MaxValueVa
 from CompanyMaster.models import UpdateDate
 import datetime, os
 from django.core.validators import URLValidator
-from CompanyMaster.models import Practice, SubPractice
+from CompanyMaster.models import Practice, SubPractice, DataPoint
 from django.core.files.storage import FileSystemStorage
 from datetime import date
 import Invoice
@@ -42,6 +42,14 @@ APRROVECHOICES = (
     ('2','REJECTED')
 )
 
+
+ROLE = (
+    ('developer', 'Developer'),
+    ('copy editor', 'Copy Editor'),
+    ('reviewer','Reviewer'),
+    ('delivery manager', 'Delivery Manager')
+)
+TEAM_CHOICES = (('0', 'assessment'), ('1', 'learning'))
 #upload path for sow and estimation
 
 
@@ -69,13 +77,30 @@ def change_file_path(instance, filename):
 
 
 class TimeStampAbstractModel(models.Model):
-    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    created_by = models.ForeignKey(User, related_name='%(class)s_created_by')
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True,)
+    created_by = models.ForeignKey(User, related_name='%(class)s_created_by',  default=35)
     updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
-    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True)
+    updated_by = models.ForeignKey(User, related_name='%(class)s_updated_by', blank=True, null=True,  default=35)
 
     class Meta:
         abstract = True
+
+
+class Role(TimeStampAbstractModel):
+    role = models.CharField(verbose_name='Role', choices=ROLE, max_length=20,)
+    is_active = models.BooleanField(verbose_name='Active', default=True)
+
+    def __unicode__(self):
+        return self.role
+
+
+class Product(TimeStampAbstractModel):
+    name = models.CharField(verbose_name='Product name',max_length=50,)
+    is_active = models.BooleanField(verbose_name='Active', default=True)
+    unit = models.CharField(verbose_name='Product unit', max_length=50, )
+
+    def __unicode__(self):
+        return self.name
 
 
 class Book(models.Model):
@@ -191,6 +216,21 @@ class Chapter(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class ProjectSopTemplate(models.Model):
+    name = models.CharField(max_length=120, verbose_name='process Template name')
+    is_active = models.BooleanField(blank=False,default=True, verbose_name='Active or not')
+    product_type = models.CharField(max_length=15, choices=TEAM_CHOICES, verbose_name='type of product')
+    created_by = models.ForeignKey(User)
+    created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name='updated at', auto_now_add=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    class Meta:
+        verbose_name = 'Project Process Template'
 
 
 class qualitysop(models.Model):
@@ -351,11 +391,11 @@ class Project(models.Model):
 
 class ProjectDetail(models.Model):
     project = models.OneToOneField(Project)
-    PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
+    projecttemplate = models.ForeignKey(ProjectSopTemplate)
+    # PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
+    Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
-    # ProjectCost = models.CharField(verbose_name="Project cost", max_length=30, null=True, blank=True)
-    # SubPractice = models.ForeignKey(SubPractice, verbose_name='Sub Practice',  null=True, blank=True)
     deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager')
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
@@ -543,12 +583,8 @@ class ProjectMilestone(models.Model):
 class ProjectTeamMember(models.Model):
     project = models.ForeignKey(Project)
     member = models.ForeignKey(User, blank=True, null=True)
-    datapoint = models.ForeignKey(
-        CompanyMaster.models.DataPoint,
-        verbose_name=u'Service Line',
-        blank=True,
-        null=True
-    )
+    product = models.ForeignKey(Product, blank=True, null=True)
+    role = models.ForeignKey(Role, blank=True,null= True)
     startDate = models.DateField(verbose_name='Start date on project',
                                  blank=True,
                                  default=timezone.now)
@@ -560,7 +596,8 @@ class ProjectTeamMember(models.Model):
                                         blank=True,
                                         decimal_places=2,
                                         verbose_name="Planned Effort")
-    rate = models.IntegerField(default=100, verbose_name="%", blank=True)
+    plannedcount = models.IntegerField(default=100, verbose_name="planned count", blank=True)
+    actualcount = models.IntegerField(default=100, verbose_name="actual count", blank=True)
     active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",

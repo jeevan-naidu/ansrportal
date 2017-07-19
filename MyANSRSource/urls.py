@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 from MyANSRSource import views, reportviews
 from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,AutocompleteBook,AutocompleteUser, \
-    AutocompleteProjectAsset, AutocompletePracticeName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
-    Autocompleteprojectscope, AutocompleteMilestonetype
+    AutocompleteProjectAsset, AutocompleteDatapointName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
+    Autocompleteprojectscope, AutocompleteMilestonetype, Autocompleteprojecttemplate, AutocompleteRole
 from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval, ActiveEmployees,\
     month_wise_active_employees, get_project_summary , ActiveProjects, ProjectChangeApproval, WrappedModifyProjectView
 from django.contrib.auth.decorators import login_required, permission_required
@@ -11,6 +11,9 @@ urlpatterns = [
     url(r'^AutocompleteMilestonetype/$',
         AutocompleteMilestonetype.as_view(),
         name='AutocompleteMilestonetype'),
+    url(r'^AutocompleteRole/$',
+        AutocompleteRole.as_view(),
+        name='AutocompleteRole'),
     url(
         r'^AutocompleteProjects/$',
         AutocompleteProjects.as_view(),
@@ -21,6 +24,9 @@ urlpatterns = [
         Autocompleteprojectscope.as_view(),
         name='Autocompleteprojectscope',
     ),
+    url(r'Autocompleteprojecttemplate/$',
+        Autocompleteprojecttemplate.as_view(),
+        name='Autocompleteprojecttemplate'),
     url(r'^practicehead/$',
         login_required(getheadid),
         name='HeadId'),
@@ -47,9 +53,9 @@ urlpatterns = [
         name='AutocompleteProjectAsset'
     ),
     url(
-        r'^AutocompletePracticeName/$',
-        AutocompletePracticeName.as_view(),
-        name='AutocompletePracticeName'
+        r'^AutocompleteDatapointName/$',
+        AutocompleteDatapointName.as_view(),
+        name='AutocompleteDatapointName'
     ),
     url(
         r'^AutocompleteUser/$',

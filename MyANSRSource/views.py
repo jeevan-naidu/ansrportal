@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -2211,7 +2211,8 @@ class TrackMilestoneWizard(SessionWizardView):
             projectObj = Project.objects.get(pk=selectedProjectId)
             totalValue = projectObj.totalValue
             projectType = projectObj.internal
-            context.update({'totalValue': totalValue, 'type': projectType})
+            projectname = projectObj.name
+            context.update({'totalValue': totalValue, 'type': projectType, 'name': projectname})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -2605,11 +2606,17 @@ class ManageTeamWizard(SessionWizardView):
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId,
-                    active=True).values('id', 'member',
+                    active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
-                                        'datapoint',
-                                        'plannedEffort', 'rate'
+                                        'role',
+                                        'plannedEffort', 'actualcount'
                                         )
+                try:
+                    self.request.session['Pname'] = currentProject[0]['project_id__name']
+                except Exception as e:
+                    logger.error(e)
+
+
             else:
                 logger.error(u"Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
@@ -2690,8 +2697,8 @@ class ManageTeamWizard(SessionWizardView):
                                 (eachData['endDate'] == ptm.endDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['datapoint'] == ptm.datapoint) and \
-                                (eachData['rate'] == ptm.rate):
+                                (eachData['role'] == ptm.role) and \
+                                (eachData['plannedrate'] == ptm.plannedrate):
                             pass
                         else:
                             ptm.project = project
@@ -2866,6 +2873,7 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
+                    pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
                     practice_name = request.POST.get('practicename')

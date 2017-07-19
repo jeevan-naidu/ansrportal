@@ -11,7 +11,7 @@
     padding: 5px 5px;
 }
 </style>
-
+<button type="button" class="btn info disabled">Project Name:- {{request.session.Pname}}</button>
 <span class="">
 	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
 		<i class="fa fa-plus"></i>
@@ -93,12 +93,7 @@ $(document).ready(function(){
 
 var lsch;
 
-/*	$('#addForm-2').click(function(){
-		lsch = $('table#add-team-members tbody tr').last().html();
-		console.log(lsch);
-	})*/
-
-})// .doc.ready
+})
 
 </script>
 
@@ -118,6 +113,27 @@ table#add-team-members td:nth-last-child(2){display: none;}
 
 {% endautoescape %}
 
-{% endblock %}{% endblock %}
+{% endblock %}
+<script>
+$('.form-control.min-100.pro-end-date').prop('readonly', true);
+$('.form-control.min-100.pro-start-date').on('click', function(){
+
+ var start_date = $(this).val()
+ newdate = start_date.split("-");
+ var end_date = parseInt(newdate[2]) + 3
+ console.log(end_date)
+ console.log(newdate[2])
+})
+$('.form-control.w-100.pro-planned-effort').on('keyup focus', function(){
+ var name = parseInt($(this).val())
+ if (name > 40)
+ {
+	swal("Hold On!", "you can't assign an Employee more than a week")
+	$(this).val('0.00')
+  }
+          });
+
+    </script>
+{% endblock %}
 
 
