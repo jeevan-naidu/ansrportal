@@ -79,16 +79,22 @@ class ChooseTabs(FormView):
         # {u'user_3': u'256', u'user_1': u'255'}
         # print users
         # print order
-
-        try:
-            ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
-                                                              project=form.cleaned_data['project'],
-                                                              qms_process_model=form.cleaned_data['qms_process_model'],
-                                                              defaults={
-                                                                  'created_by': self.request.user},)
-        except Exception as e:
-            # print "ChooseTabs", (str(e))
-            logger.error(" {0} ".format(str(e)))
+        #
+        # try:
+        #     pd_obj = ProjectDetail.objects.get(project=form.cleaned_data['project'])
+        #     ProjectTemplateProcessModel.objects.get_or_create(template=pd_obj.projecttemplate,
+        #                                                       project=form.cleaned_data['project'],
+        #                                                       qms_process_model=pd_obj.SOP,
+        #                                                       defaults={
+        #                                                           'created_by': self.request.user}, )
+        #     # ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
+        #     #                                                   project=form.cleaned_data['project'],
+        #     #                                                   qms_process_model=form.cleaned_data['qms_process_model'],
+        #     #                                                   defaults={
+        #     #                                                       'created_by': self.request.user},)
+        # except Exception as e:
+        #     # print "ChooseTabs", (str(e))
+        #     logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
@@ -257,8 +263,11 @@ def mark_as_completed(request):
 def get_template_process_review(request):
     # print request.GET
     request.session['c_project'] = project = request.GET.get('project_id')
-    template = request.GET.get('template_id')
-    qms_process_model = request.GET.get('qms_process_model')
+    pd_obj = ProjectDetail.objects.get(project_id=project)
+    template = pd_obj.projecttemplate
+    qms_process_model = pd_obj.SOP
+    #template = request.GET.get('template_id')
+    #qms_process_model = request.GET.get('qms_process_model')
     request.session['c_chapter'] = chapter = request.GET.get('chapter')
     author = request.GET.get('author')
     request.session['c_component'] = component = request.GET.get('component')

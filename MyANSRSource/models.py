@@ -389,8 +389,11 @@ class Project(models.Model):
             )
 
 
+from QMS.models import ProjectTemplateProcessModel,TemplateMaster,QMSProcessModel
+
+
 class ProjectDetail(models.Model):
-    project = models.OneToOneField(Project)
+    project = models.OneToOneField(Project, related_name='project_detail_project')
     projecttemplate = models.ForeignKey(ProjectSopTemplate)
     # PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
@@ -416,6 +419,15 @@ class ProjectDetail(models.Model):
 
     class Meta:
         verbose_name = "Project Additional Detail Table"
+
+    def save(self, request=None):
+        used_user = request.user if request else User.objects.get(id=35)
+        ProjectTemplateProcessModel.update_or_create(template=self.projecttemplate,
+                                                              project=self.project,
+                                                              qms_process_model=self.SOP,
+                                                              defaults={
+                                                                  'created_by': used_user}, )
+        super(ProjectMilestone, self).save()
 
 
 class ProjectManager(models.Model):

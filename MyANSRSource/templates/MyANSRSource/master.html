@@ -740,38 +740,38 @@
                                         {% endif %}
 
                                          {% if request.user|has_group:'HireRecruiter' %}
-                                        <!--<li>-->
-                                                <!--<a href="javascript:" data-action="click-trigger" class="open">-->
+                                        <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
 
-                                                    <!--<span class="menu-text">Daily Interview Report</span>-->
+                                                    <span class="menu-text">Daily Interview Report</span>
 
-                                                    <!--<span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>-->
-                                                <!--</a>-->
-                                                <!--<div class="child-menu" data-action="click-target" style="display: block;">-->
-                                                    <!--<ul class="clearfix">-->
-                                                        <!--<li>-->
-                                                                <!--<a href="/hire/addmrf">-->
-                                                                    <!--<span class="menu-text">MRF Details</span>-->
-                                                                <!--</a>-->
-                                                            <!--</li>-->
-                                                        <!--<li>-->
-                                                            <!--<a href="/hire/">-->
-                                                                <!--<span class="menu-text">Candidate Application</span>-->
-                                                            <!--</a>-->
-                                                        <!--</li>-->
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
+                                                    <ul class="clearfix">
+                                                        <li>
+                                                                <a href="/hire/addmrf">
+                                                                    <span class="menu-text">MRF Details</span>
+                                                                </a>
+                                                            </li>
+                                                        <li>
+                                                            <a href="/hire/">
+                                                                <span class="menu-text">Candidate Application</span>
+                                                            </a>
+                                                        </li>
 
-                                                            <!--<li>-->
-                                                                <!--<a href="/hire/candidatesearch">-->
-                                                                    <!--<span class="menu-text">Dashboard</span>-->
-                                                                <!--</a>-->
-                                                            <!--</li>-->
-
-
+                                                            <li>
+                                                                <a href="/hire/candidatesearch">
+                                                                    <span class="menu-text">Dashboard</span>
+                                                                </a>
+                                                            </li>
 
 
-                                                    <!--</ul>-->
-                                                <!--</div>-->
-                                            <!--</li>-->
+
+
+                                                    </ul>
+                                                </div>
+                                            </li>
 {% endif %}
 
 
@@ -818,40 +818,40 @@
                                                 </div>
                                             </li>
                                              {% if request.user|has_group:"TestGroup3" %}
-                                            <!--<li>-->
+                                            <li>
 
-                                                <!--<a href="javascript:" data-action="click-trigger" class="open">-->
-                                                    <!--<span class="menu-text">Exit</span>-->
-                                                    <!--<span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>-->
-                                                <!--</a>-->
-                                                <!--<div class="child-menu" data-action="click-target">-->
-                                        <!--<ul>-->
-                                            <!--<li>-->
-                                                <!--<a href="/exitapp/exit-peer/">-->
-                                                    <!--<span class="menu-text">Enter Resignation</span>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
-                                                 <!--{% if user|IsManager %}-->
-                                            <!--<li>-->
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Exit</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target">
+                                        <ul>
+                                            <li>
+                                                <a href="/exitapp/exit-peer/">
+                                                    <span class="menu-text">Enter Resignation</span>
+                                                </a>
+                                            </li>
+                                                 {% if user|IsManager %}
+                                            <li>
 
-                                                <!--<a href="/exitapp/exit-acceptance/">-->
-                                                    <!--<span class="menu-text">Manager Approval</span>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
-                                            <!--{% endif %}-->
-                                            <!--{% if request.user|has_group:'myansrsourceHR' %}-->
-                                            <!--<li>-->
-                                                <!--<a href="/exitapp/hr-acceptance/">-->
-                                                    <!--<span class="menu-text">HR Approval</span>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
-                                            <!--{% endif %}-->
-                                            <!--{% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}-->
-                                            <!--<li>-->
-                                                <!--<a href="/exitapp/clearance-list/">-->
-                                                    <!--<span class="menu-text">Resigned Candidate List</span>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
+                                                <a href="/exitapp/exit-acceptance/">
+                                                    <span class="menu-text">Manager Approval</span>
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if request.user|has_group:'myansrsourceHR' %}
+                                            <li>
+                                                <a href="/exitapp/hr-acceptance/">
+                                                    <span class="menu-text">HR Approval</span>
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
+                                            <li>
+                                                <a href="/exitapp/clearance-list/">
+                                                    <span class="menu-text">Resigned Candidate List</span>
+                                                </a>
+                                            </li>
                                             {% endif %}
                                         </ul>
                                                     {% endif %}
@@ -859,11 +859,11 @@
 
 
                                         <li>
-                                                <a href="javascript:" data-action="click-trigger" class="">
+                                                <a href="javascript:" data-action="click-trigger" class="open">
                                                     <span class="menu-text">Laptop Apply</span>
                                                     <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                                 </a>
-                                                <div class="child-menu" data-action="click-target" style="display: none;">
+                                                <div class="child-menu" data-action="click-target" style="display: block;">
                                                     <ul class="clearfix">
                                                         <li>
                                                             <a href="/process/LaptopAvail/create/">
@@ -1090,7 +1090,7 @@
                     <div class="row">
                         <div class=" col-xs-12">
                             <div class="copyright">
-                                Copyright &copy;{% now 'Y' %} ansrsource. All Rights Reserved
+                                Copyright &copy;2017 ansrsource. All Rights Reserved
                             </div>
                         </div>
                     </div>
