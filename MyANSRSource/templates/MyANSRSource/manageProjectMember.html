@@ -105,7 +105,7 @@ var lsch;
 
 
 table#add-team-members td > span{
-  display: none;
+  display: none;:qq
 }
 table#add-team-members td > select + span{display: block;}
 table#add-team-members td:nth-last-child(2){display: none;}
@@ -115,15 +115,26 @@ table#add-team-members td:nth-last-child(2){display: none;}
 
 {% endblock %}
 <script>
-$('.form-control.min-100.pro-end-date').prop('readonly', true);
-$('.form-control.min-100.pro-start-date').on('click', function(){
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
 
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+$('.form-control.min-100.pro-end-date').prop('readonly', true);
+$('.form-control.min-100.pro-start-date .input-group.date').on('click', function(){
  var start_date = $(this).val()
  newdate = start_date.split("-");
- var end_date = parseInt(newdate[2]) + 3
- console.log(end_date)
- console.log(newdate[2])
+ var end_date = parseInt(newdate[2]) + 7
+ var d_to_date = new Date(newdate[0], parseInt(newdate[1]) - 1, end_date);
+ $(this).parent().parent().parent().find('.pro-end-date').val(formatDate(d_to_date))
 })
+
 $('.form-control.w-100.pro-planned-effort').on('keyup focus', function(){
  var name = parseInt($(this).val())
  if (name > 40)

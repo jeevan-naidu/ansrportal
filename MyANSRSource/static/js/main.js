@@ -1571,8 +1571,8 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
     var startDateLen = startDate.length;
 
     var endDateVal = $endDate.val();
-    var endDate = endDateVal.split('-');
-    var endDateLen = endDate.length;
+//    var endDate = endDateVal.split('-');
+//    var endDateLen = endDate.length;
 
     var plannedPercentVal = $plannedPercent.val();
     var plannedEffortVal = $plannedEffort.val();
@@ -1587,19 +1587,19 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
         startDate[i] = Number(startDate[i]);
     }
 
-    for (i = 0; i < endDateLen; i += 1) {
-        endDate[i] = Number(endDate[i]);
-    }
+//    for (i = 0; i < endDateLen; i += 1) {
+//        endDate[i] = Number(endDate[i]);
+//    }
 
     startDate = startDate.join();
-    endDate = endDate.join();
+//    endDate = endDate.join();
 
     // Create Date Object
     startDate = new Date(startDate);
-    endDate = new Date(endDate);
+//    endDate = new Date(endDate);
 
     // Calculate planned effort
-    var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
+//    var totalPlannedEffort = app.workingDaysBetweenDates(startDate, endDate) * 8;
 
     if (percent) {
         var plannedEffortPercent = (plannedEffortVal / totalPlannedEffort) * 100; // Calculate effort percentage
@@ -1611,12 +1611,12 @@ app.getPlannedEffort = function($startDate, $endDate, $plannedEffort, $plannedPe
             plannedEffortPercent: plannedEffortPercent
         };
     } else {
-        var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
-        plannedEffort = plannedEffort.toFixed(2);
+//        var plannedEffort = totalPlannedEffort * (plannedPercentVal / 100);
+//        plannedEffort = plannedEffort.toFixed(2);
         //plannedEffort = Math.round(plannedEffort);
 
         return {
-            plannedEffort: plannedEffort
+//            plannedEffort: plannedEffort
         };
     }
 };

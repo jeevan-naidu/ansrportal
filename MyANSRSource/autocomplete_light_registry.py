@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone
-from CompanyMaster.models import Practice, SubPractice
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone, ProjectSopTemplate, \
+    Role
+from CompanyMaster.models import Practice, SubPractice, DataPoint
 from dal import autocomplete
 from MyANSRSource.models import Milestone
 
@@ -46,11 +47,11 @@ class AutocompleteProjectAsset(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompletePracticeName(autocomplete.Select2QuerySetView):
+class AutocompleteDatapointName(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = Practice.objects.filter(name__icontains=q)
+        choices = DataPoint.objects.filter(name__icontains=q, is_active=True)
         return choices
 
 
@@ -59,6 +60,14 @@ class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = SubPractice.objects.filter(name__icontains=q)
+        return choices
+
+
+class Autocompleteprojecttemplate(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = ProjectSopTemplate.objects.filter(name__icontains=q)
         return choices
 
 
@@ -89,4 +98,12 @@ class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Milestone.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteRole(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Role.objects.filter(role__icontains=q, is_active=True)
         return choices

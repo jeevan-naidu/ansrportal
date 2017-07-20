@@ -225,6 +225,7 @@ class DataPoint(models.Model):
         verbose_name="Service Line",
         max_length=40,
         blank=False)
+    is_active = models.BooleanField(verbose_name='Active or not', default=True, )
     lead = models.ForeignKey(User, verbose_name='Lead',
                              blank=False, null=False)
     createdon = models.DateTimeField(verbose_name="created Date",
