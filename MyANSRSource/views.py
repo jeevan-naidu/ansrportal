@@ -2171,7 +2171,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
             ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
                                                                       pmDelegate=updatedData['pmDelegate'])
         except Exception as error:
-            print error
+            logger.error(error)
         for eachData in allData:
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
@@ -2609,7 +2609,7 @@ class ManageTeamWizard(SessionWizardView):
                     active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
                                         'role',
-                                        'plannedEffort', 'actualcount'
+                                        'plannedEffort', 'product', 'actualcount'
                                         )
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
@@ -2692,10 +2692,14 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.active = False
                         ptm.save()
                     else:
+                        eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
+                        print eachData['endDate']
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
+                                (eachData['product']== ptm.product) and \
+                                (eachData['endDate'] == ptm.endDate) and \
                                 (eachData['role'] == ptm.role):
                             pass
                         else:

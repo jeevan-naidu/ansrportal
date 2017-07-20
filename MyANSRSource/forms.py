@@ -746,14 +746,12 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
             'role',
             'product',
             'startDate',
-            # 'endDate',
             'plannedcount',
             'actualcount',
             'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
-            # 'endDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(),
         }
 
@@ -776,7 +774,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['actualcount'].widget.attrs[
             'required'] = "true"
         self.fields['plannedEffort'].widget.attrs[
-            'class'] = "form-control w-100 pro-planned-effort"
+            'class'] = "form-control w-100"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
