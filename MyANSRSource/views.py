@@ -45,6 +45,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
 from ldap import LDAPError
+from QMS.models import ProjectTemplateProcessModel, TemplateMaster
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
@@ -2875,7 +2876,7 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
-                    pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
+                    pd.projecttemplate = TemplateMaster.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
                     del_mgr = request.POST.get('DeliveryManager')
@@ -2894,7 +2895,14 @@ def saveProject(request):
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
-                        print e
+                        logger.error(e)
+                    ProjectTemplateProcessModel.objects.update_or_create(project_id=pr.id,
+                                                                         defaults={
+                                                                             'template_id': pd.projecttemplate,
+
+                                                                             'qms_process_model_id': sop.qmsprocessmodel,
+                                                                             'created_by': request.user}, )
+
                     pd.save()
 
                 except ValueError as e:
