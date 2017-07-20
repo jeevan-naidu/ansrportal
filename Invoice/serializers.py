@@ -45,7 +45,9 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class FinanceSerializer(serializers.ModelSerializer):
-
+    payment_reason = serializers.CharField(max_length=1000,
+                                   style={'base_template': 'textarea.html', 'rows': 4}
+                                   )
     class Meta:
         model = Payment
         fields = ('payment_status', 'payment_reason')
@@ -56,7 +58,7 @@ class FinanceSerializer(serializers.ModelSerializer):
             approved_by=request.user,
             role=role,
             payment_status=self.validated_data['payment_status'],
-            payment_reason=self.validated_data['payment_reason'],)
+            payment_reason=self.validated_data['payment_reason'],).save()
 
     @staticmethod
     def transactions(pk, role):

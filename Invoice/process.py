@@ -20,16 +20,16 @@ PROCESS = {
         'role': 'Finance',
         'method': hr,
         'serializer': TransactionSerializer,
-        'transitions': ['payment_recieved', 'invoice_raise']
+        'transitions': [None, 'invoice_raise']
     },
-    'payment_recieved': {
-        'name': 'Payment Recieved',
-        'model': Payment,
-        'role': 'Finance',
-        'method': manager,
-        'serializer': FinanceSerializer,
-        'transitions': [None, 'payment_recieved']
-    },
+    # 'payment_recieved': {
+    #     'name': 'Payment Recieved',
+    #     'model': Payment,
+    #     'role': 'Finance',
+    #     'method': manager,
+    #     'serializer': FinanceSerializer,
+    #     'transitions': [None, 'payment_recieved']
+    # },
 
 }
 

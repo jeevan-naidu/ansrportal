@@ -100,7 +100,7 @@ class Product(TimeStampAbstractModel):
     unit = models.CharField(verbose_name='Product unit', max_length=50, )
 
     def __unicode__(self):
-        return self.name
+        return self.name + ' | ' + self.unit
 
 
 class Book(models.Model):

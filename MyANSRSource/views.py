@@ -2571,13 +2571,13 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-        if flagData['practicename']:
-            head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
-            head = User.objects.get(id=head_id);
-            head_name = head.first_name + " " + head.last_name
-            practicehead_name = head_name
-        else:
-            practicehead_name = 'None'
+        # if flagData['practicename']:
+        #     head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+        #     head = User.objects.get(id=head_id);
+        #     head_name = head.first_name + " " + head.last_name
+        #     practicehead_name = head_name
+        # else:
+        #     practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2589,7 +2589,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
-            'practicehead_name':practicehead_name,
+            'practicehead_name':'None',
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2694,11 +2694,9 @@ class ManageTeamWizard(SessionWizardView):
                     else:
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
-                                (eachData['endDate'] == ptm.endDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['role'] == ptm.role) and \
-                                (eachData['plannedrate'] == ptm.plannedrate):
+                                (eachData['role'] == ptm.role):
                             pass
                         else:
                             ptm.project = project
@@ -2876,9 +2874,6 @@ def saveProject(request):
                     pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
-                    practice_name = request.POST.get('practicename')
-                    practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
-                    pd.PracticeName_id = practice_id
                     del_mgr = request.POST.get('DeliveryManager')
                     del_mgr_id = User.objects.get(username=del_mgr).id
                     pd.deliveryManager_id = del_mgr_id
