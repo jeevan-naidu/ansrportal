@@ -545,6 +545,7 @@ class AssessmentView(TemplateView):
         print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
         request.session['hide_export'] = False
+        request.session['hide_import'] = False
         # for sa in request.POST :
         # print request.POST
         # reports = template_id = None
@@ -1449,7 +1450,7 @@ class ExportReview(View):
             ws1["G"+c].value = row[5]
             ws1["H"+c].value = row[6]
             ws1["I"+c].value = row[7]
-           # ws1["J" + c].value = row[8]
+            ws1["J" + c].value = row[8]
             c = int(c)
             c += 1
             s += 1
@@ -1522,6 +1523,7 @@ def import_review(request, form_file):
                                     review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
                                     defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
                                     fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
+                                    instruction=current_sheet.row(r)[9].value,
                                     created_by=request.user)
     qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
     messages.success(request, "successfully imported")
