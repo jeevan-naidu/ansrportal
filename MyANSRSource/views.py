@@ -2602,7 +2602,7 @@ class ManageTeamWizard(SessionWizardView):
                     active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
                                         'role',
-                                        'plannedEffort', 'product', 'actualcount'
+                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
                                         )
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
