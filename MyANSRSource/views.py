@@ -45,7 +45,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
 from ldap import LDAPError
-from QMS.models import ProjectTemplateProcessModel, TemplateMaster
+from QMS.models import ProjectTemplateProcessModel
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
@@ -2572,13 +2572,6 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-        # if flagData['practicename']:
-        #     head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
-        #     head = User.objects.get(id=head_id);
-        #     head_name = head.first_name + " " + head.last_name
-        #     practicehead_name = head_name
-        # else:
-        #     practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2590,7 +2583,6 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
-            'practicehead_name':'None',
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2876,7 +2868,7 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
-                    pd.projecttemplate = TemplateMaster.objects.get(name=request.POST.get('projecttemplate'))
+                    pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
                     del_mgr = request.POST.get('DeliveryManager')
@@ -2895,14 +2887,12 @@ def saveProject(request):
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
-                        logger.error(e)
-                    ProjectTemplateProcessModel.objects.update_or_create(project_id=pr.id,
-                                                                         defaults={
-                                                                             'template_id': pd.projecttemplate,
-
-                                                                             'qms_process_model_id': sop.qmsprocessmodel,
-                                                                             'created_by': request.user}, )
-
+                        print e
+                    # ProjectTemplateProcessModel.objects.update_or_create(project_id=pr.id,
+                    #                                                      defaults={
+                    #                                                          'template_id': pr.id,
+                    #                                                          'qms_process_model_id': sop_id,
+                    #                                                          'created_by': request.user}, )
                     pd.save()
 
                 except ValueError as e:
