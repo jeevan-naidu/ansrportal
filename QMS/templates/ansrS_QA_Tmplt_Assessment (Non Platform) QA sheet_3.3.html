@@ -168,8 +168,12 @@
                        {% if review_formset %}
                             {% for form_obj in review_formset %}
                                 {% if forloop.first %}
-                      {% if not request.session.hide_export %}   <div style="float:right; width:150px"><label> Import WorkBook</label><input type="file" name="import_file" value="import" id="import_file"></div>
-                               {% endif %}  {% endif %}
+                                    {% if not request.session.hide_export or request.session.author_logged_in != True %}
+                                         <div style="float:right; width:150px">
+                                         <label> Import WorkBook</label>
+                                         <input type="file" name="import_file" value="import" id="import_file"></div>
+                                    {% endif %}
+                                {% endif %}
                            {% endfor %}
 {% if not request.session.hide_export %}
                          <div class="no_questions"> <div style="float:left">

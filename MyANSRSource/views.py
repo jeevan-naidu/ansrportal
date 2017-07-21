@@ -45,7 +45,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
 from ldap import LDAPError
-from QMS.models import ProjectTemplateProcessModel
+from QMS.models import TemplateMaster, QMSProcessModel,ProjectTemplateProcessModel
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
@@ -2884,6 +2884,25 @@ def saveProject(request):
                     pd.Scope_id = scope_id
                     asset = request.POST.get('projectasset')
                     asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
+                    try:
+                        template, created = TemplateMaster.objects.get_or_create(
+                            name=request.POST.get('projecttemplate'),
+                            defaults=
+                            {'actual_name': request.POST.get('projecttemplate'),
+                             'created_by': request.user})
+
+                        qms_process_model, created = QMSProcessModel.objects.get_or_create(
+                            name=request.POST.get('sopname'),
+                            defaults={
+                                'created_by': request.user})
+
+                        obj, created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
+                                                                                            defaults={
+                                                                                                'template': template,
+                                                                                                'qms_process_model': qms_process_model,
+                                                                                                'created_by': request.user}, )
+                    except Exception as e:
+                        print str(e)
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
