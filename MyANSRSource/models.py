@@ -220,6 +220,7 @@ class Chapter(models.Model):
 
 class ProjectSopTemplate(models.Model):
     name = models.CharField(max_length=120, verbose_name='process Template name')
+    actual_name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(blank=False,default=True, verbose_name='Active or not')
     product_type = models.CharField(max_length=15, choices=TEAM_CHOICES, verbose_name='type of product')
     created_by = models.ForeignKey(User)

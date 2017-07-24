@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
-from MyANSRSource.models import Project, Chapter
+from MyANSRSource.models import Project, Chapter, ProjectSopTemplate, qualitysop
 from simple_history.models import HistoricalRecords
 
 fixed_status = (('', '------'), ('Fixed', 'Fixed'), ('FixNotRequired', 'Fix Not Required'))
@@ -34,13 +34,31 @@ class NameMasterAbstractModel(models.Model):
 
 class TemplateMaster(NameMasterAbstractModel, TimeStampAbstractModel):
     actual_name = models.CharField(max_length=100, unique=True)
-    pass
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            ProjectSopTemplate.objects.create(name=self.name, actual_name=self.actual_name)
+        else:
+            previous_name = QMSProcessModel.objects.get(self.pk).name
+            pst_obj = ProjectSopTemplate.objects.get(name__icontains=previous_name)
+            pst_obj.name, pst_obj.actual_name, pst_obj.is_active = self.name, self.actual_name, self.is_active
+            pst_obj.save()
+        super(TemplateMaster, self).save(*args, **kwargs)
 
 
 class QMSProcessModel(NameMasterAbstractModel, TimeStampAbstractModel):
     product_type = models.CharField(max_length=50, blank=True, null=True, choices=team_choices, verbose_name="Product",
                                     default=team_choices[0][0])
-    pass
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+                qualitysop.objects.create(name=self.name, product_type=self.product_type, is_active=self.is_active)
+        else:
+            previous_name = QMSProcessModel.objects.get(self.pk).name
+            sop_obj = qualitysop.objects.get(name__icontains=previous_name)
+            sop_obj.name, sop_obj.product_type, sop_obj.is_active = self.name, self.product_type, self.is_active
+            sop_obj.save()
+        super(QMSProcessModel, self).save(*args, **kwargs)
 
 
 class ProjectTemplateProcessModel(TimeStampAbstractModel):
