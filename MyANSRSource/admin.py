@@ -205,14 +205,14 @@ class ProjectScopeAdmin(admin.ModelAdmin):
 
 
 class qualitysopAdmin(admin.ModelAdmin):
-    list_display = ['name', 'SOPlink', 'createdOn', 'updatedOn', 'created_by']
+    list_display = ['name', 'SOPlink', 'product_type', 'createdOn', 'updatedOn', 'created_by']
 
 
 class ProjectAssetAdmin(admin.ModelAdmin):
     list_display = ['Asset', 'Is_Active', 'createdOn', 'updatedOn', 'created_by']
 
 class ProjectSopTemplateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_active', 'product_type', 'created_by', 'created_at', 'updated_at']
+    list_display = ['name', 'is_active', 'created_by', 'created_at', 'updated_at']
 
 
 class RoleAdmin(admin.ModelAdmin):
