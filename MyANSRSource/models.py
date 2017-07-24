@@ -597,8 +597,8 @@ class ProjectTeamMember(models.Model):
                                         blank=True,
                                         decimal_places=2,
                                         verbose_name="Planned Effort")
-    plannedcount = models.IntegerField(default=100, verbose_name="planned count", blank=True)
-    actualcount = models.IntegerField(default=100, verbose_name="actual count", blank=True)
+    plannedcount = models.IntegerField(default=0, verbose_name="planned count", blank=True)
+    actualcount = models.IntegerField(default=0, verbose_name="actual count", blank=True)
     active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
