@@ -44,8 +44,8 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from ldap import LDAPError
 from QMS.models import TemplateMaster, QMSProcessModel,ProjectTemplateProcessModel
+from ldap import LDAPError
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
 
@@ -2572,6 +2572,13 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
+        # if flagData['practicename']:
+        #     head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+        #     head = User.objects.get(id=head_id);
+        #     head_name = head.first_name + " " + head.last_name
+        #     practicehead_name = head_name
+        # else:
+        #     practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2583,6 +2590,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
+            'practicehead_name':'None',
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2602,7 +2610,7 @@ class ManageTeamWizard(SessionWizardView):
                     active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
                                         'role',
-                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
+                                        'plannedEffort', 'product', 'actualcount'
                                         )
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
@@ -2885,33 +2893,29 @@ def saveProject(request):
                     asset = request.POST.get('projectasset')
                     asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
                     try:
-                        template, created = TemplateMaster.objects.get_or_create(
-                            name=request.POST.get('projecttemplate'),
-                            defaults=
-                            {'actual_name': request.POST.get('projecttemplate'),
-                             'created_by': request.user})
 
-                        qms_process_model, created = QMSProcessModel.objects.get_or_create(
-                            name=request.POST.get('sopname'),
-                            defaults={
-                                'created_by': request.user})
+                        template, created = TemplateMaster.objects.get_or_create(name=request.POST.get('projecttemplate'),
+                                                                        defaults=
+                                                                        {'actual_name': request.POST.get('projecttemplate'),
+                                                                        'created_by': request.user})
 
-                        obj, created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
-                                                                                            defaults={
-                                                                                                'template': template,
-                                                                                                'qms_process_model': qms_process_model,
-                                                                                                'created_by': request.user}, )
+                        qms_process_model, created = QMSProcessModel.objects.get_or_create(name=request.POST.get('projecttemplate'),
+                                                                                  defaults={
+                                                                        'created_by': request.user})
+
+                        obj,created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
+                                                                             defaults={
+                                                                                 'template': template,
+
+                                                                                 'qms_process_model': qms_process_model,
+                                                                                 'created_by': request.user}, )
                     except Exception as e:
                         print str(e)
+
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
                         print e
-                    # ProjectTemplateProcessModel.objects.update_or_create(project_id=pr.id,
-                    #                                                      defaults={
-                    #                                                          'template_id': pr.id,
-                    #                                                          'qms_process_model_id': sop_id,
-                    #                                                          'created_by': request.user}, )
                     pd.save()
 
                 except ValueError as e:

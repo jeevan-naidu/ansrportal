@@ -219,9 +219,9 @@ class Chapter(models.Model):
 
 
 class ProjectSopTemplate(models.Model):
-    name = models.CharField(max_length=120, verbose_name='process Template name', unique=True)
-    actual_name = models.CharField(max_length=120, verbose_name='actual name', unique=True)
-    is_active = models.BooleanField(blank=False, default=True, verbose_name='Active or not')
+    name = models.CharField(max_length=120, verbose_name='process Template name')
+    actual_name = models.CharField(max_length=100, unique=True)
+    is_active = models.BooleanField(blank=False,default=True, verbose_name='Active or not')
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='updated at', auto_now_add=True)
@@ -234,7 +234,7 @@ class ProjectSopTemplate(models.Model):
 
 
 class qualitysop(models.Model):
-    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, unique=True )
+    name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
     SOPlink = models.TextField(validators=[URLValidator()])
     product_type = models.CharField(max_length=15, choices=TEAM_CHOICES, verbose_name='type of product')
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -393,6 +393,7 @@ class Project(models.Model):
 class ProjectDetail(models.Model):
     project = models.OneToOneField(Project, related_name='project_detail_project')
     projecttemplate = models.ForeignKey(ProjectSopTemplate)
+    # PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
@@ -596,8 +597,8 @@ class ProjectTeamMember(models.Model):
                                         blank=True,
                                         decimal_places=2,
                                         verbose_name="Planned Effort")
-    plannedcount = models.IntegerField(default=0, verbose_name="planned count", blank=True)
-    actualcount = models.IntegerField(default=0, verbose_name="actual count", blank=True)
+    plannedcount = models.IntegerField(default=100, verbose_name="planned count", blank=True)
+    actualcount = models.IntegerField(default=100, verbose_name="actual count", blank=True)
     active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
@@ -711,6 +712,5 @@ class SendEmail(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
-
 
 
