@@ -60,14 +60,13 @@ class AutocompleteTemplates(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         project = self.forwarded.get('project', None)
-        pd_obj = ProjectDetail.objects.get(project=project) # self.forwarded.get('qms_process_model', None)
+        qms_process_model = self.forwarded.get('qms_process_model', None)
         try:
-            obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=pd_obj.SOP)
+            obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=qms_process_model)
             choices = TemplateMaster.objects.filter(id=obj.template_id)
         except:
             try:
-                choices = TemplateProcessReview.objects.filter(qms_process_model=pd_obj.SOP).values_list('template_id',
-                                                                                                         flat=True)
+                choices = TemplateProcessReview.objects.filter(qms_process_model=qms_process_model).values_list('template_id',flat=True)
 
                 choices = TemplateMaster.objects.filter(id__in=choices)
             except:
@@ -139,7 +138,7 @@ class AutoCompleteUserProjectSpecific(autocomplete.Select2QuerySetView):
         try:
             user = QASheetHeader.objects.filter \
                 (project=project, chapter_component=ChapterComponent.objects.
-                 get(chapter=chapter, component=component)).values_list('author', flat=True)[0]
+                 get(chapter=chapter, component=component)).values_list('author', flat=True).first()
             # print user
             qs = qs.filter(pk=user)
 

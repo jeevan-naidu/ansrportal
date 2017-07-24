@@ -79,22 +79,16 @@ class ChooseTabs(FormView):
         # {u'user_3': u'256', u'user_1': u'255'}
         # print users
         # print order
-        #
-        # try:
-        #     pd_obj = ProjectDetail.objects.get(project=form.cleaned_data['project'])
-        #     ProjectTemplateProcessModel.objects.get_or_create(template=pd_obj.projecttemplate,
-        #                                                       project=form.cleaned_data['project'],
-        #                                                       qms_process_model=pd_obj.SOP,
-        #                                                       defaults={
-        #                                                           'created_by': self.request.user}, )
-        #     # ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
-        #     #                                                   project=form.cleaned_data['project'],
-        #     #                                                   qms_process_model=form.cleaned_data['qms_process_model'],
-        #     #                                                   defaults={
-        #     #                                                       'created_by': self.request.user},)
-        # except Exception as e:
-        #     # print "ChooseTabs", (str(e))
-        #     logger.error(" {0} ".format(str(e)))
+
+        try:
+            ProjectTemplateProcessModel.objects.get_or_create(template=form.cleaned_data['template'],
+                                                              project=form.cleaned_data['project'],
+                                                              qms_process_model=form.cleaned_data['qms_process_model'],
+                                                              defaults={
+                                                                  'created_by': self.request.user},)
+        except Exception as e:
+            # print "ChooseTabs", (str(e))
+            logger.error(" {0} ".format(str(e)))
 
         cm_obj, chapter_component = ChapterComponent.objects.get_or_create(chapter=form.cleaned_data['chapter'],
                                                                            component=form.cleaned_data['component'],
@@ -176,7 +170,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                 review_obj = QASheetHeader.objects.filter(project=project, chapter_component=chapter_component_obj,
                                                           author=author).values_list('review_group').\
                     order_by('order_number').first()
-                review_obj = review_obj[0]
+                review_obj = review_obj.first()
             else:
                 review_obj = ReviewGroup.objects.get(id=active_tab)
             try:
@@ -263,11 +257,8 @@ def mark_as_completed(request):
 def get_template_process_review(request):
     # print request.GET
     request.session['c_project'] = project = request.GET.get('project_id')
-    pd_obj = ProjectDetail.objects.get(project_id=project)
-    template = pd_obj.projecttemplate
-    qms_process_model = pd_obj.SOP
-    #template = request.GET.get('template_id')
-    #qms_process_model = request.GET.get('qms_process_model')
+    template = request.GET.get('template_id')
+    qms_process_model = request.GET.get('qms_process_model')
     request.session['c_chapter'] = chapter = request.GET.get('chapter')
     author = request.GET.get('author')
     request.session['c_component'] = component = request.GET.get('component')
@@ -398,10 +389,8 @@ def forbidden_access(self, form, project, message_code, chapter=None):
         result = True
 
     messages.error(self.request, msg_dict[message_code])
-    print "forbidden_access", result
     try:
         c = get_review_group(project, chapter,  component=self.request.session['component'])
-        print c
     except Exception as e:
         print str(e)
 
@@ -542,10 +531,8 @@ class AssessmentView(TemplateView):
         return context
 
     def post(self, request):
-        print "im in post"
         form = BaseAssessmentTemplateForm(request.POST)
         request.session['hide_export'] = False
-        request.session['hide_import'] = False
         # for sa in request.POST :
         # print request.POST
         # reports = template_id = None
@@ -589,7 +576,7 @@ class AssessmentView(TemplateView):
                     # print "order_number", order_number
                     prev_tab_obj = QASheetHeader.objects.filter(project=project,
                                                                 chapter_component=request.session['chapter_component'],
-                                                                order_number=order_number)[0]
+                                                                order_number=order_number).first()
                     if is_pm:
                         # print "first if is pm"
                         # print prev_tab_obj.review_group_status , prev_tab_obj.author_feedback_status
@@ -660,15 +647,10 @@ class AssessmentView(TemplateView):
 class ReviewReportManipulationView(AssessmentView):
     @transaction.atomic
     def post(self, request):
-        # print request.POST
-        # print request.FILES
-        # print "im in formset post"
         fail = 0
         qms_data = {}
         qms_data_list = []
         request.session['active_tab'] = active_tab = request.POST.get('active_tab1')
-        # print request.POST.get('active_tab1')
-
         qms_form = review_report_base(request.session['template_id'], request.session['project'],
                                       request_obj=self.request, tab=active_tab)
         qms_formset = formset_factory(
@@ -684,8 +666,6 @@ class ReviewReportManipulationView(AssessmentView):
         # print q_form.errors
         forbidden_file = False
         if 'import_file' in request.FILES and request.FILES['import_file']:
-            # mime = magic.Magic(mime=True)
-            # print mime.from_file(self.request.FILES['import_file'])
             if self.request.FILES['import_file'].name.split(".")[-1] == "xlsx":
                 return import_review(self.request, self.request.FILES['import_file'])
             else:
@@ -696,7 +676,6 @@ class ReviewReportManipulationView(AssessmentView):
             for form_elements in q_form:
                 # print form_elements
                 if form_elements.cleaned_data['DELETE'] is True:
-                    # form_elements.cleaned_data['DELETE']
                     ReviewReport.objects.filter(id=form_elements.cleaned_data['qms_id']).update(is_active=False)
                 else:
                     del(form_elements.cleaned_data['DELETE'])
@@ -704,11 +683,9 @@ class ReviewReportManipulationView(AssessmentView):
                         qms_data[k] = v
                     qms_data_list.append(qms_data.copy())
                     qms_data.clear()
-                    # print qms_data_list
             for obj in qms_data_list:
                 if obj['severity_type'] == "":
                     continue
-                # print obj
                 if obj['qms_id'] > 0:
                     report = ReviewReport.objects.get(id=obj['qms_id'])
                     # print obj['qms_id']
@@ -721,8 +698,6 @@ class ReviewReportManipulationView(AssessmentView):
                     report.defect = obj['defect']
                     if 'instruction' in obj:
                         report.instruction = obj['instruction']
-                    #  below is backend check preventing author from changing severity type
-                    # obj['severity_type'] = report.defect_severity_level.severity_type
                     if obj['clear_screen_shot']:
                         report.screen_shot = None
                     else:
@@ -737,8 +712,6 @@ class ReviewReportManipulationView(AssessmentView):
                                 forbidden_file_type = True
 
                             report.screen_shot = obj['screen_shot']
-                # if obj['clear_screen_shot']:
-                #     report.screen_shot = None
                 report.is_fixed = obj['is_fixed']
 
                 report.remarks = obj['remarks']
@@ -746,29 +719,13 @@ class ReviewReportManipulationView(AssessmentView):
                     report.fixed_by = request.user
                 else:
                     report.fixed_by = None
-                # print request.session['template_id']
-                #
-                # print request.session['active_tab']
-                # print obj['severity_type']
-                # import ipdb
-                # ipdb.set_trace()
-
-                # import ipdb
-                # ipdb.set_trace()
 
                 try:
-                    # 1
-                    # Grammar and style
-                    # 2
-
-                    # print request.session['template_id'], obj['severity_type'] , active_tab
-                    # review_group = ReviewGroup.objects.get(id=active_tab)
                     defect_obj = DefectSeverityLevel.objects.filter(
                                                                     severity_type=obj['severity_type'],
-                                                                    )[0]
+                                                                    ).first()
 
                     report.defect_severity_level = defect_obj
-                    # report.defect_severity_level = DefectSeverityLevel.objects.get(id=defect_obj.id)
                     qa_obj = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
                     report.QA_sheet_header = qa_obj
                     report.updated_by = request.user
@@ -794,10 +751,7 @@ class ReviewReportManipulationView(AssessmentView):
                 reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                                          'chapter_component_id': qa_obj.chapter_component.id,
                                                          'review_group_id': qa_obj.review_group.id}))
-            # messages.error(request, q_form.errors)
-            # return HttpResponseRedirect(reverse('qms'))
-            # return render_common(obj, qms_form, self.request)
-            # context = {'form': BaseAssessmentTemplateForm(), 'review_formset': qms_formset}
+
         if fail == 0:
             if forbidden_file_type:
                 messages.error(request, "You can't upload this file type but your data is saved")
@@ -806,7 +760,6 @@ class ReviewReportManipulationView(AssessmentView):
         else:
             messages.error(request, "Configuration is Missing")
 
-        # return HttpResponseRedirect(reverse('qms'))
         obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
                                   request.session['component'], active_tab)
         return render_common(obj, qms_form, self.request)
@@ -815,8 +768,9 @@ class ReviewReportManipulationView(AssessmentView):
 def render_common(obj, qms_form, request):
     reports = get_review(obj)
     result = get_work_book(qms_form, reports, obj)
-    severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').order_by('name') #. \
-        # exclude(name__icontains='S0')
+    severity_level_obj = SeverityLevelMaster.objects.filter(is_active=True).values_list('name', 'id').order_by('name')
+    # . #  exclude(name__icontains='S0')
+
     try:
         form = BaseAssessmentTemplateForm(
             initial={'project': request.session['project'], 'chapter': request.session['chapter'],
@@ -864,7 +818,7 @@ def fetch_severity(request):
     if not media_team:
         try:
             # print "severity", severity
-            obj = DefectSeverityLevel.objects.filter(severity_type=severity)[0]
+            obj = DefectSeverityLevel.objects.filter(severity_type=severity).first()
             # print "obj" , obj
             # logger.error("query {0} ".format(obj.query))
             context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
@@ -880,7 +834,6 @@ def fetch_severity(request):
                 s = DefectSeverityLevel.objects.filter(severity_type=severity).values_list("defect_classification__name",
                                                                                            "defect_classification__id")
                 classification_dict = dict((str(x), int(y)) for x, y in s)
-                # classification_dict["fghg"] =5
                 context_data = {'classification_dict': classification_dict, "triggered_by": request.GET.get('triggered_by')}
 
             except:
@@ -902,14 +855,13 @@ def fetch_severity(request):
                     print str(e)
 
             else:
-                obj = DefectSeverityLevel.objects.filter(severity_type_id=severity)[0]
+                obj = DefectSeverityLevel.objects.filter(severity_type_id=severity).first()
             # logger.error("query {0} ".format(obj.query))
             context_data = {'severity_level': str(obj.severity_level), 'defect_classification':
                 {str(obj.defect_classification): obj.defect_classification.id}, "is_media": is_media}
         except IndexError as e:
             logger.error("query {0} ".format(str(e)))
             context_data = {'configuration_missing': True, "is_media": is_media}
-    # print json.dumps(context_data)
     return HttpResponse(
             json.dumps(context_data),
             content_type="application/json"
@@ -918,7 +870,6 @@ def fetch_severity(request):
 
 def fetch_members(project):
     user = ProjectTeamMember.objects.filter(project=project, member__is_active=True)
-    qs = User.objects.filter(pk__in=user)
     return user
 
 
@@ -930,17 +881,16 @@ def fetch_author(request):
     try:
         chapter_component = ChapterComponent.objects.get(chapter=chapter_id, component=component_id)
         author = QASheetHeader.objects.filter(project_id=project_id,
-                                              chapter_component=chapter_component).values_list('author', flat=True)[0]
+                                              chapter_component=chapter_component).values_list('author', flat=True).first()
     except Exception as e:
+        logger.error("fetch_author{0}", str(e))
         author = None
-        # print "fetch_author", str(e)
-    # obj = User.objects.get(pk=user)
+
     team_members = {}
     team = fetch_members(project_id)
     for members in team:
         team_members[int(members.member_id)] = str(members.member.username)
     context_data = {'author': str(author), 'team_members': team_members}
-    # print context_data
     return HttpResponse(
         json.dumps(context_data),
         content_type="application/json"
@@ -958,13 +908,7 @@ def c_get_severity_count(project, name, template_id):
                                                         defect_severity_level__severity_level=severity_level_obj). \
             values('id', 'defect_severity_level__severity_level__name').exclude(is_active=False). \
             annotate(s_count=Count('defect_severity_level'))
-        # dsl = DSLTemplateReviewGroup.objects.filter(template_id=template_id,
-        # obj = DefectSeverityLevel.objects.filter(template_id=template_id,
-        #                                          severity_level=severity_level_obj)
-        # review_report = ReviewReport.objects.filter(defect_severity_level__in=obj,
-        #                                             QA_sheet_header=QASheetHeader.objects.filter(project=project)[0]).\
-        #     values('id', 'defect_severity_level__severity_level__name').\
-        #     annotate(s_count=Count('defect_severity_level'))
+
         for v in review_report_obj:
             for key, value in v.iteritems():
                 if key is 's_count':
@@ -1023,7 +967,6 @@ class DashboardView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        # s = ReviewReport.objects.filter(QA_sheet_header__project__ProjectDetail__deliveryManager=self.request.user). \
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__endDate__gte=datetime.date.today(),
                                                                          project__closed=False,
                                                                          project__in=ProjectDetail.objects.filter(
@@ -1032,7 +975,6 @@ class DashboardView(ListView):
             values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id',
                    'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
-        # print context['projects'].query
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1086,7 +1028,6 @@ def review_completed(request):
     review_feedback = request.GET.get('review_feedback')
     review_group = request.GET.get('review_group')
     submitted_by = request.GET.get('submitted_by')
-    # print "submitted_by" , submitted_by
     try:
         if submitted_by == "author":
             QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
@@ -1097,25 +1038,22 @@ def review_completed(request):
             existing_remark = QASheetHeader.objects.filter(project_id=project_id,
                                                            chapter_component=request.session['chapter_component'],
                                                            review_group_id=review_group).values(
-                "review_group_feedback", "author_feedback_status", "review_group_status")[0]
-            # print "existing_remark",  existing_remark
+                "review_group_feedback", "author_feedback_status", "review_group_status").first()
             if len(str(existing_remark['review_group_feedback'])) > 0 and \
-                        existing_remark['author_feedback_status'] == 1 and \
-                        existing_remark['review_group_status'] == 0:
+                    existing_remark['author_feedback_status'] == 1 and \
+                    existing_remark['review_group_status'] == 0:
 
                 review_feedback = "first review feedback :"+existing_remark['review_group_feedback']+"\n" +\
                                   "final review feedback : " + request.GET.get('review_feedback')
-                # print "rf", review_feedback
             QASheetHeader.objects.filter(project_id=project_id, chapter_component=request.session['chapter_component'],
                                          review_group_id=review_group).update(review_group_status=True,
                                                                               review_group_feedback=review_feedback)
             messages.success(request, "Saved Successfully")
     except Exception as e:
-        # print str(e)
         messages.error(request, "Unable to save")
         logger.error("check permission for author failed {0} ".format(str(e)))
     obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
-                                  request.session['component'], review_group)
+                              request.session['component'], review_group)
 
     qms_form = review_report_base(request.session['template_id'], request.session['project'],
                                   ChapterComponent.objects.get(chapter=request.session['chapter'],
@@ -1138,7 +1076,6 @@ def chapter_summary(request, p_id=None,export=False):
     review_report_obj = ReviewReport.objects.filter(QA_sheet_header__project_id=project_id).\
         values('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id').distinct().\
         annotate(cc_count=Count('QA_sheet_header__chapter_id', 'QA_sheet_header__chapter_component_id'))
-    # print review_report_obj.query
     # below let us to assign without explicitly declaring index
     qms_data = tree()
     qms_data_list = []
@@ -1149,19 +1086,9 @@ def chapter_summary(request, p_id=None,export=False):
             for k, v in eachData.iteritems():
                 if k is 'QA_sheet_header__chapter_component_id':
                     try:
-                        # print "try"
-                        # component_obj = Component.objects.get(id=v)
                         chapter_component_obj = ChapterComponent.objects.get(pk=v)
-                        # print "chapter_component_obj", chapter_component_obj.chapter.id ,
-                        # chapter_component_obj.component.id
-                        # if chapter_component_obj.chapter.id not in qms_data:
-                        #     qms_data[chapter_component_obj.chapter.id] = {}
-                        # if chapter_component_obj.component.id not in qms_data[chapter_component_obj.chapter.id]:
-                        #     qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id] = {}
-
                         qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['severity_level']\
                             = {}
-                        # print qms_data
                         qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['chapter_name']\
                             = chapter_component_obj.chapter.name
                         qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['component_name']\
@@ -1169,17 +1096,12 @@ def chapter_summary(request, p_id=None,export=False):
 
                         tmp_obj = QASheetHeader.objects.filter(project_id=project_id,
                                                                chapter_component=chapter_component_obj)
-                        # for s in tmp_obj:
-                        #     print "count", s.count
-                        # question_count = sum(tmp_obj.filter().values_list('count', flat=True))
                         question_count = tmp_obj.aggregate(Sum('count'))
-                        # print "question_count", question_count
                         question_count = question_count['count__sum']
                         qa_obj = tmp_obj[0]
                         qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id]['author']\
                             = qa_obj.author.username
                         for s in severity_level:
-                            # print "s",s
                             s_count = review_report_obj.filter(defect_severity_level__severity_level=s,
                                                                QA_sheet_header__chapter_component=
                                                                chapter_component_obj). \
@@ -1198,9 +1120,7 @@ def chapter_summary(request, p_id=None,export=False):
                                             'severity_level'][s.name] = c['s_count']
                                         tmp_dict[s.name] = (c['s_count'] * s.penalty_count) / question_count
                                     except Exception as e:
-                                        print str(e)
                                         logger.error(" qms {0} ".format(str(e)))
-                            # print tmp_dict
                             tmp_dd = float(sum(tmp_dict.values()) * 100)
                             qms_data[chapter_component_obj.chapter.id][chapter_component_obj.component.id][
                                 'defect_density'] = str(round(tmp_dd, 2))
@@ -1208,13 +1128,11 @@ def chapter_summary(request, p_id=None,export=False):
                                 'questions'] = question_count
                     except Exception as e:
                         # print "in except"
-                        print str(e)
+                        logger.error(" qms {0} ".format(str(e)))
 
                         # qms_data[obj.id]['severity_level'] = tmp_dict
             qms_data_list.append(qms_data.copy())
             qms_data.clear()
-    #return write_qms_chapter_level_summary(request, qms_data_list)
-    # print json.dumps(qms_data_list)
     if not export:
         return HttpResponse(
             json.dumps(qms_data_list),
@@ -1225,7 +1143,6 @@ def chapter_summary(request, p_id=None,export=False):
 
 
 def write_qms_chapter_level_summary(request):
-    # print"write_qms_chapter_level_summary",  request.POST.get("project_id")
     qms_data_list = chapter_summary(request, p_id=request.POST.get("project_id"), export=True)
     workbook = xlsxwriter.Workbook('qms_project_chapter_level_summary.xlsx')
     worksheet = workbook.add_worksheet()
@@ -1289,13 +1206,9 @@ class ReviewListView(ListView):
                                                                   project__closed=False, project__active=True, )\
                 .values('id', 'project', 'project_id', 'project__projectId', 'project__name', 'order_number',
                         'chapter_component', 'chapter_component_id', 'review_group_id', 'review_group__name')
-        # print "li",context['review_list']
         context['review_list'] = context['review_list'].exclude((Q(review_group_status=True) &
                                                                 Q(author_feedback_status=True)) |
                                                                 Q(project__qms_project__lead_review_status=True))
-
-
-        # print context['review_list'].query
         return context
 
 
@@ -1307,8 +1220,6 @@ class ReviewRedirectView(View):
             id=self.kwargs['chapter_component_id'])
         form = BaseAssessmentTemplateForm(initial={'project': qa_obj.project, 'chapter': cc_obj.chapter,
                                                    'author': qa_obj.author, 'component': cc_obj.component})
-        # print form
-
         self.request.session['active_tab'] = active_tab = self.kwargs['review_group_id']
 
         self.request.session['project'] = project = qa_obj.project
@@ -1316,7 +1227,6 @@ class ReviewRedirectView(View):
         self.request.session['author'] = author = qa_obj.author
         self.request.session['component'] = component = cc_obj.component
         if self.request.user is author:
-            # print"is author"
             get_review_group(project, chapter, is_author=False, component=component)
         try:
             ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
@@ -1324,7 +1234,6 @@ class ReviewRedirectView(View):
             obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
             is_pm = ProjectDetail.objects.filter(Q(deliveryManager=request.user) |
                                                   Q(pmDelegate=request.user), project=project).exists()
-            # print "is_pm" , is_pm
             self.request.session['is_pm'] = is_pm
             if obj.order_number != 1:
                 order_number = int(obj.order_number) - 1
@@ -1336,7 +1245,6 @@ class ReviewRedirectView(View):
                                     prev_tab_obj.author_feedback_status is True:
                         pass
                     else:
-                        # print "if pm else"
                         return forbidden_access(self, form, project, "previous_tab_wait_pm", chapter)
                 if not is_pm:
                     if prev_tab_obj.review_group_status and prev_tab_obj.author_feedback_status:
@@ -1396,24 +1304,18 @@ class ExportReview(View):
         ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
-        # actual_name = file_name = ptpm_obj.template.actual_name
         actual_name = ptpm_obj.template.actual_name
-        # src = "QMS/master_templates/"+file_name+".xlsx"
         src = "QMS/master_templates/"+actual_name+".xlsx"
         if not os.path.isfile(src):
-            # file_name = "generic_template"
             src = "QMS/master_templates/QMS-T1.xlsx"
 
             logger.error(" failed to find template {0} ".format(actual_name))
-        # print self.request.session['active_tab']
         if self.request.session['active_tab'] == "lambda":
             review_group = review_obj.values_list('QA_sheet_header__review_group_id', flat=True).order_by('QA_sheet_header__order_number').first()
-            # print review_group
             self.request.session['active_tab'] = review_group
         else:
             review_group = self.request.session['active_tab']
         review_group = ReviewGroup.objects.get(id=review_group)
-        # cc_obj = ChapterComponent.objects.get(id=self.request.session['chapter_component'])
         file_name = unicode(ptpm_obj.project)+" : " +self.request.session['chapter_component'].get_combination_name()\
                     + " : "+review_group.alias
         dst = "QMS/"+file_name+"_copy.xlsx"
@@ -1422,7 +1324,6 @@ class ExportReview(View):
 
         ws1 = wb["Template1"]
         ws1.title = review_group.alias
-        # wb.active = 0
         dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
         ws1.add_data_validation(dv)
 
@@ -1490,12 +1391,10 @@ def import_review(request, form_file):
             fixed_by = None
 
         try:
-            print "try dtm from dict"
             dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
         except :
             dtm, created = DefectTypeMaster.objects.get_or_create(name=current_sheet.row(r)[3].value.rstrip(),
                                                                   defaults={'created_by': request.user})
-            print "except", dtm, created
             dtm = dtm.id
 
         try:

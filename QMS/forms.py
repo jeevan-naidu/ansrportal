@@ -77,18 +77,18 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
 
         widget=autocomplete.ModelSelect2(url='AutocompleteDMProjects', attrs={
             'data-placeholder': 'Project ', }, ), required=True, )
-    # qms_process_model = forms.ModelChoiceField(
-    #     queryset=QMSProcessModel.objects.all(),
-    #     widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', forward=('project',), attrs={
-    #         'data-placeholder': 'Process Model ',
-    #     }, ),
-    #     required=True, )
-    # template = forms.ModelChoiceField(
-    #     queryset=TemplateMaster.objects.all(),
-    #     widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', forward=('project', 'qms_process_model'), attrs={
-    #         'data-placeholder': 'Template ',
-    #     }, ),
-    #     required=True, )
+    qms_process_model = forms.ModelChoiceField(
+        queryset=QMSProcessModel.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutocompleteProcessModel', forward=('project',), attrs={
+            'data-placeholder': 'Process Model ',
+        }, ),
+        required=True, )
+    template = forms.ModelChoiceField(
+        queryset=TemplateMaster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='AutocompleteTemplates', forward=('project', 'qms_process_model'), attrs={
+            'data-placeholder': 'Template ',
+        }, ),
+        required=True, )
     # review_group = forms.ModelMultipleChoiceField(queryset=ReviewGroup.objects.all(),
     #                                               widget=forms.CheckboxSelectMultiple(), required=False)
     component = forms.ModelChoiceField(
@@ -113,10 +113,10 @@ class ChooseMandatoryTabsForm(BaseAssessmentTemplateForm):
         # self.fields['author'].widget.attrs['class'] = 'author_dropdown'
         self.fields['author'].widget.attrs['disabled'] = True
 
-        # self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field author_dropdown '
-        # self.fields['template'].widget.attrs['class'] = 'reset_field author_dropdown'
-        # self.fields['qms_process_model'].widget.attrs['required'] = True
-        #self.fields['template'].widget.attrs['required'] = True
+        self.fields['qms_process_model'].widget.attrs['class'] = 'reset_field author_dropdown '
+        self.fields['template'].widget.attrs['class'] = 'reset_field author_dropdown'
+        self.fields['qms_process_model'].widget.attrs['required'] = True
+        self.fields['template'].widget.attrs['required'] = True
 
         # project_id_field = self.fields['project'].initial \
         #                    or self.initial.get('project') \
