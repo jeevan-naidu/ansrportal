@@ -2899,7 +2899,7 @@ def saveProject(request):
                                                                         {'actual_name': request.POST.get('projecttemplate'),
                                                                         'created_by': request.user})
 
-                        qms_process_model, created = QMSProcessModel.objects.get_or_create(name=request.POST.get('projecttemplate'),
+                        qms_process_model, created = QMSProcessModel.objects.get_or_create(name=sop,
                                                                                   defaults={
                                                                         'created_by': request.user})
 

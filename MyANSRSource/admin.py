@@ -204,15 +204,15 @@ class ProjectScopeAdmin(admin.ModelAdmin):
     list_display = ['scope', 'IsActive', 'createdOn', 'updatedOn', 'created_by']
 
 
-class qualitysopAdmin(admin.ModelAdmin):
-    list_display = ['name', 'SOPlink', 'product_type', 'createdOn', 'updatedOn', 'created_by']
+# class qualitysopAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'SOPlink','product_type',  'createdOn', 'updatedOn', 'created_by']
 
 
 class ProjectAssetAdmin(admin.ModelAdmin):
     list_display = ['Asset', 'Is_Active', 'createdOn', 'updatedOn', 'created_by']
-
-class ProjectSopTemplateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_active', 'created_by', 'created_at', 'updated_at']
+#
+# class ProjectSopTemplateAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'is_active',  'created_by', 'created_at', 'updated_at']
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -233,8 +233,8 @@ admin.site.register(MilestoneType, MilestoneTypeAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 admin.site.register(ProjectScope, ProjectScopeAdmin)
-admin.site.register(qualitysop, qualitysopAdmin)
+# admin.site.register(qualitysop, qualitysopAdmin)
 admin.site.register(ProjectAsset, ProjectAssetAdmin)
-admin.site.register(ProjectSopTemplate, ProjectSopTemplateAdmin)
+# admin.site.register(ProjectSopTemplate, ProjectSopTemplateAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Product, ProductAdmin)
