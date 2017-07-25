@@ -221,8 +221,7 @@ class Chapter(models.Model):
 class ProjectSopTemplate(models.Model):
     name = models.CharField(max_length=120, verbose_name='process Template name')
     actual_name = models.CharField(max_length=100, unique=True)
-    is_active = models.BooleanField(blank=False,default=True, verbose_name='Active or not')
-    product_type = models.CharField(max_length=15, choices=TEAM_CHOICES, verbose_name='type of product')
+    is_active = models.BooleanField(blank=False, default=True, verbose_name='Active or not')
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(verbose_name='Created at', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='updated at', auto_now_add=True)
@@ -237,6 +236,8 @@ class ProjectSopTemplate(models.Model):
 class qualitysop(models.Model):
     name = models.CharField(verbose_name="Quality SOP Name", max_length=200, )
     SOPlink = models.TextField(validators=[URLValidator()])
+    product_type = models.CharField(max_length=50, blank=True, null=True, choices=TEAM_CHOICES, verbose_name="Product",
+                                    default=TEAM_CHOICES[0][0])
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
