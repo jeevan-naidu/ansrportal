@@ -93,6 +93,8 @@ class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
         q = self.request.GET.get('q', '')
         choices = Milestone.objects.filter(name__icontains=q)
         return choices
+
+
 class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):

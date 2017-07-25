@@ -300,4 +300,3 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
 
     return ReviewReportForm
 
-
