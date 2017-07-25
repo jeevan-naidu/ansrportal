@@ -15,6 +15,7 @@ import datetime
 import calendar
 import helper
 from dal import autocomplete
+from QMS.models import TemplateProcessReview
 
 PROJECT_CLOSE_FLAG = (('','................'),
                       ('Extending end date external (client side)', 'Extending end date external (client side)'),
@@ -427,7 +428,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     pmDelegate = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="PM Delegate",
-        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser',  attrs={
             'data-placeholder': 'Type PM Delegate Name ...',
         }
                                          # url='AutocompleteUser'
@@ -830,6 +831,15 @@ class ProjectFlagForm(forms.ModelForm):
             'class': 'practicevalue',
         }, ),
         required=False, )
+
+    sopname = forms.ModelChoiceField(
+        queryset=qualitysop.objects.all(),
+        label="Select QualitySOP",
+        widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
+            'data-placeholder': 'Type  QualitySOP Name ...',
+        }, ),
+        required=False, )
+
     projecttemplate = forms.ModelChoiceField(
         queryset=ProjectSopTemplate.objects.all(),
         label="Select Process template",
@@ -849,13 +859,7 @@ class ProjectFlagForm(forms.ModelForm):
         required=False, )
 
 
-    sopname = forms.ModelChoiceField(
-        queryset=qualitysop.objects.all(),
-        label="Select QualitySOP",
-        widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
-            'data-placeholder': 'Type  QualitySOP Name ...',
-        }, ),
-        required=False, )
+
 
     ProjectScope = forms.ModelChoiceField(
         queryset=ProjectScope.objects.all(),

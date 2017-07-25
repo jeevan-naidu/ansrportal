@@ -44,7 +44,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
-from QMS.models import TemplateMaster, QMSProcessModel,ProjectTemplateProcessModel
+from QMS.models import TemplateMaster, QMSProcessModel,ProjectTemplateProcessModel, TemplateProcessReview
 from ldap import LDAPError
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
@@ -130,7 +130,11 @@ def getheadid(request):
 def soplink(request):
     sopid = request.GET['sop']
     soplink  = qualitysop.objects.get(id=sopid)
-    return HttpResponse(soplink.SOPlink)
+    request.session['name'] = soplink.id
+    data = json.dumps({
+        'actions': soplink.SOPlink,
+    })
+    return HttpResponse(data, content_type='application/json')
 
 
 def milestonename(request):

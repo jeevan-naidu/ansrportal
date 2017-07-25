@@ -82,6 +82,7 @@
             return false;
         });
  $('.sopname').on('change', function() {
+
               var sop = this.value
                     $.ajax(
                    {
@@ -90,8 +91,7 @@
                        data :{'sop': sop} ,
                        success : function(data)
                        {
-                       <!--document.getElementById('soplink').text=data-->
-                       document.getElementById('soplink').href=data
+                       document.getElementById('soplink').href=data['actions']
                        }
                    }
            );
