@@ -2,9 +2,9 @@ import xlrd
 import MySQLdb
 import datetime
 import copy
-# import os, sys
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
+import os, sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 #
 book = xlrd.open_workbook("QMS_QA Sheets.xlsx" , encoding_override="utf-8")
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
