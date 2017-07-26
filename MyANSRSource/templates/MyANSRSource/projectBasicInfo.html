@@ -81,6 +81,20 @@
             window.history.go(-1);
             return false;
         });
+  $('.ProjectSopTemplate').on('change', function(){
+   var id = this.value
+   $.ajax(
+                   {
+                       type : "GET",
+                       url : '/myansrsource/templatemaster/',
+                       data :{'tempmasterid': id} ,
+                       success : function(data)
+                       {
+
+                       }
+                   }
+           );
+ })
  $('.sopname').on('change', function() {
 
               var sop = this.value

@@ -137,6 +137,12 @@ def soplink(request):
     return HttpResponse(data, content_type='application/json')
 
 
+def templatemaster(request):
+    tempmasterid = request.GET['tempmasterid']
+    request.session['filter'] = tempmasterid
+    return HttpResponse('hello')
+
+
 def milestonename(request):
     type_id = request.GET['milestone_type_id']
     name = Milestone.objects.get(id=type_id).milestone_type
@@ -2576,13 +2582,6 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-        # if flagData['practicename']:
-        #     head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
-        #     head = User.objects.get(id=head_id);
-        #     head_name = head.first_name + " " + head.last_name
-        #     practicehead_name = head_name
-        # else:
-        #     practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2880,7 +2879,7 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
-                    pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
+                    pd.projecttemplate = TemplateMaster.objects.get(pk=request.session['filter']).name
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
                     del_mgr = request.POST.get('DeliveryManager')
