@@ -4,7 +4,7 @@ from MyANSRSource.autocomplete_light_registry import AutocompleteProjects,Autoco
     AutocompleteProjectAsset, AutocompleteDatapointName, AutocompletesubPracticeName, AutocompleteQualitySOP, \
     Autocompleteprojectscope, AutocompleteMilestonetype, Autocompleteprojecttemplate, AutocompleteRole
 from .views import ApproveTimesheetView, getheadid, soplink, milestonename, NewCreatedProjectApproval, ActiveEmployees,\
-    month_wise_active_employees, get_project_summary , ActiveProjects, ProjectChangeApproval, WrappedModifyProjectView,templatemaster
+    month_wise_active_employees, get_project_summary , ActiveProjects, ProjectChangeApproval, WrappedModifyProjectView
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
@@ -37,9 +37,6 @@ urlpatterns = [
     url(r'^soplink/$',
         login_required(soplink),
         name='SopLink'),
-    url(r'^templatemaster/$',
-        login_required(templatemaster),
-        name='templatemaster'),
     url(
         r'^AutocompleteQualitySOP/$',
         AutocompleteQualitySOP.as_view(),
