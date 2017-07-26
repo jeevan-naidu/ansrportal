@@ -5,7 +5,7 @@ import datetime
 import os, sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-book = xlrd.open_workbook("combo.xlsx")
+book = xlrd.open_workbook("MASTER.xlsx")
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 database.set_character_set('utf8')
 #

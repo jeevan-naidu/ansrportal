@@ -170,7 +170,7 @@ def qa_sheet_header_obj(project, chapter, author, component=None, active_tab=Non
                 review_obj = QASheetHeader.objects.filter(project=project, chapter_component=chapter_component_obj,
                                                           author=author).values_list('review_group').\
                     order_by('order_number').first()
-                review_obj = review_obj.first()
+                review_obj = review_obj[0]
             else:
                 review_obj = ReviewGroup.objects.get(id=active_tab)
             try:
