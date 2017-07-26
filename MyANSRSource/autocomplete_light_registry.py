@@ -5,6 +5,8 @@ from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, Project
 from CompanyMaster.models import Practice, SubPractice, DataPoint
 from dal import autocomplete
 from MyANSRSource.models import Milestone
+from QMS.models import TemplateProcessReview, TemplateMaster
+
 
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
@@ -66,9 +68,12 @@ class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
 class Autocompleteprojecttemplate(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        q = self.request.GET.get('q', '')
-        choices = ProjectSopTemplate.objects.filter(name__icontains=q)
-        return choices
+        value = self.request.session['name']
+        try:
+            templatename = TemplateMaster.objects.filter(id__in=TemplateProcessReview.objects.filter(qms_process_model=value).values_list('template'))
+        except Exception as e:
+            print Exception
+        return templatename
 
 
 class AutocompleteQualitySOP(autocomplete.Select2QuerySetView):
