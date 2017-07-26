@@ -96,12 +96,12 @@ class ComponentMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 class ReviewGroup(models.Model):
     name = models.CharField(max_length=100)
     review_master = models.ForeignKey(ReviewMaster)
-    alias = models.CharField(max_length=20, blank=True, null=True, verbose_name="alias/display name for review group",
+    alias = models.CharField(max_length=100, blank=True, null=True, verbose_name="alias/display name for review group",
                              editable=False)
 
     def __unicode__(self):
         """ return unicode strings """
-        return '%s' % unicode(self.alias)
+        return u'%s' % self.first_name
 
     def save(self, *args, **kwargs):
         if self.pk is None:

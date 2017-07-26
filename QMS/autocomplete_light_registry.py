@@ -62,9 +62,12 @@ class AutocompleteTemplates(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
         qms_process_model = self.forwarded.get('qms_process_model', None)
         try:
+            print "im in try"
             obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=qms_process_model)
+            print obj
             choices = TemplateMaster.objects.filter(id=obj.template_id)
         except:
+            print "excep"
             try:
                 choices = TemplateProcessReview.objects.filter(qms_process_model=qms_process_model).values_list('template_id',flat=True)
 

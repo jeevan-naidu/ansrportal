@@ -2880,6 +2880,7 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
+                    print request.POST
                     pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
@@ -2897,7 +2898,7 @@ def saveProject(request):
                     asset = request.POST.get('projectasset')
                     asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
                     try:
-
+                        print request.POST.get('projecttemplate'), sop
                         template, created = TemplateMaster.objects.get_or_create(name=request.POST.get('projecttemplate'),
                                                                         defaults=
                                                                         {'actual_name': request.POST.get('projecttemplate'),
@@ -2907,12 +2908,13 @@ def saveProject(request):
                                                                                   defaults={
                                                                         'created_by': request.user})
 
-                        obj,created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
+                        obj, created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
                                                                              defaults={
                                                                                  'template': template,
 
                                                                                  'qms_process_model': qms_process_model,
                                                                                  'created_by': request.user}, )
+                        print obj,created
                     except Exception as e:
                         print str(e)
 

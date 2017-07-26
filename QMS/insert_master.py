@@ -5,7 +5,7 @@ import datetime
 import os, sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-book = xlrd.open_workbook("MASTER.xlsx")
+book = xlrd.open_workbook("MASTER.xlsx",encoding_override="cp1252")
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 database.set_character_set('utf8')
 #
@@ -27,20 +27,32 @@ cursor = database.cursor()
 # # qms = [(y, x) for x, y in result]
 # pm = [i[0] for i in result]
 # # print pm
-# s1 = set()
-# s2 = set()
+s1 = set()
+s2 = set()
 # # s3 = set()
 # tmp = {}
 now = datetime.datetime.now()
 # # for cur_sheet in sheets:
-# process_model_set = []
-# sheet = book.sheet_by_name("Sheet3")
-# for r in range(1, sheet.nrows):
+templates= {}
+sheet = book.sheet_by_name("Sheet3")
+for r in range(1, sheet.nrows):
 #     if sheet.row(r)[1].value == "END":
 #         break
 #     if sheet.row(r)[1].value == "":
 #         continue
-    # print sheet.row(r)[0]
+    if sheet.row(r)[1].value == " ":
+        continue
+    if sheet.row(r)[1].value == "END":
+        break
+    # s1.add(repr(sheet.row(r)[1].value))
+    if sheet.row(r)[1].value != "":
+        try:
+            cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
+                           " VALUES (%s,%s,%s,%s,%s,%s,%s)", (sheet.row(r)[1].value, 471, 471, now, now, 1, 0))
+        except:
+            pass
+        database.commit()
+    # print sheet.row(r)[1].value ,"\n"
     # print "1", sheet.row(r)[1].value
     # print "2",sheet.row(r)[2].value
     # print "3",sheet.row(r)[3].value
@@ -48,49 +60,54 @@ now = datetime.datetime.now()
     # print "5",sheet.row(r)[5].value
     # print "6",sheet.row(r)[6].value
     # print "7",sheet.row(r)[7].value
-    # if sheet.row(r)[1].value != "END":
-    #     break
-    # if sheet.row(r)[6].value != '' :
-    #     tmp[sheet.row(r)[6].value] = sheet.row(r)[5].value
-    #     s1.add(sheet.row(r)[6].value)
-    # if sheet.row(r)[2].value != '' :
-    #     s2.add(sheet.row(r)[2].value)
+    # if len(sheet.row(r)[4].value) > 0  and  sheet.row(r)[4].value != '' and sheet.row(r)[4].value not in s1:
+    #     s1.add(sheet.row(r)[4].value)
+    #     tmp = sheet.row(r)[4].value
+
+    # if sheet.row(r)[5].value != '' :
+    #     # s2.add(sheet.row(r)[6].value)
+    #     templates[tmp[:-4]] = sheet.row(r)[6].value
+        # tmp = None
     # s2.add(sheet.row(r)[1].value)
     # s3.add(sheet.row(r)[2].value)
-
 # print s1
-# print list(s2)
+# for k,v in templates.iteritems():
+#     print k, " :  " , v# print list(s2)
 # z= list(s2 - set(pm))
 # print z
-z = [u'e-learning Creation',  u'Videos Creation', u'IP Creation', u'Videos Revision', u'IP Revision', u'Migration and/or Content Adaptation']
+# z = [u'e-learning Creation',  u'Videos Creation', u'IP Creation', u'Videos Revision', u'IP Revision', u'Migration and/or Content Adaptation']
 
 # #
-for ele in z:
-    try:
-        cursor.execute('SET CHARACTER SET utf8;')
-        cursor.execute('SET character_set_connection=utf8;')
-        cursor.execute('SET NAMES utf8;')
-        try:
-            cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
-                           " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1, 0))
-        except:
-            pass
-        database.commit()
-    except Exception as e:
-        print str(e)
-
-
-database.commit()
-# "db" is the result of MySQLdb.connect(), and "dbc" is the result of  db.cursor().
+# for ele in z:
+#     try:
+#         cursor.execute('SET CHARACTER SET utf8;')
+#         cursor.execute('SET character_set_connection=utf8;')
+#         cursor.execute('SET NAMES utf8;')
+#         try:
+#             cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
+#                            " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1, 0))
+#         except:
+#             pass
+#         database.commit()
 #     except Exception as e:
 #         print str(e)
-# for ele in s1:
-#     try:
-#         cursor.execute("INSERT INTO QMS_templatemaster(name, actual_name, created_by_id,updated_by_id,created_on,updated_on,is_active)"
-#                    " VALUES (%s,%s, %s,%s,%s,%s,%s)", (ele, tmp[ele], 471, 471, now, now, 1))
-#     except :
-#         pass
-#     database.commit()
+#
+#
+# database.commit()
+# # "db" is the result of MySQLdb.connect(), and "dbc" is the result of  db.cursor().
+# #     except Exception as e:
+# #         print str(e)
+for k, v in templates.iteritems():
+    if not k :
+        continue
+    else:
+        print k,v
+    try:
+        cursor.execute("INSERT INTO QMS_templatemaster(name, actual_name, created_by_id,updated_by_id,created_on,updated_on,is_active)"
+                   " VALUES (%s,%s, %s,%s,%s,%s,%s)", (v, k, 471, 471, now, now, 1))
+    except :
+        pass
+    database.commit()
 # # for ele in s2:
 #     cursor.execute("INSERT INTO QMS_severitylevelmaster (name,created_by_id,updated_by_id,created_on,updated_on,is_active)"
 #                    "VALUES (%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1))

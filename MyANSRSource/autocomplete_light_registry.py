@@ -71,6 +71,7 @@ class Autocompleteprojecttemplate(autocomplete.Select2QuerySetView):
         value = self.request.session['name']
         try:
             templatename = TemplateMaster.objects.filter(id__in=TemplateProcessReview.objects.filter(qms_process_model=value).values_list('template'))
+            print "templ", templatename
         except Exception as e:
             print Exception
         return templatename
