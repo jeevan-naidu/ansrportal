@@ -583,7 +583,7 @@ class ProjectMilestone(models.Model):
 
 
 class ProjectTeamMember(models.Model):
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project,related_name="project_team_member_project")
     member = models.ForeignKey(User, blank=True, null=True)
     product = models.ForeignKey(Product, blank=True, null=True)
     role = models.ForeignKey(Role, blank=True,null= True)
