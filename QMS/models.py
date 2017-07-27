@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import URLValidator
 from MyANSRSource.models import Project, Chapter, ProjectSopTemplate, qualitysop
 from simple_history.models import HistoricalRecords
 
@@ -39,6 +40,7 @@ class TemplateMaster(NameMasterAbstractModel, TimeStampAbstractModel):
 class QMSProcessModel(NameMasterAbstractModel, TimeStampAbstractModel):
     product_type = models.CharField(max_length=50, blank=True, null=True, choices=team_choices, verbose_name="Product",
                                     default=team_choices[0][0])
+    SOPlink = models.TextField(validators=[URLValidator()])
 
 
 class ProjectTemplateProcessModel(TimeStampAbstractModel):
