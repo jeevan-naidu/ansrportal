@@ -730,7 +730,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
     member = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_active=True),
+        queryset=User.objects.all(),
         # label="Project Leader",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
