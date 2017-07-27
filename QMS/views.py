@@ -986,9 +986,9 @@ class DashboardView(ListView):
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
-        project_details = ProjectTemplateProcessModel.objects.filter(project__in=ProjectManager.objects.
-                                                                     filter(user=self.request.user).
-                                                                     values('project')).\
+        project_details = ProjectTemplateProcessModel.objects.filter(project__in=QASheetHeader.objects.filter
+        (pk=self.request.session['QA_sheet_header_id']).values_list
+        ('project', flat=True)).\
             values_list('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id',
                         'lead_review_status').\
             annotate(chapter_count=Count('project__book__chapter'))
@@ -1301,7 +1301,7 @@ class ExportReview(View):
                         'defect_severity_level__defect_classification__name',
                         'is_fixed', 'fixed_by__username', 'remarks','instruction',).order_by('id')
 
-        ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
+        ptpm_obj = ProjectTemplateProcessModel.objects.get(project__in=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
         actual_name = ptpm_obj.template.actual_name

@@ -221,7 +221,7 @@ $('#qms_project_table tbody').html('');
           for (var inner_key in inner_obj){
               if (inner_obj.hasOwnProperty(inner_key)){
                   for (var sub_inner_key in inner_obj[inner_key]){
-                      if (inner_key.hasOwnProperty(sub_inner_key)){
+                      if (inner_obj[inner_key].hasOwnProperty(sub_inner_key)){
                           $('#qms_project_table tbody').append('<tr>' + qms_table_block + '</tr>');
                           $('#qms_project_table tbody tr:last-child .serial_no').html(qms_count);
                           $('#qms_project_table tbody tr:last-child .author').html(inner_obj[inner_key][sub_inner_key]['author']);

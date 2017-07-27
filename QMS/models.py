@@ -103,7 +103,7 @@ class ReviewGroup(models.Model):
 
     def __unicode__(self):
         """ return unicode strings """
-        return u'%s' % self.first_name
+        return u'%s' % self.alias
 
     def save(self, *args, **kwargs):
         if self.pk is None:

@@ -6,7 +6,7 @@ import os, sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 #
-book = xlrd.open_workbook("QMS_QA Sheets.xlsx" , encoding_override="utf-8")
+book = xlrd.open_workbook("MASTER.xlsx" , encoding_override="utf-8")
 database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
 database.set_character_set('utf8')
 #
@@ -15,12 +15,12 @@ cursor = database.cursor()
 #
 cursor.execute("SELECT id, name from QMS_qmsprocessmodel")
 result = cursor.fetchall()
-print result
+# print result
 process_model = dict((y, x) for x, y in result)
 # print process_model
-cursor.execute("SELECT id, alias from QMS_reviewgroup")
+cursor.execute("SELECT id, alias from QMS_reviewgroup limit 9")
 result = cursor.fetchall()
-review_group = dict((unicode(y), str(x)) for x, y in result)
+review_group = dict(((y), (x)) for x, y in result)
 # for k, v in review_group.iteritems():
 #     print k
 # print "rg", review_group
@@ -35,7 +35,7 @@ template_master = dict((y, x) for x, y in result)
 # s3 = set()
 # tmp = {}
 
-
+import ast
 process_model_set = []
 sheet = book.sheet_by_name("Sheet3")
 # for r in range(1, sheet.nrows):
@@ -52,30 +52,58 @@ now = datetime.datetime.now()
 # for cur_sheet in sheets:
 sheet = book.sheet_by_name("Sheet3")
 for r in range(1, sheet.nrows):
-    print "0",sheet.row(r)[0].value # type
-    print "1",sheet.row(r)[1].value # process model
-    # # if sheet.row(r)[2].value == "" or sheet.row(r)[3].value == "none" or sheet.row(r)[5].value == ""  or sheet.row(r)[6].value == "" :
-    # #     continue
-    print "2", sheet.row(r)[2].value  # mandatory
-    print "3", sheet.row(r)[3].value  # non mandatory
-    print "4", sheet.row(r)[4].value  # template name
-    print "5", sheet.row(r)[5].value  # required template name
-    print "6", sheet.row( r)[6].value  # remarks
-    # if sheet.row(r)[3].value == "None" and sheet.row(r)[3].value == "All":
-    #     try:
-    cursor.execute("SELECT id FROM QMS_qmsprocessmodel WHERE name=%s ",
-                   ()
+    # print "0",sheet.row(r)[0].value # type
+    # print "1",sheet.row(r)[1].value # process model
+    # # # if sheet.row(r)[2].value == "" or sheet.row(r)[3].value == "none" or sheet.row(r)[5].value == ""  or sheet.row(r)[6].value == "" :
+    # # #     continue
+    # print "2", sheet.row(r)[2].value  # mandatory
+    # print "3", sheet.row(r)[3].value  # non mandatory
+    # print "4", sheet.row(r)[4].value  # template name
+    # print "5", sheet.row(r)[5].value  # required template name
+    # print "6", sheet.row( r)[6].value  # remarks
+    if sheet.row(r)[2].value == "END":
+        break
+    if sheet.row(r)[2].value == "":
+        continue
 
+    if sheet.row(r)[2].value == "None":
+
+        try:
+            pass
+            process_model = cursor.execute("SELECT id FROM QMS_qmsprocessmodel WHERE name=%s ", (sheet.row(r)[1].value,))
+            process_model = cursor.fetchone()
+            # print int(process_model[0])
+            tmp = sheet.row(r)[5].value
+            tmp = tmp[:-4]
+            template = cursor.execute("SELECT id FROM QMS_templatemaster WHERE name=%s ", (tmp,))
+
+            template = cursor.fetchone()
+            # print template
     # cursor.execute("SELECT id, name from QMS_qmsprocessmodel where name=")
-            # result = cursor.fetchall()
+                # result = cursor.fetchall()
+            # non_mandatory = unicode(sheet.row(r)[3].value.strip()).split(",")
+            # non_mandatory = [repr(s.strip()) for s in non_mandatory if s is not None]
+            #
+            for k, v in review_group.iteritems():
+                cursor.execute(
+                "INSERT INTO QMS_templateprocessreview(review_group_id,created_by_id,updated_by_id,"
+                "created_on,updated_on,is_mandatory,qms_process_model_id,template_id)"
+                               " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (v, 471, 471, now, now, 0,
+                                                                 int(process_model[0]),int(template[0])))
+            database.commit()
 
-            #cursor.execute(
-    #     "INSERT INTO QMS_templateprocessreview(review_group_id,created_by_id,updated_by_id,"
-    #     "created_on,updated_on,is_mandatory,qms_process_model_id,template_id)"
-    #                        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (1, 471, 471, now, now, 1,
-    #                                                              process_model[str(sheet.row(r)[2].value)], template_master[sheet.row(r)[6].value]))
-    #      except Exception as e:
-    #         print str(e)
+        except Exception as e:
+            print str(e)
+    else:
+        pass
+        mandatory = str(sheet.row(r)[2].value.strip()).split(",")
+        print sheet.row(r)[2].value , mandatory
+        # mandatory = [s.encode('ascii') for s in ast.literal_eval(mandatory)]
+        mandatory = [s.strip().encode('ascii', 'ignore').decode('ascii') for s in mandatory if s is not None]
+        # non_mandatory = str(sheet.row(r)[3].value.strip()).split(",")
+        # non_mandatory = [s.strip() for s in non_mandatory if s is not None]
+        print mandatory
+        # print non_mandatory
     # database.commit()
     # print "7", sheet.row(r)[7].value   # all non mandatory
     # print "\n"
@@ -181,5 +209,5 @@ for r in range(1, sheet.nrows):
 # for s in s1:
 #     print s,"\n"
 # print len(s)
-# cursor.close()
-# database.close()
+cursor.close()
+database.close()
