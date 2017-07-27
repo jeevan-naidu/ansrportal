@@ -3418,7 +3418,7 @@ class ActiveProjects(TemplateView):
         context = super(ActiveProjects, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
             context['projects_list'] = ProjectDetail.objects.filter(
-                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                project__closed=False).values('Discipline__name', 'project__projectId', 'project__name', 'project__id',
                                               'project__customer__name',  'project__bu__name','project__endDate')
             return context
         else:
@@ -3427,14 +3427,14 @@ class ActiveProjects(TemplateView):
     def post(self, request, *args, **kwargs):
         workbook = xlsxwriter.Workbook('active_projects.xlsx')
         worksheet = workbook.add_worksheet()
-        header = ['Project Id', 'Project', 'Practice', 'Customer', 'Business Unit', 'End Date']
+        header = ['Project Id', 'Project', 'Discipline', 'Customer', 'Business Unit', 'End Date']
         header_length = len(header)
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
         date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
         project_details = ProjectDetail.objects.filter(
-                project__closed=False).values_list('project__projectId',  'project__name',  'PracticeName',
+                project__closed=False).values_list('project__projectId',  'project__name',  'Discipline__name',
                                                    'project__customer__name',
                                                    'project__bu__name', 'project__endDate')
         for k, v in header:

@@ -36,7 +36,7 @@ Active Projects
     <tr>
       <th>Project Name</th>
       <th>Business Unit </th>
-      <th >Practice</th>
+      <th >Discipline</th>
       <th >Customer</th>
       <th> End Date </th>
     </tr>
@@ -47,7 +47,7 @@ Active Projects
       <td >{{obj.projectId}}
         <a href="{% url 'get_project_summary' obj.project__id %}" target="_blank" >{{obj.project__projectId}} : {{obj.project__name}} </a></td>
       <td >{{obj.project__bu__name}} </td>
-      <td >{{obj.practice__name|default_if_none:""}}</td>
+      <td >{{obj.Discipline__name}}</td>
         <td >{{obj.project__customer__name}} </td>
       <td>{{obj.project__endDate}}</td>
 </tr>
