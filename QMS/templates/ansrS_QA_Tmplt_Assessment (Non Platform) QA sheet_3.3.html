@@ -181,7 +181,7 @@
                          </div>
                              <label>Questions : </label>
                            {% if request.session.is_pm or request.session.author_logged_in == False %}
-                                <input type="text" name="questions" {%if questions %} value="{{questions}}" {% else %}
+                                <input type="number" min="1" step="1" name="questions" {%if questions %} value="{{questions}}" {% else %}
                                        value=0 {% endif %} id="questions" style="width:50px;height:25px">{% else %} <span>{{questions}}</span>{% endif %}
                              <i class="fa fa-comments-o fa-fw "  data-toggle="modal" id="feedback_li" data-target="#feedback_modal"></i>
                          </div> {% endif %}
