@@ -1633,11 +1633,12 @@ class ApproveTimesheetView(TemplateView):
                                                  self.request.session['dm_projects'], include_activity)
                 if ts_obj:
                     ts_data_list[members] = {}
-                    for s in ts_obj:
-                        a = 0
-                        while a == 0:
-                            ts_data_list[members]['approved_status'] = s.approved
-                            a += 1
+                    status_tmp = [s.approved for s in ts_obj]
+                    if all(status_tmp):
+                        ts_data_list[members]['approved_status'] = True
+                    else:
+                        ts_data_list[members]['approved_status'] = False
+
                     if members.user_id not in user_id_collection:
                         non_billable_total = 0
                     else:
