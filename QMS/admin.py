@@ -38,13 +38,13 @@ class QMSProcessModelAdmin(CommonAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
-            qualitysop.objects.create(name=obj.name, actual_name=obj.actual_name, is_active=obj.is_active,
+            qualitysop.objects.create(name=obj.name, SOPlink=obj.SOPlink, actual_name=obj.actual_name, is_active=obj.is_active,
                                       created_by=request.user)
         else:
             obj.updated_by = request.user
             previous_name = QMSProcessModel.objects.get(pk=obj.id).name
             sop_obj = qualitysop.objects.get(name__icontains=previous_name)
-            sop_obj.name, sop_obj.product_type, sop_obj.is_active = obj.name, obj.product_type, obj.is_active
+            sop_obj.name, sop_obj.product_type, sop_obj.is_active, sop_obj.SOPlink = obj.name, obj.product_type, obj.is_active, obj.SOPlink
             sop_obj.save()
         obj.save()
 
