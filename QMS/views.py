@@ -968,7 +968,7 @@ class DashboardView(ListView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context['projects'] = ProjectTemplateProcessModel.objects.filter(project__endDate__gte=datetime.date.today(),
-                                                                         project__closed=False,
+                                                                         project__closed=False, project__active=True,
                                                                          project__in=ProjectDetail.objects.filter(
                     Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).
                                                                          values('project')).\
@@ -986,12 +986,17 @@ class DashboardView(ListView):
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
-        project_details = ProjectTemplateProcessModel.objects.filter(project__in=QASheetHeader.objects.filter
-        (pk=self.request.session['QA_sheet_header_id']).values_list
-        ('project', flat=True)).\
+
+        project_details = ProjectTemplateProcessModel.objects.filter(project__endDate__gte=datetime.date.today(),
+                                                                     project__active=True,
+                                                                     project__closed=False,
+                                                                     project__in=ProjectDetail.objects.filter(
+                    Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user)).
+                                                                         values('project')). \
             values_list('id', 'project', 'project_id', 'project__projectId', 'project__name', 'template_id',
-                        'lead_review_status').\
+                        'lead_review_status'). \
             annotate(chapter_count=Count('project__book__chapter'))
+
         for k, v in header:
             worksheet.write(k, v)
         row = 1
@@ -1301,7 +1306,7 @@ class ExportReview(View):
                         'defect_severity_level__defect_classification__name',
                         'is_fixed', 'fixed_by__username', 'remarks','instruction',).order_by('id')
 
-        ptpm_obj = ProjectTemplateProcessModel.objects.get(project__in=QASheetHeader.objects.filter
+        ptpm_obj = ProjectTemplateProcessModel.objects.get(project__=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
         actual_name = ptpm_obj.template.actual_name
