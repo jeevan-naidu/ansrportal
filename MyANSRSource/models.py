@@ -393,7 +393,7 @@ class Project(models.Model):
 
 class ProjectDetail(models.Model):
     project = models.OneToOneField(Project, related_name='project_detail_project')
-    projecttemplate = models.ForeignKey(ProjectSopTemplate)
+    projecttemplate = models.ForeignKey(ProjectSopTemplate, null=True, blank=True)
     # PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
