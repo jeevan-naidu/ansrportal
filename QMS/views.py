@@ -1301,7 +1301,7 @@ class ExportReview(View):
                         'defect_severity_level__defect_classification__name',
                         'is_fixed', 'fixed_by__username', 'remarks','instruction',).order_by('id')
 
-        ptpm_obj = ProjectTemplateProcessModel.objects.get(project__in=QASheetHeader.objects.filter
+        ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
         actual_name = ptpm_obj.template.actual_name
