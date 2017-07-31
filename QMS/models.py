@@ -7,7 +7,7 @@ from MyANSRSource.models import Project, Chapter, ProjectSopTemplate, qualitysop
 from simple_history.models import HistoricalRecords
 
 fixed_status = (('', '------'), ('Fixed', 'Fixed'), ('FixNotRequired', 'Fix Not Required'))
-team_choices = ((0, 'assessment'), ('1', 'learning'))
+team_choices = (('0', 'assessment'), ('1', 'learning'))
 
 
 class TimeStampAbstractModel(models.Model):

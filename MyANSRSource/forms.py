@@ -839,9 +839,9 @@ class ProjectFlagForm(forms.ModelForm):
             'data-placeholder': 'Type  QualitySOP Name ...',
         }, ),
         required=False, )
-    from QMS.models import TemplateMaster
+
     projecttemplate = forms.ModelChoiceField(
-        queryset=TemplateMaster.objects.all(),
+        queryset=ProjectSopTemplate.objects.all(),
         label="Select Process template",
         widget=autocomplete.ModelSelect2(url='Autocompleteprojecttemplate', attrs={
             'data-placeholder': 'Type Template Name ...',
