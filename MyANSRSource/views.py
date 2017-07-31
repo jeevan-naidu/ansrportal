@@ -3030,7 +3030,7 @@ def project_summary(project_id, show_header=True):
     cleanedTeamData = ProjectTeamMember.objects.filter(
         project=projectObj).values(
         'member__username', 'startDate', 'endDate',
-        'plannedEffort', 'rate'
+        'plannedEffort', 'actualcount'
     )
     if basicInfo['internal']:
         cleanedMilestoneData = []
@@ -3038,12 +3038,11 @@ def project_summary(project_id, show_header=True):
         cleanedMilestoneData = ProjectMilestone.objects.filter(
             project=projectObj).values('milestoneDate', 'description',
                                        'amount', 'name')
-
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
         'reason', 'endDate', 'revisedEffort', 'revisedTotal',
         'closed', 'closedOn', 'signed',
-        'updatedOn','approved'
+        'updatedOn', 'approved'
     ).order_by('updatedOn')
     data = {
         'basicInfo': basicInfo,
@@ -3052,13 +3051,14 @@ def project_summary(project_id, show_header=True):
         'milestone': cleanedMilestoneData,
         'changes': changeTracker,
     }
+
     if len(changeTracker):
         closedOn = [
             eachRec
             ['closedOn']
             for eachRec in changeTracker if eachRec['closedOn'] is not None]
         if len(closedOn):
-            data['closedOn'] = closedOn[0].strftime("%B %d, %Y, %r")
+            data['closedOn'] = closedOn[0]
     data['show_header']= show_header
     return data
 

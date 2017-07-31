@@ -38,7 +38,7 @@ class QMSProcessModelAdmin(CommonAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
-            qualitysop.objects.create(name=obj.name, SOPlink=obj.SOPlink, actual_name=obj.actual_name, is_active=obj.is_active,
+            qualitysop.objects.create(name=obj.name, SOPlink=obj.SOPlink,
                                       created_by=request.user)
         else:
             obj.updated_by = request.user
