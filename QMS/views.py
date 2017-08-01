@@ -1414,7 +1414,7 @@ def import_review(request, form_file):
     for r in range(2, l):
         if current_sheet.row(r)[3].value == "":
             break
-        if len(current_sheet.row(r)[6].value) > 0:
+        if current_sheet.row(r)[6].value != "":
             try:
                 fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
             except:
