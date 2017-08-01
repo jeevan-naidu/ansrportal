@@ -2615,7 +2615,7 @@ class ManageTeamWizard(SessionWizardView):
                     active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
                                         'role',
-                                        'plannedEffort', 'product', 'actualcount'
+                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
                                         )
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
@@ -2699,13 +2699,13 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.save()
                     else:
                         eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
-                        print eachData['endDate']
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
                                 (eachData['product']== ptm.product) and \
                                 (eachData['endDate'] == ptm.endDate) and \
+                                (eachData['plannedcount'] == ptm.plannedcount) and \
                                 (eachData['role'] == ptm.role):
                             pass
                         else:
@@ -3030,7 +3030,7 @@ def project_summary(project_id, show_header=True):
     cleanedTeamData = ProjectTeamMember.objects.filter(
         project=projectObj).values(
         'member__username', 'startDate', 'endDate',
-        'plannedEffort', 'actualcount'
+        'plannedEffort', 'rate'
     )
     if basicInfo['internal']:
         cleanedMilestoneData = []
