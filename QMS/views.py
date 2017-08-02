@@ -559,6 +559,8 @@ class AssessmentView(TemplateView):
                 request.session['chapter_component'] = ChapterComponent.objects.get(chapter=chapter, component=component)
 
                 ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
+                if int(ptpm_obj.qms_proces_model.product_type) == 1:
+                    request.session['hide_export'] = True
                 request.session['template_id'] = ptpm_obj.template_id
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
@@ -1312,12 +1314,12 @@ class ExportReview(View):
                                                            ('project', flat=True).first())
         actual_name = ptpm_obj.template.actual_name
         is_media = False
-        if int(ptpm_obj.qms_process_model.product_type) == 1:
-            is_media = True
-            src = "QMS/media_templates/" + actual_name + ".xlsx"
-
-        else:
-            src = "QMS/master_templates/"+actual_name+".xlsx"
+        # if int(ptpm_obj.qms_process_model.product_type) == 1:
+        #     is_media = True
+        #     src = "QMS/media_templates/" + actual_name + ".xlsx"
+        #
+        # else:
+        src = "QMS/master_templates/"+actual_name+".xlsx"
         if not os.path.isfile(src):
             src = "QMS/master_templates/QMS-T1.xlsx"
 
@@ -1333,26 +1335,15 @@ class ExportReview(View):
         file_name = unicode(ptpm_obj.project)+" : " +self.request.session['chapter_component'].get_combination_name()\
                     + " : "+review_group.alias
         dst = "QMS/"+file_name+"_copy.xlsx"
-
         copyfile(src, dst)
-        if is_media:
-            try:
-
-                wb = load_workbook(filename=dst, data_only=True, guess_types=False)
-            except Exception as e:
-                print "excep", str(e)
-        else:
-            wb = load_workbook(filename=dst, data_only=False, guess_types=False)
+        wb = load_workbook(filename=dst, data_only=False, guess_types=False)
 
         ws1 = wb["Template1"]
         ws1.title = review_group.alias
-        if not is_media:
-            dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
-        else:
-            try:
-                dv = DataValidation(type="list", formula1=list_formula, allow_blank=True)
-            except Exception as e:
-                print str(e)
+        # if not is_media:
+        dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
+        # else:
+        #     dv = DataValidation(type="list", formula1='='+list_formula+', allow_blank=True')
         ws1.add_data_validation(dv)
 
         c = 3
@@ -1367,25 +1358,21 @@ class ExportReview(View):
             # ws1["E" + c].value = row[3]
             # ws1["F" + c].value = row[2]
             # dv.add(ws1["D"+c])
-            if not is_media:
-                severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
-            else:
-                try:
-                    severity_formula = DataValidation(type="custom", formula1='INDIRECT(D'+c+')')
-                except Exception as e:
-                    print str(e)
+            # if not is_media:
+            severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
+            # else:
+            #     severity_formula = DataValidation(type="custom", formula1='INDIRECT(D'+c+')')
             ws1.add_data_validation(severity_formula)
             # ws1["E" + c].value = row[3]
             severity_formula.add(ws1["E" + c])
-            if not is_media:
-                classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
-            else:
-                try:
-                    classification_formula = DataValidation(type="custom", formula1='IF(D'+c + '<> "",'
-                                                                                  'VLOOKUP($D'+c+', ''Defect_severity,'
-                                                                                                    ' 2, FALSE), "")')
-                except Exception as e:
-                    print str(e)
+            # if not is_media:
+            classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
+            # else:
+            #     pass
+
+                # classification_formula = DataValidation(type="custom", formula1='IF(D'+c + '<> "",'
+                #                                                                   'VLOOKUP($D'+c+', ''Defect_severity,'
+                #                                                                                     ' 2, FALSE), "")')
 
             ws1.add_data_validation(classification_formula)
             # ws1["F" + c].value = row[4]
