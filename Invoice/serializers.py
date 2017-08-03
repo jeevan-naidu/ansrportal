@@ -1,8 +1,7 @@
 
 from rest_framework import serializers
-from models import Invoice, Transaction, Payment
+from models import Invoice, Transaction
 from Leave.views import AllowedFileTypes
-
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -23,7 +22,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ('status', 'reason')
+        fields = ('status','reason')
 
     def save_as(self, role, request, pk):
         Transaction(
@@ -42,35 +41,5 @@ class TransactionSerializer(serializers.ModelSerializer):
             return TransactionSerializer(transaction[0])
         else:
             return TransactionSerializer()
-
-
-class FinanceSerializer(serializers.ModelSerializer):
-    payment_reason = serializers.CharField(max_length=1000,
-                                   style={'base_template': 'textarea.html', 'rows': 4}
-                                   )
-    class Meta:
-        model = Payment
-        fields = ('payment_status', 'payment_reason')
-
-    def save_as(self, role, request, pk):
-        Payment(
-            invoice_id=pk,
-            approved_by=request.user,
-            role=role,
-            payment_status=self.validated_data['payment_status'],
-            payment_reason=self.validated_data['payment_reason'],).save()
-
-    @staticmethod
-    def transactions(pk, role):
-        finance = Payment.objects.filter(invoice_id=pk,
-                                                 role=role,
-                                          ).order_by('-id')
-        if finance:
-            return FinanceSerializer(finance[0])
-        else:
-            return FinanceSerializer()
-
-
-
 
 

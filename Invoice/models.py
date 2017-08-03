@@ -10,7 +10,7 @@ from django.db.models import (
     FileField,
     DateField,
 )
-from CustomApp.constants import PROCESS_STATUS, PAYMENT_STATUS
+from CustomApp.constants import PROCESS_STATUS
 
 
 class Invoice(AbstractProcess):
@@ -27,10 +27,3 @@ class Transaction(AbstractEntity):
     approved_by = ForeignKey(User, related_name='%(class)s_approved_by')
     status = CharField(choices=PROCESS_STATUS, max_length=20)
     reason = TextField(null=True, blank=True)
-
-
-class Payment(AbstractEntity):
-    invoice = ForeignKey(Invoice)
-    approved_by = ForeignKey(User, related_name='%(class)s_approved_by')
-    payment_status = CharField(choices=PAYMENT_STATUS, max_length=10)
-    payment_reason = TextField(null=True, blank=True)
