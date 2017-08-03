@@ -87,8 +87,8 @@ class ReviewMaster(NameMasterAbstractModel):
     pass
 
 
-class WorkPacketMaster(NameMasterAbstractModel, TimeStampAbstractModel):
-    pass
+# class WorkPacketMaster(NameMasterAbstractModel, TimeStampAbstractModel):
+#     pass
 
 
 class ComponentMaster(NameMasterAbstractModel, TimeStampAbstractModel):
@@ -170,7 +170,7 @@ class QASheetHeader(TimeStampAbstractModel):
                                 verbose_name="Chapter/Subtitle", null=True)
     chapter_component = models.ForeignKey(ChapterComponent, blank=True, verbose_name="Chapter&Component", null=True)
 
-    work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)", blank=True, null=True, )
+    # work_packet = models.ForeignKey(WorkPacketMaster, verbose_name="work packet (output)", blank=True, null=True, )
     count = models.IntegerField(verbose_name="work packet count", default=0)
     author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
     review_group = models.ForeignKey(ReviewGroup)
@@ -189,7 +189,7 @@ class QASheetHeader(TimeStampAbstractModel):
     )
     order_number = models.IntegerField(blank=False,
                                        verbose_name="Review tab Order", null=False)
-    history = HistoricalRecords()
+   # history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """
@@ -210,7 +210,7 @@ class ReviewReport(TimeStampAbstractModel):
     fixed_by = models.ForeignKey(User, related_name='reviewer_report_fixed_by', blank=True, null=True,)
     remarks = models.TextField(blank=True, null=True,)
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
-    history = HistoricalRecords()
+    #history = HistoricalRecords()
 
     def __unicode__(self):
         """ return unicode strings """

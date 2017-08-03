@@ -18,7 +18,7 @@ result = cursor.fetchall()
 # print result
 process_model = dict((y, x) for x, y in result)
 # print process_model
-cursor.execute("SELECT id, alias from QMS_reviewgroup limit 9")
+cursor.execute("SELECT id, alias from QMS_reviewgroup ")
 result = cursor.fetchall()
 review_group = dict(((y), (x)) for x, y in result)
 # for k, v in review_group.iteritems():
@@ -85,10 +85,11 @@ for r in range(1, sheet.nrows):
             # non_mandatory = [repr(s.strip()) for s in non_mandatory if s is not None]
             #
             for k, v in review_group.iteritems():
+                print v,process_model[0],template[0]
                 cursor.execute(
                 "INSERT INTO QMS_templateprocessreview(review_group_id,created_by_id,updated_by_id,"
                 "created_on,updated_on,is_mandatory,qms_process_model_id,template_id)"
-                               " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (v, 471, 471, now, now, 0,
+                               " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (v, 35, 35, now, now, 0,
                                                                  int(process_model[0]),int(template[0])))
             database.commit()
 
@@ -121,7 +122,7 @@ for r in range(1, sheet.nrows):
         # cursor.execute(
         #     "INSERT INTO QMS_templateprocessreview(review_group_id,created_by_id,updated_by_id,"
         #     "created_on,updated_on,is_mandatory,qms_process_model_id,template_id)"
-        #                        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (review_group[s], 471, 471, now, now, 1,
+        #                        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (review_group[s], 35, 35, now, now, 1,
         #                                                              process_model[str(sheet.row(r)[2].value)],
         #                                                              template_master[sheet.row(r)[6].value]))
         # database.commit()
@@ -148,7 +149,7 @@ for r in range(1, sheet.nrows):
         # cursor.execute(
         #     "INSERT INTO QMS_templateprocessreview(review_group_id,created_by_id,updated_by_id,"
         #     "created_on,updated_on,is_mandatory,qms_process_model_id,template_id)"
-        #     " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (review_group[s], 471, 471, now, now, 0,
+        #     " VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (review_group[s], 35, 35, now, now, 0,
         #                                           process_model[str(sheet.row(r)[2].value)],
         #                                           template_master[sheet.row(r)[6].value]))
         # database.commit()
@@ -168,7 +169,7 @@ for r in range(1, sheet.nrows):
 #         cursor.execute('SET character_set_connection=utf8;')
 #         cursor.execute('SET NAMES utf8;')
 #         cursor.execute("INSERT INTO QMS_qmsprocessmodel(name,created_by_id,updated_by_id,created_on,updated_on,is_active,product_type)"
-#                        " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1, 0))
+#                        " VALUES (%s,%s,%s,%s,%s,%s,%s)", (ele, 35, 35, now, now, 1, 0))
 #         database.commit()
 #     except Exception as e:
 #         print str(e)
@@ -180,16 +181,16 @@ for r in range(1, sheet.nrows):
 # #         print str(e)
 # for ele in s1:
 #     cursor.execute("INSERT INTO QMS_templatemaster(name, actual_name, created_by_id,updated_by_id,created_on,updated_on,is_active)"
-#                    " VALUES (%s,%s, %s,%s,%s,%s,%s)", (ele, tmp[ele], 471, 471, now, now, 1))
+#                    " VALUES (%s,%s, %s,%s,%s,%s,%s)", (ele, tmp[ele], 35, 35, now, now, 1))
 #     database.commit()
 # # for ele in s2:
 #     cursor.execute("INSERT INTO QMS_severitylevelmaster (name,created_by_id,updated_by_id,created_on,updated_on,is_active)"
-#                    "VALUES (%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1))
+#                    "VALUES (%s,%s,%s,%s,%s,%s)", (ele, 35, 35, now, now, 1))
 #     database.commit()
 # for ele in s3:
 #     cursor.execute("INSERT INTO QMS_defectclassificationmaster (name,created_by_id,updated_by_id,"
 #                    "created_on,updated_on,is_active)"
-#                    "VALUES (%s,%s,%s,%s,%s,%s)", (ele, 471, 471, now, now, 1))
+#                    "VALUES (%s,%s,%s,%s,%s,%s)", (ele, 35, 35, now, now, 1))
 #     database.commit()
 
 # cursor.execute("SELECT id, name from QMS_defectclassificationmaster")

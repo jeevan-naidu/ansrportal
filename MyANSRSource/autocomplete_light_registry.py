@@ -68,9 +68,11 @@ class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
 class Autocompleteprojecttemplate(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        value = self.request.session['name']
+        value = self.request.session['sop_name']
+        print value
         try:
-            templatename = TemplateMaster.objects.filter(id__in=TemplateProcessReview.objects.filter(qms_process_model=value).values_list('template'))
+            templatename = TemplateMaster.objects.filter(id__in=TemplateProcessReview.objects.filter(qms_process_model__name__icontains=value).values_list('template'))
+            print templatename.query
         except Exception as e:
             print Exception
         return templatename

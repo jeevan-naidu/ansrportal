@@ -88,6 +88,7 @@ class AutocompleteProcessModel(autocomplete.Select2QuerySetView):
             choices = QMSProcessModel.objects.filter(id=obj.qms_process_model_id)
 
         except:
+            print "im in except"
             choices = QMSProcessModel.objects.filter(name__icontains=q)
         return choices
 
