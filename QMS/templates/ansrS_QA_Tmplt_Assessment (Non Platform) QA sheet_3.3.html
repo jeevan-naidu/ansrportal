@@ -169,7 +169,7 @@
                             {% for form_obj in review_formset %}
                                 {% if forloop.first %}
                                     {% if not request.session.hide_export or request.session.author_logged_in != True %}
-                                         <div style="float:right; width:150px">
+                                         <div class="removeifvalue" style="float:right; width:150px">
                                          <label> Import WorkBook</label>
                                          <input type="file" name="import_file" value="import" id="import_file"></div>
                                     {% endif %}
@@ -1003,6 +1003,18 @@ $('.defect_classification').change(function(e){
         <!--$(':input[name=author]').val($(":input[name=author] option:first").val()).trigger('change');}-->
 <!--});-->
 <!--})-->
+var product_type  = {{request.session.producttype}}
+var classificationvalue = $('#id_form-0-defect_classification').val()
+if (product_type == 1){
+if (classificationvalue != "" )
+{
+ $('.removeifvalue').hide()
+ }
+ else
+ {
+ $('.removeifvalue').show()
+ }
+ }
 </script>
 
 
