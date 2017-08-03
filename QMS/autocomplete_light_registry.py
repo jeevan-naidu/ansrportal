@@ -62,12 +62,12 @@ class AutocompleteTemplates(autocomplete.Select2QuerySetView):
         project = self.forwarded.get('project', None)
         qms_process_model = self.forwarded.get('qms_process_model', None)
         try:
-            print "im in try"
+            # print "im in try"
             obj = ProjectTemplateProcessModel.objects.get(project=project, qms_process_model=qms_process_model)
-            print obj
+            # print obj
             choices = TemplateMaster.objects.filter(id=obj.template_id)
         except:
-            print "excep"
+            # print "excep"
             try:
                 choices = TemplateProcessReview.objects.filter(qms_process_model=qms_process_model).values_list('template_id',flat=True)
 
@@ -88,7 +88,7 @@ class AutocompleteProcessModel(autocomplete.Select2QuerySetView):
             choices = QMSProcessModel.objects.filter(id=obj.qms_process_model_id)
 
         except:
-            print "im in except"
+            # print "im in except"
             choices = QMSProcessModel.objects.filter(name__icontains=q)
         return choices
 
@@ -171,7 +171,8 @@ class AutoCompleteAssignUserProjectSpecific(autocomplete.Select2QuerySetView):
             try:
                 qs = User.objects.filter(pk__in=user)
             except Exception, e:
-                print "AutoCompleteAssignUserProjectSpecific" , str(e)
+                pass
+                # print "AutoCompleteAssignUserProjectSpecific" , str(e)
                 # # for i in user:
                 # #     print i.member_id
                 #

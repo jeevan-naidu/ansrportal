@@ -297,7 +297,8 @@ def get_template_process_review(request):
             # print "qa_obj" ,qa_obj
             # qa_obj.filter(chapter_component=cm_obj)
         except Exception as e:
-            print "exception", str(e)
+            pass
+            # print "exception", str(e)
             qa_obj_count = 0
         # print "qa_obj" ,qa_obj
         qa_obj_count = qa_obj.count()
@@ -359,7 +360,7 @@ def get_template_process_review(request):
                 current_tab = int(current_tab)
         except Exception as e:
             logger.error(" {0} ".format(str(e)))
-            print str(e)
+            # print str(e)
     project_obj = Project.objects.get(id=int(project))
     chapter = Chapter.objects.filter(book=project_obj.book).exclude(id__in=existing_chapters).values_list('id', 'name')
     chapter = dict((x, y) for x, y in chapter)
@@ -392,7 +393,8 @@ def forbidden_access(self, form, project, message_code, chapter=None):
     try:
         c = get_review_group(project, chapter,  component=self.request.session['component'])
     except Exception as e:
-        print str(e)
+        pass
+        # print str(e)
 
     return render(self.request, self.template_name, {'form': form,
                                                      'review_group': get_review_group(project, chapter,
@@ -513,7 +515,8 @@ def initial_to_form(reports):
                 qms_data_list.append(qms_data.copy())
                 qms_data.clear()
     except Exception as e:
-        print str(e)
+        pass
+        # print str(e)
     # print qms_data_list
     return qms_data_list, severity_count
 
@@ -811,7 +814,8 @@ def fetch_severity(request):
             "else part"
             media_team = False
     except Exception as e:
-        print str(e)
+        pass
+        # print str(e)
 
     if not media_team:
         try:
@@ -850,7 +854,8 @@ def fetch_severity(request):
                     obj = DefectSeverityLevel.objects.filter(severity_type_id=severity,
                                                              defect_classification_id=severity_classification).first()
                 except Exception as e:
-                    print str(e)
+                    pass
+                    # print str(e)
 
             else:
                 obj = DefectSeverityLevel.objects.filter(severity_type_id=severity).first()
