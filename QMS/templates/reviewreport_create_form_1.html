@@ -1,0 +1,298 @@
+{% extends 'master.html' %}
+{% load static from staticfiles %}
+
+{% block siteTitle %}QMS{% endblock %}
+{% block pageTitle %}QMS{% endblock %}
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+
+{{form.media}}
+
+<div class="row">
+
+    <div class="col-sm-12">
+
+
+        <div class="panel widget">
+            <div class="panel-heading vd_bg-grey">
+                {{context_data}}
+
+                <h3 class="panel-title"><span class="menu-icon"> <i class="fa fa-magic"></i> </span> QA Sheet </h3>
+                {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                {{ error }}
+                {% endfor %}
+                {% endfor %}
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.tags %}
+                <div class="alert alert-{{ message.tags }}">
+                    <a class="panel-close close" data-dismiss="alert">x</a>
+                    <p>{{ message }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+            </div>
+            <div class="panel-body table-responsive">
+
+                <form class="form-horizontal " id="filter_form" role="form" method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-sm-10 qms-selectors">
+
+                                <span>{{ form.project.errors }}</span>{{ form.project}}
+                                <span>{{ form.qms_process_model.errors }}</span>{{ form.qms_process_model}}
+
+                                <span>{{ form.template.errors }} </span>{{form.template}}
+
+                                <!-- <span>{{form.review_group.errors}}</span>{{form.review_group}} -->
+
+
+                                <span>{{ form.chapter.errors }} </span>{{form.chapter}}
+                                <span>{{ form.component.errors }} </span>{{form.component}}
+
+
+                                <span>{{form.author.errors}}</span>{{form.author}}
+
+
+
+
+
+                        </div>
+                        <!--<div class="col-sm-2 qms-allocators2" style="float:left;display:none;">-->
+                        <!--<input id="lead_tab_complete" type="button" class="btn btn-primary btn-sm lead_tab_complete" onclick= "mark_as_complete();" style="margin-left: 10px;" name=""value="project Completed"/>-->
+                        <!--</div>-->
+
+                    </div><!-- ./qms-selectors row -->
+                    <hr>
+
+
+                    <div class="row">
+                        <div class="col-sm-10 qms-allocators" style="display: none;">
+
+                          <div class="form-group">
+                            <div class="col-md-12">
+                              <label class="control-label col-sm-2 field-name"><span>Field 1</span><span class="vd_red"> *</span></label>
+                              <div class="controls col-sm-6">
+                                <select type="select" class="width-50 input-sm select-name" name="name" >
+                                    <option>Option 1</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                    <option>Option 4</option>
+                                    <option>Option 5</option>
+                                </select>
+                                <input type="number" min="1" max="10" step="1"   class="form-control input-sm order-number" name="">
+                                  <input id="" type="button" class="btn btn-primary btn-sm tab_complete"
+                                         onclick= "mark_as_complete(ele=this);"
+                                         style="margin-left: 20px !important; display:none" name=""value="Review Completed"/>
+
+
+                              </div>
+                            </div>
+                          </div>
+
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-sm-12 qms-add-field" style="display:none">
+                            <div class="col-sm-2 controls">
+                                <select id="select-field" type="select" class="input-sm" >
+
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <button id="qms-add-field" class="btn btn-primary btn-sm" disabled>Add This Field
+                                </button>
+                            </div>
+                            <label class="custom-control custom-checkbox">
+  <input type="checkbox" class="checkbox-primary">
+  <span class="custom-control-indicator"></span>
+  <span class="custom-control-description">Copy Configuration</span>
+</label>
+                        </div>
+
+                    </div>
+                                    <div class="modal fade" id="copy_configurations" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModalLabel">Copy Configuration</h4>
+                        </div>
+                        <div class="modal-body">
+                                <div class="row">
+                <div class="col-sm-5">
+                    <select name="from[]" id="search" class="form-control" size="8" multiple="multiple">
+
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="button" id="search_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                    <button type="button" id="search_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                    <button type="button" id="search_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                    <button type="button" id="search_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+                </div>
+
+                <div class="col-sm-5">
+                    <select name="to[]" id="search_to" class="form-control" size="8" multiple="multiple"></select>
+                </div>
+            </div>
+
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal" id="cancel_config">Cancel </button>
+                          <button type="button" class="btn vd_btn vd_bg-green" data-dismiss="modal" id="copy_config">OK</button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+
+
+
+
+
+                    <div class="row submit" id="div_submit" style="display:none">
+                        <div class="col-sm-12">
+                            <input type="submit" id="qms-submit" class="btn btn-danger btn-sm pull-right" value="Submit">
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+
+                <br>
+
+
+
+            </div><!-- ./panel body -->
+
+        </div>
+
+
+    </div>
+
+</div><!-- ./row main -->
+
+
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/qms.js"></script>
+<script type="text/javascript" src="/static/multi_select/js/multiselect.min.js"></script>
+
+<script type="text/javascript">
+var globally_locked = false;
+$(document).ready(function() {
+
+    $('#cancel_config').click(function() {
+        $('#search_to').empty().siblings('.form-control').val('');
+        $('#filter_form :checkbox').prop("checked",false);
+
+    });
+
+    $('#copy_config').click(function() {
+          if($('#search_to > option').length == 0)
+              $('#filter_form :checkbox').prop("checked",false);
+
+    });
+
+    $('#filter_form :checkbox').change(function() {
+        // this will contain a reference to the checkbox
+        if (this.checked) {
+             $('#copy_configurations').modal('show');
+             $('#qms-submit').prop("disabled",false);
+        } else {
+             $('#copy').modal('hide');
+             if(globally_locked)  $('#qms-submit').prop("disabled",true);
+             $('#search_to').empty().siblings('.form-control').val('');
+
+        }
+    });
+
+    $('#filter_form :checkbox').hover(function() {
+        // this will contain a reference to the checkbox
+        if (this.checked) {
+             $('#copy_configurations').modal('show');
+        }
+    });
+
+
+    $('#search').multiselect({
+        search: {
+            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+        },
+        fireSearch: function(value) {
+            return value.length > 3;
+        }
+    });
+});
+</script>
+
+<style type="text/css">
+
+    .btn.pull-right{margin-left: 15px}
+
+    .qms-selectors .form-inline{margin-right: 30px;}
+
+    .edit-buttons{width: 65px;}
+    .gradeX a.vd_btn{margin-right: 0px !important;}
+
+    .select2.select2-container {min-width: 0px !important;width: 150px !important;margin-right: 10px;}
+    .author_dropdown {
+        min-width: 0px !important;
+        width: 150px !important;
+       margin-right: 15px;
+        border: 1px solid #aaaaaa;
+        border-radius: 4px;
+        position: relative;
+        top: 1px;
+        /* color: #999; */
+    }
+    .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f3f1f1;
+    }
+    .qa-editable{cursor: pointer;}
+    .qa-table td p{margin-bottom: 0px; line-height: 30px;}
+
+    #qms-summary{
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    padding: 15px 0px;
+    margin-bottom: 15px;
+    transition: all 0.5s ease;
+    }
+    #qms-summary.collapsed{height: 0px;overflow: hidden;padding: 0px;border-bottom: 0px;}
+
+    #qms-summary table, #qms-summary table td, #qms-summary table th{border:1px solid #d6d6d6;text-align: center;}
+
+    #review_report_form{position:relative}
+    #review_report_form td input[type="text"], #review_report_form td select{height:25px}
+    .no_questions{
+    position: absolute;
+    top: -55px;
+    right: 15px;
+    }
+    .table .menu-action{padding-top:7px !important;}
+    .select-name{float: left;}
+    .order-number{width: 60px !important;margin-left:15px;float: left;background-color: #f4fff1;text-align: center;padding: 6px 6px 7px 17px !important}
+</style>
+
+{% endblock %}

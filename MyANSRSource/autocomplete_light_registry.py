@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone
-from CompanyMaster.models import Practice, SubPractice
+from MyANSRSource.models import Book, Project, qualitysop, ProjectAsset, ProjectScope, Milestone, ProjectSopTemplate, \
+    Role
+from CompanyMaster.models import Practice, SubPractice, DataPoint
 from dal import autocomplete
 from MyANSRSource.models import Milestone
+from QMS.models import TemplateProcessReview, TemplateMaster
+
 
 
 class AutocompleteUser(autocomplete.Select2QuerySetView):
@@ -46,11 +49,11 @@ class AutocompleteProjectAsset(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompletePracticeName(autocomplete.Select2QuerySetView):
+class AutocompleteDatapointName(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
-        choices = Practice.objects.filter(name__icontains=q)
+        choices = DataPoint.objects.filter(name__icontains=q, is_active=True)
         return choices
 
 
@@ -60,6 +63,19 @@ class AutocompletesubPracticeName(autocomplete.Select2QuerySetView):
         q = self.request.GET.get('q', '')
         choices = SubPractice.objects.filter(name__icontains=q)
         return choices
+
+
+class Autocompleteprojecttemplate(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        value = self.request.session['sop_name']
+        print value
+        try:
+            templatename = TemplateMaster.objects.filter(id__in=TemplateProcessReview.objects.filter(qms_process_model__name__icontains=value).values_list('template'))
+            print templatename.query
+        except Exception as e:
+            print Exception
+        return templatename
 
 
 class AutocompleteQualitySOP(autocomplete.Select2QuerySetView):
@@ -84,9 +100,19 @@ class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
         q = self.request.GET.get('q', '')
         choices = Milestone.objects.filter(name__icontains=q)
         return choices
+
+
 class AutocompleteMilestonetype(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Milestone.objects.filter(name__icontains=q)
+        return choices
+
+
+class AutocompleteRole(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '')
+        choices = Role.objects.filter(role__icontains=q, is_active=True)
         return choices

@@ -5,7 +5,8 @@ from django.contrib import messages
 from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
-    TimeSheetEntry, Milestone, MilestoneType,  ProjectDetail, ProjectAsset, qualitysop, ProjectScope
+    TimeSheetEntry, Milestone, MilestoneType,  ProjectDetail, ProjectAsset, qualitysop, ProjectScope, ProjectSopTemplate, \
+    Role, Product
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -163,9 +164,9 @@ class TaskAdmin(admin.ModelAdmin):
         return qs.filter(active=True)
 
 
-class ProjectTeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('member', 'role',
-                    'startDate', 'plannedEffort')
+# class ProjectTeamMemberAdmin(admin.ModelAdmin):
+#     list_display = ('member', 'actualcount', 'plannedcount', 'product', 'role'
+#                     'startDate', 'plannedEffort')
 
 
 def update_timesheet(modeladmin, request, queryset):
@@ -195,7 +196,7 @@ class MilestoneAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ['project', 'PracticeName', 'projectFinType', 'deliveryManager', 'Sowdocument',
+    list_display = ['project', 'projectFinType', 'deliveryManager', 'Sowdocument',
                     'Estimationdocument', 'SOP', 'Scope', 'Asset']
 
 
@@ -203,12 +204,22 @@ class ProjectScopeAdmin(admin.ModelAdmin):
     list_display = ['scope', 'IsActive', 'createdOn', 'updatedOn', 'created_by']
 
 
-class qualitysopAdmin(admin.ModelAdmin):
-    list_display = ['name', 'SOPlink', 'createdOn', 'updatedOn', 'created_by']
+# class qualitysopAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'SOPlink','product_type',  'createdOn', 'updatedOn', 'created_by']
 
 
 class ProjectAssetAdmin(admin.ModelAdmin):
     list_display = ['Asset', 'Is_Active', 'createdOn', 'updatedOn', 'created_by']
+#
+# class ProjectSopTemplateAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'is_active',  'created_by', 'created_at', 'updated_at']
+
+
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ['role', 'is_active']
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ['name', 'unit', 'is_active']
 
 
 admin.site.register(Project, ProjectAdmin)
@@ -222,5 +233,8 @@ admin.site.register(MilestoneType, MilestoneTypeAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 admin.site.register(ProjectScope, ProjectScopeAdmin)
-admin.site.register(qualitysop, qualitysopAdmin)
+# admin.site.register(qualitysop, qualitysopAdmin)
 admin.site.register(ProjectAsset, ProjectAssetAdmin)
+# admin.site.register(ProjectSopTemplate, ProjectSopTemplateAdmin)
+admin.site.register(Role, RoleAdmin)
+admin.site.register(Product, ProductAdmin)

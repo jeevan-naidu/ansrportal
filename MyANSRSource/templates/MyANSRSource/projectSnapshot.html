@@ -111,8 +111,7 @@
 				<th>Project Cost</th>
 				<th>P.O.</th>
 				<th>SalesForce Number</th>
-				<th>Practice</th>
-				<th>Practice Head</th>
+				<th>Discipline</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -124,8 +123,7 @@
 			<td>{{ flagData.outsource_contract_value }}</td>
 			<td>{{ flagData.po }}</td>
 			<td>{{ flagData.salesForceNumber }}</td>
-			<td>{{flagData.practicename}}</td>
-			<td>{{practicehead_name}}</td>
+			<td>{{flagData.Discipline}}</td>
 			{% for rec, value in flagData.iteritems %}
 				<input type="hidden" name="{{ rec }}" value="{{ value }}">
 			{% endfor %}

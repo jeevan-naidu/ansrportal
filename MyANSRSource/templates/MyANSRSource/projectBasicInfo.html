@@ -40,7 +40,7 @@
                                         </span>
                                         <span class="col-lg-3"><b><span class="label label-default form-control"> PH(s)</span></b></span>
                                     {% elif field.label == 'Sop Link' %}
-                                    <span class="col-lg-9">{{field}}<a id="soplink" href="{{ field.value }}">{{ field.value }}</a>
+                                    <span class="col-lg-9">{{field}}<a id="soplink" target='_blank' href="{% if field.value  %}{{ field.value }}{%endif %} {% if not field.value %}javascript:void(0){%endif%}">SopLink</a>
                                         {% if field.help_text %} <div>{{ field.help_text }} </div>{% endif %}
                                         </span>
                                         <span class="col-lg-3"></span>
@@ -81,22 +81,8 @@
             window.history.go(-1);
             return false;
         });
-         $('.practicevalue').on('change',function() {
-            var practicename = this.value
-           $.ajax(
-                   {
-                       type : "GET",
-                       url : '/myansrsource/practicehead/',
-                       data :{'practicename': practicename} ,
-                       success : function(data)
-                       {
-                       <!--document.getElementById('id_BasicInformation-PracticeHead').value=data-->
-                       document.getElementById('practice').innerHTML= 'Practice Head: ' + data
-                       }
-                   }
-           );
- });
  $('.sopname').on('change', function() {
+
               var sop = this.value
                     $.ajax(
                    {
@@ -105,8 +91,7 @@
                        data :{'sop': sop} ,
                        success : function(data)
                        {
-                       document.getElementById('soplink').text=data
-                       document.getElementById('soplink').href=data
+                       document.getElementById('soplink').href=data['actions']
                        }
                    }
            );

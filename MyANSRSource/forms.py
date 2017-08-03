@@ -1,3 +1,4 @@
+
 from django.db.models import Q
 from django import forms
 from django.utils import timezone
@@ -5,15 +6,16 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    Milestone
+    Milestone, ProjectSopTemplate,Role
 from bootstrap3_datetime.widgets import DateTimePicker
-from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, SubPractice
+from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, DataPoint
 from employee.models import Remainder
 from django.utils.safestring import mark_safe
 import datetime
 import calendar
 import helper
 from dal import autocomplete
+from QMS.models import TemplateProcessReview
 
 PROJECT_CLOSE_FLAG = (('','................'),
                       ('Extending end date external (client side)', 'Extending end date external (client side)'),
@@ -426,7 +428,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     pmDelegate = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="PM Delegate",
-        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser',  attrs={
             'data-placeholder': 'Type PM Delegate Name ...',
         }
                                          # url='AutocompleteUser'
@@ -582,6 +584,7 @@ class ModifyProjectInfoForm(forms.ModelForm):
             'class': 'practicevalue',
         }, ),
         required=False, )
+
     pmDelegate = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="PM Delegate",
@@ -617,7 +620,6 @@ class ModifyProjectInfoForm(forms.ModelForm):
             'plannedEffort',
             'totalValue',
             'salesForceNumber',
-            'practicename',
             'DeliveryManager',
             'projectManager',
             'pmDelegate',
@@ -728,7 +730,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
     member = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_active=True),
+        queryset=User.objects.all(),
         # label="Project Leader",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
@@ -742,37 +744,37 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         model = ProjectTeamMember
         fields = (
             'member',
-            'datapoint',
+            'role',
+            'product',
             'startDate',
-            'endDate',
-            'rate',
+            'plannedcount',
+            'actualcount',
             'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
-            'endDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
+        self.fields['plannedEffort'].widget.attrs['max'] = 40
+        self.fields['plannedEffort'].widget.attrs[
+            'required'] = "true"
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
-        # self.fields['datapoint'].widget.attrs['required'] = "true"
-        self.fields['datapoint'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
-        self.fields['endDate'].widget.attrs[
-            'class'] = "form-control  min-100 pro-end-date"
+        # self.fields['endDate'].widget.attrs[
+        #     'class'] = "form-control  min-100 pro-end-date"
         self.fields['startDate'].widget.attrs['required'] = True
-        self.fields['endDate'].widget.attrs['required'] = True
-        self.fields['rate'].widget.attrs[
-            'class'] = "form-control w-100 pro-planned-effort-percent"
-        self.fields['rate'].widget.attrs[
+        self.fields['actualcount'].widget.attrs[
+            'class'] = "form-control w-1000"
+        self.fields['actualcount'].widget.attrs[
             'required'] = "true"
         self.fields['plannedEffort'].widget.attrs[
-            'class'] = "form-control w-100 pro-planned-effort"
+            'class'] = "form-control w-100"
 
 
 class CloseProjectMilestoneForm(forms.ModelForm):
@@ -821,14 +823,31 @@ class CloseProjectMilestoneForm(forms.ModelForm):
 # Project Flag Form
 class ProjectFlagForm(forms.ModelForm):
     SopLink = forms.CharField(label=('Sop Link'), required=False)
-    practicename = forms.ModelChoiceField(
-        queryset=Practice.objects.all(),
-        label="Select Practice",
-        widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
-            'data-placeholder': 'Type Practice Name ...',
+    Discipline = forms.ModelChoiceField(
+        queryset=DataPoint.objects.all(),
+        label="Select Discipline",
+        widget=autocomplete.ModelSelect2(url='AutocompleteDatapointName', attrs={
+            'data-placeholder': 'Type Discipline Name ...',
             'class': 'practicevalue',
         }, ),
         required=False, )
+
+    sopname = forms.ModelChoiceField(
+        queryset=qualitysop.objects.all(),
+        label="Select QualitySOP",
+        widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
+            'data-placeholder': 'Type  QualitySOP Name ...',
+        }, ),
+        required=False, )
+
+    projecttemplate = forms.ModelChoiceField(
+        queryset=ProjectSopTemplate.objects.all(),
+        label="Select Process template",
+        widget=autocomplete.ModelSelect2(url='Autocompleteprojecttemplate', attrs={
+            'data-placeholder': 'Type Template Name ...',
+            'class': 'ProjectSopTemplate',
+        }, ),
+        required=True, )
 
     projectasset = forms.ModelChoiceField(
         queryset=ProjectAsset.objects.all(),
@@ -840,13 +859,7 @@ class ProjectFlagForm(forms.ModelForm):
         required=False, )
 
 
-    sopname = forms.ModelChoiceField(
-        queryset=qualitysop.objects.all(),
-        label="Select QualitySOP",
-        widget=autocomplete.ModelSelect2(url='AutocompleteQualitySOP', attrs={
-            'data-placeholder': 'Type  QualitySOP Name ...',
-        }, ),
-        required=False, )
+
 
     ProjectScope = forms.ModelChoiceField(
         queryset=ProjectScope.objects.all(),
@@ -865,9 +878,10 @@ class ProjectFlagForm(forms.ModelForm):
             'totalValue',
             'po',
             'salesForceNumber',
-            'practicename',
             'sopname',
             'SopLink',
+            'projecttemplate',
+            'Discipline',
             'projectasset',
             'ProjectScope',
 

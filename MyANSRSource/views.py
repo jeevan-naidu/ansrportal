@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -44,6 +44,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
+from QMS.models import TemplateMaster, QMSProcessModel,ProjectTemplateProcessModel, TemplateProcessReview
 from ldap import LDAPError
 logger = logging.getLogger('MyANSRSource')
 # views for ansr
@@ -129,7 +130,11 @@ def getheadid(request):
 def soplink(request):
     sopid = request.GET['sop']
     soplink  = qualitysop.objects.get(id=sopid)
-    return HttpResponse(soplink.SOPlink)
+    request.session['sop_name'] = soplink.name
+    data = json.dumps({
+        'actions': soplink.SOPlink,
+    })
+    return HttpResponse(data, content_type='application/json')
 
 
 def milestonename(request):
@@ -1628,11 +1633,12 @@ class ApproveTimesheetView(TemplateView):
                                                  self.request.session['dm_projects'], include_activity)
                 if ts_obj:
                     ts_data_list[members] = {}
-                    for s in ts_obj:
-                        a = 0
-                        while a == 0:
-                            ts_data_list[members]['approved_status'] = s.approved
-                            a += 1
+                    status_tmp = [s.approved for s in ts_obj]
+                    if all(status_tmp):
+                        ts_data_list[members]['approved_status'] = True
+                    else:
+                        ts_data_list[members]['approved_status'] = False
+
                     if members.user_id not in user_id_collection:
                         non_billable_total = 0
                     else:
@@ -2171,7 +2177,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
             ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
                                                                       pmDelegate=updatedData['pmDelegate'])
         except Exception as error:
-            print error
+            logger.error(error)
         for eachData in allData:
             if eachData['user'] not in updateDataId:
                 ProjectManager.objects.get(pk=eachData['id']).delete()
@@ -2211,7 +2217,8 @@ class TrackMilestoneWizard(SessionWizardView):
             projectObj = Project.objects.get(pk=selectedProjectId)
             totalValue = projectObj.totalValue
             projectType = projectObj.internal
-            context.update({'totalValue': totalValue, 'type': projectType})
+            projectname = projectObj.name
+            context.update({'totalValue': totalValue, 'type': projectType, 'name': projectname})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -2570,13 +2577,13 @@ class CreateProjectWizard(SessionWizardView):
             else:
                 flagData[k] = v
         effortTotal = 0
-        if flagData['practicename']:
-            head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
-            head = User.objects.get(id=head_id);
-            head_name = head.first_name + " " + head.last_name
-            practicehead_name = head_name
-        else:
-            practicehead_name = 'None'
+        # if flagData['practicename']:
+        #     head_id = Practice.objects.select_related('head').get(name=flagData['practicename']).head_id
+        #     head = User.objects.get(id=head_id);
+        #     head_name = head.first_name + " " + head.last_name
+        #     practicehead_name = head_name
+        # else:
+        #     practicehead_name = 'None'
         if flagData['plannedEffort']:
             revenueRec = flagData['totalValue'] / flagData['plannedEffort']
         else:
@@ -2588,7 +2595,7 @@ class CreateProjectWizard(SessionWizardView):
             'effortTotal': effortTotal,
             'revenueRec': revenueRec,
             'upload': upload,
-            'practicehead_name':practicehead_name,
+            'practicehead_name':'None',
         }
         return render(self.request, 'MyANSRSource/projectSnapshot.html', data)
 
@@ -2605,11 +2612,17 @@ class ManageTeamWizard(SessionWizardView):
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId,
-                    active=True).values('id', 'member',
+                    active=True).values('id', 'member','project_id__name',
                                         'startDate', 'endDate',
-                                        'datapoint',
-                                        'plannedEffort', 'rate'
+                                        'role',
+                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
                                         )
+                try:
+                    self.request.session['Pname'] = currentProject[0]['project_id__name']
+                except Exception as e:
+                    logger.error(e)
+
+
             else:
                 logger.error(u"Project Id : {0}, Request: {1},".format(
                     projectId, self.request))
@@ -2685,13 +2698,15 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.active = False
                         ptm.save()
                     else:
+                        eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
-                                (eachData['endDate'] == ptm.endDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['datapoint'] == ptm.datapoint) and \
-                                (eachData['rate'] == ptm.rate):
+                                (eachData['product']== ptm.product) and \
+                                (eachData['endDate'] == ptm.endDate) and \
+                                (eachData['plannedcount'] == ptm.plannedcount) and \
+                                (eachData['role'] == ptm.role):
                             pass
                         else:
                             ptm.project = project
@@ -2866,11 +2881,9 @@ def saveProject(request):
                 try:
                     pd = ProjectDetail()
                     pd.project_id = pr.id
+                    pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
-                    practice_name = request.POST.get('practicename')
-                    practice_id = Practice.objects.get(name=practice_name).id if practice_name != 'None' else None
-                    pd.PracticeName_id = practice_id
                     del_mgr = request.POST.get('DeliveryManager')
                     del_mgr_id = User.objects.get(username=del_mgr).id
                     pd.deliveryManager_id = del_mgr_id
@@ -2884,6 +2897,26 @@ def saveProject(request):
                     pd.Scope_id = scope_id
                     asset = request.POST.get('projectasset')
                     asset_id = ProjectAsset.objects.get(Asset=asset).id if asset != 'None' else None
+                    try:
+
+                        template, created = TemplateMaster.objects.get_or_create(name=request.POST.get('projecttemplate'),
+                                                                        defaults=
+                                                                        {'actual_name': request.POST.get('projecttemplate'),
+                                                                        'created_by': request.user})
+
+                        qms_process_model, created = QMSProcessModel.objects.get_or_create(name=sop,
+                                                                                  defaults={
+                                                                        'created_by': request.user})
+
+                        obj,created = ProjectTemplateProcessModel.objects.update_or_create(project_id=pd.project_id,
+                                                                             defaults={
+                                                                                 'template': template,
+
+                                                                                 'qms_process_model': qms_process_model,
+                                                                                 'created_by': request.user}, )
+                    except Exception as e:
+                        print str(e)
+
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
@@ -3040,7 +3073,7 @@ def ViewProject(request):
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
                                                                    | Q(pmDelegate=request.user) |
-                                                                   Q(PracticeName__head=request.user.id))
+                                                                   Q(Discipline__lead=request.user.id))
     allproj =[]
     bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
     for val in data2:
@@ -3087,7 +3120,7 @@ def GetTasks(request, projectid):
         tasks = Task.objects.filter(
             projectType=Project.objects.get(pk=projectid).projectType,
             active=True
-        ).values('code', 'name', 'id', 'taskType', 'norm')
+        ).values('code', 'name', 'id', 'taskType', 'norm').order_by('name')
         for eachRec in tasks:
             eachRec['norm'] = float(eachRec['norm'])
         a1 = request.GET.get('endDate')
@@ -3386,7 +3419,7 @@ class ActiveProjects(TemplateView):
         context = super(ActiveProjects, self).get_context_data(**kwargs)
         if self.request.user.groups.filter(name='myansrsourcebuhead').exists():
             context['projects_list'] = ProjectDetail.objects.filter(
-                project__closed=False).values('PracticeName', 'project__projectId', 'project__name', 'project__id',
+                project__closed=False).values('Discipline__name', 'project__projectId', 'project__name', 'project__id',
                                               'project__customer__name',  'project__bu__name','project__endDate')
             return context
         else:
@@ -3395,14 +3428,14 @@ class ActiveProjects(TemplateView):
     def post(self, request, *args, **kwargs):
         workbook = xlsxwriter.Workbook('active_projects.xlsx')
         worksheet = workbook.add_worksheet()
-        header = ['Project Id', 'Project', 'Practice', 'Customer', 'Business Unit', 'End Date']
+        header = ['Project Id', 'Project', 'Discipline', 'Customer', 'Business Unit', 'End Date']
         header_length = len(header)
         header_column = list(string.ascii_uppercase)[:header_length]
         header_column = [s+"1" for s in header_column]
         header = zip(header_column, header)
         date_format = workbook.add_format({'num_format': 'yyyy/mm/dd'})
         project_details = ProjectDetail.objects.filter(
-                project__closed=False).values_list('project__projectId',  'project__name',  'PracticeName',
+                project__closed=False).values_list('project__projectId',  'project__name',  'Discipline__name',
                                                    'project__customer__name',
                                                    'project__bu__name', 'project__endDate')
         for k, v in header:
