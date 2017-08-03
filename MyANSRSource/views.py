@@ -3120,7 +3120,7 @@ def GetTasks(request, projectid):
         tasks = Task.objects.filter(
             projectType=Project.objects.get(pk=projectid).projectType,
             active=True
-        ).values('code', 'name', 'id', 'taskType', 'norm')
+        ).values('code', 'name', 'id', 'taskType', 'norm').order_by('name')
         for eachRec in tasks:
             eachRec['norm'] = float(eachRec['norm'])
         a1 = request.GET.get('endDate')

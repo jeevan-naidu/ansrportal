@@ -750,12 +750,12 @@ def ProjectPerfomanceReport(request):
             # for super user get all the projects irrespective of what project he is related to.
             # changed: date: 4-Feb-206 -By Amol
             if request.user.is_superuser:
-                eProjects = Project.objects.filter(
+                eProjects = Project.objects.filter(active=True,
                     startDate__lte=endDate, endDate__gte=startDate,
                     #id__in=helper.get_my_project_list(request.user),
                     internal=False, bu__id__in=reportbu, projectId__isnull=False
                 ).order_by('projectId')
-                iProjects = Project.objects.filter(
+                iProjects = Project.objects.filter(active=True,
                     startDate__lte=endDate, endDate__gte=startDate, internal=True,
                     #id__in=helper.get_my_project_list(request.user),
                     bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')
@@ -765,12 +765,12 @@ def ProjectPerfomanceReport(request):
                                           iProjects, start, end)
             else:
 
-                eProjects = Project.objects.filter(
+                eProjects = Project.objects.filter(active=True,
                     startDate__lte=endDate, endDate__gte=startDate,
                     id__in=helper.get_my_project_list(request.user),
                     internal=False, bu__id__in=reportbu, projectId__isnull=False
                 ).order_by('projectId')
-                iProjects = Project.objects.filter(
+                iProjects = Project.objects.filter(active=True,
                     startDate__lte=endDate, endDate__gte=startDate, internal=True,
                     id__in=helper.get_my_project_list(request.user),
                     bu__id__in=reportbu, projectId__isnull=False).order_by('projectId')

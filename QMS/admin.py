@@ -55,7 +55,6 @@ admin.site.register(SeverityLevelMaster, CommonAdmin)
 admin.site.register(DefectClassificationMaster, CommonAdmin)
 admin.site.register(ReviewMaster) #
 admin.site.register(ReviewGroup) #
-admin.site.register(WorkPacketMaster, CommonAdmin)
 admin.site.register(DefectSeverityLevel, CommonAdmin)
 admin.site.register(QASheetHeader, CommonAdmin)#
 admin.site.register(ReviewReport, CommonAdmin)#
