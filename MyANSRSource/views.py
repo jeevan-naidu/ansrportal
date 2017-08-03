@@ -130,7 +130,7 @@ def getheadid(request):
 def soplink(request):
     sopid = request.GET['sop']
     soplink  = qualitysop.objects.get(id=sopid)
-    request.session['name'] = soplink.id
+    request.session['sop_name'] = soplink.name
     data = json.dumps({
         'actions': soplink.SOPlink,
     })
