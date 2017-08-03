@@ -1234,7 +1234,6 @@ class ReviewRedirectView(View):
         try:
             ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
             self.request.session['template_id'] = ptpm_obj.template_id
-            self.request.session['producytype'] = ptpm_obj.qms_process_model
             self.request.session['producttype'] = QMSProcessModel.objects.get(name=ptpm_obj.qms_process_model).product_type
             obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
             is_pm = ProjectDetail.objects.filter(Q(deliveryManager=request.user) |
