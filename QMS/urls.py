@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^get_template_process_review/$', login_required(get_template_process_review),
         name=u'get_template_process_review'),
     url(r'^AutocompleteDMProjects/$', login_required(AutocompleteDMProjects.as_view()), name='AutocompleteDMProjects',),
-    url(r'^AutocompleteProjects/$', login_required(AutocompleteProjects.as_view()), name='AutocompleteProjects', ),
+    url(r'^AutocompleteProject/$', login_required(AutocompleteProject.as_view()), name='AutocompleteProject', ),
     url(r'^AutocompleteUser/$', login_required(AutocompleteUser.as_view()), name='AutocompleteUser', ),
     url(r'^AutocompleteChapters/$', login_required(AutocompleteChapters.as_view()), name='AutocompleteChapters', ),
     url(r'^AutocompleteComponents/$', login_required(AutocompleteComponents.as_view()), name='AutocompleteComponents', ),
