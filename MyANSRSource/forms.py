@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    Milestone, ProjectSopTemplate,Role
+    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, DataPoint
 from employee.models import Remainder
@@ -868,7 +868,7 @@ class ProjectFlagForm(forms.ModelForm):
             'data-placeholder': 'Type  Project Scope Name ...',
         }, ),
         required=False, )
-
+    Project_funding = forms.ChoiceField(choices=PROJECT_FUNDING)
     outsource_contract_value = forms.DecimalField(initial=0.0, required=False)
 
     class Meta:
@@ -883,6 +883,7 @@ class ProjectFlagForm(forms.ModelForm):
             'projecttemplate',
             'Discipline',
             'projectasset',
+            'Project_funding',
             'ProjectScope',
 
         )
@@ -897,6 +898,10 @@ class ProjectFlagForm(forms.ModelForm):
             "20100000"
         self.fields['salesForceNumber'].widget.attrs['max'] = \
             "99999999"
+        self.fields['Project_funding'].widget.attrs[
+            'required'] = "true"
+        self.fields['sopname'].widget.attrs['required']='true'
+        self.fields['Project_funding'].widget.attrs['class']='form-control'
         self.fields['plannedEffort'].widget.attrs['class'] = \
             "planned-effort-input form-control"
         self.fields['totalValue'].widget.attrs['class'] = \

@@ -50,6 +50,9 @@ ROLE = (
     ('delivery manager', 'Delivery Manager')
 )
 TEAM_CHOICES = (('0', 'assessment'), ('1', 'learning'))
+PROJECT_FUNDING = (('Customer Paid','Customer Paid'),
+                   ('Demo/Pilot/POC', 'Demo/Pilot/POC'),
+                   ('Operations', 'Operations'))
 #upload path for sow and estimation
 
 
@@ -394,7 +397,6 @@ class Project(models.Model):
 class ProjectDetail(models.Model):
     project = models.OneToOneField(Project, related_name='project_detail_project')
     projecttemplate = models.ForeignKey(ProjectSopTemplate, null=True, blank=True)
-    # PracticeName = models.ForeignKey(Practice, verbose_name='Practice Name', null=True, blank=True)
     Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
@@ -402,6 +404,7 @@ class ProjectDetail(models.Model):
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
                                           verbose_name="Upload project Estimation Document")
+    Project_funding = models.CharField(verbose_name='Funding TYpe', choices=PROJECT_FUNDING, max_length=15, null=True, blank=True,)
     SOP = models.ForeignKey(qualitysop, verbose_name='Quality Sop ID', null=True, blank=True)
     Scope = models.ForeignKey(ProjectScope, verbose_name='Project Scope ID', null=True, blank=True)
     Asset = models.ForeignKey(ProjectAsset, verbose_name='Project Asset ID', null=True, blank=True)
