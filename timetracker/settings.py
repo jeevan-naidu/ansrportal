@@ -152,6 +152,8 @@ INSTALLED_APPS = [
     'skillset',
     'TimeInOffice',
     'LaptopAvail',
+    'QMS',
+    'simple_history',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -166,6 +168,8 @@ MIDDLEWARE_CLASSES = [
     'session_security.middleware.SessionSecurityMiddleware',
     'GrievanceAdmin.middleware.grievanceadminmiddleware.GrievancePermissionCheckMiddleware',
     'ExitApp.middleware.exitappmiddleware.ExitappPermissionCheckMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
+    'QMS.middleware.qms_middleware.QMSPermissionCheckMiddleware',
 ]
 # Overriding Default T_C_P with new T_C_p
 TEMPLATES = [
