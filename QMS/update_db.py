@@ -5,7 +5,7 @@ import os, sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 # #
-database = MySQLdb.connect(host="localhost", user="root", passwd="root", db="myansrsource")
+database = MySQLdb.connect(host="localhost", user="root", passwd="hundred@100", db="myansrsource")
 cursor = database.cursor()
 s = [f for f in os.listdir("master_templates/") if f!= "QMS-T1.xlsx"]
 
