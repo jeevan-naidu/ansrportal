@@ -605,6 +605,13 @@
                                                     <span class="menu-text">Salesforce Data</span>
                                                 </a>
                                             </li>
+                                            {% if request.user|has_group:'DeliveryManager' %}
+                                            <li>
+                                                <a href="/salesforce/contract_details">
+                                                    <span class="menu-text">Contract Details</span>
+                                                </a>
+                                            </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </li>

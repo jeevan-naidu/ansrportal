@@ -1,0 +1,142 @@
+
+
+
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Salesforce Create{% endblock %}
+{% block pageTitle %}Salesforce Create{% endblock %}
+{% block content  %}
+
+<style>
+
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
+{% if messages %}
+         {% for message in messages %}
+            {% if message.tags == 'error' %}
+              <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                <i class="icon-cross"></i>
+                </button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+              </div>
+            {% else %}
+              <div class="alert alert-success">
+                <strong>Success!</strong> {{message}}
+               </div>
+                        {% endif%}
+
+                     {% endfor %}
+                   {% endif %}
+                        <form id="salesforce_create_form" action="" method="post" class="form-horizontal" enctype="multipart/form-data" data-toggle="validator">
+                        {% csrf_token %}
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">SFID/Opportunity number</label>
+                              <div class="col-sm-7 controls">
+                                  {{form.opportunity_number}}
+                                  {{form_errors.opportunity_number}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Opportunity Name</label>
+                              <div class="col-sm-7 controls">
+                                  {{form.opportunity_name}}
+                                  {{form_errors.opportunity_name}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+                             <div class="form-group">
+                              <label class="col-sm-4 control-label">Customer Contact</label>
+                              <div class="col-sm-7 controls">
+                                      {{form.customer_contact}}
+                                      {{form_errors.customer_contact}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Account Name</label>
+                              <div class="col-sm-7 controls">
+                                      {{form.account_name}}
+                                      {{form_errors.account_name}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Estimated Start Date</label>
+                              <div class="col-sm-3 controls">
+                                {{form.estimate_start_date}}
+                                {{form_errors.estimate_start_date}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Estimated End Date</label>
+                              <div class="col-sm-3 controls">
+                                  {{form.estimate_end_date}}
+                                  {{form_errors.estimate_end_date}}
+                                <div class="help-block with-errors"></div>
+
+                              </div>
+                            </div>
+
+                                <div class="form-group">
+                              <label class="col-sm-4 control-label">Planned Start Date</label>
+                              <div class="col-sm-3 controls">
+                                {{form.planned_start_date}}
+                                {{form_errors.planned_start_date}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="col-sm-4 control-label">Planned End Date</label>
+                              <div class="col-sm-3 controls">
+                                  {{form.planned_end_date}}
+                                  {{form_errors.planned_end_date}}
+                                <div class="help-block with-errors"></div>
+
+                              </div>
+                            </div>
+
+                             <div class="form-group">
+                              <label class="col-sm-4 control-label">Value</label>
+                              <div class="col-sm-7 controls">
+                                  {{form.value}}
+                                  {{form_errors.value}}
+                                <div class="help-block with-errors"></div>
+                              </div>
+                            </div>
+
+
+
+                             <div class="form-group">
+                                 <h3 class="col-sm-8 text-right"><input type="submit" id="submit" class="btn vd_bg-green vd_white width-10" value="Save"/></h3>
+                            </div>
+                        </form>
+
+
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
+  <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+  <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
+<script type="text/javascript">
+
+
+
+</script>
+
+{% endblock %}
