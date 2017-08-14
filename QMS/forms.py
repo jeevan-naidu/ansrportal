@@ -11,7 +11,8 @@ class BaseAssessmentTemplateForm(forms.Form):
     project = forms.ModelChoiceField(
                 queryset=Project.objects.filter(endDate__gte=datetime.date.today(), closed=False,  active=True,),
 
-                widget=autocomplete.ModelSelect2(url='AutocompleteProject', attrs={
+
+                widget=autocomplete.ModelSelect2(url='AutocompleteProjectQMS', attrs={
                  'data-placeholder': 'Project ', }, ), required=True, )
 
     chapter = forms.ModelChoiceField(

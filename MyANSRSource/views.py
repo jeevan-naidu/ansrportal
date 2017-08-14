@@ -2887,6 +2887,7 @@ def saveProject(request):
                     del_mgr = request.POST.get('DeliveryManager')
                     del_mgr_id = User.objects.get(username=del_mgr).id
                     pd.deliveryManager_id = del_mgr_id
+                    pd.Project_funding = request.POST.get('Project_funding') if request.POST.get('Project_funding') != 'None' else None
                     pd.Sowdocument = request.session['sow']
                     pd.Estimationdocument = request.session['estimation']
                     sop = request.POST.get('sopname')
@@ -3030,7 +3031,7 @@ def project_summary(project_id, show_header=True):
     cleanedTeamData = ProjectTeamMember.objects.filter(
         project=projectObj).values(
         'member__username', 'startDate', 'endDate',
-        'plannedEffort', 'rate'
+        'plannedEffort',
     )
     if basicInfo['internal']:
         cleanedMilestoneData = []

@@ -44,7 +44,7 @@ class AutocompleteDMProjects(autocomplete.Select2QuerySetView):
         return choices
 
 
-class AutocompleteProject(autocomplete.Select2QuerySetView):
+class AutocompleteProjectQMS(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         q = self.request.GET.get('q', '')
         choices = Project.objects.filter(Q(project_detail_project__deliveryManager=self.request.user) |
