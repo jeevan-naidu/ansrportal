@@ -19,15 +19,15 @@ class SalesforceDataForm(forms.ModelForm):
     value = forms.CharField(max_length=50, widget=forms.TextInput(
         attrs={'class': 'input-sm form-control width-40', 'required': 'True'}))
     estimate_start_date = forms.DateField(label=('Estimated Start Date'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':''}))
+                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
     estimate_end_date = forms.DateField(label=('Estimated End Date'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':''}))
+                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
     planned_start_date = forms.DateField(label=('Planned Start Date'),
                                  widget=DateTimePicker(options=dateTimeOption,
-                                                       attrs={'class': 'form-control input-sm', 'required': ''}))
+                                                       attrs={'class': 'form-control input-sm', 'required': 'false'}))
     planned_end_date = forms.DateField(label=('Planned End Date'),
                                widget=DateTimePicker(options=dateTimeOption,
-                                                     attrs={'class': 'form-control input-sm', 'required': ''}))
+                                                     attrs={'class': 'form-control input-sm', 'required': 'true'}))
     customer_contact = forms.CharField(max_length=50, widget=forms.TextInput(
         attrs={'class': 'input-sm form-control width-40', 'required': 'True'}))
     account_name = forms.CharField(max_length=50, widget=forms.TextInput(

@@ -116,8 +116,16 @@ def contract_details(request):
             planned_end_date = form.cleaned_data['planned_end_date']
             customer_contact = form.cleaned_data['customer_contact']
             account_name = form.cleaned_data['account_name']
-            if estimate_start_date > estimate_end_date or planned_start_date > planned_end_date:
-                messages.error(request, 'Sorry, End date is greater than start date')
+            if estimate_start_date > estimate_end_date:
+                messages.error(request, 'Sorry, Estimated End date is greater than estimated start date')
+                context['form'] = SalesforceDataForm(request.POST)
+                return render(request, "contract_details.html", context)
+            if planned_start_date > planned_end_date:
+                messages.error(request, 'Sorry, Planned End date is greater than planned start date')
+                context['form'] = SalesforceDataForm(request.POST)
+                return render(request, "contract_details.html", context)
+            if opportunity_name.isdigit():
+                messages.error(request, 'Sorry, opportunity name cannot be only number')
                 context['form'] = SalesforceDataForm(request.POST)
                 return render(request, "contract_details.html", context)
             SalesforceData(user_id=user.id,

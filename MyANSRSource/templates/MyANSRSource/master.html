@@ -490,10 +490,27 @@
                                                 </li>
                                                 {% if user|manage_milestones %}
                                                     <li>
-                                                        <a href="/myansrsource/project/trackmilestone">
-                                                            <span class="menu-text">Manage Milestone(s)</span>
-                                                        </a>
-                                                    </li>
+                                    <a href="javascript:void(0);" data-action="click-trigger">
+                                        <span class="menu-icon"><i class="fa fa-dashboard"></i></span>
+                                        <span class="menu-text">Manage Milestone</span>
+                                        <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                    </a>
+                                    <div class="child-menu" data-action="click-target">
+                                        <ul>
+                                            <li>
+                                                <a href="/myansrsource/project/trackmilestone">
+                                                    <span class="menu-text">Financial</span>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/myansrsource/project/trackmilestone/delivery">
+                                                    <span class="menu-text">Delivery</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
                                                 {% endif %}
                                                                 {% endif %}
                                                             </ul>

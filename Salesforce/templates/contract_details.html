@@ -1,23 +1,5 @@
+<div id="contract">
 
-
-
-{% extends 'master.html' %}
-{% load bootstrap3 %}
-{% load fontawesome %}
-{% load permissions %}
-{% load static from staticfiles %}
-{% block siteTitle %}Salesforce Create{% endblock %}
-{% block pageTitle %}Salesforce Create{% endblock %}
-{% block content  %}
-
-<style>
-
-.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
-.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
-    padding: 5px 8px;
-}
-
-</style>
 {% if messages %}
          {% for message in messages %}
             {% if message.tags == 'error' %}
@@ -38,16 +20,17 @@
                         <form id="salesforce_create_form" action="" method="post" class="form-horizontal" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">SFID/Opportunity number</label>
+                              <label class="col-sm-4 control-label">SFID/Opportunity number<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                   {{form.opportunity_number}}
                                   {{form_errors.opportunity_number}}
+                                  8 digit number starting with 201
                                 <div class="help-block with-errors"></div>
                               </div>
                             </div>
 
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Opportunity Name</label>
+                              <label class="col-sm-4 control-label">Opportunity Name<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                   {{form.opportunity_name}}
                                   {{form_errors.opportunity_name}}
@@ -56,7 +39,7 @@
                             </div>
 
                              <div class="form-group">
-                              <label class="col-sm-4 control-label">Customer Contact</label>
+                              <label class="col-sm-4 control-label">Customer Contact<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                       {{form.customer_contact}}
                                       {{form_errors.customer_contact}}
@@ -65,7 +48,7 @@
                             </div>
 
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Account Name</label>
+                              <label class="col-sm-4 control-label">Account Name<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                       {{form.account_name}}
                                       {{form_errors.account_name}}
@@ -76,7 +59,7 @@
 
 
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Estimated Start Date</label>
+                              <label class="col-sm-4 control-label">Estimated Start Date<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-3 controls">
                                 {{form.estimate_start_date}}
                                 {{form_errors.estimate_start_date}}
@@ -84,7 +67,7 @@
                               </div>
                             </div>
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Estimated End Date</label>
+                              <label class="col-sm-4 control-label">Estimated End Date<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-3 controls">
                                   {{form.estimate_end_date}}
                                   {{form_errors.estimate_end_date}}
@@ -94,7 +77,7 @@
                             </div>
 
                                 <div class="form-group">
-                              <label class="col-sm-4 control-label">Planned Start Date</label>
+                              <label class="col-sm-4 control-label">Planned Start Date<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-3 controls">
                                 {{form.planned_start_date}}
                                 {{form_errors.planned_start_date}}
@@ -103,7 +86,7 @@
                             </div>
 
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Planned End Date</label>
+                              <label class="col-sm-4 control-label">Planned End Date<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-3 controls">
                                   {{form.planned_end_date}}
                                   {{form_errors.planned_end_date}}
@@ -113,7 +96,7 @@
                             </div>
 
                              <div class="form-group">
-                              <label class="col-sm-4 control-label">Value</label>
+                              <label class="col-sm-4 control-label">Value<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                   {{form.value}}
                                   {{form_errors.value}}
@@ -129,14 +112,18 @@
                         </form>
 
 
-<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet" />
-  <script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
-  <script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+
 
 <script type="text/javascript">
 
+$(document).ready(function() {
+  document.getElementById("id_estimate_start_date").readOnly = true;
+  document.getElementById("id_estimate_end_date").readOnly = true;
+  document.getElementById("id_planned_start_date").readOnly = true;
+  document.getElementById("id_planned_end_date").readOnly = true;
+
+});
 
 
 </script>
-
-{% endblock %}
+</div>

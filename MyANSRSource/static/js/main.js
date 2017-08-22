@@ -598,7 +598,7 @@ app.firstTimeTotal = function() {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: { // When add row, set the elements default values
-                    setZeroList: [6, 9],
+                    setZeroList: [11,12,13,14],
                     setEmptyList: [5]
                 },
                 setEnableList: [0, 1, 4, 5, 6, 7, 8, 10]
@@ -1453,12 +1453,26 @@ app.getSum = function($elements, $outputElement) {
                     });
                 }
 
-                var $deliverables = $table.find('.milestone-item-deliverable'),
-                    $amounts = $table.find('.milestone-item-amount'),
+                var deliverables = $table.find('.milestone-item-deliverable'),
+                    $rate_per_units = $table.find('.rate_per_unit'),
+                    $units = $table.find('.unit'),
+                    $amounts = $table.find('.milestone-item-amount', '.milestone_delivery'),
                     $amountTotal = $('.milestone-total-amount'),
                     $links = $('#add-milestone-btn, #del-milestone-btn'),
                     $projectTotalValueHidden = $('.project-total-value-hidden'),
                     projectTotalValueHidden = Number($projectTotalValueHidden.val());
+
+                $('.milestone_delivery').prop("readonly", true);
+
+                var unit_rate_per_unit = function(){
+                    for(i=0;i<30;i++){
+                            var $unit = $('#id_Manage_Milestones-'+i+'-unit').val()
+                            var $rate_per_unit = $('#id_Manage_Milestones-'+i+'-rate_per_unit').val()
+                            $('#id_Manage_Milestones-'+i+'-amount').val($unit*$rate_per_unit)
+                            amountTotal()
+                    }
+                }
+
 
                 // amount validation
                 var amountValidatoinFun = function() {
@@ -1495,6 +1509,14 @@ app.getSum = function($elements, $outputElement) {
                     keyup: amountTotal,
                     click: amountTotal
                 });
+
+                $units.on({
+                    keyup: unit_rate_per_unit,
+                        });
+
+                $rate_per_units.on({
+                    keyup: unit_rate_per_unit,
+                   });
             }
         };
 
