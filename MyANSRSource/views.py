@@ -2382,15 +2382,7 @@ class TrackMilestoneWizard(SessionWizardView):
                             milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
                                 milestone_type.\
                                 milestone_type
-                            if eachForm.cleaned_data['amount'] > 0 and milestone_type not in \
-                                    ['Financial', 'Delivery cum Financial']:
-                                amount = eachForm.cleaned_data['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount, ErrorList())
-                                errors.append(u'Please select milestone as \
-                                              financial')
-                            elif eachForm.cleaned_data['amount'] == 0 and milestone_type in \
-                                    ['Financial', 'Delivery cum Financial']:
+                            if eachForm.cleaned_data['amount'] == 0:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount, ErrorList())
