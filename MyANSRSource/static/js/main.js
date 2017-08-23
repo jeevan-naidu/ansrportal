@@ -1464,6 +1464,7 @@ app.getSum = function($elements, $outputElement) {
 
                 $('.milestone_delivery').prop("readonly", true);
 
+
                 var unit_rate_per_unit = function(){
                     for(i=0;i<30;i++){
                             var $unit = $('#id_Manage_Milestones-'+i+'-unit').val()
