@@ -865,7 +865,7 @@ class CloseProjectMilestoneFormDelivery(forms.ModelForm):
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
-        self.fields['amount'].widget.attrs['class'] = "milestone_delivery"
+        self.fields['amount'].widget.attrs['class'] = "milestone-item-amount milestone_delivery"
 
 
 # Project Flag Form
