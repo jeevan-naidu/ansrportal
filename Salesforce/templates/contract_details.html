@@ -1,4 +1,15 @@
-<div id="contract">
+{% extends 'master.html' %}
+{% load sales_permissions %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% load grievances_template_tags %}
+
+
+{% block siteTitle %}Contract Details{% endblock %}
+{% block pageTitle %}Contract Details{% endblock %}
+
+{% block content  %}
 
 {% if messages %}
          {% for message in messages %}
@@ -126,4 +137,4 @@ $(document).ready(function() {
 
 
 </script>
-</div>
+{% endblock  %}
