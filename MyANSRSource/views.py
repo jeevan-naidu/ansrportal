@@ -105,11 +105,6 @@ TMFORMSDELIVERY = [
     )),
 ]
 
-# TMTEMPLATESDELIVERY = {
-#     "My Projects": "MyANSRSource/manageMilestone.html",
-#     "Manage Delivery Milestones": "MyANSRSource/manageProjectMilestonedelivery.html",
-# }
-
 TLFORMS = [
     ("My Projects", ChangeProjectForm),
     ("Manage Project Leader", changeProjectLeaderForm),
@@ -2241,7 +2236,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
         step = step if step else self.steps.current
         if step == 'My Projects':
             project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                                                                    project__closed=False).filter(project__internal=True).values(
+                                                                                    project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
@@ -2362,7 +2357,7 @@ class TrackMilestoneWizard(SessionWizardView):
         step = step if step else self.steps.current
         if step == 'My Projects':
             project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                                                                    project__closed=False).filter(project__internal=True).values(
+                                                                                    project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
