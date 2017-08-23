@@ -9,7 +9,7 @@ class SalesforceData(models.Model):
     """ This model will contain all the data from the salesforce.
     The exported files from salesforce will be uploaded to this model on regualar basis.
     The opportunity number will be unique"""
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, default=35)
     opportunity_number = models.IntegerField(help_text="8 digit number starting with 201",
                                            verbose_name="SF\Opportunity Number",
                                            validators=[MinValueValidator(20100000),
