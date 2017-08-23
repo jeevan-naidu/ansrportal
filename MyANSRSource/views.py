@@ -3162,7 +3162,7 @@ def project_summary(project_id, show_header=True):
     else:
         cleanedMilestoneData = ProjectMilestone.objects.filter(
             project=projectObj).values('milestoneDate', 'description',
-                                       'amount', 'name')
+                                       'amount', 'name', 'financial')
 
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
