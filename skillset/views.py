@@ -14,6 +14,40 @@ from django.http import JsonResponse
 import json
 import ast
 
+def skill_delete(request):
+    id = request.GET.get('id')
+    skill_name = request.GET.get('skill_name')
+    skill_level = request.GET.get('skill_level')
+    employee = User_Skills.objects.filter(emp_mid=id,
+                                        skills_name=skill_name, skills_type=skill_level).delete()
+    employee = Employee.objects.get(employee_assigned_id=id)
+    user_skills = Skill_Lists.objects.all()
+    user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
+    try:
+        skillset = User_Skills.objects.filter(emp_mid=id).values('skills_name', 'skills_type')
+        skills_list = []
+        skills_dict = {'skills_name': '', 'skills_type': ''}
+        for skill in skillset:
+            skills_dict['skills_name'] = skill['skills_name']
+            skills_dict['skills_type'] = skill['skills_type']
+            skills_list.append(skills_dict)
+            skills_dict = {'skills_name': '', 'skills_type': ''}
+    except User_Skills.DoesNotExist:
+        skills_list = None
+    try:
+        depart = EmployeeCompanyInformation.objects.get(employee_id=id)
+        dept = depart.department.name
+    except:
+        dept = ""
+    user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
+    user_details['designation'] = employee.designation.name
+    user_details['department'] = dept
+    id = employee.idcard
+    user_details['id'] = id[:-1]
+    user_details['doj'] = employee.joined
+    user_details['skills'] = skills_list
+    return render(request, 'user_skills.html', {'user_details': user_details, 'user_skills': user_skills})
+
 def skill_add(request):
     json_skill = json.loads(request.body)
     details = ast.literal_eval(json_skill['json_skill'])
@@ -24,8 +58,34 @@ def skill_add(request):
         new_sid = sid.sid + 1
         user_skills = User_Skills(emp_mid = details['id'],sid = new_sid, skills_name=skills_name, skills_type = skills_level)
         user_skills.save()
-
-    return render(request,'skillassign.html', {})
+    id = details['id']
+    employee = Employee.objects.get(employee_assigned_id=id)
+    user_skills = Skill_Lists.objects.all()
+    user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
+    try:
+        skillset = User_Skills.objects.filter(emp_mid=id).values('skills_name', 'skills_type')
+        skills_list = []
+        skills_dict = {'skills_name': '', 'skills_type': ''}
+        for skill in skillset:
+            skills_dict['skills_name'] = skill['skills_name']
+            skills_dict['skills_type'] = skill['skills_type']
+            skills_list.append(skills_dict)
+            skills_dict = {'skills_name': '', 'skills_type': ''}
+    except User_Skills.DoesNotExist:
+        skills_list = None
+    try:
+        depart = EmployeeCompanyInformation.objects.get(employee_id=id)
+        dept = depart.department.name
+    except:
+        dept = ""
+    user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
+    user_details['designation'] = employee.designation.name
+    user_details['department'] = dept
+    id = employee.idcard
+    user_details['id'] = id[:-1]
+    user_details['doj'] = employee.joined
+    user_details['skills'] = skills_list
+    return render(request, 'user_skills.html', {'user_details': user_details, 'user_skills': user_skills})
 
 def skill_detail(request):
     id = request.GET.get('id')

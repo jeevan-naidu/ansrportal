@@ -32,22 +32,22 @@
 
       {% if user_details.skills %}
          {% for skill in user_details.skills %}
-         <tr>
-           <td id="header" style="width: 200px;">
+         <tr id="skill_header{{forloop.counter}}">
+           <td style="width: 200px;">
              <b>Skills:</b>
            </td>
-              <td style="width: 250px;">
-                <select>
+              <td  style="width: 250px;">
+                <select id = "skill_header_name{{forloop.counter}}">
                   <option value="{{skill.skills_name}}">{{skill.skills_name}}</option>
                 </select>
              </td>
-            <td style="width: 250px;">
-                <select>
+            <td  style="width: 250px;">
+                <select id = "skill_header_level{{forloop.counter}}">
                   <option value="{{skill.skills_type}}">{{skill.skills_type}}</option>
                 </select>
             </td>
             <td>
-                <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+                <i id = "delete{{forloop.counter}}" class="fa fa-trash delete" style="font-size:27px";></i></br>
           </td>
           </tr>
          {% endfor %}
@@ -169,8 +169,10 @@ $("#submit").on('click', function(){
     data: JSON.stringify({'json_skill': json_skill}),
     dataType: "json",
     type: "POST",
-    success: function(data){
-      swal("Skills added!")
+    success: function(json){
+      $(".UserDetail").html();
+      $('.UserDetail').html(data)
+      sweetAlert("Yahhh...", "Deleted Successfully!", "success");
     },
     });
 });
@@ -183,5 +185,27 @@ function fixIds(elem, cntr) {
 
 $(document).ready(function() {
   $(".autocomplete_dropdown").select2();
+});
+
+
+$(".delete").on('click', function(){
+   delete_id = ($(this).attr('id'));
+   last_no = delete_id[delete_id.length - 1]
+   var tr_data = document.getElementById("skill_header"+last_no)
+   var skill_name = document.getElementById("skill_header_name"+last_no).value
+   var skill_level = document.getElementById("skill_header_level"+last_no).value
+   var id = document.getElementById("id").innerHTML
+    $.ajax({
+    url:'/skillset/skill_delete',
+    data: {"skill_name": skill_name, "skill_level":skill_level, "id":id},
+    type: "get",
+    success: function(data){
+      $(".UserDetail").html();
+      $('.UserDetail').html(data)
+      sweetAlert("Yahhh...", "Deleted Successfully!", "success");
+    },
+    });
+
+
 });
 </script>
