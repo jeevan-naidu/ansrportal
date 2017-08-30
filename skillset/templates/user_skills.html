@@ -31,30 +31,51 @@
 
 
       {% if user_details.skills %}
-         <tr id="skills_level0">
+         {% for skill in user_details.skills %}
+         <tr>
            <td id="header" style="width: 200px;">
              <b>Skills:</b>
            </td>
               <td style="width: 250px;">
-               {% for skill in user_details.skills %}
                 <select>
                   <option value="{{skill.skills_name}}">{{skill.skills_name}}</option>
                 </select>
-               {% endfor %}
              </td>
             <td style="width: 250px;">
-              {% for skill in user_details.skills %}
                 <select>
                   <option value="{{skill.skills_type}}">{{skill.skills_type}}</option>
                 </select>
-              {% endfor %}
             </td>
             <td>
-              {% for skill in user_details.skills %}
                 <i class="fa fa-trash delete" style="font-size:27px";></i></br>
-              {% endfor %}
           </td>
           </tr>
+         {% endfor %}
+
+         <tr id="skills_level0">
+          <td style="width: 200px;">
+            <b>Skills:</b>
+          </td>
+             <td id= "skills_select" style="width: 250px;">
+               <select id="skill" class="dropdown" style="width:300px";>
+                 <option value="------------">------------</option>
+                 {% for element in user_skills%}
+                   <option value="{{element}}">{{element}}</option>
+                 {% endfor %}
+               </select>
+            </td>
+           <td id="level_select" style="width: 250px;">
+             <select id="level" class="dropdown" style="width:300px";>
+               <option value="------------"> ------------</option>
+                 <option value="level1">Level 1</option>
+                 <option value="level2">Level 2</option>
+                 <option value="level3">Level 3</option>
+             </select>
+           </td>
+           <td id="delete">
+               <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+         </td>
+         </tr>
         {% endif %}
 
         {% if not user_details.skills %}
@@ -140,17 +161,16 @@ $("#submit").on('click', function(){
     }
   }
 
-  var obj = '{"emp_skills":[{"id":"' + id + '","name":"' + name + '","dept":"' + dept + '","desg":"' + desg + '","doj":"' + doj + '","skills_name":"' + skills_name + '","skills_level":"' + skills_level + '"}]}';
-  var json_skill = JSON.parse(obj);
-  alert(jQuery.parseJSON(json_skill))
+  var obj = {"id": id ,"name": name ,"dept": dept ,"desg": desg ,"doj": doj ,"skills_name": skills_name ,"skills_level": skills_level};
+  var json_skill = JSON.stringify(obj);
   $.ajax({
     contentType: "application/json",
-    url:'/skillset/skill_add',
-    data: JSON.stringify({"json_skill": json_skill}),
+    url:'/skillset/skill_add/',
+    data: JSON.stringify({'json_skill': json_skill}),
     dataType: "json",
-    type: "get",
+    type: "POST",
     success: function(data){
-      $(".UserDetail").html(data);
+      swal("Skills added!")
     },
     });
 });
