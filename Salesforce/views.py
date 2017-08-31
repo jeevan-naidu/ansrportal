@@ -110,16 +110,16 @@ def contract_details(request):
             opportunity_number = form.cleaned_data['opportunity_number']
             opportunity_name = form.cleaned_data['opportunity_name']
             value = form.cleaned_data['value']
-            estimate_start_date = form.cleaned_data['estimate_start_date']
-            estimate_end_date = form.cleaned_data['estimate_end_date']
+            # estimate_start_date = form.cleaned_data['estimate_start_date']
+            # estimate_end_date = form.cleaned_data['estimate_end_date']
             planned_start_date = form.cleaned_data['planned_start_date']
             planned_end_date = form.cleaned_data['planned_end_date']
             customer_contact = form.cleaned_data['customer_contact']
             account_name = form.cleaned_data['account_name']
-            if estimate_start_date > estimate_end_date:
-                messages.error(request, 'Sorry, Estimated End date is greater than estimated start date')
-                context['form'] = SalesforceDataForm(request.POST)
-                return render(request, "contract_details.html", context)
+            # if estimate_start_date > estimate_end_date:
+            #     messages.error(request, 'Sorry, Estimated End date is greater than estimated start date')
+            #     context['form'] = SalesforceDataForm(request.POST)
+            #     return render(request, "contract_details.html", context)
             if planned_start_date > planned_end_date:
                 messages.error(request, 'Sorry, Planned End date is greater than planned start date')
                 context['form'] = SalesforceDataForm(request.POST)
@@ -133,8 +133,8 @@ def contract_details(request):
                            # business_unit = business_unit,
                            opportunity_name=opportunity_name,
                            value=value,
-                           estimate_start_date=estimate_start_date,
-                           estimate_end_date=estimate_end_date,
+                           # estimate_start_date=estimate_start_date,
+                           # estimate_end_date=estimate_end_date,
                            planned_start_date=planned_start_date,
                            planned_end_date=planned_end_date,
                            customer_contact=customer_contact,

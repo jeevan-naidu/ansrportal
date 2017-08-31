@@ -18,10 +18,10 @@ class SalesforceDataForm(forms.ModelForm):
         attrs={'class': 'input-sm form-control width-40', 'required': 'True'}))
     value = forms.CharField(max_length=50, widget=forms.TextInput(
         attrs={'class': 'input-sm form-control width-40', 'required': 'True'}))
-    estimate_start_date = forms.DateField(label=('Estimated Start Date'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
-    estimate_end_date = forms.DateField(label=('Estimated End Date'),
-                                widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
+    # estimate_start_date = forms.DateField(label=('Estimated Start Date'),
+    #                             widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
+    # estimate_end_date = forms.DateField(label=('Estimated End Date'),
+    #                             widget=DateTimePicker(options=dateTimeOption, attrs = {'class': 'form-control input-sm', 'required':'false'}))
     planned_start_date = forms.DateField(label=('Planned Start Date'),
                                  widget=DateTimePicker(options=dateTimeOption,
                                                        attrs={'class': 'form-control input-sm', 'required': 'false'}))
@@ -37,5 +37,4 @@ class SalesforceDataForm(forms.ModelForm):
     class Meta:
         model = SalesforceData
 
-        fields = ['opportunity_number', 'opportunity_name', 'value', 'estimate_start_date',
-                  'estimate_end_date', 'planned_start_date', 'planned_end_date','customer_contact', 'account_name']
+        fields = ['opportunity_number', 'opportunity_name', 'value', 'planned_start_date', 'planned_end_date','customer_contact', 'account_name']
