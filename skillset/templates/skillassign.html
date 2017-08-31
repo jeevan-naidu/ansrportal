@@ -1,0 +1,80 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Skillset{% endblock %}
+{% block pageTitle %}Skill Set{% endblock %}
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+{% block content  %}
+
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<style type="text/css">
+    #data-tables_filter{ display:none; }
+</style>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel widget">
+                    <div class="panel-heading vd_bg-grey">
+                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Team Members </h3>
+                  </div>
+                              <div class="panel-body">
+                              <div class="row">
+
+                                <select id="value" class="js-example-basic-single" style="width:300px";>
+                                  <option value="------------"> ------------</option>
+                                  {% for element in lists%}
+                                    <option value={{element.id}}> {{element.name}}</option>
+                                  {% endfor %}
+                                </select>
+
+
+
+
+
+</div>
+<div class="UserDetail">
+</div>
+</div>
+                </div>
+                <!-- Panel Widget -->
+              </div>
+              <!-- col-md-12 -->
+            </div>
+            <!-- row -->
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".js-example-basic-single").select2();
+});
+
+$("#value").on('change', function() {
+  var employee_id = this.value;
+
+  $.ajax({
+    url:'/skillset/skill_detail',
+    data: {"id": employee_id},
+    type: "get",
+    success: function(data){
+      $(".UserDetail").html(data);
+    },
+    });
+});
+</script>
+
+
+
+{% endblock %}

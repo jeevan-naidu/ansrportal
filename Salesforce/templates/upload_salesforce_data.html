@@ -45,8 +45,6 @@
 			</div>
 			
 
-<!--End modal-->
-
 
 
 
@@ -61,54 +59,11 @@
 
 <h2 class="text-center hidden">Salesforce</h2>
 
-
-{% if request.user|IsSalesforceAdmin %}
-
-<div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
-		<form action="/salesforce/upload-file/" method="post" enctype="multipart/form-data">
-			{% csrf_token %}
-			
-			{% if errors_list %}
-				<h4>Below errors were found in csv:</h4>
-				{% for error in errors_list %}
-					<!--<h5 style="color: red;">Exception Type : {{exception_type}}<br>
-					Exception : {{exception}}<br>
-					Line No : {{error_at_line}}
-					</h5>-->
-					<h5 style="color: red;">{{error}}</h5>
-				{% endfor %}
-
-			{% endif %}
-			{% for field in form %}
-				<div class="fieldWrapper">
-					
-					<div class="col-sm-12">{{ field.label_tag }} {% if field.field.required %}<span style="color:red;">*</span>{% endif %}</div>
-					<div class="col-sm-8">{{ field }}</div>
-					<div class="col-sm-4">
-						<button type="submit" class="btn btn-danger">Upload</button>
-					</div> 
-					<div class="col-sm-12">
-						<span style="color:red;">{{ field.errors }}
-						</span>
-						{% if field.help_text %}
-						<p class="help">{{ field.help_text|safe }}</p>
-					</div>
-					{% endif %}
-				</div>
-			{% endfor %}
-		</form>
-		
-	</div>
-	<div class="col-md-2"></div>
-</div>
-
-{% endif %}
-
 <div class="panel clearfix">
 <div class="panel-body">
-<h4 class="pull-right">Total : {{salesforce_data_list|length}}</h4>
+<a href="/salesforce/contract_details"><button type="button" id="add_new" class="btn-xs btn-success pull-right">ADD NEW</button></a>
+<h4 class="pull-center">Total : {{salesforce_data_list|length}}</h4>
+
 <table class="table  table-striped leave-report-table" id="data-tables">
     <thead>
       <tr>
@@ -118,6 +73,7 @@
         <th class="text-center">Value</th>
 		<th class="text-center" style="min-width:100px">Start Date</th>
           <th class="text-center" style="min-width:100px">End Date</th>
+		  <th class="text-center" style="min-width:100px">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -129,63 +85,64 @@
 			<div style="display: none">
 				<table class="table table-striped">
 					<tr>
-						<td>SF/Opportunity N0</td>
-						<td>:{{obj.opportunity_number}}</td>
+						<td><b>SF/Opportunity N0</b></td>
+						<td>{{obj.opportunity_number}}</td>
 					</tr>
 					<tr>
-						<td>Opportunity Name</td>
-						<td>:{{obj.opportunity_name}}</td>
+						<td><b>Opportunity Name</b></td>
+						<td>{{obj.opportunity_name}}</td>
+					</tr>
+					<!--<tr>-->
+						<!--<td>Business Unit</td>-->
+						<!--<td>:{{obj.business_unit}}</td>-->
+					<!--</tr>-->
+					<tr>
+						<td><b>Customer Contact</b></td>
+						<td>{{obj.customer_contact}}</td>
 					</tr>
 					<tr>
-						<td>Business Unit</td>
-						<td>:{{obj.business_unit}}</td>
+						<td><b>Account Name</td></b></td>
+						<td>{{obj.account_name}}</td>
 					</tr>
 					<tr>
-						<td>Customer Contact</td>
-						<td>:{{obj.customer_contact}}</td>
+						<td><b>Value</b></td>
+						<td>{{obj.value|floatformat:2}}</td>
+					</tr>
+					<!--<tr>-->
+						<!--<td>Probability</td>-->
+						<!--<td>:{{obj.probability}}</td>-->
+					<!--</tr>-->
+					<tr>
+						<td><b>Planned Start Date</b></td>
+						<td>{{obj.planned_start_date}}</td>
 					</tr>
 					<tr>
-						<td>Account Name</td>
-						<td>:{{obj.account_name}}</td>
+						<td><b>Planned End Date</b></td>
+						<td>{{obj.planned_end_date}}</td>
 					</tr>
-					<tr>
-						<td>Value</td>
-						<td>:{{obj.value|floatformat:2}}</td>
-					</tr>
-					<tr>
-						<td>Probability</td>
-						<td>:{{obj.probability}}</td>
-					</tr>
-					<tr>
-						<td>Start Date</td>
-						<td>:{{obj.start_date}}</td>
-					</tr>
-					<tr>
-						<td>End Date</td>
-						<td>:{{obj.end_date}}</td>
-					</tr>
-					<tr>
-						<td>Status</td>
-						<td>:{{obj.status}}</td>
-					</tr>
-					<tr>
-						<td>Updated Date</td>
-						<td>:{{obj.updated_date}}</td>
-					</tr>
-					<tr>
-						<td> Created Date</td>
-						<td>:{{obj.created_date}}</td>
-					</tr>
+					<!--<tr>-->
+						<!--<td><b>Status</b></td>-->
+						<!--<td>{{obj.status}}</td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>Updated Date</td>-->
+						<!--<td>:{{obj.updated_date}}</td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td> Created Date</td>-->
+						<!--<td>:{{obj.created_date}}</td>-->
+					<!--</tr>-->
 				</table>
 			</div>
 		</td>
         <td>{{obj.opportunity_name}}</td>
         <td class="text-right">{{obj.value|floatformat:2}}</td>
-		<td>{{obj.start_date}}</td>
-      <td>{{obj.end_date}}</td>
+		<td>{{obj.planned_start_date}}</td>
+      <td>{{obj.planned_end_date}}</td>
+		  <td>{{obj.status}}</td>
       </tr>
 	{% endfor %}
-     
+
     </tbody>
   </table>
 
@@ -199,13 +156,6 @@
 
 
 
-<style type="text/css">
-	
-.input-group-btn .btn {
-    padding: 6px 12px;
-}
-div.dataTables_filter label{float: left !important;}	
-</style>
 
 
 
@@ -220,7 +170,7 @@ div.dataTables_filter label{float: left !important;}
 		<script src='/static/js/bootstrap-filestyle.min.js' type="text/javascript"></script>
 
 		<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
-		
+
 		<script>
 			$(document).ready(function(){
 
@@ -228,34 +178,28 @@ div.dataTables_filter label{float: left !important;}
 
 		        $('#data-tables').dataTable();
 
-
-
-
-
-
-
-
 				$(".opp_num").click(function(){
 					var details = $(this).next().html();
 					$("#modal-body").html(details);
 					});
-				
+
 					// File type validation
 				var fileExtension = ['csv'];
 				$('.filestyle').bind('change', function() {
-				
+
 					if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
 						alert("Allowed file types : "+fileExtension.join(', '));
 						$(this).filestyle('clear');
 						}
-				
-					
+
+
 				});
-				
-				
-				
+
+
+
 				});
 		</script>
 
 {% endblock %}
+
 

@@ -780,8 +780,9 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
 class CloseProjectMilestoneForm(forms.ModelForm):
 
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+    millist = [2, 3, 6]
     name = forms.ModelChoiceField(
-        queryset=Milestone.objects.all(),
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
         label="Select Milestone Name",
         required=False, )
     description = forms.CharField(required=False,)
@@ -818,6 +819,53 @@ class CloseProjectMilestoneForm(forms.ModelForm):
             "milestone-item-amount d-item input-item form-control"
         self.fields['closed'].widget.attrs['class'] = "form-control"
         self.fields['amount'].widget.attrs['style'] = "width: inherit;"
+
+
+class CloseProjectMilestoneFormDelivery(forms.ModelForm):
+    id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
+    millist = [1, 4, 5]
+    name = forms.ModelChoiceField(
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
+        label="Select Milestone Name",
+        required=False, )
+    description = forms.CharField(required=False, )
+    unit = forms.CharField(required=True)
+    rate_per_unit = forms.CharField(required=True)
+
+    class Meta:
+        model = ProjectMilestone
+        fields = (
+            'milestoneDate', 'name', 'description', 'unit', 'rate_per_unit',
+            'amount', 'closed'
+        )
+        widgets = {
+            'project': forms.HiddenInput(),
+            'milestoneDate': DateTimePicker(options=dateTimeOption),
+            # 'MilestoneName': autocomplete.ModelSelect2(url='AutocompleteMilestonetype', attrs={
+            # 'data-placeholder': 'Type Milestone Type...'})
+        }
+
+    def clean(self):
+        submitted_value = super(CloseProjectMilestoneFormDelivery, self).clean()
+        is_closed = submitted_value.get("closed")
+        name = submitted_value.get("name")
+        if not is_closed and not name:
+            raise forms.ValidationError("milestone name is a required field.")
+        return submitted_value
+
+    def __init__(self, *args, **kwargs):
+        super(CloseProjectMilestoneFormDelivery, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['milestoneDate'].widget.attrs['class'] = \
+            "date-picker d-item form-control"
+        self.fields['description'].widget.attrs['class'] = "d-item input-item form-control"
+        self.fields['name'].widget.attrs['class'] = "d-item input-item form-control"
+        self.fields['unit'].widget.attrs['class'] = "d-item input-item form-control unit"
+        self.fields['rate_per_unit'].widget.attrs['class'] = "d-item input-item form-control rate_per_unit"
+        self.fields['amount'].widget.attrs['class'] = \
+            "milestone-item-amount d-item input-item form-control"
+        self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['amount'].widget.attrs['class'] = "milestone-item-amount milestone_delivery"
 
 
 # Project Flag Form

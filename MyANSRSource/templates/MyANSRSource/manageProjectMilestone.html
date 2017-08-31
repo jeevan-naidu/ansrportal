@@ -82,18 +82,7 @@
         <input type="hidden" value="{{ totalValue }}" class="project-total-value-hidden" />
 	{% endif %}
     <script>
-        $(document).on('autocompleteLightInitialize', '[data-autocomplete-light-function=select2]', function() {
-        var element = $(this).get(0);
-        console.log(element);
-{#        if (initialized.indexOf(element) >= 0) {#}
-{#            return#}
-{#        }#}
-
-
-    });
-
-
-
+   $(".unit, .rate_per_unit, .milestone_delivery").css("width", "76px");
 
         </script>
 {% endblock %}{% endblock %}

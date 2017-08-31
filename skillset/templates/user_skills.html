@@ -1,0 +1,208 @@
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<div class="SkillDeatil">
+
+
+<table id="table" class=" table table-hover view_details">
+
+         <tbody id="skills"><tr id="emp_id"><td style="width: 200px;"><b> Employee ID:</b></td>
+         <td id="id">{{user_details.id}}</td>
+    </tr>
+     <tr id="emp_name">
+         <td style="width: 200px;"><b> Employee Name:</b></td>
+         <td id="name">{{user_details.name}}</td>
+
+    </tr>
+         <tr id="dept"><td style="width: 200px;"><b> Department:</b></td>
+         <td id="department">{{user_details.department}}</td>
+    </tr>
+
+    <tr id="desg">
+         <td style="width: 200px;"><b> Designation:</b></td>
+         <td id="designation">{{user_details.designation}}</td>
+    </tr>
+
+
+         <tr id="doj"><td style="width: 200px;"><b> Joining Date:</b></td>
+         <td id="dateoj">{{user_details.doj}}</td>
+    </tr>
+
+
+      {% if user_details.skills %}
+         {% for skill in user_details.skills %}
+         <tr id="skill_header{{forloop.counter}}">
+           <td style="width: 200px;">
+             <b>Skills:</b>
+           </td>
+              <td  style="width: 250px;">
+                <select id = "skill_header_name{{forloop.counter}}">
+                  <option value="{{skill.skills_name}}">{{skill.skills_name}}</option>
+                </select>
+             </td>
+            <td  style="width: 250px;">
+                <select id = "skill_header_level{{forloop.counter}}">
+                  <option value="{{skill.skills_type}}">{{skill.skills_type}}</option>
+                </select>
+            </td>
+            <td>
+                <i id = "delete{{forloop.counter}}" class="fa fa-trash delete" style="font-size:27px";></i></br>
+          </td>
+          </tr>
+         {% endfor %}
+
+         <tr id="skills_level0">
+          <td style="width: 200px;">
+            <b>Skills:</b>
+          </td>
+             <td id= "skills_select" style="width: 250px;">
+               <select id="skill" class="dropdown" style="width:300px";>
+                 <option value="------------">------------</option>
+                 {% for element in user_skills%}
+                   <option value="{{element}}">{{element}}</option>
+                 {% endfor %}
+               </select>
+            </td>
+           <td id="level_select" style="width: 250px;">
+             <select id="level" class="dropdown" style="width:300px";>
+               <option value="------------"> ------------</option>
+                 <option value="level1">Level 1</option>
+                 <option value="level2">Level 2</option>
+                 <option value="level3">Level 3</option>
+             </select>
+           </td>
+           <td id="delete">
+               <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+         </td>
+         </tr>
+        {% endif %}
+
+        {% if not user_details.skills %}
+        <tr id="skills_level0">
+          <td style="width: 200px;">
+            <b>Skills:</b>
+          </td>
+             <td id= "skills_select" style="width: 250px;">
+               <select id="skill" class="dropdown" style="width:300px";>
+                 <option value="------------">------------</option>
+                 {% for element in user_skills%}
+                   <option value="{{element}}">{{element}}</option>
+                 {% endfor %}
+               </select>
+            </td>
+           <td id="level_select" style="width: 250px;">
+             <select id="level" class="dropdown" style="width:300px";>
+               <option value="------------"> ------------</option>
+                 <option value="level1">Level 1</option>
+                 <option value="level2">Level 2</option>
+                 <option value="level3">Level 3</option>
+             </select>
+           </td>
+           <td id="delete">
+               <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+         </td>
+         </tr>
+        {% endif %}
+
+ </tbody></table>
+ <button id="submit" type="button" class="btn btn-success">Submit</button>
+ <button id="add_skills" type="button" class="btn btn-info">Add skills</button>
+
+</div></div>
+
+<script type="text/javascript">
+
+var cloneCntr = 0;
+
+$("#add_skills").on('click', function(){
+  // $("#skills").append("<tr><td style='width: 250px;'></td><td style='width: 250px;'><select id='skill2' class='autocomplete_dropdown' style='width:300px';>" +
+  // "<option value='-----------'> ------------</option>" +
+  // "{% for element in user_skills%}<option value={{element}}>{{element}}</option>{% endfor %}</select></td>" +
+  // "<td style='width: 250px;'><select id='level2' class='autocomplete_dropdown' style='width:300px';><option value='-----------'> ------------</option>" +
+  // "<option value='level1'>Level 1</option><option value='level2'>Level 2</option><option value='level3'> Level 3</option></select></td><td>"+
+  // "<i id='delete2' class='fa fa-trash delete' style='font-size:27px';></i></td></tr>");
+
+  var row = document.getElementById("skills_level0"); // find row to copy
+  var table = document.getElementById("skills"); // find table to append to
+  var clone = row.cloneNode(true);
+  fixIds(clone, cloneCntr);
+  cloneCntr++;
+  clone.id = "skills_level"+cloneCntr; // change id or other attributes/contents
+  table.appendChild(clone); // add new row to end of table
+  });
+
+$("#submit").on('click', function(){
+  var len_of_table = document.getElementById("table").rows.length;
+
+  var skills_name = [];
+  var skills_level = [];
+
+  var id = ($('#emp_id').find('#id').text());
+  var name = ($('#emp_name').find('#name').text());
+  var dept = ($('#dept').find('#department').text());
+  var desg = ($('#desg').find('#designation').text());
+  var doj = ($('#doj').find('#dateoj').text());
+
+  for(i=0;i<=len_of_table;i++){
+    if(document.getElementById("skills_level"+i) != null){
+      if(i == 0){
+        var skill = ($('#skills_level'+i).find('#skills_select').find('#skill').find(":selected").text());
+        var level = ($('#skills_level'+i).find('#level_select').find('#level').find(":selected").text());
+        skills_name.push(skill)
+        skills_level.push(level)
+      }
+      if(i > 0){
+        var skill = $('#skills_level'+i).find('#skills_select'+(i-1)).find('#skill'+(i-1)).find(":selected").text();
+        var level = $('#skills_level'+i).find('#level_select'+(i-1)).find('#level'+(i-1)).find(":selected").text();
+        skills_name.push(skill)
+        skills_level.push(level)
+      }
+    }
+  }
+
+  var obj = {"id": id ,"name": name ,"dept": dept ,"desg": desg ,"doj": doj ,"skills_name": skills_name ,"skills_level": skills_level};
+  $.ajax({
+    contentType: "application/json",
+    url:'/skillset/skill_add/',
+    data: JSON.stringify({'json_skill':obj}),
+    type: "POST",
+    success: function(json){
+      $('.UserDetail').html(json)
+      sweetAlert("Yahhh...", "Skill Added Successfully!", "success");
+    },
+    });
+});
+
+function fixIds(elem, cntr) {
+    $(elem).find("[id]").add(elem).each(function() {
+        this.id = this.id.replace(/\d+$/, "") + cntr;
+    })
+}
+
+$(document).ready(function() {
+  $(".autocomplete_dropdown").select2();
+});
+
+
+$(".delete").on('click', function(){
+   delete_id = ($(this).attr('id'));
+   last_no = delete_id[delete_id.length - 1]
+   var tr_data = document.getElementById("skill_header"+last_no)
+   var skill_name = document.getElementById("skill_header_name"+last_no).value
+   var skill_level = document.getElementById("skill_header_level"+last_no).value
+   var id = document.getElementById("id").innerHTML
+    $.ajax({
+    url:'/skillset/skill_delete',
+    data: {"skill_name": skill_name, "skill_level":skill_level, "id":id},
+    type: "get",
+    success: function(data){
+      $(".UserDetail").html();
+      $('.UserDetail').html(data)
+      sweetAlert("Yahhh...", "Deleted Successfully!", "success");
+    },
+    });
+
+
+});
+</script>

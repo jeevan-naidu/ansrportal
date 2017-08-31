@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-
+from datetime import datetime
 
 SKILL_LEVEL=(
     ('L1', 'Level 1'), ('L2', 'Level 2'), ('L3', 'Level 3')
@@ -30,8 +30,8 @@ class User_Skills(models.Model):
     emp_mid = models.CharField(max_length=20, verbose_name="Employee ID", default="")
     skills_name = models.CharField(verbose_name="Skill Name", max_length=300, default="")
     skills_type = models.CharField(max_length=10, verbose_name="Skill Level", default="")
-    create_date = models.DateTimeField(verbose_name="created Date", auto_now_add=True)
-    update_date = models.DateTimeField(verbose_name="Updated Date", auto_now_add=True)
+    create_date = models.DateTimeField(verbose_name="created Date", default=datetime.now, blank=True)
+    update_date = models.DateTimeField(verbose_name="Updated Date", default=datetime.now, blank=True)
 
     def __unicode__(self):
         return u'{0},{1}'.format(self.skills_name, self.skills_type)

@@ -40,7 +40,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm
+    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm, CloseProjectMilestoneFormDelivery
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
@@ -94,6 +94,16 @@ TMTEMPLATES = {
     "My Projects": "MyANSRSource/manageMilestone.html",
     "Manage Milestones": "MyANSRSource/manageProjectMilestone.html",
 }
+
+TMFORMSDELIVERY = [
+    ("My Projects", ChangeProjectForm),
+    ("Manage Milestones", formset_factory(
+        CloseProjectMilestoneFormDelivery,
+        extra=1,
+        max_num=1,
+        can_delete=True
+    )),
+]
 
 TLFORMS = [
     ("My Projects", ChangeProjectForm),
@@ -2203,11 +2213,132 @@ def WrappedManageTeamLeaderView(request):
     return manageTeamLeader(request)
 
 
+class TrackMilestoneWizardDelivery(SessionWizardView):
+    def get_template_names(self):
+        return [TMTEMPLATES[self.steps.current]]
+
+    def get_context_data(self, form, **kwargs):
+        context = super(TrackMilestoneWizardDelivery, self).get_context_data(
+            form=form, **kwargs)
+        if self.steps.current == 'Manage Milestones':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            projectObj = Project.objects.get(pk=selectedProjectId)
+            totalValue = projectObj.totalValue
+            projectType = projectObj.internal
+            projectname = projectObj.name
+            context.update({'totalValue': totalValue, 'type': projectType, 'name': projectname})
+        return context
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(TrackMilestoneWizardDelivery, self).get_form(step, data, files)
+        step = step if step else self.steps.current
+        if step == 'My Projects':
+            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                                                                                    project__closed=False).values(
+                'project_id')
+            project = Project.objects.filter(id__in=project_detail, active=True)
+            form.fields['project'].queryset = project
+        if step == 'Manage Milestones':
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'class'
+                ] = 'form-control'
+
+                if form.is_valid():
+                    selectedProjectId = self.storage.get_step_data(
+                        'My Projects'
+                    )['My Projects-project']
+                    projectObj = Project.objects.get(pk=selectedProjectId)
+                    projectTotal = projectObj.totalValue
+                    totalRate = 0
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
+                            if eachForm['closed'].value():
+                                continue
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate, ErrorList())
+                        errors.append(u'Total amount must be \
+                                    equal to project value')
+        return form
+
+    def get_form_initial(self, step):
+        projectMS = {}
+        if step == 'Manage Milestones':
+            selectedProjectId = self.storage.get_step_data(
+                'My Projects'
+            )['My Projects-project']
+            # import ipdb; ipdb.set_trace()
+            projectMS = ProjectMilestone.objects.filter(
+                project__id=selectedProjectId, financial = False,
+            ).values(
+                'id',
+                'name',
+                'milestoneDate',
+                'description',
+                'unit',
+                'rate_per_unit',
+                'amount',
+                'closed'
+            )
+        return self.initial_dict.get(step, projectMS)
+
+    def done(self, form_list, **kwargs):
+        #import ipdb; ipdb.set_trace()
+        milestoneData = [form.cleaned_data for form in form_list][1]
+        projectObj = [form.cleaned_data for form in form_list][0]['project']
+
+        if projectObj:
+            for eachData in milestoneData:
+                if eachData['id']:
+                    pm = ProjectMilestone.objects.get(id=eachData['id'])
+                    if eachData['DELETE']:
+                        pm.delete()
+                    else:
+                        SaveDelivery(self, pm, eachData, projectObj)
+                else:
+                    pm = ProjectMilestone()
+                    if eachData['DELETE']:
+                        pass
+                    else:
+                        SaveDelivery(self, pm, eachData, projectObj)
+        else:
+            logging.error("Request: " + self.request)
+        return HttpResponseRedirect('/myansrsource/dashboard')
+
+
+def SaveDelivery(self, pm, eachData, projectObj):
+    if pm.closed:
+        pass
+    else:
+        pm.rate_per_unit = eachData['rate_per_unit']
+        pm.unit = eachData['unit']
+        pm.project = projectObj
+        pm.name = eachData['name']
+        pm.description = eachData['description']
+        pm.milestoneDate = eachData['milestoneDate']
+        pm.amount = eachData['amount']
+        pm.closed = eachData['closed']
+        pm.financial = False
+        pm.save(self.request)
+
+
+TrackMilestoneDelivery = TrackMilestoneWizardDelivery.as_view(TMFORMSDELIVERY)
+
+@login_required
+@permission_required('MyANSRSource.manage_project')
+def WrappedTrackMilestoneViewDelivery(request):
+    return TrackMilestoneDelivery(request)
+
 class TrackMilestoneWizard(SessionWizardView):
     def get_template_names(self):
         return [TMTEMPLATES[self.steps.current]]
 
     def get_context_data(self, form, **kwargs):
+        #import ipdb; ipdb.set_trace()
         context = super(TrackMilestoneWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Manage Milestones':
@@ -2251,15 +2382,7 @@ class TrackMilestoneWizard(SessionWizardView):
                             milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
                                 milestone_type.\
                                 milestone_type
-                            if eachForm.cleaned_data['amount'] > 0 and milestone_type not in \
-                                    ['Financial', 'Delivery cum Financial']:
-                                amount = eachForm.cleaned_data['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount, ErrorList())
-                                errors.append(u'Please select milestone as \
-                                              financial')
-                            elif eachForm.cleaned_data['amount'] == 0 and milestone_type in \
-                                    ['Financial', 'Delivery cum Financial']:
+                            if eachForm.cleaned_data['amount'] == 0:
                                 amount = eachForm.cleaned_data['amount']
                                 errors = eachForm._errors.setdefault(
                                     amount, ErrorList())
@@ -2279,7 +2402,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId,
+                project__id=selectedProjectId, financial = True,
             ).values(
                 'id',
                 'name',
@@ -2323,6 +2446,7 @@ def saveData(self, pm, eachData, projectObj):
         pm.milestoneDate = eachData['milestoneDate']
         pm.amount = eachData['amount']
         pm.closed = eachData['closed']
+        pm.financial = True
         pm.save(self.request)
 
 
@@ -3038,7 +3162,7 @@ def project_summary(project_id, show_header=True):
     else:
         cleanedMilestoneData = ProjectMilestone.objects.filter(
             project=projectObj).values('milestoneDate', 'description',
-                                       'amount', 'name')
+                                       'amount', 'name', 'financial')
 
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
