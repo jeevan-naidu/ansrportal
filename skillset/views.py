@@ -20,45 +20,23 @@ def skill_delete(request):
     skill_level = request.GET.get('skill_level')
     employee = User_Skills.objects.filter(emp_mid=id,
                                         skills_name=skill_name, skills_type=skill_level).delete()
-    employee = Employee.objects.get(employee_assigned_id=id)
-    user_skills = Skill_Lists.objects.all()
-    user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
-    try:
-        skillset = User_Skills.objects.filter(emp_mid=id).values('skills_name', 'skills_type')
-        skills_list = []
-        skills_dict = {'skills_name': '', 'skills_type': ''}
-        for skill in skillset:
-            skills_dict['skills_name'] = skill['skills_name']
-            skills_dict['skills_type'] = skill['skills_type']
-            skills_list.append(skills_dict)
-            skills_dict = {'skills_name': '', 'skills_type': ''}
-    except User_Skills.DoesNotExist:
-        skills_list = None
-    try:
-        depart = EmployeeCompanyInformation.objects.get(employee_id=id)
-        dept = depart.department.name
-    except:
-        dept = ""
-    user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
-    user_details['designation'] = employee.designation.name
-    user_details['department'] = dept
-    id = employee.idcard
-    user_details['id'] = id[:-1]
-    user_details['doj'] = employee.joined
-    user_details['skills'] = skills_list
-    return render(request, 'user_skills.html', {'user_details': user_details, 'user_skills': user_skills})
+    context = user_detail(id)
+    return render(request, 'user_skills.html', context)
 
 def skill_add(request):
-    json_skill = json.loads(request.body)
-    details = ast.literal_eval(json_skill['json_skill'])
-    for skills_name, skills_level in zip(details['skills_name'], details['skills_level']):
+    details = json.loads(request.body)
+    for skills_name, skills_level in zip(details['json_skill']['skills_name'], details['json_skill']['skills_level']):
         user_skill_detail = User_Skills.objects.all()
         last_elem = len(user_skill_detail) - 1
         sid = user_skill_detail[last_elem]
         new_sid = sid.sid + 1
-        user_skills = User_Skills(emp_mid = details['id'],sid = new_sid, skills_name=skills_name, skills_type = skills_level)
+        user_skills = User_Skills(emp_mid = details['json_skill']['id'],sid = new_sid, skills_name=skills_name, skills_type = skills_level)
         user_skills.save()
-    id = details['id']
+    context = user_detail(details['json_skill']['id'])
+    return render(request, 'user_skills.html', context)
+
+def user_detail(id):
+    context = {}
     employee = Employee.objects.get(employee_assigned_id=id)
     user_skills = Skill_Lists.objects.all()
     user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
@@ -85,7 +63,9 @@ def skill_add(request):
     user_details['id'] = id[:-1]
     user_details['doj'] = employee.joined
     user_details['skills'] = skills_list
-    return render(request, 'user_skills.html', {'user_details': user_details, 'user_skills': user_skills})
+    context['user_details'] = user_details
+    context['user_skills'] = user_skills
+    return  context
 
 def skill_detail(request):
     id = request.GET.get('id')

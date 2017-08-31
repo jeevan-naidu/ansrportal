@@ -162,17 +162,14 @@ $("#submit").on('click', function(){
   }
 
   var obj = {"id": id ,"name": name ,"dept": dept ,"desg": desg ,"doj": doj ,"skills_name": skills_name ,"skills_level": skills_level};
-  var json_skill = JSON.stringify(obj);
   $.ajax({
     contentType: "application/json",
     url:'/skillset/skill_add/',
-    data: JSON.stringify({'json_skill': json_skill}),
-    dataType: "json",
+    data: JSON.stringify({'json_skill':obj}),
     type: "POST",
     success: function(json){
-      $(".UserDetail").html();
-      $('.UserDetail').html(data)
-      sweetAlert("Yahhh...", "Deleted Successfully!", "success");
+      $('.UserDetail').html(json)
+      sweetAlert("Yahhh...", "Skill Added Successfully!", "success");
     },
     });
 });
