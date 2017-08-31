@@ -185,6 +185,51 @@ def SkillSet_assign(request):
                     lists.append(user_details)
                     user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "",
                                         "skills": ""}
+            else:
+                mgrid = Employee.objects.get(user_id=request.user.id)
+                bu_reportee = Employee.objects.filter(business_unit__in=reportee_business_unit, user__is_active=True)
+                try:
+                    mg_reportee = Employee.objects.filter(manager_id=mgrid, user__is_active=True)
+                    reportee = bu_reportee | mg_reportee
+                except Employee.DoesNotExist:
+                    print mgrid
+                    reportee = bu_reportee
+                lists = []
+                user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj":"" , "skills": ""}
+                for employee in reportee:
+                    designation_all.append(employee.designation.name)
+                    designation_all = sorted(set(designation_all))
+                    try:
+                        skillset = User_Skills.objects.filter(emp_mid=employee.employee_assigned_id).values('skills_name','skills_type')
+                        skills_list = []
+                        skills_dict = {'skills_name':'','skills_type':''}
+                        for skill in skillset:
+                            skills_dict['skills_name'] = skill['skills_name']
+                            skills_dict['skills_type'] = skill['skills_type']
+                            skills_list.append(skills_dict)
+                            skills_dict = {'skills_name':'','skills_type':''}
+                        if skills_list:
+                            for skills_user in skills_list:
+                                skills_all.append(skills_user['skills_name'])
+                        skills_all = sorted(set(skills_all))
+                    except User_Skills.DoesNotExist:
+                        skills_list = None
+                    try:
+                        depart = EmployeeCompanyInformation.objects.get(employee_id=employee.employee_assigned_id)
+                        dept = depart.department.name
+                    except:
+                        dept = ""
+                    department.append(dept)
+                    department = sorted(set(department))
+                    user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
+                    user_details['designation'] = employee.designation.name
+                    user_details['department'] = dept
+                    user_details['id'] = employee.employee_assigned_id
+                    user_details['doj'] = employee.joined
+                    user_details['skills'] = skills_list
+                    if employee.user.is_active == True:
+                        lists.append(user_details)
+                        user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "",  "skills": ""}
 
 
         return render(request, 'skillassign.html', {'lists':lists})
