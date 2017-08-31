@@ -59,8 +59,7 @@ def user_detail(id):
     user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
     user_details['designation'] = employee.designation.name
     user_details['department'] = dept
-    id = employee.idcard
-    user_details['id'] = id[:-1]
+    user_details['id'] = employee.employee_assigned_id
     user_details['doj'] = employee.joined
     user_details['skills'] = skills_list
     context['user_details'] = user_details
@@ -70,7 +69,6 @@ def user_detail(id):
 def skill_detail(request):
     id = request.GET.get('id')
     employee = Employee.objects.get(employee_assigned_id=id)
-
     user_skills = Skill_Lists.objects.all()
     user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
     try:
@@ -92,8 +90,7 @@ def skill_detail(request):
     user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
     user_details['designation'] = employee.designation.name
     user_details['department'] = dept
-    id = employee.idcard
-    user_details['id'] = id[:-1]
+    user_details['id'] = employee.employee_assigned_id
     user_details['doj'] = employee.joined
     user_details['skills'] = skills_list
     return render(request, 'user_skills.html', {'user_details':user_details, 'user_skills':user_skills})
@@ -230,8 +227,7 @@ def SkillSet(request):
                 user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
                 user_details['designation'] = employee.designation.name
                 user_details['department'] = dept
-                id = employee.idcard
-                user_details['id'] = id[:-1]
+                user_details['id'] = employee.employee_assigned_id
                 user_details['doj'] = employee.joined
                 user_details['skills'] = skills_list
                 lists.append(user_details)
@@ -277,8 +273,7 @@ def SkillSet(request):
                     user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
                     user_details['designation'] = employee.designation.name
                     user_details['department'] = dept
-                    id = employee.idcard
-                    user_details['id'] = id[:-1]
+                    user_details['id'] = employee.employee_assigned_id
                     user_details['doj'] = employee.joined
                     user_details['skills'] = skills_list
                     lists.append(user_details)
@@ -324,8 +319,7 @@ def SkillSet(request):
                     user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
                     user_details['designation'] = employee.designation.name
                     user_details['department'] = dept
-                    id = employee.idcard
-                    user_details['id'] = id[:-1]
+                    user_details['id'] = employee.employee_assigned_id
                     user_details['doj'] = employee.joined
                     user_details['skills'] = skills_list
                     if employee.user.is_active == True:
@@ -369,8 +363,7 @@ def SkillSet(request):
             user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
             user_details['designation'] = employee.designation.name
             user_details['department'] = dept
-            id = employee.idcard
-            user_details['id'] = id[:-1]
+            user_details['id'] = employee.employee_assigned_id
             user_details['doj'] = employee.joined
             user_details['skills'] = skills
             if employee.user.is_active == True:
