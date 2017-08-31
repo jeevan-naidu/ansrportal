@@ -1,7 +1,7 @@
 from django import forms
 from models import SalesforceData
 from bootstrap3_datetime.widgets import DateTimePicker
-dateTimeOption = {"format": "DD/MM/YYYY", "pickTime": False}
+dateTimeOption = {"format": "MM/DD/YYYY", "pickTime": False}
 
 class UploadSalesforceDataForm(forms.Form):
     salesforce_data_file = forms.FileField(required=True, help_text="Please use semicolon delimited csv only")
