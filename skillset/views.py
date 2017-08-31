@@ -70,6 +70,7 @@ def user_detail(id):
 def skill_detail(request):
     id = request.GET.get('id')
     employee = Employee.objects.get(employee_assigned_id=id)
+
     user_skills = Skill_Lists.objects.all()
     user_details = {"name": "", "deisgnation": "", "department": "", "id": "", "doj": "", "skills": ""}
     try:
@@ -135,8 +136,7 @@ def SkillSet_assign(request):
                 user_details['name'] = employee.user.first_name + ' ' + employee.user.last_name
                 user_details['designation'] = employee.designation.name
                 user_details['department'] = dept
-                id = employee.idcard
-                user_details['id'] = id[:-1]
+                user_details['id'] = employee.employee_assigned_id
                 user_details['doj'] = employee.joined
                 user_details['skills'] = skills_list
                 lists.append(user_details)
