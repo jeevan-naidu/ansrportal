@@ -3160,11 +3160,18 @@ def project_summary(project_id, show_header=True):
         'plannedEffort',
     )
     if basicInfo['internal']:
-        cleanedMilestoneData = []
+        cleanedMilestoneDataFinancial = []
     else:
-        cleanedMilestoneData = ProjectMilestone.objects.filter(
-            project=projectObj).values('milestoneDate', 'description',
+        cleanedMilestoneDataFinancial = ProjectMilestone.objects.filter(
+            project=projectObj, financial = True).values('milestoneDate', 'description',
                                        'amount', 'name', 'financial')
+        try:
+            cleanedMilestoneDataDelivery = ProjectMilestone.objects.filter(
+                project=projectObj, financial=False).values('milestoneDate', 'description',
+                                                           'amount', 'name', 'financial')
+        except ProjectMilestone.DoesNotExist:
+            cleanedMilestoneDataDelivery = []
+
 
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
@@ -3176,7 +3183,8 @@ def project_summary(project_id, show_header=True):
         'basicInfo': basicInfo,
         'flagData': flagData,
         'teamMember': cleanedTeamData,
-        'milestone': cleanedMilestoneData,
+        'milestone': cleanedMilestoneDataFinancial,
+        'milestoneDelivery': cleanedMilestoneDataDelivery,
         'changes': changeTracker,
     }
     if len(changeTracker):

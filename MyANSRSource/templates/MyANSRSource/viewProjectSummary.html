@@ -154,8 +154,9 @@
 	</table>
 </div>
 </div>
+
 <div class="panel panel-default">
-	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s)</span></b></div>
+<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Financial</span></b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -179,8 +180,42 @@
 			<td>
 
 				{% if milestoneData.financial %}
-                    Financial 
-                {% else %}
+                    Financial
+                {% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+        {% else %}
+        <td colspan="3" class="text-center"><h4><small>No Updates in this section till now</small></h4></td>
+        {% endif %}
+		</table>
+</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Delivery</span></b></div>
+<div class="panel-body">
+	<table class="table table-condensed">
+		<thead>
+			<th>Description</th>
+			<th>Deadline</th>
+			<th>Amount</th>
+			<th>Type</th>
+		</thead>
+        {% if milestoneDelivery %}
+		{% for milestoneData in milestoneDelivery %}
+		<tr>
+			<td>
+				{{ milestoneData.description }}
+			</td>
+			<td>
+				{{ milestoneData.milestoneDate }}
+			</td>
+			<td>
+				{{ milestoneData.amount }}
+			</td>
+			<td>
+
+				{% if not milestoneData.financial %}
                     Non-Financial
                 {% endif %}
 			</td>
