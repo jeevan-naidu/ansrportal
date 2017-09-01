@@ -163,6 +163,7 @@
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
+            <th>Completed</th>
 			<th>Type</th>
 		</thead>
         {% if milestone %}
@@ -177,6 +178,15 @@
 			<td>
 				{{ milestoneData.amount }}
 			</td>
+            <td>
+                {% if milestoneData.closed == True %}
+				    <span class="glyphicon glyphicon-ok"></span>
+			    {% endif %}
+                {% if milestoneData.closed == False %}
+                    <span class="glyphicon glyphicon-remove"></span>
+			    {% endif %}
+
+            </td>
 			<td>
 
 				{% if milestoneData.financial %}
@@ -192,13 +202,14 @@
 </div>
 </div>
 <div class="panel panel-default">
-	<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Delivery</span></b></div>
+<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Delivery</span></b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
+            <th>Completed</th>
 			<th>Type</th>
 		</thead>
         {% if milestoneDelivery %}
@@ -213,6 +224,15 @@
 			<td>
 				{{ milestoneData.amount }}
 			</td>
+            <td>
+                {% if milestoneData.closed == True %}
+                <span class="glyphicon glyphicon-ok"></span>
+			    {% endif %}
+                {% if milestoneData.closed == False %}
+                   <span class="glyphicon glyphicon-remove"></span>
+			    {% endif %}
+
+            </td>
 			<td>
 
 				{% if not milestoneData.financial %}

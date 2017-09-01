@@ -3164,11 +3164,11 @@ def project_summary(project_id, show_header=True):
     else:
         cleanedMilestoneDataFinancial = ProjectMilestone.objects.filter(
             project=projectObj, financial = True).values('milestoneDate', 'description',
-                                       'amount', 'name', 'financial')
+                                       'amount', 'name', 'financial', 'closed')
         try:
             cleanedMilestoneDataDelivery = ProjectMilestone.objects.filter(
                 project=projectObj, financial=False).values('milestoneDate', 'description',
-                                                           'amount', 'name', 'financial')
+                                                           'amount', 'name', 'financial', 'closed')
         except ProjectMilestone.DoesNotExist:
             cleanedMilestoneDataDelivery = []
 
