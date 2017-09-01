@@ -1012,9 +1012,11 @@ class ModifyProjectWizard(SessionWizardView):
         form = super(ModifyProjectWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'Rejected Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                                                                    project__closed=False,project__rejected=True).filter(project__active=False).values(
-                'project_id')
+            try:
+                project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user) | Q(project__bu__new_bu_head=self.request.user),
+                                                                                    project__closed=False, project__rejected=True).filter(project__active=False).values('project_id')
+            except Exception as e:
+                project_detail = []
             project = Project.objects.filter(id__in=project_detail)
             form.queryset = project
         return form
@@ -1054,12 +1056,12 @@ class ModifyProjectWizard(SessionWizardView):
                         'currentProject',
                     )[0]
                     additional_detail = ProjectDetail.objects.filter(project_id=projectId).values('projectFinType',
-                                                                                                  'PracticeName',
+                                                                                                  'Discipline',
                                                                                                   'deliveryManager',
                                                                                                   'outsource_contract_value',
                                                                                                   'pmDelegate')[0]
                     currentProject['projectFinType'] = additional_detail['projectFinType']
-                    currentProject['practicename'] = additional_detail['PracticeName']
+                    currentProject['Discipline'] = additional_detail['Discipline']
                     currentProject['DeliveryManager'] = additional_detail['deliveryManager']
                     currentProject['pmDelegate'] = additional_detail['pmDelegate']
                     currentProject['outsource_contract_value'] = additional_detail['outsource_contract_value']
@@ -2514,7 +2516,7 @@ def modifyProjectInfo(request, newInfo):
                                                            customer=newInfo[1]['customer'],
                                                            currentProject=newInfo[1]['currentProject'],
                                                            rejected=False,)
-        ProjectDetail.objects.filter(project_id=newInfo[1]['id']).update(PracticeName=newInfo[1]['practicename'],
+        ProjectDetail.objects.filter(project_id=newInfo[1]['id']).update(Discipline=newInfo[1]['Discipline'],
                                                                          projectFinType=newInfo[1]['projectFinType'],
                                                                          deliveryManager=newInfo[1]['DeliveryManager'],
                                                                          pmDelegate=newInfo[1]['pmDelegate'],

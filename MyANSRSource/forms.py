@@ -576,15 +576,14 @@ class ModifyProjectInfoForm(forms.ModelForm):
         }
                                          ),
         required=False, )
-    practicename = forms.ModelChoiceField(
-        queryset=Practice.objects.all(),
-        label="Select Practice",
-        widget=autocomplete.ModelSelect2(url='AutocompletePracticeName', attrs={
-            'data-placeholder': 'Type Practice Name ...',
+    Discipline = forms.ModelChoiceField(
+        queryset=DataPoint.objects.all(),
+        label="Select Discipline",
+        widget=autocomplete.ModelSelect2(url='AutocompleteDatapointName', attrs={
+            'data-placeholder': 'Type Discipline Name ...',
             'class': 'practicevalue',
         }, ),
         required=False, )
-
     pmDelegate = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="PM Delegate",

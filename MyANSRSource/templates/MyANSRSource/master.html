@@ -439,12 +439,14 @@
                                                         <span class="menu-text">Approve ChangeReq</span>
                                                     </a>
                                                 </li>
+                                                                {% endif %}
+                                                                {% if request.user|has_group:'DeliveryManager' %}
                                                 <li>
                                                     <a href="{% url 'changeproject' %}">
                                                         <span class="menu-text">Rejected Project</span>
                                                     </a>
                                                 </li>
-                                                {% endif %}
+                                                                {% endif %}
                                                 {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                 <li>
                                                     <a href="/myansrsource/project/modify">
