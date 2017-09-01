@@ -783,7 +783,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     name = forms.ModelChoiceField(
         queryset=Milestone.objects.filter(milestone_type_id__in=millist),
         label="Select Milestone Name",
-        required=False, )
+        required=True, )
     description = forms.CharField(required=False,)
     class Meta:
         model = ProjectMilestone
@@ -826,7 +826,7 @@ class CloseProjectMilestoneFormDelivery(forms.ModelForm):
     name = forms.ModelChoiceField(
         queryset=Milestone.objects.filter(milestone_type_id__in=millist),
         label="Select Milestone Name",
-        required=False, )
+        required=True, )
     description = forms.CharField(required=False, )
     unit = forms.CharField(required=True)
     rate_per_unit = forms.CharField(required=True)
