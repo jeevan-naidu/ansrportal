@@ -3161,6 +3161,7 @@ def project_summary(project_id, show_header=True):
     )
     if basicInfo['internal']:
         cleanedMilestoneDataFinancial = []
+        cleanedMilestoneDataDelivery = []
     else:
         try:
             cleanedMilestoneDataFinancial = ProjectMilestone.objects.filter(
