@@ -269,12 +269,12 @@
 
                                         </td>
                                         <td class="" id="is_fixed-{{forloop.counter}}-td">
-                                           {% if request.session.reviewer_logged_in %}{% get_fixed_status form_obj.is_fixed.value%}{% else %}
-                                            {{form_obj.is_fixed}}{% endif %}
+                                           {% get_fixed_status form_obj.is_fixed.value%}
+                                            {{form_obj.is_fixed}}
 
                                         </td>
                                         <td class="" id="fixed_by-{{forloop.counter}}-td" >
-                                            {% if form_obj.fixed_by.value %}{{ form_obj.fixed_by.value|default_if_none:""}} {% endif %}
+                                           {{ form_obj.fixed_by.value|default_if_none:""}}
                                         </td>
                                         <td id="remarks-{{forloop.counter}}-td">
                                            {% if request.session.reviewer_logged_in %} {{form_obj.remarks.value|default_if_none:""}}{% else %}{{form_obj.remarks}} {% endif %}
