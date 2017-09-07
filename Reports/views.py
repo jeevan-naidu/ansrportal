@@ -118,13 +118,12 @@ class MilestoneReportsView(View):
             response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
 
             writer = csv.writer(response)
-            writer.writerow(['Project Id', 'Project Name', "Leads/PM's", 'Milestone Date', 'Description', 'Amount',
+            writer.writerow(['Project Id', 'Project Name', "Leads/PM's", 'Milestone Date', 'Milestone Name', 'Description', 'Amount',
                              'Closed Status', 'Is Financial', 'Customer Contact', 'Closed On', 'Updated On'])
             for obj in MilestoneList:
-
                 leads_list = ",".join(i.first_name + " " + i.last_name for i in obj.project.projectManager.all())
                 writer.writerow([smart_str(obj.project.projectId), smart_str(obj.project.name), smart_str(leads_list),
-                                 smart_str(obj.milestoneDate), smart_str(obj.description),
+                                 smart_str(obj.milestoneDate), smart_str(obj.name), smart_str(obj.description),
                                  smart_str(obj.amount), smart_str(obj.closed), smart_str(obj.financial),
                                  smart_str(obj.project.customerContact), smart_str(obj.closedon),
                                  smart_str(obj.updatedOn)])
