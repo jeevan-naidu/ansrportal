@@ -8,6 +8,13 @@ def get_my_project_list(requestee, pmflag=0):
     :param requestee:
     :return Eligible Project's ID as list:
     """
+    # import ipdb;
+    # ipdb.set_trace()
+    pm_delegate = myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id)
+    if pm_delegate:
+        return myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('project_id')
+    if pm_delegate and requestee.is_superuser:
+        return myansr_model.ProjectManager.objects.values('project__id')
     if pmflag and requestee.is_superuser:
         return myansr_model.ProjectManager.objects.values('project__id')
     if pmflag:
@@ -16,6 +23,7 @@ def get_my_project_list(requestee, pmflag=0):
     bu_head = company_model.BusinessUnit.objects.filter(new_bu_head=requestee)
     acc_mgmt = company_model.Customer.objects.filter(Q(Crelation=requestee) | Q(Cdelivery=requestee))
     pm = myansr_model.ProjectManager.objects.filter(user=requestee)
+
 
     if requestee.is_superuser:
         return myansr_model.Project.objects.all().values('id')
