@@ -212,9 +212,9 @@ def review_report_base(template_id, project_obj, chapter_component_obj=None, req
                     # condition to prevent reviewer from editing
                     # print "pm", request_obj.session['is_pm']
 
-                    if qa_obj.reviewed_by == request_obj.user:
-                        self.fields['remarks'].widget.attrs['readonly'] = True
-                        self.fields['is_fixed'].widget.attrs['disabled'] = True
+                    # if qa_obj.reviewed_by == request_obj.user:
+                    #     self.fields['remarks'].widget.attrs['readonly'] = True
+                    #     self.fields['is_fixed'].widget.attrs['disabled'] = True
 
                     if qa_obj.review_group_status and not qa_obj.author_feedback_status and \
                                     qa_obj.reviewed_by == request_obj.user:
