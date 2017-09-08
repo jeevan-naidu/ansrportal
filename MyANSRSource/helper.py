@@ -11,6 +11,11 @@ def get_my_project_list(requestee, pmflag=0):
     # import ipdb;
     # ipdb.set_trace()
     pm_delegate = myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id)
+    delivery_manager = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id)
+    if delivery_manager:
+        return myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id).values('project_id')
+    if delivery_manager and requestee.is_superuser:
+        return myansr_model.ProjectManager.objects.values('project__id')
     if pm_delegate:
         return myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('project_id')
     if pm_delegate and requestee.is_superuser:

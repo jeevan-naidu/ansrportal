@@ -32,7 +32,7 @@ from tasks import TimeSheetWeeklyReminder, TimeSheetRejectionNotification, Proje
 from fb360.models import Respondent
 from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
-    ProjectMilestone, ProjectTeamMember, Book, ProjectChangeInfo, \
+    ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
     ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate
 
@@ -3167,12 +3167,23 @@ def project_summary(project_id, show_header=True):
             cleanedMilestoneDataFinancial = ProjectMilestone.objects.filter(
                 project=projectObj, financial = True).values('milestoneDate', 'description',
                                            'amount', 'name', 'financial', 'closed')
+            for element in cleanedMilestoneDataFinancial:
+                name_id = element['name']
+                name = Milestone.objects.filter(id=name_id)
+                # import ipdb; ipdb.set_trace()
+                element['name'] = name[0]
         except ProjectMilestone.DoesNotExist:
             cleanedMilestoneDataDelivery = []
         try:
             cleanedMilestoneDataDelivery = ProjectMilestone.objects.filter(
                 project=projectObj, financial=False).values('milestoneDate', 'description',
                                                            'amount', 'name', 'financial', 'closed')
+            for element in cleanedMilestoneDataDelivery:
+                name_id = element['name']
+                name = Milestone.objects.filter(id = name_id)
+                # import ipdb; ipdb.set_trace()
+                element['name'] = name[0]
+
         except ProjectMilestone.DoesNotExist:
             cleanedMilestoneDataDelivery = []
 

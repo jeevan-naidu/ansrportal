@@ -160,6 +160,7 @@
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
+			<th>Name</th>
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
@@ -169,6 +170,9 @@
         {% if milestone %}
 		{% for milestoneData in milestone %}
 		<tr>
+			<td>
+				{{ milestoneData.name }}
+			</td>
 			<td>
 				{{ milestoneData.description }}
 			</td>
@@ -206,6 +210,7 @@
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
+			<th>Name</th>
 			<th>Description</th>
 			<th>Deadline</th>
 			<th>Amount</th>
@@ -215,6 +220,9 @@
         {% if milestoneDelivery %}
 		{% for milestoneData in milestoneDelivery %}
 		<tr>
+			<td>
+				{{ milestoneData.name }}
+			</td>
 			<td>
 				{{ milestoneData.description }}
 			</td>
