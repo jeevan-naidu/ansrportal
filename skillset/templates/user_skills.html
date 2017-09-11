@@ -187,6 +187,9 @@ $(document).ready(function() {
 
 $(".delete").on('click', function(){
    delete_id = ($(this).attr('id'));
+   if(delete_id== undefined){
+    sweetAlert("Oops", "Cannot delete an empty row!");
+   }
    last_no = delete_id[delete_id.length - 1]
    var tr_data = document.getElementById("skill_header"+last_no)
    var skill_name = document.getElementById("skill_header_name"+last_no).value
