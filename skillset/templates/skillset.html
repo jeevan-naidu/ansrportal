@@ -16,6 +16,7 @@
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
 
 <style type="text/css">
     #data-tables_filter{ display:none; }
@@ -249,16 +250,34 @@
 
     $('#export').on('click', function(e){
         e.preventDefault();
-        ResultsToTable();
+        fnExcelReport("data-tables","skillset");
     });
 
     function ResultsToTable(){
         $("#data-tables").table2excel({
             exclude: ".noExl",
-            name: "Results"
+            filename: "skillset",
+            ext:'.xlsx'
         });
     }
 });
+
+    function fnExcelReport(id, name) {
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+      tab_text = tab_text + "<table border='1px'>";
+      var exportTable = $('#' + id).clone();
+      exportTable.find('input').each(function (index, elem) { $(elem).remove(); });
+      tab_text = tab_text + exportTable.html();
+      tab_text = tab_text + '</table></body></html>';
+      var fileName = name + '.xls';
+
+      //Save the file
+      var blob = new Blob([tab_text], { type: "text/plain;charset=utf-8" })
+      window.saveAs(blob, fileName);
+}
 
 
 
