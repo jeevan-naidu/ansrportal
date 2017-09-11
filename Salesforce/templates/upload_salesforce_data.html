@@ -24,7 +24,7 @@
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header vd_bg-blue vd_white">
-							 
+
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 								x
 							</button>
@@ -36,14 +36,14 @@
 							...
 						</div>
 						<div class="modal-footer vd_bg-grey">
-						
+
 						</div>
 					</div>
-					
+
 				</div>
-				
+
 			</div>
-			
+
 
 
 
@@ -81,7 +81,7 @@
       <tr>
 		<td>{{forloop.counter}}</td>
         <td>
-			<a style="padding:0px 2px;" href="#modal-container-992788" role="button" class="btn opp_num" data-toggle="modal">{{obj.opportunity_number}}</a>
+			<a style="padding:0px 2px;" href="#modal-container-992788" role="button" id="opp_num{{forloop.counter}}" class="btn opp_num" data-toggle="modal">{{obj.opportunity_number}}</a>
 			<div style="display: none">
 				<table class="table table-striped">
 					<tr>
@@ -92,10 +92,6 @@
 						<td><b>Opportunity Name</b></td>
 						<td>{{obj.opportunity_name}}</td>
 					</tr>
-					<!--<tr>-->
-						<!--<td>Business Unit</td>-->
-						<!--<td>:{{obj.business_unit}}</td>-->
-					<!--</tr>-->
 					<tr>
 						<td><b>Customer Contact</b></td>
 						<td>{{obj.customer_contact}}</td>
@@ -108,10 +104,6 @@
 						<td><b>Value</b></td>
 						<td>{{obj.value|floatformat:2}}</td>
 					</tr>
-					<!--<tr>-->
-						<!--<td>Probability</td>-->
-						<!--<td>:{{obj.probability}}</td>-->
-					<!--</tr>-->
 					<tr>
 						<td><b>Planned Start Date</b></td>
 						<td>{{obj.planned_start_date}}</td>
@@ -120,19 +112,7 @@
 						<td><b>Planned End Date</b></td>
 						<td>{{obj.planned_end_date}}</td>
 					</tr>
-					<!--<tr>-->
-						<!--<td><b>Status</b></td>-->
-						<!--<td>{{obj.status}}</td>-->
-					<!--</tr>-->
-					<!--<tr>-->
-						<!--<td>Updated Date</td>-->
-						<!--<td>:{{obj.updated_date}}</td>-->
-					<!--</tr>-->
-					<!--<tr>-->
-						<!--<td> Created Date</td>-->
-						<!--<td>:{{obj.created_date}}</td>-->
-					<!--</tr>-->
-				</table>
+					</table>
 			</div>
 		</td>
         <td>{{obj.opportunity_name}}</td>
@@ -166,10 +146,9 @@
 {% endblock  %}
 
 {% block page_specific_JS %}
-		<script src='/static/js/jquery.ui.widget.js' type="text/javascript"></script>
-		<script src='/static/js/bootstrap-filestyle.min.js' type="text/javascript"></script>
-
-		<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+		<script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+        <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
 
 		<script>
 			$(document).ready(function(){
@@ -178,23 +157,10 @@
 
 		        $('#data-tables').dataTable();
 
-				$(".opp_num").click(function(){
+				$("#data-tables").on('click', '.opp_num',function(){
 					var details = $(this).next().html();
 					$("#modal-body").html(details);
 					});
-
-					// File type validation
-				var fileExtension = ['csv'];
-				$('.filestyle').bind('change', function() {
-
-					if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-						alert("Allowed file types : "+fileExtension.join(', '));
-						$(this).filestyle('clear');
-						}
-
-
-				});
-
 
 
 				});
