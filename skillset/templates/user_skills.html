@@ -58,7 +58,7 @@
           </td>
              <td id= "skills_select" style="width: 250px;">
                <select id="skill" class="dropdown" style="width:300px";>
-                 <option value="------------">------------</option>
+                 <option value=""></option>
                  {% for element in user_skills%}
                    <option value="{{element}}">{{element}}</option>
                  {% endfor %}
@@ -66,7 +66,7 @@
             </td>
            <td id="level_select" style="width: 250px;">
              <select id="level" class="dropdown" style="width:300px";>
-               <option value="------------"> ------------</option>
+               <option value=""></option>
                  <option value="level1">Level 1</option>
                  <option value="level2">Level 2</option>
                  <option value="level3">Level 3</option>
@@ -85,7 +85,7 @@
           </td>
              <td id= "skills_select" style="width: 250px;">
                <select id="skill" class="dropdown" style="width:300px";>
-                 <option value="------------">------------</option>
+                 <option value=""></option>
                  {% for element in user_skills%}
                    <option value="{{element}}">{{element}}</option>
                  {% endfor %}
@@ -93,7 +93,7 @@
             </td>
            <td id="level_select" style="width: 250px;">
              <select id="level" class="dropdown" style="width:300px";>
-               <option value="------------"> ------------</option>
+               <option value=""></option>
                  <option value="level1">Level 1</option>
                  <option value="level2">Level 2</option>
                  <option value="level3">Level 3</option>
@@ -129,6 +129,7 @@ $("#add_skills").on('click', function(){
   fixIds(clone, cloneCntr);
   cloneCntr++;
   clone.id = "skills_level"+cloneCntr; // change id or other attributes/contents
+  clone.removeClass = "hidden"
   table.appendChild(clone); // add new row to end of table
   });
 
@@ -149,14 +150,37 @@ $("#submit").on('click', function(){
       if(i == 0){
         var skill = ($('#skills_level'+i).find('#skills_select').find('#skill').find(":selected").text());
         var level = ($('#skills_level'+i).find('#level_select').find('#level').find(":selected").text());
-        skills_name.push(skill)
-        skills_level.push(level)
+        if(skill == '' && level == ''){
+            $('#skills_level'+i).remove()
+        }
+        else if(skill == '' && level != ''){
+            sweetAlert("sorry...", "Cannot add with a empty skill!");
+            return;
+        }
+        else if(skill != '' && level == ''){
+            sweetAlert("sorry...", "Cannot add with a empty level!");
+            return;
+        }
+        else{
+            skills_name.push(skill)
+            skills_level.push(level)
+        }
       }
       if(i > 0){
         var skill = $('#skills_level'+i).find('#skills_select'+(i-1)).find('#skill'+(i-1)).find(":selected").text();
         var level = $('#skills_level'+i).find('#level_select'+(i-1)).find('#level'+(i-1)).find(":selected").text();
-        skills_name.push(skill)
-        skills_level.push(level)
+        if(skill == '' && level == ''){
+            $('#skills_level'+i).remove()
+        }else if(skill == '' && level != ''){
+            sweetAlert("sorry...", "Cannot add with a empty skill!");
+            return;
+         }else if(skill != '' && level == ''){
+            sweetAlert("sorry...", "Cannot add with a empty level!");
+            return;
+        }else{
+            skills_name.push(skill)
+            skills_level.push(level)
+        }
       }
     }
   }
