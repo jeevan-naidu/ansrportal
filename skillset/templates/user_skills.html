@@ -37,7 +37,7 @@
              <b>Skills:</b>
            </td>
               <td  style="width: 250px;">
-                <select id = "skill_header_name{{forloop.counter}}">
+                <select class="skill_header_name1" id = "skill_header_name{{forloop.counter}}">
                   <option value="{{skill.skills_name}}">{{skill.skills_name}}</option>
                 </select>
              </td>
@@ -72,8 +72,8 @@
                  <option value="level3">Level 3</option>
              </select>
            </td>
-           <td id="delete">
-               <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+           <td>
+               <i id="delete" class="fa fa-trash delete" style="font-size:27px";></i></br>
          </td>
          </tr>
         {% endif %}
@@ -99,8 +99,8 @@
                  <option value="level3">Level 3</option>
              </select>
            </td>
-           <td id="delete">
-               <i class="fa fa-trash delete" style="font-size:27px";></i></br>
+           <td>
+               <i id="delete0" class="fa fa-trash delete" style="font-size:27px";></i></br>
          </td>
          </tr>
         {% endif %}
@@ -129,7 +129,6 @@ $("#add_skills").on('click', function(){
   fixIds(clone, cloneCntr);
   cloneCntr++;
   clone.id = "skills_level"+cloneCntr; // change id or other attributes/contents
-  clone.removeClass = "hidden"
   table.appendChild(clone); // add new row to end of table
   });
 
@@ -208,25 +207,34 @@ $(document).ready(function() {
   $(".autocomplete_dropdown").select2();
 });
 
-
-$(".delete").on('click', function(){
+$("#table").on('click', '.delete', function(){
    delete_id = ($(this).attr('id'));
-   last_no = delete_id[delete_id.length - 1]
-   var tr_data = document.getElementById("skill_header"+last_no)
-   var skill_name = document.getElementById("skill_header_name"+last_no).value
-   var skill_level = document.getElementById("skill_header_level"+last_no).value
-   var id = document.getElementById("id").innerHTML
-    $.ajax({
-    url:'/skillset/skill_delete',
-    data: {"skill_name": skill_name, "skill_level":skill_level, "id":id},
-    type: "get",
-    success: function(data){
-      $(".UserDetail").html();
-      $('.UserDetail').html(data)
-      sweetAlert("Yahhh...", "Deleted Successfully!", "success");
+   no_of_option = $(this).parent().parent().find('select.dropdown option').length
+   if(no_of_option >0)
+   {
+       tr_id = $(this).parent().parent().attr('id');
+       var tr = document.getElementById(tr_id).innerHTML
+       console.log(tr)
+       $('#'+tr_id).remove()
+   }
+   else
+   {
+        last_no = delete_id[delete_id.length - 1]
+        var tr_data = document.getElementById("skill_header"+last_no)
+        var skill_name = document.getElementById("skill_header_name"+last_no).value
+        var skill_level = document.getElementById("skill_header_level"+last_no).value
+        var id = document.getElementById("id").innerHTML
+        $.ajax({
+        url:'/skillset/skill_delete',
+        data: {"skill_name": skill_name, "skill_level":skill_level, "id":id},
+        type: "get",
+        success: function(data){
+          $(".UserDetail").html();
+          $('.UserDetail').html(data)
+          sweetAlert("Yahhh...", "Deleted Successfully!", "success");
     },
     });
-
-
+   }
 });
+
 </script>
