@@ -192,7 +192,7 @@ $("#submit").on('click', function(){
     type: "POST",
     success: function(json){
       $('.UserDetail').html(json)
-      sweetAlert("Yahhh...", "Skill Added Successfully!", "success");
+      sweetAlert("", "Skill Added Successfully!", "success");
     },
     });
 });
@@ -214,8 +214,10 @@ $("#table").on('click', '.delete', function(){
    {
        tr_id = $(this).parent().parent().attr('id');
        var tr = document.getElementById(tr_id).innerHTML
-       console.log(tr)
-       $('#'+tr_id).remove()
+       if(tr_id != 'skills_level0'){
+        $('#'+tr_id).remove()
+       }
+
    }
    else
    {
@@ -231,7 +233,7 @@ $("#table").on('click', '.delete', function(){
         success: function(data){
           $(".UserDetail").html();
           $('.UserDetail').html(data)
-          sweetAlert("Yahhh...", "Deleted Successfully!", "success");
+          sweetAlert("", "Deleted Successfully!", "success");
     },
     });
    }
