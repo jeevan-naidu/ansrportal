@@ -14,12 +14,13 @@ def get_my_project_list(requestee, pmflag=0):
     if bu_head:
         return myansr_model.Project.objects.filter(bu__in=bu_head).values('id')
     pmdelegate_id = myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('pmDelegate_id')
+    deliverymanager_id = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id).values('deliveryManager_id')
     if requestee.id == pmdelegate_id:
         if pm_delegate:
             return myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('project_id')
         if pm_delegate and requestee.is_superuser:
             return myansr_model.ProjectManager.objects.values('project__id')
-    if requestee.id == delivery_manager:
+    if requestee.id == deliverymanager_id:
         if delivery_manager:
             return myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id).values('project_id')
         if delivery_manager and requestee.is_superuser:
