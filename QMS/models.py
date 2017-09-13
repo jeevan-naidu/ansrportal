@@ -129,7 +129,7 @@ class DefectSeverityLevel(TimeStampAbstractModel):
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     class Meta:
-        unique_together = (("severity_type", "severity_level", "defect_classification"),)
+        unique_together = (("severity_type", "severity_level", "defect_classification", "product_type"),)
 
     def __unicode__(self):
         """ return unicode strings """

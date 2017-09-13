@@ -40,4 +40,3 @@ def get_my_project_list(requestee, pmflag=0):
         return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
     else:
         return []
-
