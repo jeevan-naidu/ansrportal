@@ -9,22 +9,20 @@ def get_my_project_list(requestee, pmflag=0):
     :return Eligible Project's ID as list:
     """
     pm_delegate = myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id)
-    delivery_manager = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id)
     bu_head = company_model.BusinessUnit.objects.filter(new_bu_head=requestee)
+    delivery_manager = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id)
     if bu_head:
-        return myansr_model.Project.objects.filter(bu__in=bu_head).values('id')
-    pmdelegate_id = myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('pmDelegate_id')
-    deliverymanager_id = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id).values('deliveryManager_id')
-    if requestee.id == pmdelegate_id:
-        if pm_delegate:
-            return myansr_model.ProjectDetail.objects.filter(pmDelegate_id=requestee.id).values('project_id')
-        if pm_delegate and requestee.is_superuser:
-            return myansr_model.ProjectManager.objects.values('project__id')
-    if requestee.id == deliverymanager_id:
-        if delivery_manager:
-            return myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id).values('project_id')
-        if delivery_manager and requestee.is_superuser:
-            return myansr_model.ProjectManager.objects.values('project__id')
+        if requestee.is_superuser:
+            return myansr_model.Project.objects.all().values('id')
+        else:
+            return myansr_model.Project.objects.filter(bu__in=bu_head).values('id')
+    if pm_delegate or delivery_manager:
+
+        if requestee.is_superuser:
+            return myansr_model.Project.objects.all().values('id')
+        else:
+            return myansr_model.ProjectDetail.objects.filter(Q(deliveryManager_id=requestee.id) | Q(pmDelegate_id=requestee.id) ).values('project_id')
+
     if pmflag and requestee.is_superuser:
         return myansr_model.ProjectManager.objects.values('project__id')
     if pmflag:
