@@ -2535,7 +2535,6 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
             selectedProjectId = self.storage.get_step_data(
                 'My Projects'
             )['My Projects-project']
-            # import ipdb; ipdb.set_trace()
             projectMS = ProjectMilestone.objects.filter(
                 project__id=selectedProjectId, financial = False,
             ).values(
@@ -2551,7 +2550,6 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
         return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
-        #import ipdb; ipdb.set_trace()
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
 
@@ -2602,7 +2600,6 @@ class TrackMilestoneWizard(SessionWizardView):
         return [TMTEMPLATES[self.steps.current]]
 
     def get_context_data(self, form, **kwargs):
-        #import ipdb; ipdb.set_trace()
         context = super(TrackMilestoneWizard, self).get_context_data(
             form=form, **kwargs)
         if self.steps.current == 'Manage Milestones':
@@ -3432,10 +3429,13 @@ def project_summary(project_id, show_header=True):
             for element in cleanedMilestoneDataFinancial:
                 name_id = element['name']
                 name = Milestone.objects.filter(id=name_id)
-                # import ipdb; ipdb.set_trace()
-                element['name'] = name[0]
+                if name.exists():
+                    element['name'] = name[0]
+                else:
+                    element['name'] = ''
         except ProjectMilestone.DoesNotExist:
-            cleanedMilestoneDataDelivery = []
+            cleanedMilestoneDataFinancial = []
+
         try:
             cleanedMilestoneDataDelivery = ProjectMilestone.objects.filter(
                 project=projectObj, financial=False).values('milestoneDate', 'description',
@@ -3443,9 +3443,10 @@ def project_summary(project_id, show_header=True):
             for element in cleanedMilestoneDataDelivery:
                 name_id = element['name']
                 name = Milestone.objects.filter(id = name_id)
-                # import ipdb; ipdb.set_trace()
-                element['name'] = name[0]
-
+                if name.exists():
+                    element['name'] = name[0]
+                else:
+                    element['name'] = ''
         except ProjectMilestone.DoesNotExist:
             cleanedMilestoneDataDelivery = []
 
