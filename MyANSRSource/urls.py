@@ -103,6 +103,11 @@ urlpatterns = [
     url(r'^timesheet/send_reminder_mail', permission_required('MyANSRSource.approve_timesheet')
         (views.send_reminder_mail)),
 
+    url(r'^timesheet/pm_view',login_required(views.pm_view),name=u'project_manager_view'),
+    url(r'^timesheet/pm_details',login_required(views.pm_details),name=u'project_manager_details'),
+    url(r'^timesheet/pm_view/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$', login_required(views.pm_view)),
+    url(r'^timesheet/pm_view/(?P<week>[\w\-]+)/(?P<startdate>(\d+))/(?P<enddate>(\d+))/$', login_required(views.pm_view)),
+
     url(r'^dashboard$',
         views.Dashboard,
         name=u'dashboard'),

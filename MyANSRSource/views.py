@@ -1084,18 +1084,14 @@ class ModifyProjectWizard(SessionWizardView):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
-
 @login_required
 def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
     total_list = []
     if not user_id:
         user = request.user
-
     else:
-
         user = user_id
-
     cwActivityData = TimeSheetEntry.objects.filter(
         Q(
             wkstart=weekstartDate,
@@ -1605,6 +1601,248 @@ def dem_members(request):
 
     return manager_team_members, team_members
 
+def pm_details(request):
+    user_details = getTSData(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
+                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
+    return HttpResponse(
+        json.dumps(user_details),
+        content_type="application/json"
+    )
+
+@login_required
+def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
+    # To be approved TS data
+    total_list = []
+    if not user_id:
+        user = request.user
+    else:
+        user = user_id
+    cwActivityData = TimeSheetEntry.objects.filter(
+        Q(
+            wkstart=weekstartDate,
+            wkend=ansrEndDate,
+            teamMember=user,
+            project__isnull=True
+        )
+    ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
+             'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
+             'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
+             'teamMember__employee__employee_assigned_id', 'remarks'
+             )
+
+
+    cwTimesheetData = TimeSheetEntry.objects.filter(
+        Q(
+            wkstart=weekstartDate,
+            wkend=ansrEndDate,
+            teamMember=user,
+            activity__isnull=True
+        )
+    ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
+             'tuesdayH', 'wednesdayH',
+             'thursdayH', 'fridayH', 'hold',
+             'saturdayH', 'sundayH', 'approved',
+             'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
+             'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
+             'remarks'
+             )
+    # print cwActivityData
+    # Changing data TS data
+    tsData = {}
+    tsDataList = []
+    zero = 0
+    non_zero = 0
+    monday_total = 0.0
+    tuesday_total = 0.0
+    wednesday_total = 0.0
+    thursday_total = 0.0
+    friday_total = 0.0
+    saturday_total = 0.0
+    sunday_total = 0.0
+    for eachData in cwTimesheetData:
+        for k, v in eachData.iteritems():
+            # print k,v
+            if user_id:
+                if isinstance(v, Decimal):
+                    v = str(v)
+            if user_id:
+
+                if k == 'teamMember__employee__employee_assigned_id':
+                    tsData['employee_id'] = v
+                if k == 'project':
+                    tsData['project'] = v
+                if k == 'project__name':
+                    tsData['project_name'] = v
+                if k == 'location':
+                    tsData['location'] = v
+                if k == 'chapter':
+                    tsData['chapter'] = v
+                if k == 'task':
+                    tsData['task'] = v
+                if k == 'mondayH':
+                    tsData['mondayH'] = v
+                    monday_total += float(v)
+                if k == 'tuesdayH':
+                    tsData['tuesdayH'] = v
+                    tuesday_total += float(v)
+                if k == 'wednesdayH':
+                    tsData['wednesdayH'] = v
+                    wednesday_total += float(v)
+                if k == 'thursdayH':
+                    tsData['thursdayH'] = v
+                    thursday_total += float(v)
+                if k == 'fridayH':
+                    tsData['fridayH'] = v
+                    friday_total += float(v)
+                if k == 'saturdayH':
+                    tsData['saturdayH'] = v
+                    saturday_total += float(v)
+                if k == 'sundayH':
+                    tsData['sundayH'] = v
+                    sunday_total += float(v)
+
+            tsData[k] = v
+            if k == 'managerFeedback':
+                tsData['feedback'] = v
+            if k == 'id':
+                tsData['tsId'] = v
+
+            if k == 'project__internal':
+                tsData['is_internal'] = int(v)
+
+            if k == 'project__projectType__code':
+                tsData['projectType'] = v
+
+        tsDataList.append(tsData.copy())
+        tsData.clear()
+    atData = {}
+    atDataList = []
+
+    for eachData in cwActivityData:
+        for k, v in eachData.iteritems():
+            if user_id:
+                v = str(v)
+            if k == 'activity':
+                atData['activity'] = v
+            if k == 'hold':
+                atData['hold'] = v
+            if 'monday' in k:
+                atData['activity_monday'] = v
+                monday_total += float(v)
+            if 'tuesday' in k:
+                atData['activity_tuesday'] = v
+                tuesday_total += float(v)
+            if 'wednesday' in k:
+                atData['activity_wednesday'] = v
+                wednesday_total += float(v)
+            if 'thursday' in k:
+                atData['activity_thursday'] = v
+                thursday_total += float(v)
+            if 'friday' in k:
+                atData['activity_friday'] = v
+                friday_total += float(v)
+            if 'saturday' in k:
+                atData['activity_saturday'] = v
+                saturday_total += float(v)
+            if 'sunday' in k:
+                atData['activity_sunday'] = v
+                sunday_total += float(v)
+            if 'total' in k:
+                atData['activity_total'] = v
+            if k == 'managerFeedback':
+                atData['managerFeedback'] = v
+            if k == 'activity__name':
+                atData['activity__name'] = v
+            if k == 'id':
+                atData['atId'] = v
+            atData[k] = v
+        atDataList.append(atData.copy())
+        atData.clear()
+    if user_id:
+        total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
+                            'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
+                            'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
+                            'sunday_total': str(round(sunday_total, 2))})
+    return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
+
+
+def pm_view(request):
+    if request.method == 'GET':
+        context = {}
+        ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(request)
+        manager_team_members, team_members = dem_members(request)
+        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        own_team = {members.user_id: members.user.email for members in team_members}
+        updated_dict = team_dict.copy()
+        updated_dict.update(own_team)
+
+        user_id_collection = [k[0] for k in manager_team_members]
+        if updated_dict:
+            dates = switchWeeks(request)
+            ts_data_list = {}
+            request.session['include_activity'] = {}
+            start_date = dates['start']
+            end_date = dates['end']
+            status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+                user_id__in=updated_dict.keys()))
+            for user_id, name in updated_dict.iteritems():
+                non_billable_total = 0.0
+                if user_id not in user_id_collection:
+                    include_activity = False
+                    request.session['include_activity'][int(user_id)] = False
+                else:
+                    include_activity = True
+                    request.session['include_activity'][int(user_id)] = True
+
+                # exclude dm non project activities from dashboard
+                if user_id == request.user.id and request.user.id in updated_dict:
+                    request.session['include_activity'][int(request.user.id)] = False
+
+                members = Employee.objects.get(user=user_id)
+                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
+                                                 request.session['dm_projects'], include_activity)
+                if ts_obj:
+                    ts_data_list[members] = {}
+                    status_tmp = [s.approved for s in ts_obj]
+                    if all(status_tmp):
+                        ts_data_list[members]['approved_status'] = True
+                    else:
+                        ts_data_list[members]['approved_status'] = False
+
+                    if members.user_id not in user_id_collection:
+                        non_billable_total = 0
+                    else:
+                        non_billable_obj = non_billable_hours(ts_obj)
+                        for others in non_billable_obj:
+                            non_billable_total += float(others['totalH'])
+                    ts_data_list[members]['non_billable_total'] = non_billable_total
+                    billable_hours_obj = billable_hours(ts_obj)
+                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                    ts_data_list[members]['internal_value'] = internal_value
+                    ts_data_list[members]['external_value'] = external_value
+                    ts_data_list[members]['b_total'] = b_total
+                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
+                context['ts_data_list'] = ts_data_list
+                context['ts_final_list'] = ts_final_list
+                context['weekstartDate'] = dates['start']
+                context['weekendDate'] = dates['end']
+                context['status_dict'] = status
+                context['disabled'] = dates['disabled']
+            context['week_collection'] = week_collection[::-1]
+            ts_data_list_approved_false = {}
+            ts_data_list_approved_true = {}
+
+            for k, v in ts_data_list.iteritems():
+
+                if v['approved_status']:
+                    ts_data_list_approved_true[k] = v
+                else:
+                    ts_data_list_approved_false[k] = v
+            context['ts_data_list_approved_false'] = ts_data_list_approved_false
+            context['ts_data_list_approved_true'] = ts_data_list_approved_true
+        else:
+            context['exception_message'] = "you don't have any team members"
+    return render(request, 'pmview.html', context)
 
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
