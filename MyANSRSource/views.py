@@ -876,6 +876,30 @@ def time_sheet_for_the_week(week_start_date, week_end_date, request_object, appr
                 ts_obj = []
     return ts_obj
 
+def time_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
+                            include_activity=False):
+
+    ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
+                                           teamMember=request_object.user)
+
+    # if approve_time_sheet:
+    #
+    #     ts_obj = ts_obj.filter(hold=True)
+    #
+    #     if include_activity:
+    #         if dm_projects and dm_projects is not None:
+    #             ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
+    #         else:
+    #             ts_obj = ts_obj.filter(Q(project__isnull=True))
+    #
+    #     else:
+    #         if dm_projects and dm_projects is not None:
+    #             ts_obj = ts_obj.filter(project__in=dm_projects)
+    #
+    #         else:
+    #             ts_obj = []
+    return ts_obj
+
 
 def billable_hours(ts_obj):
     return ts_obj.filter(
@@ -1799,7 +1823,7 @@ def pm_view(request):
                     request.session['include_activity'][int(request.user.id)] = False
 
                 members = Employee.objects.get(user=user_id)
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
+                ts_obj = time_week(start_date, end_date, members, True,
                                                  request.session['dm_projects'], include_activity)
                 if ts_obj:
                     ts_data_list[members] = {}
