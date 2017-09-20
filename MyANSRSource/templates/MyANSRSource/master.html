@@ -398,7 +398,7 @@
                                                     </a>
                                                 </li>
                                             {% endif %}
-                                            {% if user|IsManager %}
+                                            {% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
                                             <li>
                                                     <a href="/myansrsource/timesheet/pm_view">
                                                         <span class="menu-text">Team Member view</span>
