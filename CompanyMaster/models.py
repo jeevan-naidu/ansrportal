@@ -212,6 +212,8 @@ class BusinessUnit(models.Model):
                                      auto_now_add=True)
     updatedon = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+    is_active = models.BooleanField(default=True,
+                                    verbose_name="Is Active?")
 
     def __unicode__(self):
         return self.name

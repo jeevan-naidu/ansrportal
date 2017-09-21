@@ -3269,6 +3269,9 @@ def saveProject(request):
                     pd.projecttemplate = ProjectSopTemplate.objects.get(name=request.POST.get('projecttemplate'))
                     pd.pmDelegate = User.objects.get(username=request.POST.get('pmDelegate')) if request.POST.get('pmDelegate') != 'None' else None
                     pd.projectFinType = request.POST.get('projectFinType')
+                    portfoliomgr = request.POST.get('PortfolioManager')
+                    portfolio_mgr_id = User.objects.get(username=portfoliomgr).id
+                    pd.portfolio_manager_id = portfolio_mgr_id
                     del_mgr = request.POST.get('DeliveryManager')
                     del_mgr_id = User.objects.get(username=del_mgr).id
                     pd.deliveryManager_id = del_mgr_id
@@ -3302,7 +3305,6 @@ def saveProject(request):
                                                                                  'created_by': request.user}, )
                     except Exception as e:
                         print str(e)
-
                     try:
                         pd.Asset_id = asset_id
                     except Exception as e:
@@ -3315,6 +3317,11 @@ def saveProject(request):
                     pci.delete()
                     pr.customer.delete()
                     logger.exception(e)
+                    return render(
+                        request,
+                        'MyANSRSource/projectCreationFailure.html',
+                        {})
+
 
             except ValueError as e:
                 logger.exception(e)

@@ -400,6 +400,7 @@ class ProjectDetail(models.Model):
     Discipline = models.ForeignKey(DataPoint, verbose_name='Discipline Name', null=True, blank=True)
     projectFinType = models.CharField(verbose_name='Project Finance Type ', choices=PROJECTFINTYPE, max_length=20,
                                       blank=True, null=True)
+    portfolio_manager = models.ForeignKey(User, verbose_name='Portfolio Manager', related_name='portfolio_manager', default=35,null=True,blank=True)
     deliveryManager = models.ForeignKey(User, verbose_name='Project Delievery Manager')
     Sowdocument = models.FileField(upload_to=change_file_path, blank=True, null=True, verbose_name="Upload Project SOW")
     Estimationdocument = models.FileField(upload_to=change_file_path, blank=True, null=True,
