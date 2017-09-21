@@ -25,6 +25,7 @@ def get_my_project_list(requestee, pmflag=0):
 
     if pmflag and requestee.is_superuser:
         return myansr_model.ProjectManager.objects.values('project__id')
+
     if pmflag:
         return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
 
