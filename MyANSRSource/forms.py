@@ -415,7 +415,15 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=True, )
-
+    PortfolioManager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="Portfolio Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        required=True, )
     DeliveryManager = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="Delivery Manager",
@@ -477,7 +485,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         self.fields['projectType'].queryset = \
             projectType.objects.filter(active=True).order_by('description')
         self.fields['bu'].queryset = \
-            BusinessUnit.objects.all().order_by('name')
+            BusinessUnit.objects.filter(is_active=True).order_by('name')
         self.fields['customer'].queryset = \
             Customer.objects.filter(active=True).order_by('name')
         self.fields['projectFinType'].widget.attrs['class'] = \
@@ -567,7 +575,14 @@ class ModifyProjectInfoForm(forms.ModelForm):
             # 'data-minimum-input-length': 3,
         }, ),
         required=False, )
-
+    PortfolioManager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="Portfolio Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Delievery Manager Name ...',
+        }
+                                         ),
+        required=False, )
     DeliveryManager = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
         label="Delivery Manager",
@@ -619,6 +634,7 @@ class ModifyProjectInfoForm(forms.ModelForm):
             'plannedEffort',
             'totalValue',
             'salesForceNumber',
+            'PortfolioManager',
             'DeliveryManager',
             'projectManager',
             'pmDelegate',
