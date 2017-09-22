@@ -27,7 +27,6 @@ class SalesforceData(models.Model):
     estimate_end_date = models.DateField(verbose_name="Estimated End Date", blank=True, null=True)
     planned_start_date = models.DateField(verbose_name='Planned Start Date', blank=True, null=True)
     planned_end_date = models.DateField(verbose_name="Planned End Date", blank=True, null=True)
-    status = models.CharField(max_length=100, blank=True, null=True)
     updated_date = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)

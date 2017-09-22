@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
-    BTGReportForm, InvoiceForm
+    BTGReportForm, InvoiceForm,RevenueReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
     BTGReport, ProjectDetail
@@ -25,6 +25,7 @@ import xlsxwriter
 import os
 import string
 import helper
+from django.template.defaultfilters import stringfilter
 from decimal import *
 
 
@@ -1693,3 +1694,41 @@ def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
                 return 0
             else:
                 return round(float(effort) * (num / float(deno)), 2)
+
+@login_required
+@permission_required('MyANSRSource.view_all_reports')
+def RevenueRecogniation(request):
+    form = RevenueReportForm(user=request.user)
+    buName, currReportMonth, reportYear = 0, 0, 0
+    reportData = RevenueReportForm(request.POST, user=request.user)
+    if request.method == 'POST':
+        if reportData.is_valid():
+            bu = reportData.cleaned_data['bu']
+            if bu == '0':
+                values = (list(ProjectMilestone.objects.filter(financial=0, closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
+                                                                                                            'project_id__customer__name','project_id__totalValue',
+                                                                                                            'project_id__name',
+                                                                                                            'project_id__customer',
+                                                                                                            'project_id__startDate',
+                                                                                                            'project_id__endDate',
+                                                                                                            'project_id__salesForceNumber','unit')))
+                for val in values:
+                    val['unit'] = val['project_id__totalValue'] - val['amount']
+            else:
+                values = (list(ProjectMilestone.objects.filter(financial=0, project_id__bu=bu,closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
+                                                                                                           'project_id__name','project_id__customer__name','project_id__totalValue',
+                                                                                                           'project_id__customer',
+                                                                                                           'project_id__startDate',
+                                                                                                           'project_id__endDate',
+                                                                                                         'project_id__salesForceNumber','unit')))
+                for val in values:
+                    val['unit'] = val['project_id__totalValue'] - val['amount']
+
+
+            form = RevenueReportForm(initial={
+                'bu': reportData.cleaned_data['bu']
+            }, user=request.user)
+
+        return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'report': values})
+    else:
+        return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
