@@ -1081,7 +1081,6 @@ class UtilizationReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
         super(UtilizationReportForm, self).__init__(*args, **kwargs)
-        #import ipdb;ipdb.set_trace()
         if currentUser.is_superuser:
             bu = list(BusinessUnit.objects.all())
             opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
@@ -1096,6 +1095,31 @@ class UtilizationReportForm(forms.Form):
         self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['year'].widget.attrs['class'] = "form-control"
         self.fields['month'].widget.attrs['class'] = "form-control"
+
+
+class RevenueReportForm(forms.Form):
+    bu = forms.ChoiceField(
+        label="Business Unit",
+        required=True,
+    )
+
+
+    def __init__(self, *args, **kwargs):
+        currentUser = kwargs.pop('user')
+        super(RevenueReportForm, self).__init__(*args, **kwargs)
+        if currentUser.is_superuser:
+            bu = list(BusinessUnit.objects.all())
+            opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
+            self.fields['bu'].choices = opt
+        else:
+            bu = list(
+                BusinessUnit.objects.filter(
+                    id__in=Project.objects.filter(
+                        id__in=helper.get_my_project_list(currentUser)).values('bu__id')
+                ).order_by('name'))
+            self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
+        self.fields['bu'].widget.attrs['class'] = "form-control"
+
 
 
 class BTGReportForm(forms.Form):
