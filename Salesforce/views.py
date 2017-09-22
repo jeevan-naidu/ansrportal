@@ -83,7 +83,6 @@ class UploadSalesforceDataView(View):
                         obj.probability = row_dict.get('probability_(%)', '').strip()
                         obj.estimate_start_date = estimate_start_date
                         obj.estimate_end_date = estimate_end_date
-                        obj.status = row_dict.get('stage', '').strip()
                         obj.save()
                 except Exception as e:
 
