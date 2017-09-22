@@ -145,7 +145,7 @@ class DSLTemplateReviewGroup(TimeStampAbstractModel):
     is_active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     class Meta:
-        unique_together = (("defect_severity_level", "template"),)
+        unique_together = (("defect_severity_level", "template", "review_master"),)
 
     def __unicode__(self):
         """ return unicode strings """
