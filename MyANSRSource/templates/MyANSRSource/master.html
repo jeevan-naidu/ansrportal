@@ -11,7 +11,6 @@
 <!-- Specific Page Data -->
 
 <!-- End of Data -->
-
 <head>
     {% load static from staticfiles %}
     <meta charset="utf-8" />
@@ -45,8 +44,15 @@
        {# Load SweetAlert CSS and JS #}
        <link rel="stylesheet" type="text/css" href="/static/css/sweetalert.min.css" media="screen">
        <script src="/static/js/sweetalert.min.js"></script>
-
-
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
     <link href="/static/css/fontello.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Pinyon+Script" rel="stylesheet">
 
@@ -57,6 +63,8 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/images/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/static/images/ico/apple-touch-icon-57-precomposed.png">
     <link rel="shortcut icon" href="/static/images/favicon.png">
+    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" type ="text/css">
+    <link href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" rel="stylesheet" type = "text/css">
 
     <!-- CSS -->
 
@@ -566,6 +574,11 @@
                                                                             <span class="menu-text">Active Projects</span>
                                                                         </a>
                                                                     </li>
+                                                                <li>
+                                                                    <a href="{% url 'RevenueRecogniation'%}">
+                                                                        <span class="menu-text">Revenue Recognition</span>
+                                                                    </a>
+                                                                </li>
 
                                                                 {%endif %}
 

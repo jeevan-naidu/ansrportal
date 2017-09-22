@@ -1,0 +1,95 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load humanize %}
+{% block pageTitle %}Revenue Recognition Summary{% endblock %}
+{%block childcontent %}
+<div class="panel clearfix">
+
+
+<div class="panel-body">
+<div class="row">
+    <div class="col-md-12" style="overflow: auto">
+        <form id="loginForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+            {% csrf_token %}
+            {% bootstrap_messages %}
+            <table class="table table-condensed">
+                <tr>
+                    {% for field in form %}
+                        <th>{{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required">*</span>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for field in form %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                    <td class="col-lg-1"><button type="submit" class="btn btn-primary">
+                        
+                        <i class="fa fa-line-chart"></i>
+                        Get Report
+                    </button></td>
+                    <td class="col-lg-1">
+                        {% if fresh == 1 %}
+                            <button type="submit" class="btn btn-success" name="generate">
+                        {% else %}
+                            <button type="submit" class="btn btn-success hidden" disabled>
+                        {% endif %}
+                                <i class="fa fa-file-excel-o"></i>
+                                Export to Excel
+                            </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <legend>Revenue Recognition Report</legend>
+         {% if report %}
+        <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
+            <thead>
+            <tr>
+                <th>SF-ID</th>
+                <th>Project-ID</th>
+                <th>Project-Name</th>
+                <th>Project Value</th>
+                <th>Revenue Recognised</th>
+                <th>BTG</th>
+            </tr>
+            </thead>
+            <script>
+                $(document).ready(function() {
+                    $('#example').DataTable( {
+                        dom: 'Bfrtip',
+                        lengthMenu: [
+                            [ 10, 25, 50, -1 ],
+                            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                        ],
+                        buttons: ['pageLength',
+                            'copy', 'excel', 'pdf', 'print'
+                        ]
+                    } );
+                } );
+            </script>
+            {% for val in report %}
+            <tr>
+            <td>{{val.project_id__salesForceNumber}}</td>
+            <td>{{val.project_id__projectId}}</td>
+            <td>{{val.project_id__name}}</td>
+            <td>{{val.project_id__totalValue}}</td>
+            <td>{{val.amount}}</td>
+            <td>{{val.unit}}</td>
+        </tr>
+            {% endfor %}
+            {% else %}
+             <i class="fa fa-hand-o-right" style="font-size:20px">No Result Found</i>
+            {% endif %}
+        </table>
+    </div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
