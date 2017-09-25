@@ -776,6 +776,13 @@ def get_time_sheet(request, is_approve=False):
             content_type="application/json"
         )
 
+def pm_details(request):
+    user_details = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
+                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
+    return HttpResponse(
+        json.dumps(user_details),
+        content_type="application/json"
+    )
 
 def time_sheet_employee(request):
     s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
@@ -1581,26 +1588,6 @@ def send_reminder_mail(request):
         json_obj = {'status': False}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
 
-# def manager_team_members(request):
-#     # delivery manager's project list
-#     manager = Employee.objects.get(user_id=request.user)
-#     # to fetch non project activities for their respective team
-#     manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
-#                                                     Q(employee_assigned_id=manager)),
-#                                                    user__is_active=True).values_list('user_id', 'user__email')
-#         # allowing DM to approve their ts entry for their own project by removing exclude condition
-#         # team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
-#         #                                                                                  member__is_active=True).
-#         #                                        values_list('member', flat=True))  # .exclude(user=request.user)
-#
-#     # else:
-#     #     # their own team
-#     #     team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
-#     #                                            user__is_active=True)  # .exclude(user=request.user)
-#
-#     return manager_team_members
-
-
 def dem_members(request, pm_view=0):
     if pm_view == 1:
         manager = Employee.objects.get(user_id=request.user)
@@ -1633,171 +1620,6 @@ def dem_members(request, pm_view=0):
                                                    user__is_active=True)  # .exclude(user=request.user)
 
         return manager_team_members, team_members
-
-def pm_details(request):
-    user_details = getTSData(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
-                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-    return HttpResponse(
-        json.dumps(user_details),
-        content_type="application/json"
-    )
-
-@login_required
-def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
-    # To be approved TS data
-    total_list = []
-    if not user_id:
-        user = request.user
-    else:
-        user = user_id
-    cwActivityData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=user,
-            project__isnull=True
-        )
-    ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
-             'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
-             'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
-             'teamMember__employee__employee_assigned_id', 'remarks'
-             )
-
-
-    cwTimesheetData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=user,
-            activity__isnull=True
-        )
-    ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
-             'tuesdayH', 'wednesdayH',
-             'thursdayH', 'fridayH', 'hold',
-             'saturdayH', 'sundayH', 'approved',
-             'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
-             'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks'
-             )
-    # print cwActivityData
-    # Changing data TS data
-    tsData = {}
-    tsDataList = []
-    zero = 0
-    non_zero = 0
-    monday_total = 0.0
-    tuesday_total = 0.0
-    wednesday_total = 0.0
-    thursday_total = 0.0
-    friday_total = 0.0
-    saturday_total = 0.0
-    sunday_total = 0.0
-    for eachData in cwTimesheetData:
-        for k, v in eachData.iteritems():
-            # print k,v
-            if user_id:
-                if isinstance(v, Decimal):
-                    v = str(v)
-            if user_id:
-
-                if k == 'teamMember__employee__employee_assigned_id':
-                    tsData['employee_id'] = v
-                if k == 'project':
-                    tsData['project'] = v
-                if k == 'project__name':
-                    tsData['project_name'] = v
-                if k == 'location':
-                    tsData['location'] = v
-                if k == 'chapter':
-                    tsData['chapter'] = v
-                if k == 'task':
-                    tsData['task'] = v
-                if k == 'mondayH':
-                    tsData['mondayH'] = v
-                    monday_total += float(v)
-                if k == 'tuesdayH':
-                    tsData['tuesdayH'] = v
-                    tuesday_total += float(v)
-                if k == 'wednesdayH':
-                    tsData['wednesdayH'] = v
-                    wednesday_total += float(v)
-                if k == 'thursdayH':
-                    tsData['thursdayH'] = v
-                    thursday_total += float(v)
-                if k == 'fridayH':
-                    tsData['fridayH'] = v
-                    friday_total += float(v)
-                if k == 'saturdayH':
-                    tsData['saturdayH'] = v
-                    saturday_total += float(v)
-                if k == 'sundayH':
-                    tsData['sundayH'] = v
-                    sunday_total += float(v)
-
-            tsData[k] = v
-            if k == 'managerFeedback':
-                tsData['feedback'] = v
-            if k == 'id':
-                tsData['tsId'] = v
-
-            if k == 'project__internal':
-                tsData['is_internal'] = int(v)
-
-            if k == 'project__projectType__code':
-                tsData['projectType'] = v
-
-        tsDataList.append(tsData.copy())
-        tsData.clear()
-    atData = {}
-    atDataList = []
-
-    for eachData in cwActivityData:
-        for k, v in eachData.iteritems():
-            if user_id:
-                v = str(v)
-            if k == 'activity':
-                atData['activity'] = v
-            if k == 'hold':
-                atData['hold'] = v
-            if 'monday' in k:
-                atData['activity_monday'] = v
-                monday_total += float(v)
-            if 'tuesday' in k:
-                atData['activity_tuesday'] = v
-                tuesday_total += float(v)
-            if 'wednesday' in k:
-                atData['activity_wednesday'] = v
-                wednesday_total += float(v)
-            if 'thursday' in k:
-                atData['activity_thursday'] = v
-                thursday_total += float(v)
-            if 'friday' in k:
-                atData['activity_friday'] = v
-                friday_total += float(v)
-            if 'saturday' in k:
-                atData['activity_saturday'] = v
-                saturday_total += float(v)
-            if 'sunday' in k:
-                atData['activity_sunday'] = v
-                sunday_total += float(v)
-            if 'total' in k:
-                atData['activity_total'] = v
-            if k == 'managerFeedback':
-                atData['managerFeedback'] = v
-            if k == 'activity__name':
-                atData['activity__name'] = v
-            if k == 'id':
-                atData['atId'] = v
-            atData[k] = v
-        atDataList.append(atData.copy())
-        atData.clear()
-    if user_id:
-        total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
-                            'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
-                            'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
-                            'sunday_total': str(round(sunday_total, 2))})
-    return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
-
 
 def pm_view(request):
     if request.method == 'GET':
