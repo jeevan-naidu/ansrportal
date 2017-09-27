@@ -30,8 +30,12 @@
             <td>{{val.milestoneDate}}</td>
             <td>{{val.description}}</td>
             <td>{{val.amount}}</td>
-            <td>{{val.financial}}</td>
+            {% if val.financial == True%}
+                <td>Yes</td>
+            {% else %}
+                <td>No</td>
             </tr>
+            {% endif %}
             {% endfor %}
 
         </table>
