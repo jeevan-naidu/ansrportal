@@ -419,7 +419,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         queryset=User.objects.filter(is_active=True),
         label="Portfolio Manager",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
-            'data-placeholder': 'Type Delievery Manager Name ...',
+            'data-placeholder': 'Type Portfolio Manager Name ...',
         }
                                          # url='AutocompleteUser'
                                          ),
@@ -579,7 +579,7 @@ class ModifyProjectInfoForm(forms.ModelForm):
         queryset=User.objects.filter(is_active=True),
         label="Portfolio Manager",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
-            'data-placeholder': 'Type Delievery Manager Name ...',
+            'data-placeholder': 'Type Portfolio Manager Name ...',
         }
                                          ),
         required=False, )
@@ -1120,7 +1120,34 @@ class RevenueReportForm(forms.Form):
             self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
         self.fields['bu'].widget.attrs['class'] = "form-control"
 
+class InvoiceReportForm(forms.Form):
+    project = forms.ModelChoiceField(
+        queryset=Project.objects.all(),
+        label="Project",
+        widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
+            # Set some placeholder
+            'data-placeholder': 'Enter a Project Name /Project Id ...',
+            # Only trigger autocompletion after 3 characters have been typed
+            # 'data-minimum-input-length': 3,
+        }, ),
+        required=True, )
+    startDate = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now,
+        required=False,
+    )
+    endDate = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now,
+        required=False,
+    )
 
+    def __init__(self, *args, **kwargs):
+        super(InvoiceReportForm, self).__init__(*args, **kwargs)
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
 
 class BTGReportForm(forms.Form):
 

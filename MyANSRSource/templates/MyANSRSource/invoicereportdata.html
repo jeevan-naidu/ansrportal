@@ -1,0 +1,38 @@
+<div id="invoicereport">
+<table id="report" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Milestone Name</th>
+                <th>Milestone Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Financial</th>
+
+            </tr>
+            </thead>
+            <script>
+                $(document).ready(function() {
+                    $('#report').DataTable( {
+                        dom: 'Bfrtip',
+                        lengthMenu: [
+                            [ 10, 25, 50, -1 ],
+                            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                        ],
+                        buttons: ['pageLength',
+                            'copy', 'excel', 'pdf',
+                        ]
+                    } );
+                } );
+            </script>
+            {% for val in data %}
+            <tr>
+            <td>{{val.name}}</td>
+            <td>{{val.milestoneDate}}</td>
+            <td>{{val.description}}</td>
+            <td>{{val.amount}}</td>
+            <td>{{val.financial}}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+</div>
