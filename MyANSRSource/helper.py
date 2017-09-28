@@ -14,22 +14,21 @@ def get_my_project_list(requestee, pmflag=0):
     delivery_manager = myansr_model.ProjectDetail.objects.filter(deliveryManager_id=requestee.id)
     pm = myansr_model.ProjectManager.objects.filter(user=requestee)
     acc_mgmt = company_model.Customer.objects.filter(Q(Crelation=requestee) | Q(Cdelivery=requestee))
-
     if bu_head:
         if requestee.is_superuser:
             return myansr_model.Project.objects.all().values('id')
         else:
             return myansr_model.Project.objects.filter(bu__in=bu_head).values('id')
-    if pm_delegate and delivery_manager and portfolio_manager or pm_delegate and not delivery_manager or not pm_delegate and delivery_manager and portfolio_manager:
+
+    if pm_delegate and delivery_manager and portfolio_manager or not pm_delegate and delivery_manager and portfolio_manager:
         if requestee.is_superuser:
             return myansr_model.Project.objects.all().values('id')
         else:
-            return myansr_model.ProjectDetail.objects.filter(Q(deliveryManager_id=requestee.id) | Q(pmDelegate_id=requestee.id) | Q(portfolio_manager_id=requestee.id) ).values('project_id')
-    else:
-        if pmflag and requestee.is_superuser:
-            return myansr_model.ProjectManager.objects.values('project__id')
-        if pmflag:
-            return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
+            return myansr_model.ProjectDetail.objects.filter(
+                Q(deliveryManager_id=requestee.id) | Q(pmDelegate_id=requestee.id) | Q(
+                    portfolio_manager_id=requestee.id)).values('project_id')
+    if pm:
+        return myansr_model.ProjectManager.objects.filter(user=requestee).values('project__id')
 
     if requestee.is_superuser:
         return myansr_model.Project.objects.all().values('id')
