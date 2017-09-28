@@ -6,7 +6,7 @@
                 <th>Milestone Date</th>
                 <th>Description</th>
                 <th>Amount</th>
-                <th>Financial</th>
+                <th>Completed</th>
 
             </tr>
             </thead>
@@ -30,7 +30,7 @@
             <td>{{val.milestoneDate}}</td>
             <td>{{val.description}}</td>
             <td>{{val.amount}}</td>
-            {% if val.financial == True%}
+            {% if val.closed == True%}
                 <td>Yes</td>
             {% else %}
                 <td>No</td>
