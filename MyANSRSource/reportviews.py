@@ -1404,6 +1404,23 @@ def generateProjectContent(request, header, report, worksheet,
         worksheet.write(row, 5, report['salesForceNumber'], numberFormat)
         worksheet.write(row, 6, report['signed'], content)
         worksheet.write(row, 7, report['po'], content)
+    elif 'totalValue' not in report:
+        row =1
+        for val in report:
+            worksheet.write(row, 0, val['project_id__name'], dateformat)
+            worksheet.write(row, 1, val['project_id__startDate'], dateformat)
+            worksheet.write(row, 2, val['project_id__endDate'], dateformat)
+            worksheet.write(row, 3, val['project_id__plannedEffort'], numberFormat)
+            worksheet.write(row, 4, val['project_id__salesForceNumber'], numberFormat)
+            worksheet.write(row, 5, val['project_id__signed'], content)
+            worksheet.write(row, 6, val['project_id__po'], content)
+            worksheet.write(row, 7, val['project_id__totalValue'], content)
+            worksheet.write(row, 8, val['amount'], content)
+            worksheet.write(row, 9, val['unit'], content)
+            worksheet.write(row, 10, val['project_id__customer__name'], content)
+            worksheet.write(row, 11, val['project_id__bu__name'], content)
+            row=row+1
+
     else:
         row, msg = 1, ''
         for eachRec in report:
@@ -1715,9 +1732,11 @@ def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
 @permission_required('MyANSRSource.view_all_reports')
 def RevenueRecogniation(request):
     form = RevenueReportForm(user=request.user)
-    buName, currReportMonth, reportYear = 0, 0, 0
+    buName, currReportMonth, reportYear, fresh= 0, 0, 0, 0
     reportData = RevenueReportForm(request.POST, user=request.user)
     if request.method == 'POST':
+        fresh = 1
+
         if reportData.is_valid():
             bu = reportData.cleaned_data['bu']
             if bu == '0':
@@ -1726,25 +1745,44 @@ def RevenueRecogniation(request):
                                                                                                             'project_id__name',
                                                                                                             'project_id__customer',
                                                                                                             'project_id__startDate',
-                                                                                                            'project_id__endDate',
-                                                                                                            'project_id__salesForceNumber','unit')))
+                                                                                                            'project_id__endDate', 'project_id__signed','project_id__po',
+                                                                                                            'project_id__salesForceNumber', 'project_id__plannedEffort','unit')))
                 for val in values:
                     val['unit'] = val['project_id__totalValue'] - val['amount']
             else:
-                values = (list(ProjectMilestone.objects.filter(financial=0, project_id__bu=bu,closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
+                values = (list(ProjectMilestone.objects.filter(financial=0, project_id__bu=bu, closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
                                                                                                            'project_id__name','project_id__customer__name','project_id__totalValue',
                                                                                                            'project_id__customer',
                                                                                                            'project_id__startDate',
                                                                                                            'project_id__endDate',
-                                                                                                         'project_id__salesForceNumber','unit')))
+                                                                                                         'project_id__salesForceNumber','project_id__plannedEffort','project_id__signed','project_id__po',
+                                                                                                               'unit')))
                 for val in values:
                     val['unit'] = val['project_id__totalValue'] - val['amount']
-
+            if 'generate' in request.POST:
+                newval = []
+                fileName = u'Revenue-Repoort{0}_{1}.xlsx'.format(
+                    datetime.now().date(),
+                    datetime.now().time()
+                )
+                fileName = fileName.replace("  ", "_")
+                totals = []
+                sheetName = ['Basic Information','']
+                heading = [
+                    ['Project Name', 'Start Date', 'EndDate', 'Planned Effort', 'SalesForece', 'Signed', 'Po',
+                     'Project Value', 'Revenue Recognised', 'BTG', 'Customer', 'BU'],
+                    ['Project Name']]
+                report = [values, newval]
+                return generateExcel(request, report, sheetName,
+                                     heading, totals, fileName)
 
             form = RevenueReportForm(initial={
                 'bu': reportData.cleaned_data['bu']
             }, user=request.user)
 
-        return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'report': values})
+        return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'fresh': 1, 'report': values})
+
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
+
+
