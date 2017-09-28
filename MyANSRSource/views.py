@@ -876,28 +876,11 @@ def time_sheet_for_the_week(week_start_date, week_end_date, request_object, appr
                 ts_obj = []
     return ts_obj
 
-def time_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
-                            include_activity=False):
+def time_week(week_start_date, week_end_date, request_object):
 
     ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
                                            teamMember=request_object.user)
 
-    # if approve_time_sheet:
-    #
-    #     ts_obj = ts_obj.filter(hold=True)
-    #
-    #     if include_activity:
-    #         if dm_projects and dm_projects is not None:
-    #             ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
-    #         else:
-    #             ts_obj = ts_obj.filter(Q(project__isnull=True))
-    #
-    #     else:
-    #         if dm_projects and dm_projects is not None:
-    #             ts_obj = ts_obj.filter(project__in=dm_projects)
-    #
-    #         else:
-    #             ts_obj = []
     return ts_obj
 
 
@@ -1598,32 +1581,58 @@ def send_reminder_mail(request):
         json_obj = {'status': False}
     return HttpResponse(json.dumps(json_obj), content_type="application/javascript")
 
+# def manager_team_members(request):
+#     # delivery manager's project list
+#     manager = Employee.objects.get(user_id=request.user)
+#     # to fetch non project activities for their respective team
+#     manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
+#                                                     Q(employee_assigned_id=manager)),
+#                                                    user__is_active=True).values_list('user_id', 'user__email')
+#         # allowing DM to approve their ts entry for their own project by removing exclude condition
+#         # team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
+#         #                                                                                  member__is_active=True).
+#         #                                        values_list('member', flat=True))  # .exclude(user=request.user)
+#
+#     # else:
+#     #     # their own team
+#     #     team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
+#     #                                            user__is_active=True)  # .exclude(user=request.user)
+#
+#     return manager_team_members
 
-def dem_members(request):
-    # delivery manager's project list
-    dm_projects = ProjectDetail.objects.filter(Q(deliveryManager=request.user) | Q(pmDelegate=request.user)).values_list('project', flat=True)
-    manager = Employee.objects.get(user_id=request.user)
-    # to fetch non project activities for their respective team
-    manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
-                                                    Q(employee_assigned_id=manager)),
-                                                   user__is_active=True).values_list('user_id', 'user__email')
-    if 'dm_projects' not in request.session:
-        if dm_projects:
-            request.session['dm_projects'] = dm_projects
-        else:
-            request.session['dm_projects'] = None
-    if dm_projects:
-        # allowing DM to approve their ts entry for their own project by removing exclude condition
-        team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
-                                                                                         member__is_active=True).
-                                               values_list('member', flat=True))  # .exclude(user=request.user)
 
+def dem_members(request, pm_view=0):
+    if pm_view == 1:
+        manager = Employee.objects.get(user_id=request.user)
+        manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                        Q(employee_assigned_id=manager)),
+                                                       user__is_active=True).values_list('user_id', 'user__email')
+
+        return manager_team_members
     else:
-        # their own team
-        team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
-                                               user__is_active=True)  # .exclude(user=request.user)
+        dm_projects = ProjectDetail.objects.filter(Q(deliveryManager=request.user) | Q(pmDelegate=request.user)).values_list('project', flat=True)
+        manager = Employee.objects.get(user_id=request.user)
+        # to fetch non project activities for their respective team
+        manager_team_members = Employee.objects.filter((Q(manager_id=manager) |
+                                                        Q(employee_assigned_id=manager)),
+                                                       user__is_active=True).values_list('user_id', 'user__email')
+        if 'dm_projects' not in request.session:
+            if dm_projects:
+                request.session['dm_projects'] = dm_projects
+            else:
+                request.session['dm_projects'] = None
+        if dm_projects:
+            # allowing DM to approve their ts entry for their own project by removing exclude condition
+            team_members = Employee.objects.filter(user__in=ProjectTeamMember.objects.filter(project__in=dm_projects,
+                                                                                             member__is_active=True).
+                                                   values_list('member', flat=True))  # .exclude(user=request.user)
 
-    return manager_team_members, team_members
+        else:
+            # their own team
+            team_members = Employee.objects.filter((Q(manager_id=manager) | Q(employee_assigned_id=manager)),
+                                                   user__is_active=True)  # .exclude(user=request.user)
+
+        return manager_team_members, team_members
 
 def pm_details(request):
     user_details = getTSData(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
@@ -1794,13 +1803,13 @@ def pm_view(request):
     if request.method == 'GET':
         context = {}
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(request)
-        manager_team_members, team_members = dem_members(request)
-        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
-        own_team = {members.user_id: members.user.email for members in team_members}
+        team_members = dem_members(request, pm_view=1)
+        team_dict = {members[0]: members[1] for members in team_members}
+        # own_team = {members.user_id: members.user.email for members in team_members}
         updated_dict = team_dict.copy()
-        updated_dict.update(own_team)
+        # updated_dict.update(own_team)
 
-        user_id_collection = [k[0] for k in manager_team_members]
+        user_id_collection = [k[0] for k in team_members]
         if updated_dict:
             dates = switchWeeks(request)
             ts_data_list = {}
@@ -1823,8 +1832,7 @@ def pm_view(request):
                     request.session['include_activity'][int(request.user.id)] = False
 
                 members = Employee.objects.get(user=user_id)
-                ts_obj = time_week(start_date, end_date, members, True,
-                                                 request.session['dm_projects'], include_activity)
+                ts_obj = time_week(start_date, end_date, members)
                 if ts_obj:
                     ts_data_list[members] = {}
                     status_tmp = [s.approved for s in ts_obj]
@@ -1874,7 +1882,7 @@ class ApproveTimesheetView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-        manager_team_members, team_members = dem_members(self.request)
+        manager_team_members, team_members = dem_members(self.request, pm_view=0)
         team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
         own_team = {members.user_id: members.user.email for members in team_members}
         updated_dict = team_dict.copy()

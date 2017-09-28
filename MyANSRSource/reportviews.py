@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
-    BTGReportForm, InvoiceForm,RevenueReportForm
+    BTGReportForm, InvoiceForm,RevenueReportForm, InvoiceReportForm
 from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
     BTGReport, ProjectDetail
@@ -498,7 +498,6 @@ def SingleProjectReport(request):
                    'deviation': deviation, 'balanceTotal': balanceTotal,
                    'red': red, 'closed': closed}
                   )
-
 
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
@@ -1043,6 +1042,24 @@ def getEffort(request, startDate, endDate, start, end, eachProject, label):
 def getInternalData(request):
     pass
 
+@login_required
+@permission_required('MyANSRSource.view_all_reports')
+def InvoiceReport(request):
+    if request.method == 'GET':
+        form = InvoiceReportForm()
+        return render(request, 'MyANSRSource/invoicereport.html',
+                      {'form': form})
+    if request.method == 'POST':
+        form = InvoiceReportForm()
+        project_id = request.POST.get('project')
+        startDate = request.POST.get('startDate')
+        endDate = request.POST.get('endDate')
+        if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
+            data = ProjectMilestone.objects.filter(project_id=project_id, closed=1)
+        else:
+            data = ProjectMilestone.objects.filter(project_id=project_id, closed=1, milestoneDate__range=(startDate, endDate))
+        return render(request, 'MyANSRSource/invoicereportdata.html',
+                      {'form': form, 'data':data})
 
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
@@ -1058,7 +1075,6 @@ def RevenueRecognitionReport(request):
     return render(request, 'MyANSRSource/reportrevenue.html',
                   {'data': data,
                    'form': btg})
-
 
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
