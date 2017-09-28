@@ -1735,7 +1735,7 @@ def RevenueRecogniation(request):
                 for val in values:
                     val['unit'] = val['project_id__totalValue'] - val['amount']
             else:
-                values = (list(ProjectMilestone.objects.filter(financial=0, project_id__bu=bu,closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
+                values = (list(ProjectMilestone.objects.filter(financial=0, project_id__bu=bu, closed=1).values('id', 'amount','project_id__projectId','project_id__bu__name',
                                                                                                            'project_id__name','project_id__customer__name','project_id__totalValue',
                                                                                                            'project_id__customer',
                                                                                                            'project_id__startDate',
@@ -1745,20 +1745,19 @@ def RevenueRecogniation(request):
                 for val in values:
                     val['unit'] = val['project_id__totalValue'] - val['amount']
             if 'generate' in request.POST:
-                fileName = u'Project-Perfomance{0}_{1}.xlsx'.format(
+                newval = []
+                fileName = u'Revenue-Repoort{0}_{1}.xlsx'.format(
                     datetime.now().date(),
                     datetime.now().time()
                 )
                 fileName = fileName.replace("  ", "_")
                 totals = []
-                sheetName = ['Basic Information', 'Projectwise']
+                sheetName = ['Basic Information','']
                 heading = [
                     ['Project Name', 'Start Date', 'EndDate', 'Planned Effort', 'SalesForece', 'Signed', 'Po',
                      'Project Value', 'Revenue Recognised', 'BTG', 'Customer', 'BU'],
-                    ['Project Name', 'Project Type', 'BU', 'Customer Name',
-                     'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
-                     'Billed', 'Billed PTM', 'Project Status', 'SF-ID', 'PTD']]
-                report = [values, values]
+                    ['Project Name']]
+                report = [values, newval]
                 return generateExcel(request, report, sheetName,
                                      heading, totals, fileName)
 
