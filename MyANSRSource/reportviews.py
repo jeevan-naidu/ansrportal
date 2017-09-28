@@ -829,7 +829,6 @@ def ProjectPerfomanceReport(request):
                 totals = [eothersTotal, iothersTotal, eidleTotal, iidleTotal,
                           eothersTotalPTM, iothersTotalPTM, eidleTotalPTM,
                           iidleTotalPTM, eptdTotal, iptdTotal]
-                print totals
                 sheetName = ['External', 'Internal']
                 heading = [
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
