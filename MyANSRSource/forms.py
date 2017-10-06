@@ -386,9 +386,18 @@ class changeProjectLeaderForm(forms.ModelForm):
                                          # url='AutocompleteUser'
                                          ),
         required=False, )
+    portfolio_manager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="PM Delegate",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type PM Delegate Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        required=False, )
     class Meta:
         model = Project
-        fields = ('projectManager', 'DeliveryManager', 'pmDelegate')
+        fields = ('projectManager', 'DeliveryManager', 'pmDelegate', 'portfolio_manager')
         widgets = {
             'projectManager': autocomplete.ModelSelect2Multiple()
         }
@@ -397,6 +406,7 @@ class changeProjectLeaderForm(forms.ModelForm):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
         self.fields['pmDelegate'].widget.attrs['class'] = "form-control"
+        self.fields['portfolio_manager'].widget.attrs['class'] = "form-control"
         self.fields['DeliveryManager'].widget.attrs['class'] = "form-control"
 
 
