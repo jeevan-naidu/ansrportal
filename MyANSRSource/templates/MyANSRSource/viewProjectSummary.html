@@ -76,14 +76,28 @@
 		<table class="table table-condensed">
 		<thead>
 				<th>Delivery manager</th>
+				<th>Portfolio manager</th>
 				<th>PM Delegate</th>
 				<th>Project Finance Type</th>
+                <th>Sow</th>
+                <th>Estimation</th>
 		</thead>
 		<tbody>
 		<tr>
 			<td>{{ basicInfo.deliveryManager}}</td>
+			<td>{{ basicInfo.portfolio_manager}}</td>
 			<td>{{ basicInfo.pmDelegate }}</td>
 			<td>{{ basicInfo.projectFinType }}</td>
+            {% if basicInfo.Sowdocument %}
+               <td><a href="/media/{{ basicInfo.Sowdocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
+            {% else %}
+                <td>None</td>
+            {% endif %}
+            {% if basicInfo.Estimationdocument %}
+                <td><a href="/media/{{ basicInfo.Estimationdocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
+            {% else %}
+                <td>None</td>
+            {% endif %}
 		</tr>
 		</tbody>
 	</table>

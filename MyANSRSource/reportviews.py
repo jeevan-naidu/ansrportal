@@ -1055,9 +1055,9 @@ def InvoiceReport(request):
         startDate = request.POST.get('startDate')
         endDate = request.POST.get('endDate')
         if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
-            data = ProjectMilestone.objects.filter(project_id=project_id, closed=1)
+            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True)
         else:
-            data = ProjectMilestone.objects.filter(project_id=project_id, closed=1, milestoneDate__range=(startDate, endDate))
+            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True, milestoneDate__range=(startDate, endDate))
         return render(request, 'MyANSRSource/invoicereportdata.html',
                       {'form': form, 'data':data})
 

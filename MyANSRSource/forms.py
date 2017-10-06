@@ -386,9 +386,18 @@ class changeProjectLeaderForm(forms.ModelForm):
                                          # url='AutocompleteUser'
                                          ),
         required=False, )
+    portfolio_manager = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_active=True),
+        label="Portfolio Manager",
+        widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
+            'data-placeholder': 'Type Portfolio manager Name ...',
+        }
+                                         # url='AutocompleteUser'
+                                         ),
+        required=False, )
     class Meta:
         model = Project
-        fields = ('projectManager', 'DeliveryManager', 'pmDelegate')
+        fields = ('projectManager', 'DeliveryManager', 'pmDelegate', 'portfolio_manager')
         widgets = {
             'projectManager': autocomplete.ModelSelect2Multiple()
         }
@@ -397,6 +406,7 @@ class changeProjectLeaderForm(forms.ModelForm):
         super(changeProjectLeaderForm, self).__init__(*args, **kwargs)
         self.fields['projectManager'].widget.attrs['class'] = "form-control"
         self.fields['pmDelegate'].widget.attrs['class'] = "form-control"
+        self.fields['portfolio_manager'].widget.attrs['class'] = "form-control"
         self.fields['DeliveryManager'].widget.attrs['class'] = "form-control"
 
 
@@ -797,7 +807,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
     millist = [2, 3, 6]
     name = forms.ModelChoiceField(
-        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist, is_active=True),
         label="Select Milestone Name",
         required=True, )
     description = forms.CharField(required=False,)
@@ -840,7 +850,7 @@ class CloseProjectMilestoneFormDelivery(forms.ModelForm):
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
     millist = [1, 4, 5]
     name = forms.ModelChoiceField(
-        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist, is_active=True),
         label="Select Milestone Name",
         required=True, )
     description = forms.CharField(required=False, )
