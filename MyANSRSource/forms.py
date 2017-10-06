@@ -388,9 +388,9 @@ class changeProjectLeaderForm(forms.ModelForm):
         required=False, )
     portfolio_manager = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
-        label="PM Delegate",
+        label="Portfolio Manager",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
-            'data-placeholder': 'Type PM Delegate Name ...',
+            'data-placeholder': 'Type Portfolio manager Name ...',
         }
                                          # url='AutocompleteUser'
                                          ),
@@ -807,7 +807,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
     millist = [2, 3, 6]
     name = forms.ModelChoiceField(
-        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist, is_active=True),
         label="Select Milestone Name",
         required=True, )
     description = forms.CharField(required=False,)
@@ -850,7 +850,7 @@ class CloseProjectMilestoneFormDelivery(forms.ModelForm):
     id = forms.IntegerField(label="msRecId", widget=forms.HiddenInput())
     millist = [1, 4, 5]
     name = forms.ModelChoiceField(
-        queryset=Milestone.objects.filter(milestone_type_id__in=millist),
+        queryset=Milestone.objects.filter(milestone_type_id__in=millist, is_active=True),
         label="Select Milestone Name",
         required=True, )
     description = forms.CharField(required=False, )

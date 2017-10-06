@@ -514,6 +514,7 @@ class TimeSheetEntry(models.Model):
 class MilestoneType(models.Model):
     milestone_type = models.CharField(max_length=50, verbose_name="Milestone Type")
     is_financial = models.BooleanField(default=False, verbose_name="Is Financial")
+    is_active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.milestone_type
@@ -529,6 +530,7 @@ class Milestone(UpdateDate):
                             null=True, verbose_name="name")
     is_final_milestone = models.BooleanField(verbose_name="Is Final Milestone", default=False)
     check_schedule_deviation = models.BooleanField(verbose_name="Check Schedule Deviation", default=False)
+    is_active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.name

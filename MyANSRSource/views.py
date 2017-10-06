@@ -3414,14 +3414,21 @@ def project_summary(project_id, show_header=True):
     )[0]
     projdetailobj = ProjectDetail.objects.filter(project_id=project_id)
     if projdetailobj:
-        projdetailvalue = projdetailobj.values('projectFinType', 'deliveryManager__username', 'pmDelegate__username')[0]
+        projdetailvalue = projdetailobj.values('projectFinType', 'deliveryManager__username', 'pmDelegate__username', 'portfolio_manager__username', 'Sowdocument', 'Estimationdocument')[0]
         basicInfo['projectFinType'] = projdetailvalue['projectFinType']
         basicInfo['deliveryManager'] = projdetailvalue['deliveryManager__username']
         basicInfo['pmDelegate'] = projdetailvalue['pmDelegate__username']
+        basicInfo['portfolio_manager'] = projdetailvalue['portfolio_manager__username']
+        basicInfo['Sowdocument'] = projdetailvalue['Sowdocument']
+        basicInfo['Estimationdocument'] = projdetailvalue['Estimationdocument']
+
     else:
         basicInfo['projectFinType'] = None
         basicInfo['deliveryManager'] = None
         basicInfo['pmDelegate'] = None
+        basicInfo['portfolio_manager'] = None
+        basicInfo['Sowdocument'] = None
+        basicInfo['Estimationdocument'] = None
     if basicInfo['customerContact']:
         customerObj = basicInfo['customerContact']
         basicInfo['customerContact__username'] = customerObj
