@@ -2445,7 +2445,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
             for eachData in pm:
                 l.append(eachData['projectManager'])
             delivery_delegate_mgr = ProjectDetail.objects.filter(project=myProject.id).values('deliveryManager','pmDelegate','portfolio_manager')[0]
-            projectMS = {'projectManager': l, 'DeliveryManager': delivery_delegate_mgr['deliveryManager'], 'pmDelegate': delivery_delegate_mgr['pmDelegate'], 'portfolio_manager':delivery_delegate_mgr['portfolio_manager']}
+            projectMS = {'projectManager': l, 'DeliveryManager': delivery_delegate_mgr['deliveryManager'], 'pmDelegate': delivery_delegate_mgr['pmDelegate'], 'PortfolioManager':delivery_delegate_mgr['portfolio_manager']}
             return self.initial_dict.get(step, projectMS)
 
     def done(self, form_list, **kwargs):
@@ -2458,7 +2458,7 @@ class ManageTeamLeaderWizard(SessionWizardView):
         try:
             ProjectDetail.objects.filter(project=myProject.id).update(deliveryManager=updatedData['DeliveryManager'],
                                                                       pmDelegate=updatedData['pmDelegate'],
-                                                                      portfolio_manager=updatedData['portfolio_manager'])
+                                                                      portfolio_manager=updatedData['PortfolioManager'])
         except Exception as error:
             logger.error(error)
         for eachData in allData:
