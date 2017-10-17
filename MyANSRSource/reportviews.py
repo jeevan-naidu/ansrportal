@@ -1240,7 +1240,7 @@ def calcPTM(request, tsData):
 
 
 @login_required
-def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
+def generateExcel(request, report, sheetName, heading, grdTotal, fileName, flag=None):
     if len(report):
         workbook = xlsxwriter.Workbook(fileName, {'constant_memory': True})
         common = {'font_name': 'Droid Sans', 'font_size': 11,
@@ -1278,7 +1278,7 @@ def generateExcel(request, report, sheetName, heading, grdTotal, fileName):
                     generateProjectContent(request, header, report[counter],
                                            eachName, content, alp, grdTotal,
                                            dateformat, reportDateformat,
-                                           number)
+                                           number,flag=flag)
                 elif sheetName[0] == 'External':
                     generateSheetHeader(request, heading[counter], header,
                                         alp, eachName)
@@ -1391,7 +1391,7 @@ def generateMemSumContent(request, header, report, worksheet,
 @login_required
 def generateProjectContent(request, header, report, worksheet,
                            content, alp, grdTotal, dateformat,
-                           reportDateformat, numberFormat):
+                           reportDateformat, numberFormat,flag = None):
     if 'totalValue' in report:
         row = 1
         pName = report['code'] + ' : ' + report['name']
@@ -1404,7 +1404,7 @@ def generateProjectContent(request, header, report, worksheet,
         worksheet.write(row, 5, report['salesForceNumber'], numberFormat)
         worksheet.write(row, 6, report['signed'], content)
         worksheet.write(row, 7, report['po'], content)
-    elif 'totalValue' not in report:
+    elif flag == True:
         row =1
         for val in report:
             worksheet.write(row, 0, val['project_id__name'], dateformat)
@@ -1774,7 +1774,7 @@ def RevenueRecogniation(request):
                     ['Project Name']]
                 report = [values, newval]
                 return generateExcel(request, report, sheetName,
-                                     heading, totals, fileName)
+                                     heading, totals, fileName, flag=True)
 
             form = RevenueReportForm(initial={
                 'bu': reportData.cleaned_data['bu']
@@ -1784,5 +1784,4 @@ def RevenueRecogniation(request):
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
-
 
