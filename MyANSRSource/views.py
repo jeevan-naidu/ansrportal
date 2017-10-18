@@ -987,6 +987,8 @@ class ChangeProjectWizard(SessionWizardView):
                     'plannedEffort',
                     'totalValue',
                     'startDate',
+                    'salesForceNumber',
+                    'customerContact',
                 )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject['plannedEffort']
@@ -3751,19 +3753,21 @@ class ProjectChangeApproval(View):
                                                                                              'revisedEffort',
                                                                                              'revisedTotal',
                                                                                              'project', 'signed',
-                                                                                             'closed', 'salesForceNumber',
+                                                                                             'closed',
+                                                                                             'salesForceNumber',
                                                                                              'customerContact',
                                                                                              )[0]
                     try:
-                        Project.objects.filter(id=update_project_table['project']).update(plannedEffort=update_project_table['revisedEffort'],
-                                                                                          totalValue=update_project_table['revisedTotal'],
-                                                                                          closed=update_project_table['closed'],
-                                                                                          signed=update_project_table['signed'],
-                                                                                          endDate=update_project_table['endDate'],
-                                                                                          startDate=update_project_table['startDate'],
-                                                                                          salesForceNumber=update_project_table['startDate'],
-                                                                                          customerContact=update_project_table['customerContact'],
-                                                                                          )
+                        Project.objects.filter(id=update_project_table['project']).update(
+                            plannedEffort=update_project_table['revisedEffort'],
+                            totalValue=update_project_table['revisedTotal'],
+                            closed=update_project_table['closed'],
+                            signed=update_project_table['signed'],
+                            endDate=update_project_table['endDate'],
+                            startDate=update_project_table['startDate'],
+                            customerContact=update_project_table['customerContact'],
+                            salesForceNumber=update_project_table['salesForceNumber']
+                            )
 
                     except Exception as error:
                         return HttpResponse(error)
