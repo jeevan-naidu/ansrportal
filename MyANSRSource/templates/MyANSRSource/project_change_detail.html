@@ -4,44 +4,80 @@
 
 <table class=" table table-hover view_details" >
     <tr>
-         <td style="width: 200px;" ><b> Project Name:</b></td>
+         <td style="width: 400px;" ><b> Project Name:</b></td>
          <td>{{ project_change_detail.project.name }}</td>
     </tr>
+    {% if project_change_detail.startdate_dropdown %}
     <tr>
-         <td style="width: 200px;" ><b> Prev StartDate:</b></td>
+        <td style="width: 400px;" ><b> Startdate change reason:</b></td>
+         <td>{{ project_change_detail.startdate_dropdown }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+         <td style="width: 400px;" ><b> Prev StartDate:</b></td>
          <td>{{ project_change_detail.project.startDate }}</td>
     </tr>
     <tr>
-         <td style="width: 200px;" > <b>Revised Start Date:</b></td>
+         <td style="width: 400px;" > <b>Revised Start Date:</b></td>
          <td>{{ project_change_detail.startDate }}</td>
     </tr>
+    {% if project_change_detail.enddate_dropdown %}
     <tr>
-         <td style="width: 200px;" ><b> Prev End Date:</b></td>
+        <td style="width: 400px;" ><b> Enddate change reason:</b></td>
+         <td>{{ project_change_detail.enddate_dropdown }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+         <td style="width: 400px;" ><b> Prev End Date:</b></td>
          <td>{{ project_change_detail.project.endDate}}</td>
     </tr>
     <tr>
-         <td style="width: 200px;" ><b>  Revised End Date:</b></td>
+         <td style="width: 400px;" ><b>  Revised End Date:</b></td>
          <td>{{ project_change_detail.endDate }}</td>
     </tr>
     <tr>
-         <td style="width: 200px;" ><b> Book:</b></td>
+         <td style="width: 400px;" ><b> Book:</b></td>
          <td>{{ project_change_detail.project.book }}</td>
     </tr>
+    {% if project_change_detail.amount_dropdown != '1' %}
     <tr>
-         <td style="width: 200px;" ><b> Prev Total Value:</b></td>
+        <td style="width: 400px;" ><b> Amount change reason:</b></td>
+         <td>{{ project_change_detail.amount_dropdown }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+         <td style="width: 400px;" ><b> Prev Total Value:</b></td>
          <td>{{ project_change_detail.project.totalValue }}</td>
     </tr>
     <tr>
-         <td style="width: 200px;" ><b> Revised Total Value:</b></td>
+         <td style="width: 400px;" ><b> Revised Total Value:</b></td>
          <td>{{ project_change_detail.revisedTotal }}</td>
     </tr>
+    {% if project_change_detail.effort_dropdown %}
     <tr>
-        <td style="width: 200px;" ><b>Previous Planned Effort:</b></td>
+        <td style="width: 400px;" ><b> Effort change reason:</b></td>
+         <td>{{ project_change_detail.effort_dropdown }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td style="width: 400px;" ><b>Previous Planned Effort:</b></td>
          <td>{{ project_change_detail.project.plannedEffort }}</td>
     </tr>
     <tr>
-         <td style="width: 200px;" ><b> Revised Planned Effort:</b></td>
+         <td style="width: 400px;" ><b> Revised Planned Effort:</b></td>
          <td>{{ project_change_detail.revisedEffort }}</td>
     </tr>
+    {% if project_change_detail.salesForceNumber != 1%}
+    <tr>
+        <td style="width: 400px;" ><b> Sales Force Number:</b></td>
+         <td>{{ project_change_detail.salesForceNumber }}</td>
+    </tr>
+    {% endif %}
+    {% if project_change_detail.customerContact != '1' %}
+    <tr>
+        <td style="width: 400px;" ><b> Customer Contact:</b></td>
+         <td>{{ project_change_detail.customerContact }}</td>
+    </tr>
+    {% endif %}
  </table>
 </div>

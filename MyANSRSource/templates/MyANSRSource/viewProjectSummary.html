@@ -170,7 +170,7 @@
 </div>
 
 <div class="panel panel-default">
-<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Financial</span></b></div>
+<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Invoice</span></b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -220,7 +220,7 @@
 </div>
 </div>
 <div class="panel panel-default">
-<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Delivery</span></b></div>
+<div class="panel-heading overflowHidden"><b><span class="col-lg-6">Milestone(s) Revenue</span></b></div>
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
@@ -275,10 +275,14 @@
 	<table class="table table-condensed">
 		<thead>
 			<th>CR Date</th>
-			<th>CR Reason</th>
+			<th>Total changed reason</th>
 			<th>Revised Total</th>
+            <th>Effort changed resason</th>
 			<th>Revised Effort</th>
+            <th>Enddate changed reason</th>
 			<th>Project End Date</th>
+            <th>Salesforce Number</th>
+            <th>Customer Contact</th>
 			<th>Signed</th>
 			<th>Closed</th>
 			<th>Status</th>
@@ -289,18 +293,44 @@
 			<td>
 				{{ eachChange.updatedOn }}
 			</td>
+            {% if eachChange.amount_dropdown == '1'%}
+                <td>None</td>
+            {% else %}
 			<td>
-				{{ eachChange.reason }}
+				{{ eachChange.amount_dropdown }}
 			</td>
+            {% endif %}
 			<td>
 				{{ eachChange.revisedTotal }}
+			</td>
+            <td>
+				{{ eachChange.effort_dropdown }}
 			</td>
 			<td>
 				{{ eachChange.revisedEffort }}
 			</td>
+            <td>
+				{{ eachChange.enddate_dropdown }}
+			</td>
 			<td>
 				{{ eachChange.endDate }}
 			</td>
+
+            {% if eachChange.salesForceNumber == 1 or eachChange.salesForceNumber == 0 %}
+                <td>None</td>
+            {% else %}
+                <td>
+                    {{ eachChange.salesForceNumber }}
+                </td>
+            {% endif %}
+
+            {% if eachChange.customerContact == '1'%}
+                <td>None</td>
+            {% else %}
+                <td>
+                    {{ eachChange.customerContact}}
+                </td>
+            {% endif %}
 			<td>
                 {% if eachChange.signed %}
                        Yes
