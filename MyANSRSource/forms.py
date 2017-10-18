@@ -1130,16 +1130,10 @@ class RevenueReportForm(forms.Form):
         self.fields['bu'].widget.attrs['class'] = "form-control"
 
 class InvoiceReportForm(forms.Form):
-    project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
-        label="Project",
-        widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
-            # Set some placeholder
-            'data-placeholder': 'Enter a Project Name /Project Id ...',
-            # Only trigger autocompletion after 3 characters have been typed
-            # 'data-minimum-input-length': 3,
-        }, ),
-        required=True, )
+    bu = forms.ChoiceField(
+        label="Business Unit",
+        required=True,
+    )
     startDate = forms.DateField(
         label="From",
         widget=DateTimePicker(options=dateTimeOption),
@@ -1154,7 +1148,20 @@ class InvoiceReportForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        currentUser = kwargs.pop('user')
         super(InvoiceReportForm, self).__init__(*args, **kwargs)
+        if currentUser.is_superuser:
+            bu = list(BusinessUnit.objects.all())
+            opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
+            self.fields['bu'].choices = opt
+        else:
+            bu = list(
+                BusinessUnit.objects.filter(
+                    id__in=Project.objects.filter(
+                        id__in=helper.get_my_project_list(currentUser)).values('bu__id')
+                ).order_by('name'))
+            self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
+        self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
 

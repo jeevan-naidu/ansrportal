@@ -55,15 +55,14 @@
 $("#loginForm").submit(function (e) {
 
   e.preventDefault();
-  project = document.getElementById('id_project').value
+  bu = document.getElementById('id_bu').value
   startDate = document.getElementById('id_startDate').value
   endDate = document.getElementById('id_endDate').value
-  console.log(project, startDate, endDate)
 
     $.ajax( {
       type: "POST",
       url: 'invoice-report',
-      data: {"project":project,"startDate":startDate,"endDate":endDate},
+      data: {"bu":bu,"startDate":startDate,"endDate":endDate},
       success: function( data ) {
         $("#invoicereport").html(data);
       }

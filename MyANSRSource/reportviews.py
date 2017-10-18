@@ -1046,18 +1046,25 @@ def getInternalData(request):
 @permission_required('MyANSRSource.view_all_reports')
 def InvoiceReport(request):
     if request.method == 'GET':
-        form = InvoiceReportForm()
+        form = InvoiceReportForm(user=request.user)
         return render(request, 'MyANSRSource/invoicereport.html',
                       {'form': form})
     if request.method == 'POST':
-        form = InvoiceReportForm()
-        project_id = request.POST.get('project')
+        form = InvoiceReportForm(user=request.user)
+        bu = request.POST.get('bu')
         startDate = request.POST.get('startDate')
         endDate = request.POST.get('endDate')
         if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
-            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True)
+            if bu == '0':
+                data = ProjectMilestone.objects.filter(financial=True)
+            else:
+                data = ProjectMilestone.objects.filter(financial=True,
+                                                       milestoneDate__range=(startDate, endDate))
         else:
-            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True, milestoneDate__range=(startDate, endDate))
+            if bu == '0':
+                data = ProjectMilestone.objects.filter(financial=True, milestoneDate__range=(startDate, endDate))
+            else:
+                data = ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True, milestoneDate__range=(startDate, endDate))
         return render(request, 'MyANSRSource/invoicereportdata.html',
                       {'form': form, 'data':data})
 
