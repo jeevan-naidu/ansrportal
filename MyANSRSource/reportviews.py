@@ -255,7 +255,7 @@ def SingleProjectReport(request):
             }
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
-            ).values('crId', 'reason', 'endDate', 'revisedEffort',
+            ).values('crId', 'endDate', 'revisedEffort',
                      'revisedTotal', 'closed', 'closedOn',
                      'updatedOn').order_by('updatedOn')
             if basicData['endDate'] < datetime.now().date() \
@@ -438,7 +438,7 @@ def SingleProjectReport(request):
                     closedDate = [eachD['closedOn'] for eachD in crData if eachD['closedOn'] is not None]
                     closingInfo = 'Project Closed on ' + str(closedDate[0])
                     newCR.append({'data': closingInfo, 'crId': None,
-                                  'reason': None, 'closed': None,
+                                  'closed': None,
                                   'endDate': None, 'revisedEffort': None,
                                   'revisedTotal': None, 'closed': None,
                                   'closedOn': None, 'updatedOn': None})
@@ -470,7 +470,7 @@ def SingleProjectReport(request):
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
                      'Total Value', 'salesForceNumber', 'Contract Signed',
                      'P.O.'],
-                    ['CR#', 'Reason', 'End Date', 'Revised Effort',
+                    ['CR#', 'End Date', 'Revised Effort',
                      'Revised Total', 'CR Date'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
@@ -1434,7 +1434,6 @@ def generateProjectContent(request, header, report, worksheet,
             if 'crId' in eachRec:
                 rValue = "$" + str(eachRec['revisedTotal'])
                 worksheet.write(row, 0, eachRec['crId'], content)
-                worksheet.write(row, 1, eachRec['reason'], content)
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
                 worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
                 worksheet.write(row, 4, rValue, numberFormat)
