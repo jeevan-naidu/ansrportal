@@ -7,7 +7,7 @@
          <td style="width: 400px;" ><b> Project Name:</b></td>
          <td>{{ project_change_detail.project.name }}</td>
     </tr>
-    {% if project_change_detail.startdate_dropdown %}
+    {% if project_change_detail.startdate_dropdown and project_change_detail.startdate_dropdown != '1' %}
     <tr>
         <td style="width: 400px;" ><b> Startdate change reason:</b></td>
          <td>{{ project_change_detail.startdate_dropdown }}</td>
@@ -21,7 +21,7 @@
          <td style="width: 400px;" > <b>Revised Start Date:</b></td>
          <td>{{ project_change_detail.startDate }}</td>
     </tr>
-    {% if project_change_detail.enddate_dropdown %}
+    {% if project_change_detail.enddate_dropdown and project_change_detail.enddate_dropdown != '1' %}
     <tr>
         <td style="width: 400px;" ><b> Enddate change reason:</b></td>
          <td>{{ project_change_detail.enddate_dropdown }}</td>
@@ -39,7 +39,7 @@
          <td style="width: 400px;" ><b> Book:</b></td>
          <td>{{ project_change_detail.project.book }}</td>
     </tr>
-    {% if project_change_detail.amount_dropdown != '1' %}
+    {% if project_change_detail.amount_dropdown and project_change_detail.amount_dropdown != '1' %}
     <tr>
         <td style="width: 400px;" ><b> Amount change reason:</b></td>
          <td>{{ project_change_detail.amount_dropdown }}</td>
@@ -53,7 +53,7 @@
          <td style="width: 400px;" ><b> Revised Total Value:</b></td>
          <td>{{ project_change_detail.revisedTotal }}</td>
     </tr>
-    {% if project_change_detail.effort_dropdown %}
+    {% if project_change_detail.effort_dropdown and project_change_detail.effort_dropdown != '1'  %}
     <tr>
         <td style="width: 400px;" ><b> Effort change reason:</b></td>
          <td>{{ project_change_detail.effort_dropdown }}</td>
@@ -67,13 +67,21 @@
          <td style="width: 400px;" ><b> Revised Planned Effort:</b></td>
          <td>{{ project_change_detail.revisedEffort }}</td>
     </tr>
-    {% if project_change_detail.salesForceNumber != 1%}
+    {% if project_change_detail.salesForceNumber and project_change_detail.salesForceNumber != 1%}
     <tr>
-        <td style="width: 400px;" ><b> Sales Force Number:</b></td>
+        <td style="width: 400px;" ><b>Prev Sales Force Number:</b></td>
+         <td>{{ project_change_detail.project.salesForceNumber }}</td>
+    </tr>
+    <tr>
+        <td style="width: 400px;" ><b>Revised Sales Force Number:</b></td>
          <td>{{ project_change_detail.salesForceNumber }}</td>
     </tr>
     {% endif %}
-    {% if project_change_detail.customerContact != '1' %}
+    {% if project_change_detail.customerContact and project_change_detail.customerContact != '1' %}
+    <tr>
+        <td style="width: 400px;" ><b>Prev Customer Contact:</b></td>
+         <td>{{ project_change_detail.project.customerContact}}</td>
+    </tr>
     <tr>
         <td style="width: 400px;" ><b> Customer Contact:</b></td>
          <td>{{ project_change_detail.customerContact }}</td>

@@ -1058,8 +1058,7 @@ def InvoiceReport(request):
             if bu == '0':
                 data = ProjectMilestone.objects.filter(financial=True)
             else:
-                data = ProjectMilestone.objects.filter(financial=True,
-                                                       milestoneDate__range=(startDate, endDate))
+                data = ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True)
         else:
             if bu == '0':
                 data = ProjectMilestone.objects.filter(financial=True, milestoneDate__range=(startDate, endDate))

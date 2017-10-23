@@ -26,14 +26,14 @@
             </script>
             {% for val in data %}
             <tr>
-            <td>{{val.name}}</td>
-            <td>{{val.milestoneDate}}</td>
-            <td>{{val.description}}</td>
-            <td>{{val.amount}}</td>
-            {% if val.closed == True%}
-                <td>Yes</td>
-            {% else %}
-                <td>No</td>
+                <td>{{val.name}}</td>
+                <td>{{val.milestoneDate}}</td>
+                <td>{{val.description}}</td>
+                <td>{{val.amount}}</td>
+                {% if val.closed == True%}
+                    <td>Yes</td>
+                {% else %}
+                    <td>No</td>
             </tr>
             {% endif %}
             {% endfor %}

@@ -303,15 +303,23 @@
 			<td>
 				{{ eachChange.revisedTotal }}
 			</td>
+            {% if eachChange.effort_dropdown == '1'%}
+                <td>None</td>
+            {% else %}
             <td>
 				{{ eachChange.effort_dropdown }}
 			</td>
+            {% endif %}
 			<td>
 				{{ eachChange.revisedEffort }}
 			</td>
+            {% if eachChange.enddate_dropdown == '1'%}
+                <td>None</td>
+            {% else %}
             <td>
 				{{ eachChange.enddate_dropdown }}
 			</td>
+            {% endif %}
 			<td>
 				{{ eachChange.endDate }}
 			</td>
