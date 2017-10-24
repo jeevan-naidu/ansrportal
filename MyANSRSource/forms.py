@@ -751,12 +751,12 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['amount_dropdown'].widget.attrs['class'] = "form-control amount_dropdown"
         self.fields['close_dropdown'].widget.attrs['class'] = "form-control close_dropdowm"
         self.fields['salesForceNumber'].widget.attrs['class'] = \
-            "form-control"
+            "form-control salesforcenumber"
         self.fields['salesForceNumber'].widget.attrs['min'] = \
             "20100000"
         self.fields['salesForceNumber'].widget.attrs['max'] = \
             "99999999"
-        self.fields['customerContact'].widget.attrs['class'] = "form-control customercontact"
+        self.fields['customerContact'].widget.attrs['class'] = "form-control customerContact"
         self.fields['Sowdocument'].widget.attrs['class'] = "form-control Sowdocument"
         self.fields['endDate'].widget.attrs['class'] = "form-control endDate"
         self.fields['startDate'].widget.attrs['class'] = "form-control startDate"

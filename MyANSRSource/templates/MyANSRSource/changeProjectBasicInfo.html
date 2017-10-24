@@ -219,6 +219,13 @@ $(document).ready(function() {
 });
 
 $(document).ready(function(){
+        var startdate_val = $('.startDate').val();
+        var enddate_val = $('.endDate').val();
+        var effort_val = $('.Effort').val();
+        var amount_val = $('.Total').val();
+        var salesforce_val = $('.salesforcenumber').val();
+        var customercontact_val = $('.customerContact').val();
+
         $('#startdate, #enddate, #effort, #amount, #closed, #salesforce, #customercontact').click(function(){
             var id = this.id
             if($(this).is(":checked")){
@@ -226,6 +233,31 @@ $(document).ready(function(){
             }
             else if($(this).is(":not(:checked)")){
                 $('.'+id).hide();
+                if(id == 'startdate'){
+                    $('.startdate_dropdown').val('');
+                    $('.startDate').val(startdate_val);
+                }
+                if(id == 'enddate'){
+                    $('.enddate_dropdown').val('');
+                    $('.endDate').val(enddate_val);
+                }
+                if(id == 'effort'){
+                    $('.effort_dropdown').val('');
+                    $('.Effort').val(effort_val);
+                }
+                if(id == 'amount'){
+                    $('.amount_dropdown').val('');
+                    $('.Total').val(amount_val);
+                }
+                if(id == 'salesforce'){
+                    $('.salesforcenumber').val(salesforce_val);
+                }
+                if(id == 'customercontact'){
+                    $('.customerContact').val(customercontact_val);
+                }
+                if(id == 'closed'){
+                    $('.close_dropdowm').val('');
+                }
             }
         });
     });
