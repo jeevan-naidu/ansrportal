@@ -1056,14 +1056,27 @@ def InvoiceReport(request):
         endDate = request.POST.get('endDate')
         if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
             if bu == '0':
-                data = ProjectMilestone.objects.filter(financial=True)
+                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
             else:
-                data = ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True)
+                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
         else:
             if bu == '0':
-                data = ProjectMilestone.objects.filter(financial=True, milestoneDate__range=(startDate, endDate))
+                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
             else:
-                data = ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True, milestoneDate__range=(startDate, endDate))
+                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, closed=1,financial=True, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
+                    
         return render(request, 'MyANSRSource/invoicereportdata.html',
                       {'form': form, 'data':data})
 
@@ -1789,4 +1802,3 @@ def RevenueRecogniation(request):
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
-

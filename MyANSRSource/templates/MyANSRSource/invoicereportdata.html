@@ -2,12 +2,13 @@
 <table id="report" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
             <thead>
             <tr>
-                <th>Milestone Name</th>
-                <th>Milestone Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Completed</th>
-
+                <th class="hidden">SFID</th>
+                <th>Project ID</th>
+                <th>Project Name</th>
+                <th>Project value</th>
+                <th>Invoiced Amount</th>
+                <th>Balance</th>
+                <th class="hidden">BU</th>
             </tr>
             </thead>
             <script>
@@ -26,16 +27,15 @@
             </script>
             {% for val in data %}
             <tr>
-                <td>{{val.name}}</td>
-                <td>{{val.milestoneDate}}</td>
-                <td>{{val.description}}</td>
+                <td class="hidden">{{val.project_id__salesForceNumber}}</td>
+                <td>{{val.project_id__projectId}}</td>
+                <td>{{val.project_id__name}}</td>
+                <td>{{val.project_id__totalValue}}</td>
                 <td>{{val.amount}}</td>
-                {% if val.closed == True%}
-                    <td>Yes</td>
-                {% else %}
-                    <td>No</td>
+                <td>{{val.balance}}</td>
+                <td class="hidden">{{val.project_id__bu_id__name}}
             </tr>
-            {% endif %}
+
             {% endfor %}
 
         </table>
