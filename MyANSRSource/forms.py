@@ -724,13 +724,15 @@ class ChangeProjectForm(forms.ModelForm):
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 
     id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
-    reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG)
-    remark = forms.CharField(max_length=100, required=False)
+    reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG, required=False, widget=forms.HiddenInput())
+    remark = forms.CharField(max_length=100, required=False, widget=forms.HiddenInput())
+    salesForceNumber = forms.CharField(label="Salesforce Number", required=False)
 
     class Meta:
         model = ProjectChangeInfo
         fields = (
-            'reason', 'remark', 'startDate', 'endDate', 'revisedEffort',
+            'reason', 'remark', 'startDate', 'startdate_dropdown', 'enddate_dropdown', 'effort_dropdown',
+            'amount_dropdown', 'close_dropdown','endDate', 'revisedEffort', 'salesForceNumber', 'customerContact',
             'revisedTotal', 'closed', 'signed', 'Sowdocument', 'estimationDocument',
         )
         widgets = {
@@ -741,15 +743,27 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['Sowdocument'].widget.attrs['class'] = "form-control Sowdocument"
         self.fields['reason'].widget.attrs['class'] = "form-control reason"
         self.fields['remark'].widget.attrs['class'] = "form-control remark controls"
-        self.fields['endDate'].widget.attrs['class'] = "form-control"
-        self.fields['revisedEffort'].widget.attrs['class'] = "form-control"
-        self.fields['revisedTotal'].widget.attrs['class'] = "form-control"
-        self.fields['closed'].widget.attrs['class'] = "form-control project_close"
+        self.fields['startdate_dropdown'].widget.attrs['class'] = "form-control startdate_dropdown"
+        self.fields['enddate_dropdown'].widget.attrs['class'] = "form-control enddate_dropdown"
+        self.fields['effort_dropdown'].widget.attrs['class'] = "form-control effort_dropdown"
+        self.fields['amount_dropdown'].widget.attrs['class'] = "form-control amount_dropdown"
+        self.fields['close_dropdown'].widget.attrs['class'] = "form-control close_dropdowm"
+        self.fields['salesForceNumber'].widget.attrs['class'] = \
+            "form-control salesforcenumber"
+        self.fields['salesForceNumber'].widget.attrs['min'] = \
+            "20100000"
+        self.fields['salesForceNumber'].widget.attrs['max'] = \
+            "99999999"
+        self.fields['customerContact'].widget.attrs['class'] = "form-control customerContact"
+        self.fields['Sowdocument'].widget.attrs['class'] = "form-control Sowdocument"
+        self.fields['endDate'].widget.attrs['class'] = "form-control endDate"
+        self.fields['startDate'].widget.attrs['class'] = "form-control startDate"
+        self.fields['revisedEffort'].widget.attrs['class'] = "form-control Effort"
+        self.fields['revisedTotal'].widget.attrs['class'] = "form-control Total"
+        self.fields['closed'].widget.attrs['class'] = "form-control Closed"
         self.fields['signed'].widget.attrs['class'] = "form-control sowsigned"
-
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
@@ -1130,16 +1144,10 @@ class RevenueReportForm(forms.Form):
         self.fields['bu'].widget.attrs['class'] = "form-control"
 
 class InvoiceReportForm(forms.Form):
-    project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
-        label="Project",
-        widget=autocomplete.ModelSelect2(url='AutocompleteProjects', attrs={
-            # Set some placeholder
-            'data-placeholder': 'Enter a Project Name /Project Id ...',
-            # Only trigger autocompletion after 3 characters have been typed
-            # 'data-minimum-input-length': 3,
-        }, ),
-        required=True, )
+    bu = forms.ChoiceField(
+        label="Business Unit",
+        required=True,
+    )
     startDate = forms.DateField(
         label="From",
         widget=DateTimePicker(options=dateTimeOption),
@@ -1154,7 +1162,20 @@ class InvoiceReportForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        currentUser = kwargs.pop('user')
         super(InvoiceReportForm, self).__init__(*args, **kwargs)
+        if currentUser.is_superuser:
+            bu = list(BusinessUnit.objects.all())
+            opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
+            self.fields['bu'].choices = opt
+        else:
+            bu = list(
+                BusinessUnit.objects.filter(
+                    id__in=Project.objects.filter(
+                        id__in=helper.get_my_project_list(currentUser)).values('bu__id')
+                ).order_by('name'))
+            self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
+        self.fields['bu'].widget.attrs['class'] = "form-control"
         self.fields['startDate'].widget.attrs['class'] = "form-control"
         self.fields['endDate'].widget.attrs['class'] = "form-control"
 

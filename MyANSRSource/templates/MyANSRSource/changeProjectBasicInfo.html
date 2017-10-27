@@ -8,67 +8,217 @@
 {% if form.errors %}
 	<div class="alert alert-danger" role="alert">
         <ul>
-		{% for field in form %} 
+		{% for field in form %}
 		{% if field.errors %}
         <li>{{ field.label }}: {{ field.errors|striptags }}</li>
 		{% endif %}
 		{% endfor %}
-        </ul>        
+        </ul>
 	</div>
 {% endif %}
 
 
 <style type="text/css">
-    
+
     .table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
     padding: 5px 5px;
-}
+    }
+
 </style>
 
+{% if error == 1%}
+
+<div class="col-xs-12 col-md-12 col-lg-9 col-lg-offset-1 jumbotron shadow">
+
+	<div><h4><b>Change request cannot be initiated as there is an active change request pending for approval</b></h4></div>
+
+<a href="modify" class="btn btn-success pull-right">
+				<i class=""></i>
+	<b>Go Back</b>
+</a>
+
+</div>
+
+<script>
+$(document).ready(function() {
+	$('.form-group').hide();
+});
+</script>
+
+{% else %}
 
 <div class="panel clearfix">
 <div class="panel-body">
     <div class="row">
-        <div class="col-sm-6 center-block">
+        <div class="col-sm-16 center-block">
             <div class="table-responsive col-lg-12">
-            <h3><small><b>{{ projectName }}</b></small></h3>
+            <h3><small><b>{{ projectName }} {{ error }}</b></small></h3>
             <h4><b><span class="label label-default">Total effort : {{ totalEffort }}</span></b></small></h4>
             <table class="table">
                 <tr>
+                     <tr>
                     {% for hField in form.hidden_fields %}
                         <td>{{ hField }}</td>
                     {% endfor %}
                 </tr>
-                {% for field in form %}
-                    <tr>
-                        <td class="col-lg-6">
-                                {% if field.label != 'BasicInfoId' %}
-                                    {% if field.label != 'Remark' %}
-                                    {{ field.label }}
-                                    {% if field.field.required %}
-                                        <span class="required">*</span>
-                                    {% endif %}
-                                        {% endif %}
-                                {% endif %}
-                        </td>
-                        <td class="col-lg-7">
-                            {% if field.label == 'Revised Effort' %}
+                    <td>
+                         <label class="col-sm-15 control-label">Revised Project Start date</label>
+                    </td>
+                    <td>
+                            <div>
+                            <input type="checkbox" name="startdate" id="startdate"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="startdate">
 
-                                <span class="col-lg-10">{{ field }}</span>
+                            {{form.startdate_dropdown}}
+                        </div>
 
-                                <span class="col-lg-2"><b><span class="label label-default form-control">PH(s)</span></b></span>
-                            {% else %}
-                                {% if field.label == 'Remark' %}
-                                    <span class="col-lg-10 remark_span">{{ field }}</span>
-                                    {% else %}
-                                    <span class="col-lg-10">{{ field }}</span>
-                                    {% endif %}
+                    </td>
+                    <td>
+                        <div class="startdate">
+                            {{form.startDate}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Revised Project End date</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="enddate" id="enddate"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="enddate">
+                            {{form.enddate_dropdown}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="enddate">
+                            {{form.endDate}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Revised Effort</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="effort" id="effort"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="effort">
+                            {{form.effort_dropdown}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="effort">
+                            {{form.revisedEffort}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="effort">
+                            <b><span class="label label-default form-control effort">PH(s)</span></b>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Revised Amount</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="amount" id="amount"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="amount">
+                            {{form.amount_dropdown}}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="amount">
+                            {{form.revisedTotal}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Close the project</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="close_project" id="closed"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="closed">
+                            {{form.close_dropdown}}
+                        </div>
+                    </td>
+                </tr>
 
-                                <span class="col-lg-2"></span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Contract Signed</label>
+                    </td>
+                    <td>
+                        <div>
+                            {{form.signed}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Salesforce Number</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="salesforce" id="salesforce"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="salesforce">
+                            {{form.salesForceNumber}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Customer Contact</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="checkbox" name="customercontact" id="customercontact"><br>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="customercontact">
+                            {{form.customerContact}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Upload Project SOW</label>
+                    </td>
+                    <td>
+                        {{form.estimationDocument}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Upload Estimation Document</label>
+                    </td>
+                    <td>
+                        {{form.Sowdocument}}
+                    </td>
+                </tr>
             </table>
             </div>
         </div>
@@ -78,115 +228,65 @@
 
 
 <script>
-   window.onload = function() {
-        var reason = $('.reason option:selected').val();
-        var textremark = $('.remark')[0].value;
-        var reasondropdown = $('.reason');
-        var leng = reasondropdown['0'].length;
-        reasondropdown['0'].remove(leng-1);
-        reasondropdown['0'].remove(leng-2);
-        reasondropdown['0'].remove(leng-3);
-       if($('.project_close')[0].checked){
-            closingcommentsadd();
-       }
-       else{
-           commentsadd();
-       }
 
-         $('.remark').remove();
-
-            if(reason == 'Others'){
-                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" name="Change Basic Information-remark" type="text" required="true" value='+textremark+'>';
-                $(".remark_span").append(reason);
-                reasondropdown = $('.reason');
-                reasondropdown[0].getElementsByTagName('option')[7].selected = 'selected';
-            }
-            else{
-                reamrkinput = $('.remark')
-                if(reamrkinput){
-                    $('.remark').remove();
-                }
-            }
-        }
-
-
-
-        $('.reason').change(function(){
-
-            var reason = $('.reason option:selected').val();
-            if(reason == 'Others'){
-                reason = '<input class="form-control remark" id="id_Change Basic Information-remark" name="Change Basic Information-remark" type="text" required="true">';
-                $(".remark_span").append(reason);
-            }
-            else{
-                reamrkinput = $('.remark')
-                if(reamrkinput){
-                    $('.remark').remove();
-                }
-            }
-
-        });
-$('.project_close').click(function(){
-     if(this.checked){
-         closingcommentsadd();
-     }
-     else{
-         commentsadd();
-     }
-
+$(document).ready(function() {
+    $('.startdate').hide();
+    $('.enddate').hide();
+    $('.effort').hide();
+    $('.amount').hide();
+    $('.closed').hide();
+    $('.salesforce').hide();
+    $('.customercontact').hide();
 });
-function closingcommentsadd(){
-    reamrkinput = $('.remark')
-                if(reamrkinput){
-                    $('.remark').remove();
+
+$(document).ready(function(){
+        var startdate_val = $('.startDate').val();
+        var enddate_val = $('.endDate').val();
+        var effort_val = $('.Effort').val();
+        var amount_val = $('.Total').val();
+        var salesforce_val = $('.salesforcenumber').val();
+        var customercontact_val = $('.customerContact').val();
+
+        $('#startdate, #enddate, #effort, #amount, #closed, #salesforce, #customercontact').click(function(){
+            var id = this.id
+            if($(this).is(":checked")){
+                $('.'+id).show();
+            }
+            else if($(this).is(":not(:checked)")){
+                $('.'+id).hide();
+                if(id == 'startdate'){
+                    $('.startdate_dropdown').val('');
+                    $('.startDate').val(startdate_val);
                 }
-         var reasondropdown = $('.reason');
-         reasondropdown.empty()
+                if(id == 'enddate'){
+                    $('.enddate_dropdown').val('');
+                    $('.endDate').val(enddate_val);
+                }
+                if(id == 'effort'){
+                    $('.effort_dropdown').val('');
+                    $('.Effort').val(effort_val);
+                }
+                if(id == 'amount'){
+                    $('.amount_dropdown').val('');
+                    $('.Total').val(amount_val);
+                }
+                if(id == 'salesforce'){
+                    $('.salesforcenumber').val(salesforce_val);
+                }
+                if(id == 'customercontact'){
+                    $('.customerContact').val(customercontact_val);
+                }
+                if(id == 'closed'){
+                    $('.close_dropdowm').val('');
+                }
+            }
+        });
+    });
 
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Closing sample project';
-                             reasondropdown[0].add(spec, 0);
-          var spec = document.createElement('option');
-         spec.text = spec.value = 'Closing master project';
-                             reasondropdown[0].add(spec, 0);
-          var spec = document.createElement('option');
-         spec.text = spec.value = 'Closing rework project';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = '...............';
-                             reasondropdown[0].add(spec, 0);
-         reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected'
-}
-
-function commentsadd(){
-    var reasondropdown = $('.reason');
-         reasondropdown.empty()
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Others';
-                             reasondropdown[0].add(spec, 0);
-          var spec = document.createElement('option');
-         spec.text = spec.value = 'Revising planned cost for 0 value project ';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Revising planned cost ';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Revising planned effort for 0 value project ';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Revising planned effort ';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Extending end date internal ';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = spec.value = 'Extending end date external (client side)';
-                             reasondropdown[0].add(spec, 0);
-         var spec = document.createElement('option');
-         spec.text = '...............';
-                             reasondropdown[0].add(spec, 0);
-        reasondropdown[0].getElementsByTagName('option')[0].selected = 'selected';
-}
 </script>
+{% endif %}
+
+
+
 
 {% endblock %}{% endblock %}

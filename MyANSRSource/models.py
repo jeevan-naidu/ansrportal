@@ -13,6 +13,35 @@ from django.core.files.storage import FileSystemStorage
 from datetime import date
 import Invoice
 
+STARTDATE = (
+    ('Data entry error','Data Entry Error'),
+)
+
+ENDDATE = (
+    ('Data entry error','Data Entry Error'),
+    ('Scope change','Scope Change'),
+    ('Client requested','Client Requested'),
+    ('Ansr renegotiated date','Ansr Renegotiated Date'),
+)
+
+EFFORT = (
+    ('Data entry error','Data Entry Error'),
+    ('Scope change','Scope Change'),
+    ('Project effort confirmed post sample','Project effort confirmed post sample'),
+)
+
+AMOUNT = (
+    ('Data entry error','Data Entry Error'),
+    ('Scope change','Scope Change'),
+    ('Project value confirmed','Project value confirmed'),
+)
+
+CLOSE = (
+    ('Project completed','Project completed'),
+    ('project cancelled','Project Cancelled'),
+)
+
+
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
     ('I', 'Idle'),
@@ -625,9 +654,27 @@ class ProjectChangeInfo(models.Model):
     project = models.ForeignKey(Project, verbose_name="Project Name")
     crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
-    reason = models.CharField(max_length=100, default=None, blank=False,
-                              null=False,
+    reason = models.CharField(max_length=100, default=0, blank=True,
+                              null=True,
                               verbose_name="Reason for change")
+    startdate_dropdown = models.CharField(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
+    enddate_dropdown = models.CharField(choices=ENDDATE, max_length=100, blank=True, null=True, default=None)
+    effort_dropdown = models.CharField(choices=EFFORT, max_length=100, blank=True, null=True, default=None)
+    amount_dropdown = models.CharField(choices=AMOUNT, max_length=100, blank=True, null=True, default=None)
+    close_dropdown = models.CharField(choices=CLOSE, max_length=100, blank=True, null=True, default=None)
+    salesForceNumber = models.IntegerField(default=0, blank=True, null=True,
+                                           help_text="8 digit number starting with 201",
+                                           verbose_name="SF\
+                                                       Opportunity Number",
+                                           validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
+    customerContact = models.CharField(
+        max_length=100,
+        default=None,
+        verbose_name="Customer Contact",
+        blank=True,
+        null=True
+        # related_name="Cusomer Contact"
+    )
     endDate = models.DateField(verbose_name="Revised Project End Date",
                                default=None, blank=False, null=False)
     # po = models.CharField(max_length=60, null=False,

@@ -255,7 +255,7 @@ def SingleProjectReport(request):
             }
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
-            ).values('crId', 'reason', 'endDate', 'revisedEffort',
+            ).values('crId', 'endDate', 'revisedEffort',
                      'revisedTotal', 'closed', 'closedOn',
                      'updatedOn').order_by('updatedOn')
             if basicData['endDate'] < datetime.now().date() \
@@ -438,7 +438,7 @@ def SingleProjectReport(request):
                     closedDate = [eachD['closedOn'] for eachD in crData if eachD['closedOn'] is not None]
                     closingInfo = 'Project Closed on ' + str(closedDate[0])
                     newCR.append({'data': closingInfo, 'crId': None,
-                                  'reason': None, 'closed': None,
+                                  'closed': None,
                                   'endDate': None, 'revisedEffort': None,
                                   'revisedTotal': None, 'closed': None,
                                   'closedOn': None, 'updatedOn': None})
@@ -470,7 +470,7 @@ def SingleProjectReport(request):
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
                      'Total Value', 'salesForceNumber', 'Contract Signed',
                      'P.O.'],
-                    ['CR#', 'Reason', 'End Date', 'Revised Effort',
+                    ['CR#', 'End Date', 'Revised Effort',
                      'Revised Total', 'CR Date'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
@@ -1046,18 +1046,37 @@ def getInternalData(request):
 @permission_required('MyANSRSource.view_all_reports')
 def InvoiceReport(request):
     if request.method == 'GET':
-        form = InvoiceReportForm()
+        form = InvoiceReportForm(user=request.user)
         return render(request, 'MyANSRSource/invoicereport.html',
                       {'form': form})
     if request.method == 'POST':
-        form = InvoiceReportForm()
-        project_id = request.POST.get('project')
+        form = InvoiceReportForm(user=request.user)
+        bu = request.POST.get('bu')
         startDate = request.POST.get('startDate')
         endDate = request.POST.get('endDate')
         if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
-            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True)
+            if bu == '0':
+                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
+            else:
+                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
         else:
-            data = ProjectMilestone.objects.filter(project_id=project_id, financial=True, milestoneDate__range=(startDate, endDate))
+            if bu == '0':
+                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
+            else:
+                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, closed=1,financial=True, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
+                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
+                for val in data:
+                    val['balance'] = val['project_id__totalValue'] - val['amount']
+
         return render(request, 'MyANSRSource/invoicereportdata.html',
                       {'form': form, 'data':data})
 
@@ -1427,7 +1446,6 @@ def generateProjectContent(request, header, report, worksheet,
             if 'crId' in eachRec:
                 rValue = "$" + str(eachRec['revisedTotal'])
                 worksheet.write(row, 0, eachRec['crId'], content)
-                worksheet.write(row, 1, eachRec['reason'], content)
                 worksheet.write(row, 2, eachRec['endDate'], dateformat)
                 worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
                 worksheet.write(row, 4, rValue, numberFormat)
@@ -1784,4 +1802,3 @@ def RevenueRecogniation(request):
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
-

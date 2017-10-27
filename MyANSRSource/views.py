@@ -947,8 +947,14 @@ class ChangeProjectWizard(SessionWizardView):
             totalEffort = currentProject['plannedEffort']
             projectName = u"{1} : {0}".format(currentProject['name'],
                                               currentProject['projectId'])
-            context.update({'totalEffort': totalEffort,
-                            'projectName': projectName})
+            if ProjectChangeInfo.objects.filter(project_id__projectId=currentProject['projectId'], approved=0):
+                error = 1
+                context.update({'totalEffort': totalEffort,
+                                'projectName': projectName,
+                                'error':error})
+            else:
+                context.update({'totalEffort': totalEffort,
+                                'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -979,6 +985,7 @@ class ChangeProjectWizard(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             if projectId is not None:
+
                 currentProject = Project.objects.filter(
                     pk=projectId).values(
                     'id',
@@ -987,9 +994,12 @@ class ChangeProjectWizard(SessionWizardView):
                     'plannedEffort',
                     'totalValue',
                     'startDate',
+                    'salesForceNumber',
+                    'customerContact',
                 )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject['plannedEffort']
+
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
@@ -2741,8 +2751,34 @@ def UpdateProjectInfo(request, newInfo):
         pci.project = pru
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
+        if newInfo[1]['startdate_dropdown']:
+            pci.startdate_dropdown = newInfo[1]['startdate_dropdown']
         else:
-            pci.reason = newInfo[1]['reason']
+            pci.startdate_dropdown = 1
+        if newInfo[1]['enddate_dropdown']:
+            pci.enddate_dropdown = newInfo[1]['enddate_dropdown']
+        else:
+            pci.enddate_dropdown = 1
+        if newInfo[1]['effort_dropdown']:
+            pci.effort_dropdown = newInfo[1]['effort_dropdown']
+        else:
+            pci.effort_dropdown = 1
+        if newInfo[1]['amount_dropdown']:
+            pci.amount_dropdown = newInfo[1]['amount_dropdown']
+        else:
+            pci.amount_dropdown = 1
+        if newInfo[1]['close_dropdown']:
+            pci.close_dropdown = newInfo[1]['close_dropdown']
+        else:
+            pci.close_dropdown = 1
+        if newInfo[1]['salesForceNumber']:
+            pci.salesForceNumber = newInfo[1]['salesForceNumber']
+        else:
+            pci.salesForceNumber = 1
+        if newInfo[1]['customerContact']:
+            pci.customerContact = newInfo[1]['customerContact']
+        else:
+            pci.customerContact = 1
         pci.endDate = newInfo[1]['endDate']
         pci.revisedEffort = newInfo[1]['revisedEffort']
         pci.revisedTotal = newInfo[1]['revisedTotal']
@@ -3476,9 +3512,9 @@ def project_summary(project_id, show_header=True):
 
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
-        'reason', 'endDate', 'revisedEffort', 'revisedTotal',
-        'closed', 'closedOn', 'signed',
-        'updatedOn','approved'
+        'endDate', 'revisedEffort', 'revisedTotal', 'effort_dropdown',
+        'closed', 'closedOn', 'signed', 'amount_dropdown', 'enddate_dropdown',
+        'updatedOn','approved', 'salesForceNumber', 'customerContact',
     ).order_by('updatedOn')
     data = {
         'basicInfo': basicInfo,
@@ -3726,15 +3762,20 @@ class ProjectChangeApproval(View):
                                                                                              'revisedTotal',
                                                                                              'project', 'signed',
                                                                                              'closed',
+                                                                                             'salesForceNumber',
+                                                                                             'customerContact',
                                                                                              )[0]
                     try:
-                        Project.objects.filter(id=update_project_table['project']).update(plannedEffort=update_project_table['revisedEffort'],
-                                                                                          totalValue=update_project_table['revisedTotal'],
-                                                                                          closed=update_project_table['closed'],
-                                                                                          signed=update_project_table['signed'],
-                                                                                          endDate=update_project_table['endDate'],
-                                                                                          startDate=update_project_table['startDate'],
-                                                                                          )
+                        Project.objects.filter(id=update_project_table['project']).update(
+                            plannedEffort=update_project_table['revisedEffort'],
+                            totalValue=update_project_table['revisedTotal'],
+                            closed=update_project_table['closed'],
+                            signed=update_project_table['signed'],
+                            endDate=update_project_table['endDate'],
+                            startDate=update_project_table['startDate'],
+                            customerContact=update_project_table['customerContact'],
+                            salesForceNumber=update_project_table['salesForceNumber']
+                            )
 
                     except Exception as error:
                         return HttpResponse(error)
@@ -3749,7 +3790,6 @@ class ProjectChangeApproval(View):
 def project_change_detail(request):
     cr_id = request.GET.get('id')
     project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
-    project_change_detail = ProjectChangeInfo.objects.get(crId=cr_id)
     return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail})
 
 month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
