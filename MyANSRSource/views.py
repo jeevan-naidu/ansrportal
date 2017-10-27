@@ -947,8 +947,14 @@ class ChangeProjectWizard(SessionWizardView):
             totalEffort = currentProject['plannedEffort']
             projectName = u"{1} : {0}".format(currentProject['name'],
                                               currentProject['projectId'])
-            context.update({'totalEffort': totalEffort,
-                            'projectName': projectName})
+            if ProjectChangeInfo.objects.filter(project_id__projectId=currentProject['projectId'], approved=0):
+                error = 1
+                context.update({'totalEffort': totalEffort,
+                                'projectName': projectName,
+                                'error':error})
+            else:
+                context.update({'totalEffort': totalEffort,
+                                'projectName': projectName})
         return context
 
     def get_form(self, step=None, data=None, files=None):
@@ -979,6 +985,7 @@ class ChangeProjectWizard(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             if projectId is not None:
+
                 currentProject = Project.objects.filter(
                     pk=projectId).values(
                     'id',
@@ -992,6 +999,7 @@ class ChangeProjectWizard(SessionWizardView):
                 )[0]
                 currentProject['revisedTotal'] = currentProject['totalValue']
                 currentProject['revisedEffort'] = currentProject['plannedEffort']
+
         return self.initial_dict.get(step, currentProject)
 
     def done(self, form_list, **kwargs):
