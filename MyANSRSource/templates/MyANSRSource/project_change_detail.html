@@ -8,7 +8,7 @@
          <td>{{ project_change_detail.project.name }}</td>
     </tr>
 
-    {% if project_change_detail.reason and project_change_detail.reason != '1' %}
+    {% if project_change_detail.reason and project_change_detail.reason != '0' %}
     <tr>
          <td style="width: 400px;" ><b> Prev StartDate:</b></td>
          <td>{{ project_change_detail.project.startDate }}</td>
