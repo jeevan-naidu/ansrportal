@@ -947,7 +947,7 @@ class ChangeProjectWizard(SessionWizardView):
             totalEffort = currentProject['plannedEffort']
             projectName = u"{1} : {0}".format(currentProject['name'],
                                               currentProject['projectId'])
-            if ProjectChangeInfo.objects.filter(project_id__projectId=currentProject['projectId'], approved=0):
+            if ProjectChangeInfo.objects.filter(project_id__projectId=currentProject['projectId'], approved=0).exclude(crId__startswith='BL'):
                 error = 1
                 context.update({'totalEffort': totalEffort,
                                 'projectName': projectName,
