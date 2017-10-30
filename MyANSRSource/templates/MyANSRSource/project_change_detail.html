@@ -25,7 +25,22 @@
          <td style="width: 400px;" ><b>  Revised End Date:</b></td>
          <td>{{ project_change_detail.endDate }}</td>
     </tr>
-
+    <tr>
+         <td style="width: 400px;" ><b> Prev Total Value:</b></td>
+         <td>{{ project_change_detail.project.totalValue }}</td>
+    </tr>
+    <tr>
+         <td style="width: 400px;" ><b> Revised Total Value:</b></td>
+         <td>{{ project_change_detail.revisedTotal }}</td>
+    </tr>
+    <tr>
+        <td style="width: 400px;" ><b>Previous Planned Effort:</b></td>
+         <td>{{ project_change_detail.project.plannedEffort }}</td>
+    </tr>
+    <tr>
+         <td style="width: 400px;" ><b> Revised Planned Effort:</b></td>
+         <td>{{ project_change_detail.revisedEffort }}</td>
+    </tr>
     {% endif %}
 
     {% if project_change_detail.startdate_dropdown and project_change_detail.startdate_dropdown != '1' %}
@@ -43,22 +58,7 @@
         <td style="width: 400px;" ><b> Startdate change reason:</b></td>
          <td>{{ project_change_detail.startdate_dropdown }}</td>
     </tr>
-    <tr>
-         <td style="width: 400px;" ><b> Prev Total Value:</b></td>
-         <td>{{ project_change_detail.project.totalValue }}</td>
-    </tr>
-    <tr>
-         <td style="width: 400px;" ><b> Revised Total Value:</b></td>
-         <td>{{ project_change_detail.revisedTotal }}</td>
-    </tr>
-    <tr>
-        <td style="width: 400px;" ><b>Previous Planned Effort:</b></td>
-         <td>{{ project_change_detail.project.plannedEffort }}</td>
-    </tr>
-    <tr>
-         <td style="width: 400px;" ><b> Revised Planned Effort:</b></td>
-         <td>{{ project_change_detail.revisedEffort }}</td>
-    </tr>
+
     {% endif %}
     {% if project_change_detail.enddate_dropdown and project_change_detail.enddate_dropdown != '1' %}
 
