@@ -3284,9 +3284,15 @@ def saveProject(request):
                 pci.crId = u"BL-{0}".format(pr.id)
                 pci.reason = 'Base Line data'
                 pci.endDate = endDate
+                pci.startDate = startDate
                 pci.revisedEffort = int(request.POST.get('plannedEffort'))
                 pci.revisedTotal = float(request.POST.get('totalValue'))
                 pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
+                pci.customerContact = str(request.POST.get('customerContact'))
+                if request.POST.get('signed') == 'True':
+                    pci.signed = '1'
+                elif request.POST.get('signed') == 'False':
+                    pci.signed = '0'
                 pci.save()
 
                 for eachId in eval(request.POST.get('pm')):

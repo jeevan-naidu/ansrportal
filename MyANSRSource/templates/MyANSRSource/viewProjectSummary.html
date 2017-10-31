@@ -279,6 +279,8 @@
 			<th>Revised Total</th>
             <th>Effort changed resason</th>
 			<th>Revised Effort</th>
+      <th>Startdate Changed Reason</th>
+      <th>Revised Start Date</th>
             <th>Enddate changed reason</th>
 			<th>Revised End Date</th>
             <th>Salesforce Number</th>
@@ -313,6 +315,18 @@
 			<td>
 				{{ eachChange.revisedEffort }}
 			</td>
+
+
+      {% if eachChange.startdate_dropdown == '1' or not eachChange.startdate_dropdown %}
+          <td>None</td>
+      {% else %}
+      <td>
+        {{ eachChange.startdate_dropdown }}
+      </td>
+            {% endif %}
+      <td>
+        {{ eachChange.startDate }}
+      </td>
             {% if eachChange.enddate_dropdown == '1'%}
                 <td>None</td>
             {% else %}
