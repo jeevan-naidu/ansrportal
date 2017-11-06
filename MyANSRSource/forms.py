@@ -1122,7 +1122,7 @@ class UtilizationReportForm(forms.Form):
 
 class RevenueReportForm(forms.Form):
     bu = forms.ChoiceField(
-        label="Business Unitdd",
+        label="Business Unit",
         required=True,
     )
 
