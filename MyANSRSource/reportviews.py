@@ -1747,7 +1747,6 @@ def getPlannedMonthHours(Rstart, Rend, Estart, Eend, effort):
                 return round(float(effort) * (num / float(deno)), 2)
 
 @login_required
-@permission_required('MyANSRSource.view_all_reports')
 def RevenueRecogniation(request):
     form = RevenueReportForm(user=request.user)
     buName, currReportMonth, reportYear, fresh= 0, 0, 0, 0

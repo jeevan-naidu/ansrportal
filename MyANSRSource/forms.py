@@ -1122,7 +1122,7 @@ class UtilizationReportForm(forms.Form):
 
 class RevenueReportForm(forms.Form):
     bu = forms.ChoiceField(
-        label="Business Unit",
+        label="Business Unitdd",
         required=True,
     )
 
@@ -1130,7 +1130,7 @@ class RevenueReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         currentUser = kwargs.pop('user')
         super(RevenueReportForm, self).__init__(*args, **kwargs)
-        if currentUser.is_superuser:
+        if currentUser.is_superuser or currentUser.groups.filter(name__in=['Finance']).exists():
             bu = list(BusinessUnit.objects.all())
             opt = [(0, 'All')] + [(rec.id, rec.name) for rec in bu]
             self.fields['bu'].choices = opt
