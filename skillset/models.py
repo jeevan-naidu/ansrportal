@@ -12,9 +12,9 @@ class Skill_Lists(models.Model):
     # User = models.ForeignKey(User, unique=True)
 
     skill_name = models.CharField(verbose_name="Skill Name", max_length=100)
-    level1 = models.TextField(verbose_name="Level1", max_length=500)
-    level2 = models.TextField(verbose_name="Level2", max_length=500)
-    level3 = models.TextField(verbose_name="Level3", max_length=500)
+    level1 = models.TextField(verbose_name="Level1", max_length=2000)
+    level2 = models.TextField(verbose_name="Level2", max_length=2000)
+    level3 = models.TextField(verbose_name="Level3", max_length=2000)
 
     def __unicode__(self):
         return unicode(self.skill_name)
@@ -38,4 +38,3 @@ class User_Skills(models.Model):
 
     class Meta:
         verbose_name = 'User Skills'
-
