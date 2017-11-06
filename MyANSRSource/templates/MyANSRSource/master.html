@@ -582,7 +582,7 @@
                                                                         </a>
                                                                     </li>
                                                                 {% endif %}
-                                                                {% if request.user|has_group:'Finance' %}
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:"myansrsourcebuhead"%}
                                                                 <li>
                                                                     <a href="{% url 'RevenueRecogniation'%}">
                                                                         <span class="menu-text">Revenue Recognition</span>
