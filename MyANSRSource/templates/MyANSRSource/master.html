@@ -417,7 +417,7 @@
                                     </div>
                                 </li>
 
-                                {% if user|manage_project or user|create_project or request.user|IsMilestoneReportsAdmin %}
+                                {% if user|manage_project or user|create_project or request.user|IsMilestoneReportsAdmin or request.user|has_group:'Finance' %}
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="icon-palette"> </i></span>
@@ -484,7 +484,7 @@
                                                         {% endif %}
                                                     </a>
                                                 </li>
-                                                 {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead'%}
+                                                 {% if request.user|has_group:'DeliveryManager' or request.user|has_group:'myansrsourcebuhead' or request.user|has_group:'Finance' %}
                                                 <li>
                                                     <a href="/myansrsource/project/manage-projectleader">
                                                         <span class="menu-text">Manage Project Leader</span>
@@ -581,6 +581,8 @@
                                                                             <span class="menu-text">Active Projects</span>
                                                                         </a>
                                                                     </li>
+                                                                {% endif %}
+                                                                {% if request.user|has_group:'Finance' %}
                                                                 <li>
                                                                     <a href="{% url 'RevenueRecogniation'%}">
                                                                         <span class="menu-text">Revenue Recognition</span>
@@ -592,8 +594,7 @@
                                                                     </a>
                                                                 </li>
 
-
-                                                                {%endif %}
+                                                                {% endif %}
 
                                                             </ul>
                                                         </div>
