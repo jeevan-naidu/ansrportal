@@ -582,20 +582,22 @@
                                                                         </a>
                                                                     </li>
                                                                 {% endif %}
-                                                                {% if request.user|has_group:'Finance' or request.user|has_group:"myansrsourcebuhead"%}
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                     <a href="{% url 'RevenueRecogniation'%}">
                                                                         <span class="menu-text">Revenue Recognition</span>
                                                                     </a>
                                                                 </li>
-                                                                {% if request.user|has_group:'Finance' or request.user|has_group:'DeliveryManager' %}
+                                                                {% endif %}
+                                                                
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:'DeliveryManager' or request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                     <a href="{% url 'InvoiceReport'%}">
                                                                         <span class="menu-text">Invoice Report</span>
                                                                     </a>
                                                                 </li>
                                                                 {% endif %}
-                                                                {% endif %}
+
 
                                                             </ul>
                                                         </div>
