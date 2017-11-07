@@ -1503,7 +1503,7 @@ def import_review(request, form_file):
                                         instruction=current_sheet.row(r)[9].value,
                                         created_by=request.user)
             qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-            messages.success(request, "successfully imported")
+    messages.success(request, "successfully imported")
     return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                         'chapter_component_id': qa_obj.chapter_component.id,
                                                                          'review_group_id': qa_obj.review_group.id}))
