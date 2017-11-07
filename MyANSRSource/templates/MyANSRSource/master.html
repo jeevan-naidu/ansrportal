@@ -582,19 +582,22 @@
                                                                         </a>
                                                                     </li>
                                                                 {% endif %}
-                                                                {% if request.user|has_group:'Finance' or request.user|has_group:"myansrsourcebuhead"%}
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                     <a href="{% url 'RevenueRecogniation'%}">
                                                                         <span class="menu-text">Revenue Recognition</span>
                                                                     </a>
                                                                 </li>
+                                                                {% endif %}
+                                                                
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:'DeliveryManager' or request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                     <a href="{% url 'InvoiceReport'%}">
                                                                         <span class="menu-text">Invoice Report</span>
                                                                     </a>
                                                                 </li>
-
                                                                 {% endif %}
+
 
                                                             </ul>
                                                         </div>
@@ -1231,7 +1234,7 @@
 <!-- Modal for portal questions -->
 
 <style type="text/css">
-    
+
     .the-portal-question{
         background: #ccc;
         font-weight: 999;
@@ -1272,7 +1275,7 @@
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
                           <h4 class="modal-title" id="myModalLabel"><b>ansr</b>portal question bank</h4>
                         </div>
-                        <div class="modal-body"> 
+                        <div class="modal-body">
 
 
 <div class="portal-question-container">
@@ -1286,7 +1289,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Barack Obama</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1297,7 +1300,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Prithviraj Chauhan</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1308,7 +1311,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Uma Mahesh</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1320,8 +1323,8 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">None of the above</div>
-                              </label> 
-                            </div>          
+                              </label>
+                            </div>
 
 
 </div>
@@ -1337,7 +1340,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Goku</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1348,7 +1351,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Vegeta</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1359,7 +1362,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Future Trunks</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1371,11 +1374,11 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">All of the above</div>
-                              </label> 
-                            </div>          
+                              </label>
+                            </div>
 
 
-</div>                            
+</div>
 
 <div class="portal-question-container">
 
@@ -1388,7 +1391,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Son Goku</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1399,7 +1402,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Hakaishin Beerus</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1410,7 +1413,7 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Whis San</div>
-                              </label> 
+                              </label>
                             </div>
 
 
@@ -1422,28 +1425,28 @@
                                  <input class="input-border-btm" type="radio">
                                </div>
                                <div class="col-sm-8 control-label">Pilaf Sama</div>
-                              </label> 
-                            </div>          
+                              </label>
+                            </div>
 
 
-</div>                        
+</div>
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Previous</button>
                           <button type="button" class="btn vd_btn vd_bg-green">Next</button>
                         </div>
                       </div>
-                      <!-- /.modal-content --> 
+                      <!-- /.modal-content -->
                     </div>
                     <!-- /.modal-dialog -->
 
 
-                            
+
                           </form>
 
 
                   </div>
-                  <!-- /.modal --> 
+                  <!-- /.modal -->
 
 
 
