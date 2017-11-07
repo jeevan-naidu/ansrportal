@@ -1314,17 +1314,16 @@ class ExportReview(View):
                         'defect_severity_level__severity_level__name',
                         'defect_severity_level__defect_classification__name',
                         'is_fixed', 'fixed_by__username', 'remarks','instruction',).order_by('id')
-
         ptpm_obj = ProjectTemplateProcessModel.objects.get(project=QASheetHeader.objects.filter
                                                            (pk=self.request.session['QA_sheet_header_id']).values_list
                                                            ('project', flat=True).first())
         actual_name = ptpm_obj.template.actual_name
         is_media = False
-        # if int(ptpm_obj.qms_process_model.product_type) == 1:
-        #     is_media = True
-        #     src = "QMS/media_templates/" + actual_name + ".xlsx"
-        #
-        # else:
+        if int(ptpm_obj.qms_process_model.product_type) == 1:
+            is_media = True
+            self.request.session['media'] = True
+        else:
+            self.request.session['media'] = False
         src = "QMS/master_templates/"+actual_name+".xlsx"
         if not os.path.isfile(src):
             src = "QMS/master_templates/QMS-T1.xlsx"
@@ -1338,61 +1337,69 @@ class ExportReview(View):
         review_group = ReviewGroup.objects.get(id=review_group)
         if is_media:
             list_formula = review_group.review_master.name + u"_dt"
+            # list_formula = 'INDIRECT'
+
+
         file_name = unicode(ptpm_obj.project)+" : " +self.request.session['chapter_component'].get_combination_name()\
                     + " : "+review_group.alias
         dst = "QMS/"+file_name+"_copy.xlsx"
         copyfile(src, dst)
-        wb = load_workbook(filename=dst, data_only=False, guess_types=False)
+        try:
+            wb = load_workbook(filename=dst, data_only=False, guess_types=False)
+            if is_media:
+                ws1 = wb['Sheet1']
+            else:
+                ws1 = wb["Template1"]
+            ws1.title = review_group.alias
+            if not is_media:
+                dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
+            else:
+                dv = DataValidation(type="list", formula1="='Data Validation New'!$J$2:$J$11", allow_blank=True)
+            ws1.add_data_validation(dv)
 
-        ws1 = wb["Template1"]
-        ws1.title = review_group.alias
-        # if not is_media:
-        dv = DataValidation(type="list", formula1='Ref!$D$03:$D$100', allow_blank=True)
-        # else:
-        #     dv = DataValidation(type="list", formula1='='+list_formula+', allow_blank=True')
-        ws1.add_data_validation(dv)
+            c = 3
+            s = 1
+            for row in review_obj:
+                c = str(c)
+                # for i, header in enumerate(header)
+                ws1["A" + c] = s
+                ws1["B"+c].value = row[0]
+                ws1["C"+c].value = row[1]
+                ws1["D"+c].value = row[2]
+                ws1["E" + c].value = row[3]
+                ws1["F" + c].value = row[2]
+                dv.add(ws1["D"+c])
+                if not is_media:
+                    severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
+                else:
+                    severity_formula = DataValidation(type="custom", formula1='INDIRECT(INDIRECT("RC[-1]",0))')
+                ws1.add_data_validation(severity_formula)
+                ws1["E" + c].value = row[3]
+                severity_formula.add(ws1["E" + c])
+                if not is_media:
+                    classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
+                else:
+                    pass
 
-        c = 3
-        s = 1
-        for row in review_obj:
-            c = str(c)
-            # for i, header in enumerate(header)
-            ws1["A" + c] = s
-            ws1["B"+c].value = row[0]
-            ws1["C"+c].value = row[1]
-            ws1["D"+c].value = row[2]
-            # ws1["E" + c].value = row[3]
-            # ws1["F" + c].value = row[2]
-            # dv.add(ws1["D"+c])
-            # if not is_media:
-            severity_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,2,),"")')
-            # else:
-            #     severity_formula = DataValidation(type="custom", formula1='INDIRECT(D'+c+')')
-            ws1.add_data_validation(severity_formula)
-            # ws1["E" + c].value = row[3]
-            severity_formula.add(ws1["E" + c])
-            # if not is_media:
-            classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
-            # else:
-            #     pass
+                    classification_formula = DataValidation(type="custom", formula1='IF(D'+c + '<> "",'
+                                                                                      'VLOOKUP($D'+c+', ''Defect_severity,'
+                                                                                                        ' 2, FALSE), "")')
 
-                # classification_formula = DataValidation(type="custom", formula1='IF(D'+c + '<> "",'
-                #                                                                   'VLOOKUP($D'+c+', ''Defect_severity,'
-                #                                                                                     ' 2, FALSE), "")')
-
-            ws1.add_data_validation(classification_formula)
-            # ws1["F" + c].value = row[4]
-            classification_formula.add(ws1["E" + c])
-            ws1["G"+c].value = row[5]
-            ws1["H"+c].value = row[6]
-            ws1["I"+c].value = row[7]
-            ws1["J" + c].value = row[8]
-            c = int(c)
-            c += 1
-            s += 1
-        # dv.add(ws1)
-        dv.ranges.append('D3:D500')
-        wb.save(filename=dst)
+                ws1.add_data_validation(classification_formula)
+                ws1["F" + c].value = row[4]
+                classification_formula.add(ws1["E" + c])
+                ws1["G"+c].value = row[5]
+                ws1["H"+c].value = row[6]
+                ws1["I"+c].value = row[7]
+                ws1["J" + c].value = row[8]
+                c = int(c)
+                c += 1
+                s += 1
+            # dv.add(ws1)
+            dv.ranges.append('D3:D500')
+            wb.save(filename=dst)
+        except Exception as e:
+            logger.exception(e)
 
         return generateDownload(self.request, dst)
 
@@ -1433,34 +1440,70 @@ def import_review(request, form_file):
             dtm = dtm.id
 
         try:
-            cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
+            if request.session['media']:
+                if request.session['media'] == True:
+                    cm = classification_master[(current_sheet.row(r)[4].value.rstrip())]
+            else:
+                cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
 
         except :
-            cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
+            if request.session['media']:
+                if request.session['media'] == True:
+                    cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
                                                                            defaults={'created_by': request.user})
-            cm = cm.id
+                    cm = cm.id
+            else:
+                cm, created = DefectClassificationMaster.objects.get_or_create(
+                    name=current_sheet.row(r)[5].value.rstrip(),
+                    defaults={'created_by': request.user})
+                cm = cm.id
 
         try:
-            slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
+            if request.session['media']:
+                if request.session['media'] == True:
+                    slm = severity_level_master[current_sheet.row(r)[5].value.rstrip()]
+            else:
+                slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
 
         except :
-            slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
-                                                                     penalty_count=0,
-                                                                     defaults={'created_by': request.user})
-            slm = slm.id
-
-        dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
-                                                                 severity_level_id=slm,
+            if request.session['media']:
+                if request.session['media'] == True:
+                    slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
+                                                                             penalty_count=0,
+                                                                             defaults={'created_by': request.user})
+                    slm = slm.id
+            else:
+                slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
+                                                                         penalty_count=0,
+                                                                         defaults={'created_by': request.user})
+                slm = slm.id
+        if request.session['media']:
+            if request.session['media'] == True:
+                dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
+                                                                 severity_level_id=slm, product_type=1,
                                                                  defaults={'created_by': request.user})
 
-        ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
+                ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
                                     review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
                                     defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
                                     fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
                                     instruction=current_sheet.row(r)[9].value,
                                     created_by=request.user)
-    qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-    messages.success(request, "successfully imported")
+                qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+                messages.success(request, "successfully imported")
+        else:
+            dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
+                                                                     severity_level_id=slm, product_type=0,
+                                                                     defaults={'created_by': request.user})
+
+            ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
+                                        review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
+                                        defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
+                                        fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
+                                        instruction=current_sheet.row(r)[9].value,
+                                        created_by=request.user)
+            qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+            messages.success(request, "successfully imported")
     return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                         'chapter_component_id': qa_obj.chapter_component.id,
                                                                          'review_group_id': qa_obj.review_group.id}))
