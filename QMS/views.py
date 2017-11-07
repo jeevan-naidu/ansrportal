@@ -1407,6 +1407,7 @@ class ExportReview(View):
 
 @transaction.atomic
 def import_review(request, form_file):
+
     xl_workbook = xlrd.open_workbook(file_contents=form_file.read())
 
     sheet_names = xl_workbook.sheet_names()
@@ -1440,14 +1441,14 @@ def import_review(request, form_file):
             dtm = dtm.id
 
         try:
-            if 'media' in request.session:
+            if request.session['media']:
                 if request.session['media'] == True:
                     cm = classification_master[(current_sheet.row(r)[4].value.rstrip())]
             else:
                 cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
 
         except :
-            if 'media' in request.session:
+            if request.session['media']:
                 if request.session['media'] == True:
                     cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
                                                                            defaults={'created_by': request.user})
@@ -1459,14 +1460,14 @@ def import_review(request, form_file):
                 cm = cm.id
 
         try:
-            if 'media' in request.session:
+            if request.session['media']:
                 if request.session['media'] == True:
                     slm = severity_level_master[current_sheet.row(r)[5].value.rstrip()]
             else:
                 slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
 
         except :
-            if 'media' in request.session:
+            if request.session['media']:
                 if request.session['media'] == True:
                     slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
                                                                              penalty_count=0,
@@ -1477,7 +1478,7 @@ def import_review(request, form_file):
                                                                          penalty_count=0,
                                                                          defaults={'created_by': request.user})
                 slm = slm.id
-        if 'media' in request.session:
+        if request.session['media']:
             if request.session['media'] == True:
                 dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
                                                                  severity_level_id=slm, product_type=1,
@@ -1490,7 +1491,7 @@ def import_review(request, form_file):
                                     instruction=current_sheet.row(r)[9].value,
                                     created_by=request.user)
                 qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-                messages.success(request, "successfully imported")
+                # messages.success(request, "successfully imported")
         else:
             dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
                                                                      severity_level_id=slm, product_type=0,
