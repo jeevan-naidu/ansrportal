@@ -1422,90 +1422,96 @@ def import_review(request, form_file):
     ReviewReport.objects.filter(QA_sheet_header_id=request.session['QA_sheet_header_id']).update(is_active=False)
 
     l = current_sheet.nrows
-    for r in range(2, l):
-        if current_sheet.row(r)[3].value == "":
-            break
-        if current_sheet.row(r)[6].value != "":
+    try:
+        for r in range(2, l):
+            if current_sheet.row(r)[3].value == "":
+                break
+            if current_sheet.row(r)[6].value != "":
+                try:
+                    fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
+                except:
+                    fixed_by = request.user
+            else:
+                fixed_by = None
+
             try:
-                fixed_by = User.objects.get(username=current_sheet.row(r)[7].value)
-            except:
-                fixed_by = request.user
-        else:
-            fixed_by = None
+                dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
+            except :
+                dtm, created = DefectTypeMaster.objects.get_or_create(name=current_sheet.row(r)[3].value.rstrip(),
+                                                                      defaults={'created_by': request.user})
+                dtm = dtm.id
 
-        try:
-            dtm = defect_type_master[(current_sheet.row(r)[3].value.rstrip())]
-        except :
-            dtm, created = DefectTypeMaster.objects.get_or_create(name=current_sheet.row(r)[3].value.rstrip(),
-                                                                  defaults={'created_by': request.user})
-            dtm = dtm.id
+            try:
+                if request.session['media']:
+                    if request.session['media'] == True:
+                        cm = classification_master[(current_sheet.row(r)[4].value.rstrip())]
+                else:
+                    cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
 
-        try:
-            if request.session['media']:
-                if request.session['media'] == True:
-                    cm = classification_master[(current_sheet.row(r)[4].value.rstrip())]
-            else:
-                cm = classification_master[(current_sheet.row(r)[5].value.rstrip())]
-
-        except :
-            if request.session['media']:
-                if request.session['media'] == True:
-                    cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
-                                                                           defaults={'created_by': request.user})
+            except :
+                if request.session['media']:
+                    if request.session['media'] == True:
+                        cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
+                                                                               defaults={'created_by': request.user})
+                        cm = cm.id
+                else:
+                    cm, created = DefectClassificationMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(), defaults={'created_by': request.user})
                     cm = cm.id
-            else:
-                cm, created = DefectClassificationMaster.objects.get_or_create(
-                    name=current_sheet.row(r)[5].value.rstrip(),
-                    defaults={'created_by': request.user})
-                cm = cm.id
 
-        try:
-            if request.session['media']:
-                if request.session['media'] == True:
-                    slm = severity_level_master[current_sheet.row(r)[5].value.rstrip()]
-            else:
-                slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
+            try:
+                if request.session['media']:
+                    if request.session['media'] == True:
+                        slm = severity_level_master[current_sheet.row(r)[5].value.rstrip()]
+                else:
+                    slm = severity_level_master[current_sheet.row(r)[4].value.rstrip()]
 
-        except :
-            if request.session['media']:
-                if request.session['media'] == True:
-                    slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
+            except :
+                if request.session['media']:
+                    if request.session['media'] == True:
+                        slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[5].value.rstrip(),
+                                                                                 penalty_count=0,
+                                                                                 defaults={'created_by': request.user})
+                        slm = slm.id
+                else:
+                    slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
                                                                              penalty_count=0,
                                                                              defaults={'created_by': request.user})
                     slm = slm.id
-            else:
-                slm, created = SeverityLevelMaster.objects.get_or_create(name=current_sheet.row(r)[4].value.rstrip(),
-                                                                         penalty_count=0,
-                                                                         defaults={'created_by': request.user})
-                slm = slm.id
-        if request.session['media']:
-            if request.session['media'] == True:
-                dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
-                                                                 severity_level_id=slm, product_type=1,
-                                                                 defaults={'created_by': request.user})
-
-                ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
-                                    review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
-                                    defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
-                                    fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
-                                    instruction=current_sheet.row(r)[9].value,
-                                    created_by=request.user)
-                qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-                # messages.success(request, "successfully imported")
-        else:
-            dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
-                                                                     severity_level_id=slm, product_type=0,
+            if request.session['media']:
+                if request.session['media'] == True:
+                    dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
+                                                                     severity_level_id=slm, product_type=1,
                                                                      defaults={'created_by': request.user})
 
-            ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
+                    ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
                                         review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
                                         defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
                                         fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
                                         instruction=current_sheet.row(r)[9].value,
                                         created_by=request.user)
-            qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
-    messages.success(request, "successfully imported")
-    return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
+                    qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+                    # messages.success(request, "successfully imported")
+            else:
+                dsl, created = DefectSeverityLevel.objects.get_or_create(severity_type_id=dtm, defect_classification_id=cm,
+                                                                         severity_level_id=slm, product_type=0,
+                                                                         defaults={'created_by': request.user})
+
+                ReviewReport.objects.create(QA_sheet_header_id=request.session['QA_sheet_header_id'],
+                                            review_item=current_sheet.row(r)[1].value, defect=current_sheet.row(r)[2].value,
+                                            defect_severity_level=dsl, is_fixed=current_sheet.row(r)[6].value,
+                                            fixed_by=fixed_by, remarks=current_sheet.row(r)[8].value,
+                                            instruction=current_sheet.row(r)[9].value,
+                                            created_by=request.user)
+                qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+        messages.success(request, "successfully imported")
+        return HttpResponseRedirect(
+            reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
+                                                     'chapter_component_id': qa_obj.chapter_component.id,
+                                                     'review_group_id': qa_obj.review_group.id}))
+    except Exception as e:
+        messages.error(request, "please click on Export button")
+        qa_obj = QASheetHeader.objects.get(pk=request.session['QA_sheet_header_id'])
+        return HttpResponseRedirect(reverse(u'review_redirect_view', kwargs={'id': request.session['QA_sheet_header_id'],
                                         'chapter_component_id': qa_obj.chapter_component.id,
                                                                          'review_group_id': qa_obj.review_group.id}))
 
