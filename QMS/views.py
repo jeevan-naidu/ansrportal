@@ -193,7 +193,6 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
     # print "get_review_group"
     obj = ReviewGroup.objects.all()
     # print is_author , project,chapter,component
-
     try:
         if not is_author and project and chapter:
             obj = QASheetHeader.objects.filter\
@@ -204,9 +203,8 @@ def get_review_group(project=None, chapter=None, is_author=False, component=Fals
             # for s in obj:
                 #  print s.review_group_id,s.review_group__name,s.review_group__alias
     except Exception as e:
-        # print str(e)
+        logger.error(" {0} ".format(str(e)))
         pass
-        # print "get_review_group" , str(e)
     return obj
 
 
@@ -544,16 +542,15 @@ class AssessmentView(TemplateView):
         # print "after ass " , active_tab
         # print request.POST
         if form.is_valid():
-
             project = form.cleaned_data['project']
             chapter = form.cleaned_data['chapter']
             author = form.cleaned_data['author']
             component = form.cleaned_data['component']
             BaseAssessmentTemplateForm(initial={'project': project, 'chapter': chapter, 'author': author,
                                                 'component': component })
-            if request.user is author:
-                # print"is author"
+            if request.user is not author:
                 get_review_group(project, chapter, is_author=False, component=component)
+
             try:
                 request.session['project'] = project
                 request.session['chapter'] = chapter
@@ -562,8 +559,8 @@ class AssessmentView(TemplateView):
                 request.session['chapter_component'] = ChapterComponent.objects.get(chapter=chapter, component=component)
 
                 ptpm_obj = ProjectTemplateProcessModel.objects.get(project=project)
-                if int(ptpm_obj.qms_proces_model.product_type) == 1:
-                    request.session['hide_export'] = True
+                # if int(ptpm_obj.qms_process_model.product_type) == 1:
+                #     request.session['hide_export'] = True
                 request.session['template_id'] = ptpm_obj.template_id
                 obj = qa_sheet_header_obj(project, chapter, author, component, active_tab)
                 # print "status", obj.author_feedback_status
@@ -635,7 +632,9 @@ class AssessmentView(TemplateView):
 
                 return render_common(obj, qms_form, request)
 
-            except:
+            except Exception as e:
+                messages.info(request, "No data filled against that project")
+                logger.error(" {0} ".format(str(e)))
                 return render(request, "ansrS_QA_Tmplt_Assessment (Non Platform) QA sheet_3.3.html",
                               {'form': BaseAssessmentTemplateForm(request.POST), })
 
