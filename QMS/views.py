@@ -1057,6 +1057,7 @@ def review_completed(request):
                                                                               review_group_feedback=review_feedback)
             messages.success(request, "Saved Successfully")
     except Exception as e:
+        print e
         messages.error(request, "Unable to save")
         logger.error("check permission for author failed {0} ".format(str(e)))
     obj = qa_sheet_header_obj(request.session['project'], request.session['chapter'], request.session['author'],
@@ -1374,7 +1375,10 @@ class ExportReview(View):
                 else:
                     severity_formula = DataValidation(type="custom", formula1='INDIRECT(INDIRECT("RC[-1]",0))')
                 ws1.add_data_validation(severity_formula)
-                ws1["E" + c].value = row[3]
+                if not is_media:
+                    ws1["E" + c].value = row[3]
+                else:
+                    ws1["E" + c].value = row[4]
                 severity_formula.add(ws1["E" + c])
                 if not is_media:
                     classification_formula = DataValidation(type="custom", formula1='IFNA(VLOOKUP(D' + c + ',name,3,),"")')
@@ -1386,7 +1390,10 @@ class ExportReview(View):
                                                                                                         ' 2, FALSE), "")')
 
                 ws1.add_data_validation(classification_formula)
-                ws1["F" + c].value = row[4]
+                if not is_media:
+                    ws1["F" + c].value = row[4]
+                else:
+                    ws1["F" + c].value = row[3]
                 classification_formula.add(ws1["E" + c])
                 ws1["G"+c].value = row[5]
                 ws1["H"+c].value = row[6]
