@@ -175,7 +175,7 @@ class QASheetHeader(TimeStampAbstractModel):
     author = models.ForeignKey(User, related_name='QASheetHeader_author', blank=True, null=True,)
     review_group = models.ForeignKey(ReviewGroup)
     reviewed_by = models.ForeignKey(User, related_name='QASheetHeader_reviewed_by')
-    review_group_feedback = models.CharField(max_length=100, blank=True, null=True,)
+    review_group_feedback = models.CharField(max_length=1000, blank=True, null=True,)
     review_group_status = models.BooleanField(
         default=False,
         null=False,
