@@ -1006,9 +1006,9 @@ $('.defect_classification').change(function(e){
 </script>
 {% if request.session.producttype %}
 <script>
-var product_type  = {{request.session.producttype}}
+<!--var product_type  = {{request.session.producttype}}-->
 var classificationvalue = $('#id_form-0-defect_classification').val()
-if (product_type == 1){
+<!--if (product_type == 1){-->
 if (classificationvalue != "" )
 {
  $('.removeifvalue').hide()
@@ -1017,7 +1017,7 @@ if (classificationvalue != "" )
  {
  $('.removeifvalue').show()
  }
- }
+ <!--}-->
 </script>
 {% endif %}
 
