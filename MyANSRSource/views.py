@@ -3805,7 +3805,7 @@ def change_request_detail(request):
         project_document_detail = ProjectDetail.objects.get(project_id = project_change_detail.project.id)
         return render(request,'project_change_detail.html', {'BL':'1','project_change_detail': project_change_detail, 'project_document_detail':project_document_detail})
     project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
-    cr_id_project = ProjectChangeInfo.objects.select_related('project').filter(project_id=project_change_detail.project.id)
+    cr_id_project = ProjectChangeInfo.objects.select_related('project').filter(project_id=project_change_detail.project.id, approved=1)
     for index, cr in enumerate(cr_id_project):
         if cr.crId == cr_id:
             pre_cr_details = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id_project[index-1])
