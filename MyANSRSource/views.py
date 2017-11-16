@@ -3770,6 +3770,8 @@ class ProjectChangeApproval(View):
                                                                                              'closed',
                                                                                              'salesForceNumber',
                                                                                              'customerContact',
+                                                                                             'Sowdocument',
+                                                                                             'estimationDocument',
                                                                                              )[0]
                     try:
                         Project.objects.filter(id=update_project_table['project']).update(
@@ -3781,6 +3783,10 @@ class ProjectChangeApproval(View):
                             startDate=update_project_table['startDate'],
                             customerContact=update_project_table['customerContact'],
                             salesForceNumber=update_project_table['salesForceNumber']
+                            )
+                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(
+                            Sowdocument=update_project_table['Sowdocument'],
+                            Estimationdocument=update_project_table['estimationDocument']
                             )
 
                     except Exception as error:
