@@ -3784,11 +3784,14 @@ class ProjectChangeApproval(View):
                             customerContact=update_project_table['customerContact'],
                             salesForceNumber=update_project_table['salesForceNumber']
                             )
-                        ProjectDetail.objects.filter(project_id=update_project_table['project']).update(
-                            Sowdocument=update_project_table['Sowdocument'],
-                            Estimationdocument=update_project_table['estimationDocument']
-                            )
-
+                        if update_project_table['Sowdocument']:
+                            ProjectDetail.objects.filter(project_id=update_project_table['project']).update(
+                                Sowdocument=update_project_table['Sowdocument']
+                                )
+                        if update_project_table['estimationDocument']:
+                            ProjectDetail.objects.filter(project_id=update_project_table['project']).update(
+                                Estimationdocument=update_project_table['estimationDocument']
+                                )
                     except Exception as error:
                         return HttpResponse(error)
 
