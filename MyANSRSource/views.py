@@ -2784,8 +2784,8 @@ def UpdateProjectInfo(request, newInfo):
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
         pci.startDate = newInfo[1]['startDate']
-        pci.estimationDocument = request.session['revisedestimation']
-        pci.Sowdocument = request.session['revisedsow']
+        pci.estimationDocument = request.session['revisedsow']
+        pci.Sowdocument = request.session['revisedestimation']
         pci.bu = pru.bu
         pci.approved = 0
         if pci.closed is True:
