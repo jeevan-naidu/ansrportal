@@ -50,14 +50,22 @@
              <td>No</td>
            {% endif %}
       </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Sow Document:</b></td>
-           <td><a href="/media/{{ project_change_detail.Sowdocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
-      </tr>
+      {% if project_change_detail.Sowdocument%}
+        <tr>
+             <td style="width: 400px;" ><b> Project Sow Document:</b></td>
+             <td><a href="/media/{{ project_change_detail.Sowdocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
+        </tr>
+      {% else %}
+        <tr><td style="width: 400px;" ><b> Project Sow Document:</b></td><td>None</td></tr>
+      {% endif %}
+      {% if project_change_detail.estimationDocument%}
       <tr>
            <td style="width: 400px;" ><b> Project Estimation Document:</b></td>
            <td><a href="/media/{{ project_change_detail.estimationDocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
       </tr>
+      {% else %}
+        <tr><td style="width: 400px;" ><b> Project Sow Document:</b></td><td>None</td></tr>
+      {% endif %}
 
 {% else %}
     {% if project_change_detail.reason and project_change_detail.reason != '0' %}
