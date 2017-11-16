@@ -255,8 +255,8 @@ def SingleProjectReport(request):
             }
             crData = ProjectChangeInfo.objects.filter(
                 project=cProject
-            ).values('crId', 'endDate', 'revisedEffort',
-                     'revisedTotal', 'closed', 'closedOn',
+            ).values('crId', 'startdate_dropdown', 'enddate_dropdown', 'effort_dropdown', 'endDate', 'revisedEffort', 'startDate', 'signed',
+                     'revisedTotal', 'closed', 'closedOn', 'approved', 'close_dropdown', 'amount_dropdown', 'salesForceNumber', 'customerContact',
                      'updatedOn').order_by('updatedOn')
             if basicData['endDate'] < datetime.now().date() \
                     and cProject.closed is False:
@@ -470,8 +470,10 @@ def SingleProjectReport(request):
                     ['Project Name', 'Start Date', 'End Date', 'Planned Effort',
                      'Total Value', 'salesForceNumber', 'Contract Signed',
                      'P.O.'],
-                    ['CR#', 'End Date', 'Revised Effort',
-                     'Revised Total', 'CR Date'],
+                    ['CR#','CR Date','Start Date change reason', 'Start Date', 'End Date change reason',
+                    'End Date', 'Effort change reason', 'Revised Effort', 'Total Change reason', 'Revised Total',
+                    'Revised sales Force Number', 'Revised Customer Contact',
+                    'Project Close Reason', 'Revised Project CLosed', 'Revised Project signed', 'approved'],
                     ['Milestone Name', 'Milestone Date', 'Financial', 'Value',
                      'Completed'],
                     ['Member Name', 'Designation', 'Planned Effort',
@@ -1076,7 +1078,7 @@ def InvoiceReport(request):
                 'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
                 for val in data:
                     val['balance'] = val['project_id__totalValue'] - val['amount']
-                    
+
         return render(request, 'MyANSRSource/invoicereportdata.html',
                       {'form': form, 'data':data})
 
@@ -1446,10 +1448,37 @@ def generateProjectContent(request, header, report, worksheet,
             if 'crId' in eachRec:
                 rValue = "$" + str(eachRec['revisedTotal'])
                 worksheet.write(row, 0, eachRec['crId'], content)
-                worksheet.write(row, 2, eachRec['endDate'], dateformat)
-                worksheet.write(row, 3, eachRec['revisedEffort'], numberFormat)
-                worksheet.write(row, 4, rValue, numberFormat)
-                worksheet.write(row, 5, str(eachRec['updatedOn']), content)
+                worksheet.write(row, 1, str(eachRec['updatedOn']), content)
+                if eachRec['startdate_dropdown'] != '1':
+                    worksheet.write(row, 2, eachRec['startdate_dropdown'], content)
+                    worksheet.write(row, 3, eachRec['startDate'], dateformat)
+                if eachRec['enddate_dropdown'] != '1':
+                    worksheet.write(row, 4, eachRec['enddate_dropdown'], content)
+                    worksheet.write(row, 5, eachRec['endDate'], dateformat)
+                if eachRec['effort_dropdown'] != '1':
+                    worksheet.write(row, 6, eachRec['effort_dropdown'], content)
+                    worksheet.write(row, 7, eachRec['revisedEffort'], numberFormat)
+                if eachRec['amount_dropdown'] != '1':
+                    worksheet.write(row, 8, eachRec['amount_dropdown'], content)
+                    worksheet.write(row, 9, eachRec['revisedTotal'], numberFormat)
+                worksheet.write(row, 10, eachRec['salesForceNumber'], numberFormat)
+                worksheet.write(row, 11, eachRec['customerContact'], content)
+                if eachRec['close_dropdown'] != '1':
+                    worksheet.write(row, 12, eachRec['close_dropdown'], content)
+                if eachRec['closed'] == 0:
+                    worksheet.write(row, 13, 'No', content)
+                if eachRec['closed'] == 1:
+                    worksheet.write(row, 13, 'Yes', content)
+                if eachRec['signed'] == 0:
+                    worksheet.write(row, 14, 'No', content)
+                if eachRec['signed'] == 1:
+                    worksheet.write(row, 14, 'Yes', content)
+                if eachRec['approved'] == '0':
+                    worksheet.write(row, 15, 'Active', content)
+                if eachRec['approved'] == '1':
+                    worksheet.write(row, 15, 'Approved', content)
+                if eachRec['approved'] == '2':
+                    worksheet.write(row, 15, 'Rejected', content)
                 row += 1
                 if 'data' in eachRec:
                     generateReportFooter(request, worksheet, alp[7], row,
@@ -1640,9 +1669,6 @@ def getMemberExactTsHours(request, start, end, report):
                 if eachData['project__projectId'] == eachStart['project__projectId'] and \
                         eachData['project__book__name'] == eachStart['project__book__name'] and \
                         eachData['chapter__name'] == eachStart['chapter__name'] and \
-                        eachData['teamMember__username'] == eachStart['teamMember__username'] and \
-                        eachData['hold'] == eachStart['hold'] and \
-                        eachData['task__name'] == eachStart['task__name'] and \
                         eachData['activity__name'] == eachStart['activity__name']:
                     total = eachData['total'] - eachStart['extra']
                     if total >= 0:

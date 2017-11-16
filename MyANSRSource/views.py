@@ -2785,7 +2785,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.closed = newInfo[1]['closed']
         pci.startDate = newInfo[1]['startDate']
         pci.estimationDocument = request.session['revisedestimation']
-        pci.sowdocument = request.session['revisedsow']
+        pci.Sowdocument = request.session['revisedsow']
         pci.bu = pru.bu
         pci.approved = 0
         if pci.closed is True:
@@ -3518,7 +3518,7 @@ def project_summary(project_id, show_header=True):
 
     changeTracker = ProjectChangeInfo.objects.filter(
         project=projectObj).values(
-        'endDate', 'revisedEffort', 'revisedTotal', 'effort_dropdown',
+        'crId', 'startDate','endDate', 'revisedEffort', 'revisedTotal', 'effort_dropdown',
         'closed', 'closedOn', 'signed', 'amount_dropdown', 'enddate_dropdown',
         'updatedOn','approved', 'salesForceNumber', 'customerContact',
     ).order_by('updatedOn')
@@ -3792,11 +3792,26 @@ class ProjectChangeApproval(View):
         except Exception as E:
             return HttpResponse(E)
 
+def change_request_detail(request):
+    cr_id = request.GET.get('id')
+    if 'BL' in cr_id:
+        project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
+        project_document_detail = ProjectDetail.objects.get(project_id = project_change_detail.project.id)
+        return render(request,'project_change_detail.html', {'BL':'1','project_change_detail': project_change_detail, 'project_document_detail':project_document_detail})
+    project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
+    cr_id_project = ProjectChangeInfo.objects.select_related('project').filter(project_id=project_change_detail.project.id)
+    for index, cr in enumerate(cr_id_project):
+        if cr.crId == cr_id:
+            pre_cr_details = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id_project[index-1])
+            prev_cr_document_detail = ProjectDetail.objects.get(project_id = pre_cr_details.project.id)
+            return render(request,'change_request_detail.html', {'project_change_detail': project_change_detail,
+            'pre_cr_details':pre_cr_details, 'prev_cr_document_detail':prev_cr_document_detail})
 
 def project_change_detail(request):
     cr_id = request.GET.get('id')
     project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
-    return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail})
+    project_document_detail = ProjectDetail.objects.get(project_id = project_change_detail.project.id)
+    return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail, 'project_document_detail':project_document_detail})
 
 month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),
                  (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')]

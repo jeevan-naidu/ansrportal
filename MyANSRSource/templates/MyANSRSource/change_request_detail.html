@@ -7,59 +7,6 @@
          <td style="width: 400px;" ><b> Project Name:</b></td>
          <td>{{ project_change_detail.project.name }}</td>
     </tr>
-    {% if BL == '1' %}
-      <tr>
-           <td style="width: 400px;" > <b>Project Start Date:</b></td>
-           <td>{{ project_change_detail.startDate }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project End Date:</b></td>
-           <td>{{ project_change_detail.endDate }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Total Value:</b></td>
-           <td>{{ project_change_detail.revisedTotal }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Planned Effort:</b></td>
-           <td>{{ project_change_detail.revisedEffort }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Sales Force Number:</b></td>
-           <td>{{ project_change_detail.salesForceNumber }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Customer Contact:</b></td>
-           <td>{{ project_change_detail.customerContact }}</td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b>Project Closed:</b></td>
-           {% if project_change_detail.closed == True %}
-             <td>Yes</td>
-           {% endif %}
-           {%if project_change_detail.closed == False %}
-             <td>No</td>
-           {% endif %}
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Signed:</b></td>
-           {% if project_change_detail.signed == True %}
-             <td>Yes</td>
-           {% endif %}
-           {%if project_change_detail.signed == False %}
-             <td>No</td>
-           {% endif %}
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Sow Document:</b></td>
-           <td><a href="/media/{{ project_change_detail.Sowdocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
-      </tr>
-      <tr>
-           <td style="width: 400px;" ><b> Project Estimation Document:</b></td>
-           <td><a href="/media/{{ project_change_detail.estimationDocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
-      </tr>
-
-{% else %}
     {% if project_change_detail.reason and project_change_detail.reason != '0' %}
     <tr>
          <td style="width: 400px;" ><b> Prev StartDate:</b></td>
@@ -100,7 +47,7 @@
 
     <tr>
          <td style="width: 400px;" ><b> Prev StartDate:</b></td>
-         <td>{{ project_change_detail.project.startDate }}</td>
+         <td>{{ pre_cr_details.startDate }}</td>
     </tr>
     <tr>
          <td style="width: 400px;" > <b>Revised Start Date:</b></td>
@@ -117,7 +64,7 @@
 
     <tr>
          <td style="width: 400px;" ><b> Prev End Date:</b></td>
-         <td>{{ project_change_detail.project.endDate}}</td>
+         <td>{{ pre_cr_details.endDate}}</td>
     </tr>
     <tr>
          <td style="width: 400px;" ><b>  Revised End Date:</b></td>
@@ -133,7 +80,7 @@
 
     <tr>
          <td style="width: 400px;" ><b> Prev Total Value:</b></td>
-         <td>{{ project_change_detail.project.totalValue }}</td>
+         <td>{{ pre_cr_details.revisedTotal }}</td>
     </tr>
     <tr>
          <td style="width: 400px;" ><b> Revised Total Value:</b></td>
@@ -147,7 +94,7 @@
     {% if project_change_detail.effort_dropdown and project_change_detail.effort_dropdown != '1'  %}
     <tr>
         <td style="width: 400px;" ><b>Previous Planned Effort:</b></td>
-         <td>{{ project_change_detail.project.plannedEffort }}</td>
+         <td>{{ pre_cr_details.revisedEffort }}</td>
     </tr>
     <tr>
          <td style="width: 400px;" ><b> Revised Planned Effort:</b></td>
@@ -162,10 +109,10 @@
     {% if project_change_detail.close_dropdown and project_change_detail.close_dropdown != '1'  %}
     <tr>
         <td style="width: 400px;" ><b>Project Closed:</b></td>
-        {% if project_change_detail.project.closed == True %}
+        {% if pre_cr_details.closed == True %}
           <td>Yes</td>
         {% endif %}
-        {%if project_change_detail.project.closed == False %}
+        {%if pre_cr_details.closed == False %}
           <td>No</td>
         {% endif %}
     </tr>
@@ -185,10 +132,10 @@
     {% endif %}
 
     {% if project_change_detail.salesForceNumber and project_change_detail.salesForceNumber != 1%}
-    {% if project_change_detail.salesForceNumber != project_change_detail.project.salesForceNumber %}
+    {% if project_change_detail.salesForceNumber != pre_cr_details.salesForceNumber %}
         <tr>
             <td style="width: 400px;" ><b>Prev Sales Force Number:</b></td>
-             <td>{{ project_change_detail.project.salesForceNumber }}</td>
+             <td>{{ pre_cr_details.salesForceNumber }}</td>
         </tr>
         <tr>
             <td style="width: 400px;" ><b>Revised Sales Force Number:</b></td>
@@ -198,10 +145,10 @@
     {% endif %}
 
     {% if project_change_detail.customerContact and project_change_detail.customerContact != '1' %}
-    {% if project_change_detail.customerContact != project_change_detail.project.customerContact %}
+    {% if project_change_detail.customerContact != pre_cr_details.customerContact %}
         <tr>
             <td style="width: 400px;" ><b>Prev Customer Contact:</b></td>
-             <td>{{ project_change_detail.project.customerContact}}</td>
+             <td>{{ pre_cr_details.customerContact}}</td>
         </tr>
         <tr>
             <td style="width: 400px;" ><b> Customer Contact:</b></td>
@@ -211,15 +158,15 @@
     {% endif %}
 
 
-    {% if project_change_detail.signed == True and project_change_detail.project.signed != True or project_change_detail.signed == False and project_change_detail.project.signed != False %}
-    {% if project_change_detail.signed == False and project_change_detail.project.signed != False or project_change_detail.signed == True and project_change_detail.project.signed != True %}
+    {% if project_change_detail.signed == True and pre_cr_details.signed != True or project_change_detail.signed == False and pre_cr_details.signed != False %}
+    {% if project_change_detail.signed == False and pre_cr_details.signed != False or project_change_detail.signed == True and pre_cr_details.signed != True %}
     {% if project_change_detail.signed or project_change_detail.signed != '1' %}
     <tr>
         <td style="width: 400px;" ><b>Previous Signed:</b></td>
-        {% if project_change_detail.project.signed == True %}
+        {% if pre_cr_details.signed == True %}
           <td>Yes</td>
         {% endif %}
-        {%if project_change_detail.project.signed == False %}
+        {%if pre_cr_details.signed == False %}
           <td>No</td>
         {% endif %}
     </tr>
@@ -266,7 +213,7 @@
          <td><a href="/media/{{ project_change_detail.estimationDocument }}" target="_blank"><span class="glyphicon glyphicon-file"></span></i></a></td>
     </tr>
     {% endif %}
-    {% endif %}
+
 
  </table>
 </div>

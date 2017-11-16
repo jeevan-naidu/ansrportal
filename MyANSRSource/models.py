@@ -769,6 +769,3 @@ class SendEmail(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
-
-
-

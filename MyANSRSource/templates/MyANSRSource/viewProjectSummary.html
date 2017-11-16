@@ -274,85 +274,46 @@
 <div class="panel-body">
 	<table class="table table-condensed">
 		<thead>
+      <th>CRId</th>
 			<th>CR Date</th>
-			<th>Total changed reason</th>
 			<th>Revised Total</th>
-            <th>Effort changed resason</th>
-			<th>Revised Effort</th>
-      <th>Startdate Changed Reason</th>
+      <th>Revised Effort</th>
       <th>Revised Start Date</th>
-            <th>Enddate changed reason</th>
-			<th>Revised End Date</th>
-            <th>Salesforce Number</th>
-            <th>Customer Contact</th>
-			<th>Signed</th>
+      <th>Revised End Date</th>
+      <th>Signed</th>
+      <th>Sow</th>
+      <th>Estimation</th>
 			<th>Closed</th>
 			<th>Status</th>
 		</thead>
         {% if changes %}
 		{% for eachChange in changes %}
 		<tr>
+      <td class="ws-mw">
+      <a id="{{eachChange.crId}}"
+      href="#modal-container-detail" data-toggle="modal" title="Action"
+     class="pull-left detail">
+                         {{eachChange.crId}}
+                       </a></td>
 			<td>
 				{{ eachChange.updatedOn }}
 			</td>
-            {% if eachChange.amount_dropdown == '1'%}
-                <td>None</td>
-            {% else %}
-			<td>
-				{{ eachChange.amount_dropdown }}
-			</td>
-            {% endif %}
 			<td>
 				{{ eachChange.revisedTotal }}
 			</td>
-            {% if eachChange.effort_dropdown == '1'%}
-                <td>None</td>
-            {% else %}
-            <td>
-				{{ eachChange.effort_dropdown }}
-			</td>
-            {% endif %}
+
 			<td>
 				{{ eachChange.revisedEffort }}
 			</td>
-
-
-      {% if eachChange.startdate_dropdown == '1' or not eachChange.startdate_dropdown %}
-          <td>None</td>
-      {% else %}
-      <td>
-        {{ eachChange.startdate_dropdown }}
-      </td>
-            {% endif %}
       <td>
         {{ eachChange.startDate }}
       </td>
-            {% if eachChange.enddate_dropdown == '1'%}
-                <td>None</td>
-            {% else %}
-            <td>
-				{{ eachChange.enddate_dropdown }}
-			</td>
-            {% endif %}
+
 			<td>
 				{{ eachChange.endDate }}
 			</td>
 
-            {% if eachChange.salesForceNumber == 1 or eachChange.salesForceNumber == 0 %}
-                <td>None</td>
-            {% else %}
-                <td>
-                    {{ eachChange.salesForceNumber }}
-                </td>
-            {% endif %}
 
-            {% if eachChange.customerContact == '1'%}
-                <td>None</td>
-            {% else %}
-                <td>
-                    {{ eachChange.customerContact}}
-                </td>
-            {% endif %}
 			<td>
                 {% if eachChange.signed %}
                        Yes
@@ -360,6 +321,17 @@
                        No
                 {% endif %}
 			</td>
+        {% if eachChange.Sowdocument %}
+                <td>{{eachChange.Sowdocument}}</td>
+        {% else %}
+                <td>None</td>
+        {% endif %}
+
+        {% if eachChange.Estimationdocument %}
+                <td>{{eachChange.Estimationdocument}}</td>
+        {% else %}
+                <td>None</td>
+        {% endif %}
 			<td>
                 {% if eachChange.closed %}
                        Yes
@@ -382,13 +354,56 @@
 	</table>
 </div>
 </div>
+
+<div class="modal fade" id="modal-container-detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
 {% if show_header %}
 <a href="view-project" class="btn btn-info">
         <i class="fa fa-arrow-circle-left"></i>
 	<b>Choose another project</b>
 </a> {% endif %}
 
+<script type="text/javascript">
+$(".detail").click(function(){
+  var project_id = this.id
+  $.ajax({
+      url:"{% url 'change_request_detail' %}",
+      data: {"id": project_id},
+      type: "get",
+      success: function(data){
+      $("#modal_body").html(data);
+      },
+  });
+});
+</script>
+
+
  {% if not show_header %}
+
+
 <script type="text/javascript">
 
 $(function() {
@@ -397,5 +412,6 @@ $(function() {
 });
 
 </script>
+
 {% endif %}
 {% endblock %}

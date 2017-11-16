@@ -49,24 +49,24 @@
         {% if not fresh %}
             <table class="table table-condensed">
                 <tr>
-                    <td class="text-center"><b>Individual Project Perfomance</b></td> 
+                    <td class="text-center"><b>Individual Project Perfomance</b></td>
                 </tr>
                 <tr>
-                    <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td> 
+                    <td class="text-center"><b>{{ basicData.code }} : {{ basicData.name }}</b></td>
                 </tr>
             </table>
         {% endif %}
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Project Name</th> 
-                <th>Start Date</th> 
-                <th>End Date</th> 
-                <th>P.O.</th> 
-                <th>Contract Signed</th> 
-                <th class="text-right">Planned Effort</th> 
-                <th class="text-right">Total Value</th> 
-                <th class="text-right">Salesforce Number</th> 
+                <th>Project Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>P.O.</th>
+                <th>Contract Signed</th>
+                <th class="text-right">Planned Effort</th>
+                <th class="text-right">Total Value</th>
+                <th class="text-right">Salesforce Number</th>
             </tr>
             </thead>
             {% if fresh %}
@@ -75,45 +75,63 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td>{{ basicData.code }} : {{ basicData.name }}</td> 
-                    <td>{{ basicData.startDate }}</td> 
+                    <td>{{ basicData.code }} : {{ basicData.name }}</td>
+                    <td>{{ basicData.startDate }}</td>
                     {% if red %}
                     <td style="color: red">
                     {% else %}
                     <td>
                     {% endif %}
                         {{ basicData.endDate }}
-                    </td> 
-                    <td>{{ basicData.po }}</td> 
-                    <td>{{ basicData.signed }}</td> 
-                    <td class="text-right">{{ basicData.plannedEffort }}</td> 
-                    <td class="text-right">${{ basicData.totalValue | intcomma }}</td> 
-                    <td class="text-right">{{ basicData.salesForceNumber | intcomma }}</td> 
+                    </td>
+                    <td>{{ basicData.po }}</td>
+                    <td>{{ basicData.signed }}</td>
+                    <td class="text-right">{{ basicData.plannedEffort }}</td>
+                    <td class="text-right">${{ basicData.totalValue | intcomma }}</td>
+                    <td class="text-right">{{ basicData.salesForceNumber | intcomma }}</td>
                 </tr>
             {% endif %}
         </table>
         <table class="table table-condensed">
-            <thead>
-            <tr>
-                <th>CR#</th> 
-                <th>CR Date</th> 
-                <th>Project End Date</th>
-                <th class="text-right">Revised Effort</th> 
-                <th class="text-right">Revised Total</th> 
-            </tr>
-            </thead>
+          <thead>
+            <th>CRId</th>
+            <th>CR Date</th>
+            <th>Revised Total</th>
+            <th>Revised Effort</th>
+            <th>Revised Start Date</th>
+            <th>Revised End Date</th>
+            <th>Signed</th>
+            <th>Closed</th>
+            <th>Status</th>
+          </thead>
             {% if crData %}
                 {% for eachData in crData %}
                     <tr>
-                        <td>{{ eachData.crId }}</td> 
-                        <td>{{ eachData.updatedOn }}</td> 
+                        <td>{{ eachData.crId }}</td>
+                        <td>{{ eachData.updatedOn }}</td>
+                        <td>{{ eachData.revisedTotal }}</td>
+                        <td>{{ eachData.revisedEffort }}</td>
+                        <td>{{ eachData.startDate }}</td>
                         <td>{{ eachData.endDate }}</td>
-                        <td class="text-right">{{ eachData.revisedEffort }}</td> 
-                        <td class="text-right">${{ eachData.revisedTotal | intcomma }}</td> 
-                    </tr>
+                        <td>
+                                  {% if eachData.signed %}
+                                         Yes
+                                  {% else %}
+                                         No
+                                  {% endif %}
+                  			</td>
+                        <td>
+                                  {% if eachData.closed %}
+                                         Yes
+                                  {% else %}
+                                         No
+                                  {% endif %}
+                  			</td>
+                        <td>{%if eachData.approved == '0' %}Active{% endif %}{% if eachData.approved == '1' %}Approved{% endif %}{% if eachData.approved == '2' %} Rejected {% endif %} </td>
+                        </tr>
                     <tr>
                     {% if eachData.closed %}
-                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td> 
+                        <td colspan="8" class="text-center"><h4><small>Project Closed On : <b>{{ eachData.closedOn }}</b></small></h4></td>
                     {% endif %}
                     </tr>
                 {% endfor %}
@@ -132,21 +150,21 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Milestone Name</th> 
-                <th>Milestone Date</th> 
-                <th>Financial</th> 
-                <th class="text-right">Value</th> 
-                <th>Completed</th> 
+                <th>Milestone Name</th>
+                <th>Milestone Date</th>
+                <th>Financial</th>
+                <th class="text-right">Value</th>
+                <th>Completed</th>
             </tr>
             </thead>
             {% if msData %}
                 {% for eachData in msData %}
                     <tr>
-                        <td>{{ eachData.description }}</td> 
-                        <td>{{ eachData.milestoneDate }}</td> 
-                        <td>{{ eachData.financial }}</td> 
-                        <td class="text-right">${{ eachData.amount | intcomma }}</td> 
-                        <td>{{ eachData.closed }}</td> 
+                        <td>{{ eachData.description }}</td>
+                        <td>{{ eachData.milestoneDate }}</td>
+                        <td>{{ eachData.financial }}</td>
+                        <td class="text-right">${{ eachData.amount | intcomma }}</td>
+                        <td>{{ eachData.closed }}</td>
                     </tr>
                 {% endfor %}
             {% else %}
@@ -164,35 +182,35 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th>Member Name</th> 
-                <th>Role</th> 
-                <th class="text-right">Planned Effort</th> 
+                <th>Member Name</th>
+                <th>Role</th>
+                <th class="text-right">Planned Effort</th>
                 <th class="text-right">Actual Effort</th>
-                {% if not closed %} 
-                    <th class="text-right">Balance Effort</th> 
+                {% if not closed %}
+                    <th class="text-right">Balance Effort</th>
                 {% else %}
                     <th class="text-right">Deviation</th>
-                {% endif %} 
+                {% endif %}
             </tr>
             </thead>
             {% if tsData %}
                 {% for eachData in tsData %}
                     <tr>
-                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }}</td> 
-                        <td>{{ eachData.designation }}</td> 
-                        <td class="text-right">{{ eachData.planned }}</td> 
-                        <td class="text-right">{{ eachData.actual }}</td> 
-                        {% if not closed %} 
+                        <td>{{ eachData.teamMember__first_name }} {{ eachData.teamMember__last_name }}</td>
+                        <td>{{ eachData.designation }}</td>
+                        <td class="text-right">{{ eachData.planned }}</td>
+                        <td class="text-right">{{ eachData.actual }}</td>
+                        {% if not closed %}
                             {% if eachData.balance >= 0 %}
                                 <td class="text-right" style="color: green">{{ eachData.balance }}</td>
                             {% else %}
                                 <td class="text-right" style="color: red">{{ eachData.balance }}</td>
                             {% endif %}
-                        {% else %} 
+                        {% else %}
                             {% if eachData.deviation >= 0 %}
-                                <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td> 
+                                <td class="text-right" style="color: green"><b>{{ eachData.deviation }} %</b></td>
                             {% else %}
-                                <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td> 
+                                <td class="text-right" style="color: red"><b>{{ eachData.deviation }} %</b></td>
                             {% endif %}
                         {% endif %}
                     </tr>
@@ -201,13 +219,13 @@
                         <td colspan=2><h4><small><b>Total  </b></small></h4></td>
                         <td class="text-right"><h4><small><b>{{ plannedTotal }}</b></small></h4></td>
                         <td class="text-right"><h4><small><b>{{ actualTotal }}</b></small></h4></td>
-                        {% if not closed %} 
+                        {% if not closed %}
                             {% if balanceTotal <= 0 %}
                                 <td class="text-right"><h4><small><b style="color: red">{{ balanceTotal }}</b></small></h4></td>
                             {% else %}
                                 <td class="text-right"><h4><small><b style="color: green">{{ balanceTotal }}</b></small></h4></td>
                             {% endif %}
-                        {% else %} 
+                        {% else %}
                             {% if deviation < 0 %}
                                 <td class="text-right"><h4><small><b style="color: red">{{ deviation }} %</b></small></h4></td>
                             {% else %}
@@ -231,8 +249,8 @@
             <thead>
             <tr>
                 <th colspan=1></th>
-                <th class="text-center" colspan=4>Productivity</th> 
-                <th></th> 
+                <th class="text-center" colspan=4>Productivity</th>
+                <th></th>
             </tr>
             </thead>
             <thead>
