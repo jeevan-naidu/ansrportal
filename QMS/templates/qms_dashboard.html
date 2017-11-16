@@ -85,14 +85,12 @@
                         </td>
                             <td class="noExl">
                                     {% if result.0 %}
-                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}"
-                                               data-diffvalue="{{result.1}}" class="btn btn-xs
-                                                 {% if result.1 != 0 %} btn-danger  {% else %}
+                                        <input id="lead_tab_complete" type="button" data-project="{{obj.project}}" data-diffvalue="{{result.1}}" class="btn btn-xs  {% if result.1 != 0 %} btn-danger  {% else %}
                                                  btn-success {% endif %} lead_tab_complete"
                                                onclick= "mark_as_complete(this);"
-                                               name=""value="Completed"/>
+                                               name="" {% if result.1 != 0 %} value="In-Progress" {% else %} value="Completed {% endif %}"/>
                                 {% else %}
-                                <input  type="button"  class="btn btn-xs   btn-white " disabled value="Completed" >
+                                <input  type="button"  class="btn btn-xs btn-success" disabled value="Completed" >
 
                                 {% endif %}
                                  <div class="modal fade" id="reviewComplete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
