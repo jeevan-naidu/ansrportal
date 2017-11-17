@@ -763,6 +763,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control Effort"
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control Total"
         self.fields['closed'].widget.attrs['class'] = "form-control Closed"
+        self.fields['closed'].widget.attrs['id'] = "closed"
         self.fields['signed'].widget.attrs['class'] = "form-control sowsigned"
 
 class ChangeProjectTeamMemberForm(forms.ModelForm):
