@@ -22,6 +22,12 @@ ENDDATE = (
     ('Scope change','Scope Change'),
     ('Client requested','Client Requested'),
     ('Ansr renegotiated date','Ansr Renegotiated Date'),
+    ('Client Feeback','Client Feeback'),
+    ('Material Delay','Material Delay'),
+    ('SME Unavailability','SME Unavailability'),
+    ('Quality Issues','Quality Issues'),
+    ('Productivity Issues','Productivity Issues'),
+    ('Estimation Issues','Estimation Issues'),
 )
 
 EFFORT = (
@@ -34,6 +40,7 @@ AMOUNT = (
     ('Data entry error','Data Entry Error'),
     ('Scope change','Scope Change'),
     ('Project value confirmed','Project value confirmed'),
+    ('Project Value Changed based on actuals','Project Value Changed based on actuals'),
 )
 
 CLOSE = (
@@ -81,7 +88,8 @@ ROLE = (
 TEAM_CHOICES = (('0', 'assessment'), ('1', 'learning'))
 PROJECT_FUNDING = (('Customer Paid','Customer Paid'),
                    ('Demo/Pilot/POC', 'Demo/Pilot/POC'),
-                   ('Operations', 'Operations'))
+                   ('Operations', 'Operations'),
+                   ('Bench', 'Bench'))
 #upload path for sow and estimation
 
 
