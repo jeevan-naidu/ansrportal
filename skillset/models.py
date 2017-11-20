@@ -15,6 +15,7 @@ class Skill_Lists(models.Model):
     level1 = models.TextField(verbose_name="Level1", max_length=2000)
     level2 = models.TextField(verbose_name="Level2", max_length=2000)
     level3 = models.TextField(verbose_name="Level3", max_length=2000)
+    level4 = models.TextField(verbose_name="Level4", max_length=2000)
 
     def __unicode__(self):
         return unicode(self.skill_name)
