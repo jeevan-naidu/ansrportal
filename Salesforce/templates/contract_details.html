@@ -44,7 +44,7 @@
                         <form id="salesforce_create_form" action="" method="post" class="form-horizontal" enctype="multipart/form-data" data-toggle="validator">
                         {% csrf_token %}
                             <div class="form-group">
-                              <label class="col-sm-4 control-label">Opportunity number<span class="mandatory-field"> *</span></label>
+                              <label class="col-sm-4 control-label">Sales Opportunity number<span class="mandatory-field"> *</span></label>
                               <div class="col-sm-7 controls">
                                   {{form.opportunity_number}}
                                   {{form_errors.opportunity_number}}
