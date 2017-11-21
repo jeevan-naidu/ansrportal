@@ -191,7 +191,7 @@ class MilestoneTypeAdmin(admin.ModelAdmin):
     list_display = ('milestone_type', 'is_financial')
 
 class CRReasonFieldAdmin(admin.ModelAdmin):
-    list_display = ('reason_field')
+    list_display = ('reason_field', 'is_active')
 
 class CRReasonAdmin(admin.ModelAdmin):
     list_display = ('name', 'reason_type')
