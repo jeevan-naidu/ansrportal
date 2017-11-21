@@ -577,6 +577,28 @@ class Milestone(UpdateDate):
         verbose_name = "Project Milestone"
 
 
+class CRReasonField(models.Model):
+    reason_field = models.CharField(max_length=50, verbose_name="Reason Field")
+
+    def __unicode__(self):
+        return self.reason_field
+
+    class Meta:
+        verbose_name = "Reason Field"
+        verbose_name_plural = "Reason Fields"
+
+class CRReason(models.Model):
+    reason_type = models.ForeignKey(CRReasonField)
+    name = models.CharField(default=None, blank=False, max_length=100,
+                            null=True, verbose_name="name")
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "CR Reason"
+        verbose_name = "CR Reason"
+
 class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
