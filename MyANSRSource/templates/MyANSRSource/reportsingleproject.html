@@ -87,7 +87,7 @@
                     <td>{{ basicData.po }}</td>
                     <td>{{ basicData.signed }}</td>
                     <td class="text-right">{{ basicData.plannedEffort }}</td>
-                    <td class="text-right">${{ basicData.totalValue | intcomma }}</td>
+                    <td class="text-right">$ {{ basicData.totalValue | intcomma }}</td>
                     <td class="text-right">{{ basicData.salesForceNumber | intcomma }}</td>
                 </tr>
             {% endif %}
