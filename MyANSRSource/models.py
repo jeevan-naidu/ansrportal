@@ -585,8 +585,8 @@ class CRReasonField(models.Model):
         return self.reason_field
 
     class Meta:
-        verbose_name = "Reason Field"
-        verbose_name_plural = "Reason Fields"
+        verbose_name = "CR Reason Field"
+        verbose_name_plural = "CR Reason Fields"
 
 class CRReason(models.Model):
     reason_type = models.ForeignKey(CRReasonField)
