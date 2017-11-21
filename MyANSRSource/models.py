@@ -579,6 +579,7 @@ class Milestone(UpdateDate):
 
 class CRReasonField(models.Model):
     reason_field = models.CharField(max_length=50, verbose_name="Reason Field")
+    is_active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.reason_field
