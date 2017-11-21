@@ -688,11 +688,11 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=0, blank=True,
                               null=True,
                               verbose_name="Reason for change")
-    startdate_dropdown = models.CharField(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
-    enddate_dropdown = models.CharField(choices=ENDDATE, max_length=100, blank=True, null=True, default=None)
-    effort_dropdown = models.CharField(choices=EFFORT, max_length=100, blank=True, null=True, default=None)
-    amount_dropdown = models.CharField(choices=AMOUNT, max_length=100, blank=True, null=True, default=None)
-    close_dropdown = models.CharField(choices=CLOSE, max_length=100, blank=True, null=True, default=None)
+    startdate_dropdown = models.ForeignKey(CRReason, blank=True, null=True, default=None, related_name="Startdate")
+    enddate_dropdown = models.ForeignKey(CRReason, blank=True, null=True, default=None, related_name="Enddate")
+    effort_dropdown = models.ForeignKey(CRReason, blank=True, null=True, default=None, related_name="Effort")
+    amount_dropdown = models.ForeignKey(CRReason, blank=True, null=True, default=None, related_name="Amount")
+    close_dropdown = models.ForeignKey(CRReason, blank=True, null=True, default=None, related_name="salesForceNumber")
     salesForceNumber = models.IntegerField(default=0, blank=True, null=True,
                                            help_text="8 digit number starting with 201",
                                            verbose_name="SF\
