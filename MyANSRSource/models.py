@@ -688,7 +688,7 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=0, blank=True,
                               null=True,
                               verbose_name="Reason for change")
-    startdate_dropdown = models.ForeignKey(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
+    startdate_dropdown = models.CharField(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
     enddate_dropdown = models.CharField(choices=ENDDATE, max_length=100, blank=True, null=True, default=None)
     effort_dropdown = models.CharField(choices=EFFORT, max_length=100, blank=True, null=True, default=None)
     amount_dropdown = models.CharField(choices=AMOUNT, max_length=100, blank=True, null=True, default=None)
