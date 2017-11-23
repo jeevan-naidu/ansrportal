@@ -443,7 +443,7 @@
                                                     </a>
                                                 </li>
                                                 {% endif %}
-                                               {% if request.user|has_group:'myansrsourcebuhead' %}
+                                               {% if request.user|has_group:'myansrsourcebuhead' or request.user|has_group:'PortfolioManager'%}
                                                 <li>
                                                     <a href="{% url 'new_created_project_approval' %}">
                                                         <span class="menu-text">Approve Project</span>
@@ -589,7 +589,7 @@
                                                                     </a>
                                                                 </li>
                                                                 {% endif %}
-                                                                
+
                                                                 {% if request.user|has_group:'Finance' or request.user|has_group:'DeliveryManager' or request.user|has_group:"myansrsourcebuhead" %}
                                                                 <li>
                                                                     <a href="{% url 'InvoiceReport'%}">
