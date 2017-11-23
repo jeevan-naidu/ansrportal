@@ -3551,7 +3551,8 @@ def ViewProject(request):
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
                                                                    | Q(pmDelegate=request.user) |
-                                                                   Q(Discipline__lead=request.user.id))
+                                                                   Q(Discipline__lead=request.user.id)
+                                                                   | Q(portfolio_manager=request.user))
     allproj =[]
     bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
     for val in data2:
