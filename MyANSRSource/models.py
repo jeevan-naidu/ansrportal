@@ -13,42 +13,6 @@ from django.core.files.storage import FileSystemStorage
 from datetime import date
 import Invoice
 
-STARTDATE = (
-    ('Data entry error','Data Entry Error'),
-)
-
-ENDDATE = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Client requested','Client Requested'),
-    ('Ansr renegotiated date','Ansr Renegotiated Date'),
-    ('Client Feeback','Client Feeback'),
-    ('Material Delay','Material Delay'),
-    ('SME Unavailability','SME Unavailability'),
-    ('Quality Issues','Quality Issues'),
-    ('Productivity Issues','Productivity Issues'),
-    ('Estimation Issues','Estimation Issues'),
-)
-
-EFFORT = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Project effort confirmed post sample','Project effort confirmed post sample'),
-)
-
-AMOUNT = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Project value confirmed','Project value confirmed'),
-    ('Project Value Changed based on actuals','Project Value Changed based on actuals'),
-)
-
-CLOSE = (
-    ('Project completed','Project completed'),
-    ('project cancelled','Project Cancelled'),
-)
-
-
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
     ('I', 'Idle'),
@@ -688,11 +652,11 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=0, blank=True,
                               null=True,
                               verbose_name="Reason for change")
-    startdate_dropdown = models.CharField(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
-    enddate_dropdown = models.CharField(choices=ENDDATE, max_length=100, blank=True, null=True, default=None)
-    effort_dropdown = models.CharField(choices=EFFORT, max_length=100, blank=True, null=True, default=None)
-    amount_dropdown = models.CharField(choices=AMOUNT, max_length=100, blank=True, null=True, default=None)
-    close_dropdown = models.CharField(choices=CLOSE, max_length=100, blank=True, null=True, default=None)
+    startdate_dropdown = models.ForeignKey(CRReason, related_name='startdate', blank=True, null=True, default=None)
+    enddate_dropdown = models.ForeignKey(CRReason, related_name='enddate', blank=True, null=True, default=None)
+    effort_dropdown = models.ForeignKey(CRReason, related_name='effort', blank=True, null=True, default=None)
+    amount_dropdown = models.ForeignKey(CRReason, related_name='amount', blank=True, null=True, default=None)
+    close_dropdown = models.ForeignKey(CRReason, related_name='close', blank=True, null=True, default=None)
     salesForceNumber = models.IntegerField(default=0, blank=True, null=True,
                                            help_text="8 digit number starting with 201",
                                            verbose_name="SF\

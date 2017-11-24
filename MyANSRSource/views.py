@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -2752,25 +2752,25 @@ def UpdateProjectInfo(request, newInfo):
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
         if newInfo[1]['startdate_dropdown']:
-            pci.startdate_dropdown = newInfo[1]['startdate_dropdown']
-        else:
-            pci.startdate_dropdown = 1
+            start_id = CRReason.objects.get(name=newInfo[1]['startdate_dropdown'], reason_type_id=1).id
+            pci.startdate_dropdown_id = int(start_id)
+
         if newInfo[1]['enddate_dropdown']:
-            pci.enddate_dropdown = newInfo[1]['enddate_dropdown']
-        else:
-            pci.enddate_dropdown = 1
+            end_id = CRReason.objects.get(name=newInfo[1]['enddate_dropdown'], reason_type_id=2).id
+            pci.enddate_dropdown_id = int(end_id)
+
         if newInfo[1]['effort_dropdown']:
-            pci.effort_dropdown = newInfo[1]['effort_dropdown']
-        else:
-            pci.effort_dropdown = 1
+            effort_id = CRReason.objects.get(name=newInfo[1]['effort_dropdown'], reason_type_id=4).id
+            pci.effort_dropdown_id = int(effort_id)
+
         if newInfo[1]['amount_dropdown']:
-            pci.amount_dropdown = newInfo[1]['amount_dropdown']
-        else:
-            pci.amount_dropdown = 1
+            amount_id = CRReason.objects.get(name=newInfo[1]['amount_dropdown'], reason_type_id=3).id
+            pci.amount_dropdown_id = int(amount_id)
+
         if newInfo[1]['close_dropdown']:
-            pci.close_dropdown = newInfo[1]['close_dropdown']
-        else:
-            pci.close_dropdown = 1
+            close_id = CRReason.objects.get(name=newInfo[1]['close_dropdown'], reason_type_id=5).id
+            pci.close_dropdown_id = int(close_id)
+
         if newInfo[1]['salesForceNumber']:
             pci.salesForceNumber = newInfo[1]['salesForceNumber']
         else:
