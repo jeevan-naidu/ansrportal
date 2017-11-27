@@ -343,7 +343,7 @@ class Project(models.Model):
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
-                                           verbose_name="SF\
+                                           verbose_name="Sales\
                                            Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
@@ -659,7 +659,7 @@ class ProjectChangeInfo(models.Model):
     close_dropdown = models.ForeignKey(CRReason, related_name='close', blank=True, null=True, default=None)
     salesForceNumber = models.IntegerField(default=0, blank=True, null=True,
                                            help_text="8 digit number starting with 201",
-                                           verbose_name="SF\
+                                           verbose_name="Sales\
                                                        Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     customerContact = models.CharField(

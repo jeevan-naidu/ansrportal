@@ -28,7 +28,7 @@
                         <td>{{ field }}</td>
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary">
-                        
+
                         <i class="fa fa-line-chart"></i>
                         Get Report
                     </button></td>
@@ -76,9 +76,9 @@
             <td>{{val.project_id__salesForceNumber}}</td>
             <td>{{val.project_id__projectId}}</td>
             <td>{{val.project_id__name}}</td>
-            <td>{{val.project_id__totalValue}}</td>
-            <td>{{val.amount}}</td>
-            <td>{{val.unit}}</td>
+            <td>$ {{val.project_id__totalValue}}</td>
+            <td>$ {{val.amount}}</td>
+            <td>$ {{val.unit}}</td>
         </tr>
             {% endfor %}
             {% else %}
