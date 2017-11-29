@@ -112,7 +112,7 @@
 				<th>Start Date</th>
 				<th>End Date</th>
 				<th>Total Value</th>
-				<th>SalesForce Number</th>
+				<th>Sales Opportuntiy Number</th>
 		</thead>
 		<tbody>
 		<tr>
@@ -120,7 +120,7 @@
 			<td>{{ flagData.contingencyEffort }}</td>
 			<td>{{ flagData.startDate }}</td>
 			<td>{{ flagData.endDate }}</td>
-			<td>{{ flagData.totalValue }}</td>
+			<td>$ {{ flagData.totalValue }}</td>
 			<td>{{ flagData.salesForceNumber }}</td>
 		</tr>
 		</tbody>
@@ -299,7 +299,7 @@
 				{{ eachChange.updatedOn }}
 			</td>
 			<td>
-				{{ eachChange.revisedTotal }}
+				$ {{ eachChange.revisedTotal }}
 			</td>
 
 			<td>

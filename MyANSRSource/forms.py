@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING
+    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING, CRReason, CRReasonField
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, DataPoint
 from employee.models import Remainder
@@ -727,7 +727,26 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     reason = forms.ChoiceField(choices=PROJECT_CLOSE_FLAG, required=False, widget=forms.HiddenInput())
     remark = forms.CharField(max_length=100, required=False, widget=forms.HiddenInput())
     salesForceNumber = forms.CharField(label="Salesforce Number", required=False)
-
+    startdate_dropdown = forms.ModelChoiceField(
+        queryset=CRReason.objects.filter(reason_type_id=1),
+        label="Select CRReason Name",
+        required=False, )
+    enddate_dropdown = forms.ModelChoiceField(
+        queryset=CRReason.objects.filter(reason_type_id=2),
+        label="Select CRReason Name",
+        required=False, )
+    effort_dropdown = forms.ModelChoiceField(
+        queryset=CRReason.objects.filter(reason_type_id=4),
+        label="Select CRReason Name",
+        required=False, )
+    amount_dropdown = forms.ModelChoiceField(
+        queryset=CRReason.objects.filter(reason_type_id=3),
+        label="Select CRReason Name",
+        required=False, )
+    close_dropdown = forms.ModelChoiceField(
+        queryset=CRReason.objects.filter(reason_type_id=5),
+        label="Select CRReason Name",
+        required=False, )
     class Meta:
         model = ProjectChangeInfo
         fields = (

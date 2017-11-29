@@ -76,7 +76,7 @@
                 {% for basicData in data %}
                     <tr>
                         <td>{{ basicData.project__projectId }} : {{ basicData.project__name }}</td> 
-                        <td class="text-right">${{ basicData.project__totalValue }}</td> 
+                        <td class="text-right">$ {{ basicData.project__totalValue }}</td>
                         <td class="text-right">{{ basicData.project__plannedEffort }}</td> 
                         <td>{{ basicData.project__startDate }}</td> 
                         <td>{{ basicData.project__endDate }}</td>

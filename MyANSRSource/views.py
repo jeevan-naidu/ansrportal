@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField
 
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -2752,25 +2752,25 @@ def UpdateProjectInfo(request, newInfo):
         if newInfo[1]['remark']:
             pci.reason = newInfo[1]['remark']
         if newInfo[1]['startdate_dropdown']:
-            pci.startdate_dropdown = newInfo[1]['startdate_dropdown']
-        else:
-            pci.startdate_dropdown = 1
+            start_id = CRReason.objects.get(name=newInfo[1]['startdate_dropdown'], reason_type_id=1).id
+            pci.startdate_dropdown_id = int(start_id)
+
         if newInfo[1]['enddate_dropdown']:
-            pci.enddate_dropdown = newInfo[1]['enddate_dropdown']
-        else:
-            pci.enddate_dropdown = 1
+            end_id = CRReason.objects.get(name=newInfo[1]['enddate_dropdown'], reason_type_id=2).id
+            pci.enddate_dropdown_id = int(end_id)
+
         if newInfo[1]['effort_dropdown']:
-            pci.effort_dropdown = newInfo[1]['effort_dropdown']
-        else:
-            pci.effort_dropdown = 1
+            effort_id = CRReason.objects.get(name=newInfo[1]['effort_dropdown'], reason_type_id=4).id
+            pci.effort_dropdown_id = int(effort_id)
+
         if newInfo[1]['amount_dropdown']:
-            pci.amount_dropdown = newInfo[1]['amount_dropdown']
-        else:
-            pci.amount_dropdown = 1
+            amount_id = CRReason.objects.get(name=newInfo[1]['amount_dropdown'], reason_type_id=3).id
+            pci.amount_dropdown_id = int(amount_id)
+
         if newInfo[1]['close_dropdown']:
-            pci.close_dropdown = newInfo[1]['close_dropdown']
-        else:
-            pci.close_dropdown = 1
+            close_id = CRReason.objects.get(name=newInfo[1]['close_dropdown'], reason_type_id=5).id
+            pci.close_dropdown_id = int(close_id)
+
         if newInfo[1]['salesForceNumber']:
             pci.salesForceNumber = newInfo[1]['salesForceNumber']
         else:
@@ -3551,7 +3551,8 @@ def ViewProject(request):
 
     data2 = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=request.user)
                                                                    | Q(pmDelegate=request.user) |
-                                                                   Q(Discipline__lead=request.user.id))
+                                                                   Q(Discipline__lead=request.user.id)
+                                                                   | Q(portfolio_manager=request.user))
     allproj =[]
     bu_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
     for val in data2:
@@ -3687,7 +3688,15 @@ class NewCreatedProjectApproval(View):
 
     def get_queryset(self, request):
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
-        queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+        portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager=request.user)
+        prtm_project_list = []
+        for val in portfolio_manager_list:
+            prtm_project_list.append(val.project_id)
+        project_list = Project.objects.filter(id__in=prtm_project_list)
+        if business_unit_list:
+            queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+        if portfolio_manager_list:
+            queryset = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False, rejected=False)
         return queryset
 
     def get(self, request):
@@ -3735,7 +3744,15 @@ class ProjectChangeApproval(View):
 
     def get_queryset(self, request):
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
-        queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager=request.user)
+        prtm_project_list = []
+        for val in portfolio_manager_list:
+            prtm_project_list.append(val.project_id)
+        project_list = Project.objects.filter(id__in=prtm_project_list)
+        if business_unit_list:
+            queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        if portfolio_manager_list:
+            queryset = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0, closed=0).exclude(crId__startswith='BL')
         return queryset
 
     def get(self, request):
@@ -3819,7 +3836,10 @@ def change_request_detail(request):
 def project_change_detail(request):
     cr_id = request.GET.get('id')
     project_change_detail = ProjectChangeInfo.objects.select_related('project').get(crId=cr_id)
-    project_document_detail = ProjectDetail.objects.get(project_id = project_change_detail.project.id)
+    try:
+        project_document_detail = ProjectDetail.objects.get(project_id = project_change_detail.project.id)
+    except ProjectDetail.DoesNotExist:
+        project_document_detail = {}
     return render(request,'project_change_detail.html', {'project_change_detail': project_change_detail, 'project_document_detail':project_document_detail})
 
 month = [(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'),

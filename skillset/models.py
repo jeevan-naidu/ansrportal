@@ -12,9 +12,10 @@ class Skill_Lists(models.Model):
     # User = models.ForeignKey(User, unique=True)
 
     skill_name = models.CharField(verbose_name="Skill Name", max_length=100)
-    level1 = models.TextField(verbose_name="Level1", max_length=2000)
-    level2 = models.TextField(verbose_name="Level2", max_length=2000)
-    level3 = models.TextField(verbose_name="Level3", max_length=2000)
+    level1 = models.TextField(verbose_name="Level1", max_length=2000, null=True, blank= True)
+    level2 = models.TextField(verbose_name="Level2", max_length=2000, null=True, blank= True)
+    level3 = models.TextField(verbose_name="Level3", max_length=2000, null=True, blank= True)
+    level4 = models.TextField(verbose_name="Level4", max_length=2000, null=True, blank= True)
 
     def __unicode__(self):
         return unicode(self.skill_name)

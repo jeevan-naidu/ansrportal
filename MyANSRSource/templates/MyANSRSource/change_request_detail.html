@@ -26,11 +26,11 @@
     </tr>
     <tr>
          <td style="width: 400px;" ><b> Prev Total Value:</b></td>
-         <td>{{ project_change_detail.project.totalValue }}</td>
+         <td>$ {{ project_change_detail.project.totalValue }}</td>
     </tr>
     <tr>
          <td style="width: 400px;" ><b> Revised Total Value:</b></td>
-         <td>{{ project_change_detail.revisedTotal }}</td>
+         <td>$ {{ project_change_detail.revisedTotal }}</td>
     </tr>
     <tr>
         <td style="width: 400px;" ><b>Previous Planned Effort:</b></td>
@@ -80,11 +80,11 @@
 
     <tr>
          <td style="width: 400px;" ><b> Prev Total Value:</b></td>
-         <td>{{ pre_cr_details.revisedTotal }}</td>
+         <td>$ {{ pre_cr_details.revisedTotal }}</td>
     </tr>
     <tr>
          <td style="width: 400px;" ><b> Revised Total Value:</b></td>
-         <td>{{ project_change_detail.revisedTotal }}</td>
+         <td>$ {{ project_change_detail.revisedTotal }}</td>
     </tr>
     <tr>
         <td style="width: 400px;" ><b> Amount change reason:</b></td>
@@ -134,11 +134,11 @@
     {% if project_change_detail.salesForceNumber and project_change_detail.salesForceNumber != 1%}
     {% if project_change_detail.salesForceNumber != pre_cr_details.salesForceNumber %}
         <tr>
-            <td style="width: 400px;" ><b>Prev Sales Force Number:</b></td>
+            <td style="width: 400px;" ><b>Prev Sales Opportunity Number:</b></td>
              <td>{{ pre_cr_details.salesForceNumber }}</td>
         </tr>
         <tr>
-            <td style="width: 400px;" ><b>Revised Sales Force Number:</b></td>
+            <td style="width: 400px;" ><b>Revised Sales Opportunity Number:</b></td>
              <td>{{ project_change_detail.salesForceNumber }}</td>
         </tr>
     {% endif %}

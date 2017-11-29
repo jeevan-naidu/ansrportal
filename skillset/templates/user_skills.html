@@ -67,9 +67,7 @@
            <td id="level_select" style="width: 250px;">
              <select id="level" class="dropdown" style="width:300px";>
                <option value=""></option>
-                 <option value="level1">Level 1</option>
-                 <option value="level2">Level 2</option>
-                 <option value="level3">Level 3</option>
+
              </select>
            </td>
            <td>
@@ -94,10 +92,7 @@
            <td id="level_select" style="width: 250px;">
              <select id="level" class="dropdown" style="width:300px";>
                <option value=""></option>
-                 <option value="level1">Level 1</option>
-                 <option value="level2">Level 2</option>
-                 <option value="level3">Level 3</option>
-             </select>
+
            </td>
            <td>
                <i id="delete0" class="fa fa-trash delete" style="font-size:27px";></i></br>
@@ -107,7 +102,7 @@
 
  </tbody></table>
  <button id="submit" type="button" class="btn btn-success">Submit</button>
- <button id="add_skills" type="button" class="btn btn-info">Add skills</button>
+ <button id="add" type="button" class="btn btn-info">Add skills</button>
 
 </div></div>
 
@@ -115,7 +110,7 @@
 
 var cloneCntr = 0;
 
-$("#add_skills").on('click', function(){
+$("#add").on('click', function(){
   // $("#skills").append("<tr><td style='width: 250px;'></td><td style='width: 250px;'><select id='skill2' class='autocomplete_dropdown' style='width:300px';>" +
   // "<option value='-----------'> ------------</option>" +
   // "{% for element in user_skills%}<option value={{element}}>{{element}}</option>{% endfor %}</select></td>" +
@@ -130,6 +125,27 @@ $("#add_skills").on('click', function(){
   cloneCntr++;
   clone.id = "skills_level"+cloneCntr; // change id or other attributes/contents
   table.appendChild(clone); // add new row to end of table
+  });
+
+  document.addEventListener('click', function(e) {
+      id = e.target.id;
+      if(id.includes('skill')){
+        item = $('#'+ id +' option:selected').val();
+        $.ajax({
+          url:'/skillset/skill_detail_display',
+          data: {"item": item},
+          type: "get",
+          success: function(data){
+            if(id == 'skill'){
+              $('#level').html(data)
+            }
+            if(id.slice(-1) != 'l'){
+              id_number = id.slice(-1)
+              $('#level'+id_number).html(data)
+            }
+          },
+          });
+        }
   });
 
 $("#submit").on('click', function(){

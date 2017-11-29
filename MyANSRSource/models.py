@@ -13,42 +13,6 @@ from django.core.files.storage import FileSystemStorage
 from datetime import date
 import Invoice
 
-STARTDATE = (
-    ('Data entry error','Data Entry Error'),
-)
-
-ENDDATE = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Client requested','Client Requested'),
-    ('Ansr renegotiated date','Ansr Renegotiated Date'),
-    ('Client Feeback','Client Feeback'),
-    ('Material Delay','Material Delay'),
-    ('SME Unavailability','SME Unavailability'),
-    ('Quality Issues','Quality Issues'),
-    ('Productivity Issues','Productivity Issues'),
-    ('Estimation Issues','Estimation Issues'),
-)
-
-EFFORT = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Project effort confirmed post sample','Project effort confirmed post sample'),
-)
-
-AMOUNT = (
-    ('Data entry error','Data Entry Error'),
-    ('Scope change','Scope Change'),
-    ('Project value confirmed','Project value confirmed'),
-    ('Project Value Changed based on actuals','Project Value Changed based on actuals'),
-)
-
-CLOSE = (
-    ('Project completed','Project completed'),
-    ('project cancelled','Project Cancelled'),
-)
-
-
 TASKTYPEFLAG = (
     ('B', 'Revenue'),
     ('I', 'Idle'),
@@ -379,7 +343,7 @@ class Project(models.Model):
     endDate = models.DateField(verbose_name="Project End Date",
                                default=timezone.now)
     salesForceNumber = models.IntegerField(default=0, help_text="8 digit number starting with 201",
-                                           verbose_name="SF\
+                                           verbose_name="Sales\
                                            Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     plannedEffort = models.IntegerField(default=0,
@@ -577,6 +541,29 @@ class Milestone(UpdateDate):
         verbose_name = "Project Milestone"
 
 
+class CRReasonField(models.Model):
+    reason_field = models.CharField(max_length=50, verbose_name="Reason Field")
+    is_active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.reason_field
+
+    class Meta:
+        verbose_name = "CR Reason Field"
+        verbose_name_plural = "CR Reason Fields"
+
+class CRReason(models.Model):
+    reason_type = models.ForeignKey(CRReasonField)
+    name = models.CharField(default=None, blank=False, max_length=100,
+                            null=True, verbose_name="name")
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "CR Reason"
+        verbose_name = "CR Reason"
+
 class ProjectMilestone(models.Model):
     project = models.ForeignKey(Project)
     milestoneDate = models.DateField(verbose_name="Milestone Date",
@@ -665,14 +652,14 @@ class ProjectChangeInfo(models.Model):
     reason = models.CharField(max_length=100, default=0, blank=True,
                               null=True,
                               verbose_name="Reason for change")
-    startdate_dropdown = models.CharField(choices=STARTDATE, max_length=100, blank=True, null=True, default=None)
-    enddate_dropdown = models.CharField(choices=ENDDATE, max_length=100, blank=True, null=True, default=None)
-    effort_dropdown = models.CharField(choices=EFFORT, max_length=100, blank=True, null=True, default=None)
-    amount_dropdown = models.CharField(choices=AMOUNT, max_length=100, blank=True, null=True, default=None)
-    close_dropdown = models.CharField(choices=CLOSE, max_length=100, blank=True, null=True, default=None)
+    startdate_dropdown = models.ForeignKey(CRReason, related_name='startdate', blank=True, null=True, default=None)
+    enddate_dropdown = models.ForeignKey(CRReason, related_name='enddate', blank=True, null=True, default=None)
+    effort_dropdown = models.ForeignKey(CRReason, related_name='effort', blank=True, null=True, default=None)
+    amount_dropdown = models.ForeignKey(CRReason, related_name='amount', blank=True, null=True, default=None)
+    close_dropdown = models.ForeignKey(CRReason, related_name='close', blank=True, null=True, default=None)
     salesForceNumber = models.IntegerField(default=0, blank=True, null=True,
                                            help_text="8 digit number starting with 201",
-                                           verbose_name="SF\
+                                           verbose_name="Sales\
                                                        Opportunity Number",
                                            validators=[MinValueValidator(20100000), MaxValueValidator(99999999)])
     customerContact = models.CharField(

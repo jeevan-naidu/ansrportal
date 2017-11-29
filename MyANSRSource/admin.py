@@ -6,7 +6,7 @@ from MyANSRSource.models import Project, ProjectManager, \
     ProjectMilestone, Book, Chapter, \
     projectType, Task, Activity, Report,\
     TimeSheetEntry, Milestone, MilestoneType,  ProjectDetail, ProjectAsset, qualitysop, ProjectScope, ProjectSopTemplate, \
-    Role, Product
+    Role, Product, CRReason, CRReasonField
 
 
 class ChapterInlineFormSet(forms.ModelForm):
@@ -190,6 +190,12 @@ class TimeSheetEntryAdmin(admin.ModelAdmin):
 class MilestoneTypeAdmin(admin.ModelAdmin):
     list_display = ('milestone_type', 'is_financial')
 
+class CRReasonFieldAdmin(admin.ModelAdmin):
+    list_display = ('reason_field', 'is_active')
+
+class CRReasonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'reason_type')
+
 
 class MilestoneAdmin(admin.ModelAdmin):
     list_display = ('name', 'milestone_type', 'is_final_milestone', 'check_schedule_deviation')
@@ -235,6 +241,8 @@ admin.site.register(ProjectDetail, ProjectDetailAdmin)
 admin.site.register(ProjectScope, ProjectScopeAdmin)
 # admin.site.register(qualitysop, qualitysopAdmin)
 admin.site.register(ProjectAsset, ProjectAssetAdmin)
+admin.site.register(CRReason, CRReasonAdmin)
+admin.site.register(CRReasonField, CRReasonFieldAdmin)
 # admin.site.register(ProjectSopTemplate, ProjectSopTemplateAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Product, ProductAdmin)

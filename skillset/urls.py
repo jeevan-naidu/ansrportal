@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^skill_detail/$', login_required(views.skill_detail)),
     url(r'^skill_add/$', login_required(views.skill_add)),
     url(r'^skill_delete/$', login_required(views.skill_delete)),
+    url(r'^skill_detail_display/$', login_required(views.skill_detail_display)),
     ]

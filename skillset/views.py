@@ -67,6 +67,16 @@ def user_detail(id):
     context['user_skills'] = user_skills
     return  context
 
+def skill_detail_display(request):
+    item = request.GET.get('item')
+    skilldata = Skill_Lists.objects.filter(skill_name=item)[0]
+    skill_level = {}
+    skill_level['Level1'] = skilldata.level1
+    skill_level['Level2'] = skilldata.level2
+    skill_level['Level3'] = skilldata.level3
+    skill_level['Level4'] = skilldata.level4
+    return render(request, 'skill_level.html', {'skill_level':skill_level})
+
 def skill_detail(request):
     id = request.GET.get('id')
     employee = Employee.objects.get(employee_assigned_id=id)

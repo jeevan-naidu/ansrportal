@@ -57,7 +57,7 @@
 
 
 
-<h2 class="text-center hidden">Salesforce</h2>
+<h2 class="text-center hidden">Sales Opportunity Number</h2>
 
 <div class="panel clearfix">
 <div class="panel-body">
@@ -68,7 +68,7 @@
     <thead>
       <tr>
 		<th class="text-center">No.</th>
-        <th class="text-center">SF No.</th>
+        <th class="text-center">SO No.</th>
         <th class="text-center">Opportunity Name</th>
         <th class="text-center">Value</th>
 		<th class="text-center" style="min-width:100px">Start Date</th>
@@ -101,7 +101,7 @@
 					</tr>
 					<tr>
 						<td><b>Value</b></td>
-						<td>{{obj.value|floatformat:2}}</td>
+						<td>$ {{obj.value|floatformat:2}}</td>
 					</tr>
 					<tr>
 						<td><b>Planned Start Date</b></td>
@@ -115,10 +115,10 @@
 			</div>
 		</td>
         <td>{{obj.opportunity_name}}</td>
-        <td class="text-right">{{obj.value|floatformat:2}}</td>
+        <td class="text-right">$ {{obj.value|floatformat:2}}</td>
 		<td>{{obj.planned_start_date}}</td>
       <td>{{obj.planned_end_date}}</td>
-		 
+
       </tr>
 	{% endfor %}
 
@@ -166,5 +166,3 @@
 		</script>
 
 {% endblock %}
-
-
