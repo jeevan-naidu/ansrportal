@@ -72,10 +72,9 @@ def creditview(request):
     if leave == 'Earned Leave':
         year = int(year)
         if year == now.year:
-            year = 2016
+            year = year-1
         else:
             year = request.GET.get('year')
-        print year
         carry_forward = LeaveSummary.objects.filter(user_id =user_id, leave_type_id=1, year=(year)).\
             values('balance', 'year', 'applied')
         for balance in carry_forward:
@@ -163,7 +162,7 @@ def LeaveCancel(request):
     leave = LeaveApplications.objects.get(id=leave_id)
     leave_apply_year = leave.from_date.year
     leaveSummary = LeaveSummary.objects.get(leave_type=leave.leave_type, user=user_id, year=leave_apply_year)
-    onetimeLeave = ['maternity_leave', 'paternity_leave', 'bereavement_leave']
+    onetimeLeave = ['maternity_leave', 'paternity_leave']
 
 
     if leave.leave_type.leave_type in leaveWithoutBalance:
@@ -339,7 +338,6 @@ class ApplyLeaveView(View):
             user_id = request.GET.get('user_id')
             onetime_leave = ['maternity_leave',
                              'paternity_leave',
-                             'bereavement_leave',
                              'comp_off_earned',
                              'comp_off_avail',
                              'pay_off',
@@ -403,7 +401,6 @@ class ApplyLeaveView(View):
                 context_data['form'] = leave_form
             onetime_leave = ['maternity_leave',
                              'paternity_leave',
-                             'bereavement_leave',
                              'comp_off_earned',
                              'comp_off_avail',
                              'pay_off','short_leave']
@@ -427,7 +424,6 @@ class ApplyLeaveView(View):
                 todate = leave_form.cleaned_data['toDate']
                 fromsession = leave_form.cleaned_data['from_session']
                 tosession = leave_form.cleaned_data['to_session']
-
             if not manager:
                 context_data['errors'].append('you are not assigned to any manager. please contact HR ')
                 context_data['form'] = leave_form
@@ -435,7 +431,7 @@ class ApplyLeaveView(View):
                 for error in validate['errors']:
                     context_data['errors'].append(error)
                 context_data['form'] = leave_form
-            elif fromdate.year != todate.year:
+            elif fromdate.year != todate.year and onetime_leave[0] != 'maternity_leave':
                 context_data['errors'].append('From Date and To date need to be in same year')
                 context_data['form'] = leave_form
             else:

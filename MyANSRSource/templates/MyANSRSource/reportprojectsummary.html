@@ -26,10 +26,10 @@
                 </tr>
                 <tr>
                     {% for field in form %}
-                        <td>{{ field }}</td> 
+                        <td>{{ field }}</td>
                     {% endfor %}
                     <td class="col-lg-1"><button type="submit" class="btn btn-primary">
-                        
+
                         <i class="fa fa-line-chart"></i>
                         Get Report
                     </button></td>
@@ -39,7 +39,7 @@
                         {% else %}
                             <button type="submit" class="btn btn-success" disabled>
                         {% endif %}
-                               
+
                                 <i class="fa fa-file-excel-o"></i>
                                 Export to Excel
                             </button>
@@ -65,45 +65,55 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th colspan="8"></th> 
-                <th class="text-center" colspan="6">Effort</th> 
+                <th colspan="8"></th>
+                <th class="text-center" colspan="6">Effort</th>
             </tr>
             <tr>
-                <th>Project Name</th> 
-                <th>Project Type</th> 
-                <th>BU</th> 
-                <th>Customer Name</th> 
-                <th>Lead</th> 
-                <th>Start Date</th> 
-                <th>End Date</th> 
-                <th class="text-right">Value</th> 
-                <th class="text-right">Planned</th> 
-                <th class="text-right">Billed</th> 
-                <th class="text-right">Billed PTM</th> 
+                <th>Project Name</th>
+                <th>Project Type</th>
+                <th>BU</th>
+                <th>Customer Name</th>
+                <th>Delivery Manager</th>
+                <th>Portfolio Manager</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th class="text-right">Value</th>
+                <th class="text-right">Planned</th>
+                <th class="text-right">Billed</th>
+                <th class="text-right">Billed PTM</th>
                 <th class="text-right">Project Status</th>
                 <th class="text-right">SO-No</th>
-                <th class="text-right">PTD</th> 
+                <th class="text-right">PTD</th>
             </tr>
             </thead>
             {% if data.external %}
                 {% for eachData in data.external %}
                     <tr>
-                        <td>{{ eachData.pName }}</td> 
-                        <td>{{ eachData.type }}</td> 
-                        <td>{{ eachData.bu }}</td> 
-                        <td>{{ eachData.customer }}</td> 
+                        <td>{{ eachData.pName }}</td>
+                        <td>{{ eachData.type }}</td>
+                        <td>{{ eachData.bu }}</td>
+                        <td>{{ eachData.customer }}</td>
                         {% if eachData.pm %}
-                            <td> 
+                            <td>
                                 {% for t in eachData.pm %}
-                                    {{ t }}, 
+                                    {{ t }},
                                 {% endfor %}
                             </td>
                         {% else %}
                                 <td>-<td>
-                        {% endif %} 
+                        {% endif %}
+                        {% if eachData.prtm %}
+                            <td>
+                                {% for t in eachData.prtm %}
+                                    {{ t }}
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %}
                         <td>{{ eachData.startDate }}</td>
-                        <td>{{ eachData.endDate }}</td> 
-                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td>{{ eachData.endDate }}</td>
+                        <td class="text-right">${{ eachData.value | intcomma }}</td>
                         <td class="text-right">{{ eachData.pEffort }}</td>
                         <td class="text-right">{{ eachData.billed }}</td>
                         <td class="text-right">{{ eachData.bPTM }}</td>
@@ -144,45 +154,55 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th colspan="8"></th> 
-                <th class="text-center" colspan="6">Effort</th> 
+                <th colspan="8"></th>
+                <th class="text-center" colspan="6">Effort</th>
             </tr>
             <tr>
-                <th>Project Name</th> 
-                <th>Project Type</th> 
-                <th>BU</th> 
-                <th>Customer Name</th> 
-                <th>Lead</th> 
-                <th>Start Date</th> 
-                <th>End Date</th> 
-                <th class="text-right">Value</th> 
-                <th class="text-right">Planned</th> 
-                <th class="text-right">Billed</th> 
-                <th class="text-right">Billed PTM</th> 
+                <th>Project Name</th>
+                <th>Project Type</th>
+                <th>BU</th>
+                <th>Customer Name</th>
+                <th>Delivery Manager</th>
+                <th>Portfolio Manager</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th class="text-right">Value</th>
+                <th class="text-right">Planned</th>
+                <th class="text-right">Billed</th>
+                <th class="text-right">Billed PTM</th>
                 <th class="text-right">Project Status</th>
                 <th class="text-right">SO-No</th>
-                <th class="text-right">PTD</th> 
+                <th class="text-right">PTD</th>
             </tr>
             </thead>
             {% if data.internal %}
                 {% for eachData in data.internal %}
                     <tr>
-                        <td>{{ eachData.pName }}</td> 
-                        <td>{{ eachData.type }}</td> 
-                        <td>{{ eachData.bu }}</td> 
-                        <td>{{ eachData.customer }}</td> 
+                        <td>{{ eachData.pName }}</td>
+                        <td>{{ eachData.type }}</td>
+                        <td>{{ eachData.bu }}</td>
+                        <td>{{ eachData.customer }}</td>
                         {% if eachData.pm %}
-                            <td> 
+                            <td>
                                 {% for t in eachData.pm %}
-                                    {{ t }}, 
+                                    {{ t }},
                                 {% endfor %}
                             </td>
                         {% else %}
                                 <td>-<td>
-                        {% endif %} 
+                        {% endif %}
+                        {% if eachData.prtm %}
+                            <td>
+                                {% for t in eachData.prtm %}
+                                    {{ t }}
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                                <td>-<td>
+                        {% endif %}
                         <td>{{ eachData.startDate }}</td>
-                        <td>{{ eachData.endDate }}</td> 
-                        <td class="text-right">${{ eachData.value | intcomma }}</td> 
+                        <td>{{ eachData.endDate }}</td>
+                        <td class="text-right">${{ eachData.value | intcomma }}</td>
                         <td class="text-right">{{ eachData.pEffort }}</td>
                         <td class="text-right">{{ eachData.billed }}</td>
                         <td class="text-right">{{ eachData.bPTM }}</td>
