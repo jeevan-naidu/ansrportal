@@ -107,13 +107,13 @@ def LeaveForm(leavetype, user, data=None):
 
     onetime_leave = ['maternity_leave',
                      'paternity_leave',
-                     'bereavement_leave',
                      'comp_off_avail',
                      'pay_off',
                      'short_leave',
                      'comp_off_earned']
     regular_leave = ['earned_leave',
                      'sick_leave',
+                     'bereavement_leave',
                      'casual_leave',
                      'loss_of_pay',
                      'work_from_home',
