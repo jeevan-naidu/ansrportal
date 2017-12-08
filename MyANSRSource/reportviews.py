@@ -833,10 +833,10 @@ def ProjectPerfomanceReport(request):
                 sheetName = ['External', 'Internal']
                 heading = [
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
-                     'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
+                     'Delivery Manager', 'Portfolio Manager', 'Start Date', 'End Date', 'Value', 'Planned',
                      'Billed', 'Billed PTM', 'Project Status', 'SF-ID', 'PTD'],
                     ['Project Name', 'Project Type', 'BU', 'Customer Name',
-                     'Lead', 'Start Date', 'End Date', 'Value', 'Planned',
+                     'Delivery Manager', 'Portfolio Manager', 'Start Date', 'End Date', 'Value', 'Planned',
                      'Billed', 'Billed PTM', 'Project Status', 'SF-ID', 'PTD']]
                 report = [externalData, internalData]
                 return generateExcel(request, report, sheetName,
@@ -870,8 +870,10 @@ def getProjectData(request, startDate, endDate, projects, start, end):
             pm = ProjectDetail.objects.filter(project=eachProject)
             if len(pm):
                 data['pm'] = [eachPM.deliveryManager.username for eachPM in pm]
+                data['prtm'] = [eachPM.portfolio_manager.username for eachPM in pm]
             else:
                 data['pm'] = []
+                data['prtm'] = []
             data['startDate'] = eachProject.startDate
             data['endDate'] = eachProject.endDate
             data['value'] = eachProject.totalValue
@@ -1554,15 +1556,17 @@ def generateProjectPerfContent(request, header, report, worksheet,
         else:
             eachRec['status'] = 'Open'
         worksheet.write(row, 4, lead, content)
-        worksheet.write(row, 5, eachRec['startDate'], dateFormat)
-        worksheet.write(row, 6, eachRec['endDate'], dateFormat)
-        worksheet.write(row, 7, pValue, numberFormat)
-        worksheet.write(row, 8, eachRec['pEffort'], numberFormat)
-        worksheet.write(row, 9, eachRec['billed'], numberFormat)
-        worksheet.write(row, 10, eachRec['bPTM'], numberFormat)
-        worksheet.write(row, 11, eachRec['status'], numberFormat)
-        worksheet.write(row, 12, eachRec['sfid'], numberFormat)
-        worksheet.write(row, 13, eachRec['ptd'], numberFormat)
+        if eachRec['prtm']:
+            worksheet.write(row, 5, ''.join(eachRec['prtm']), content)
+        worksheet.write(row, 6, eachRec['startDate'], dateFormat)
+        worksheet.write(row, 7, eachRec['endDate'], dateFormat)
+        worksheet.write(row, 8, pValue, numberFormat)
+        worksheet.write(row, 9, eachRec['pEffort'], numberFormat)
+        worksheet.write(row, 10, eachRec['billed'], numberFormat)
+        worksheet.write(row, 11, eachRec['bPTM'], numberFormat)
+        worksheet.write(row, 12, eachRec['status'], numberFormat)
+        worksheet.write(row, 13, eachRec['sfid'], numberFormat)
+        worksheet.write(row, 14, eachRec['ptd'], numberFormat)
         row += 1
     cellRange = u'A{1}:{0}{1}'.format(alp[13], row+1)
     worksheet.merge_range(cellRange, '', header)
