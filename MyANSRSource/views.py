@@ -3687,6 +3687,7 @@ class NewCreatedProjectApproval(View):
     template_name = "newCreatedProjectApproval.html"
 
     def get_queryset(self, request):
+        context = {}
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
         portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager=request.user)
         prtm_project_list = []
@@ -3694,14 +3695,14 @@ class NewCreatedProjectApproval(View):
             prtm_project_list.append(val.project_id)
         project_list = Project.objects.filter(id__in=prtm_project_list)
         if business_unit_list:
-            queryset = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+            context['bu_queryset'] = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
         if portfolio_manager_list:
-            queryset = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False, rejected=False)
-        return queryset
+            context['prtm_queryset'] = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False, rejected=False)
+        return context
 
     def get(self, request):
         queryset = self.get_queryset(request)
-        return render(request, self.template_name, {'queryset':queryset})
+        return render(request, self.template_name, queryset)
 
     def post(self, request):
         try:
@@ -3743,6 +3744,7 @@ class ProjectChangeApproval(View):
     template_name = "projectchangeapproval.html"
 
     def get_queryset(self, request):
+        context = {}
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
         portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager=request.user)
         prtm_project_list = []
@@ -3750,14 +3752,14 @@ class ProjectChangeApproval(View):
             prtm_project_list.append(val.project_id)
         project_list = Project.objects.filter(id__in=prtm_project_list)
         if business_unit_list:
-            queryset = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+            context['bu_queryset'] = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
         if portfolio_manager_list:
-            queryset = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0, closed=0).exclude(crId__startswith='BL')
-        return queryset
+            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0, closed=0).exclude(crId__startswith='BL')
+        return context
 
     def get(self, request):
         queryset = self.get_queryset(request)
-        return render(request, self.template_name, {'queryset': queryset})
+        return render(request, self.template_name, queryset)
 
     def post(self, request):
         try:

@@ -27,7 +27,38 @@
                             </tr>
                           </thead>
                           <tbody>
-                        {% for process in queryset %}
+                        {% for process in bu_queryset %}
+                             <tr><td class="ws-mw">
+                                 <a id="{{process.crId}}"
+                                 href="#modal-container-detail" data-toggle="modal" title="Action"
+                                class="pull-left detail">
+                                                    {{process.crId}}
+                                                  </a></td>
+                                <!--<td class="ws-mw">{{process.projectId}}</td>-->
+                                 <td class="ws-mw">{{process.project}}</td>
+                                 <td class="ws-mw">{{process.reason}}</td>
+                                 <td class="ws-mw">$ {{process.revisedTotal}}</td>
+                                 <td class="ws-mw">
+                                     <div class="checkbox checkbox-success radio-mod btn-xs">
+                                <input id="approve_{{process.crId}}" type="checkbox" name="approve" class="approve" value="approved">
+                                <label for="approve_{{process.crId}}" class="ansr-orange-mod">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                <input id="reject_{{process.crId}}" type="checkbox" name="reject"
+                                       class="reject" value="rejected_1">
+                                <label for="reject_{{process.crId}}">
+                                Reject
+                                </label>
+                            </div>
+                                 </td>
+                        </tr>
+
+
+
+                        {% endfor %}
+                        {% for process in prtm_queryset %}
                              <tr><td class="ws-mw">
                                  <a id="{{process.crId}}"
                                  href="#modal-container-detail" data-toggle="modal" title="Action"
