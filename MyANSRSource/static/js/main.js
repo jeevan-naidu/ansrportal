@@ -598,10 +598,10 @@ app.firstTimeTotal = function() {
                 isAmountTotal: true,
                 setEditableAll: true,
                 defaultValues: { // When add row, set the elements default values
-                    setZeroList: [11,12,13,14],
+                    setZeroList: [8,9,10,11,12,13,14],
                     setEmptyList: [5]
                 },
-                setEnableList: [0, 1, 4, 5, 6, 7, 8, 10]
+                setEnableList: [0, 1, 4, 5]
             });
         }
 

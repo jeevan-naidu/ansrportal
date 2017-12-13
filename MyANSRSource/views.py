@@ -2571,7 +2571,6 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
-
         if projectObj:
             for eachData in milestoneData:
                 if eachData['id']:
@@ -2717,6 +2716,7 @@ class TrackMilestoneWizard(SessionWizardView):
 
 
 def saveData(self, pm, eachData, projectObj):
+
     if pm.closed:
         pass
     else:
