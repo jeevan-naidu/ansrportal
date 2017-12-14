@@ -3042,11 +3042,9 @@ class ManageTeamWizard(SessionWizardView):
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId,
-                    active=True).values('id', 'member','project_id__name',
-                                        'startDate', 'endDate',
-                                        'role',
-                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
-                                        )
+                    active=True).values('id', 'member','project_id__name', 'project_id__startDate',
+                                        'startDate', 'endDate', 'project_id__endDate',
+                                        'role', 'plannedEffort')
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
                 except Exception as e:
@@ -3133,9 +3131,7 @@ class ManageTeamWizard(SessionWizardView):
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['product']== ptm.product) and \
                                 (eachData['endDate'] == ptm.endDate) and \
-                                (eachData['plannedcount'] == ptm.plannedcount) and \
                                 (eachData['role'] == ptm.role):
                             pass
                         else:
