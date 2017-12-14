@@ -3044,9 +3044,12 @@ class ManageTeamWizard(SessionWizardView):
                     project__id=projectId,
                     active=True).values('id', 'member','project_id__name', 'project_id__startDate',
                                         'startDate', 'endDate', 'project_id__endDate',
-                                        'role', 'plannedEffort')
+                                        'role', 'plannedEffort', 'project_id__plannedEffort')
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
+                    self.request.session['PstartDate'] = currentProject[0]['project_id__startDate']
+                    self.request.session['PendDate'] = currentProject[0]['project_id__endDate']
+                    self.request.session['PplannedEffort'] = currentProject[0]['project_id__plannedEffort']
                 except Exception as e:
                     logger.error(e)
 
