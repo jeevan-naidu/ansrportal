@@ -3126,7 +3126,7 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.active = False
                         ptm.save()
                     else:
-                        eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
+                        # eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
