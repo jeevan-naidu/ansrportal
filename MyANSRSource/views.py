@@ -24,7 +24,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee, Remainder, EmployeeArchive
+from employee.models import Attendance,Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
@@ -1809,6 +1809,34 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
 
+def time_in_office(user_id, start_date, end_date):
+    week_data = []
+    employee_detail = Employee.objects.filter(user_id=user_id)[0]
+    delta = end_date - start_date
+    for i in range(delta.days + 1):
+        attendance = Attendance.objects.filter(incoming_employee_id=employee_detail.employee_assigned_id, \
+                                               attdate = start_date + timedelta(days=i))
+        for val in attendance:
+            if val:
+                time = val.swipe_out - val.swipe_in
+                sec = time.seconds
+                hours = sec // 3600
+                minutes = (sec // 60) - (hours * 60)
+                time_in = float('{0}.{1}'.format(hours, minutes))
+                week_data.append(round(time_in,2))
+    time_in_office = sum(week_data)
+    return time_in_office
+
+def total_hours_logged(user_id,start_date,end_date):
+    week_data = []
+    delta = end_date - start_date
+    TSdata = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id)
+    for val in TSdata:
+        data = val.mondayH + val.tuesdayH + val.wednesdayH + val.thursdayH + val.fridayH + val.saturdayH + val.sundayH
+        week_data.append(data)
+    total_logged = sum(week_data)
+    return total_logged
+
 def pm_view(request):
     if request.method == 'GET':
         context = {}
@@ -1859,10 +1887,16 @@ def pm_view(request):
                             non_billable_total += float(others['totalH'])
                     ts_data_list[members]['non_billable_total'] = non_billable_total
                     billable_hours_obj = billable_hours(ts_obj)
+                    total_time = time_in_office(user_id, start_date, end_date)
+                    total_logged = total_hours_logged(user_id,start_date,end_date)
                     internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                    external_utilization = round(external_value/total_logged*100,2)
+                    ts_data_list[members]['total_hours_logged'] = total_logged
+                    ts_data_list[members]['total_time'] = total_time
                     ts_data_list[members]['internal_value'] = internal_value
                     ts_data_list[members]['external_value'] = external_value
                     ts_data_list[members]['b_total'] = b_total
+                    ts_data_list[members]['external_utilization'] = external_utilization
                     ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
                 context['ts_data_list'] = ts_data_list
                 context['ts_final_list'] = ts_final_list
