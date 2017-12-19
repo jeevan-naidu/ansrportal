@@ -186,7 +186,8 @@ Team member view
                     <table class="table table-hover project-table">
                       <thead>
                         <tr>
-                          <th style="width: 300px;">Billable Project</th>
+                          <th></th>
+                          <th>Manager</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
@@ -194,13 +195,16 @@ Team member view
                           <th>Fri</th>
                           <th>Sat</th>
                           <th>Sun</th>
+                          <th>Total</th>
+                          <th>Submission Status</th>
+                          <th>Approval Status</th>
                         </tr>
                       </thead>
                       <tbody>
 
-
-                        <tr class="project-time-row">
-                          <td class="project_name">The name of the project</td>
+                      <tr class="project-time-row time_in_office">
+                          <td>Time in Office</td>
+                          <td>-</td>
                           <td class="mondayH">0</td>
                           <td class="tuesdayH">0</td>
                           <td class="wednesdayH">0</td>
@@ -208,66 +212,119 @@ Team member view
                           <td class="fridayH">0</td>
                           <td class="saturdayH">0</td>
                           <td class="sundayH">0</td>
-                        </tr>
+                          <td class="TotalH">0</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+
+                      <tr class="project-time-row leaves">
+                          <td>Leaves</td>
+                          <td class="practice_manager">-</td>
+                          <td class="mondayH">0</td>
+                          <td class="tuesdayH">0</td>
+                          <td class="wednesdayH">0</td>
+                          <td class="thursdayH">0</td>
+                          <td class="fridayH">0</td>
+                          <td class="saturdayH">0</td>
+                          <td class="sundayH">0</td>
+                          <td class="TotalH">0</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+
+                      <tr class="project-time-row total_hours_logged">
+                          <td>Total Hours Logged</td>
+                          <td>-</td>
+                          <td class="mondayH">0</td>
+                          <td class="tuesdayH">0</td>
+                          <td class="wednesdayH">0</td>
+                          <td class="thursdayH">0</td>
+                          <td class="fridayH">0</td>
+                          <td class="saturdayH">0</td>
+                          <td class="sundayH">0</td>
+                          <td class="TotalH">0</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+
+                      <tr>
+                          <td>Internal Hours</td>
+                      </tr>
+
+                      <tr>
+                          <td>External Hours</td>
+                      </tr>
+
+
+                        <!--<tr class="project-time-row">-->
+                          <!--<td class="project_name">The name of the project</td>-->
+                          <!--<td class="mondayH">0</td>-->
+                          <!--<td class="tuesdayH">0</td>-->
+                          <!--<td class="wednesdayH">0</td>-->
+                          <!--<td class="thursdayH">0</td>-->
+                          <!--<td class="fridayH">0</td>-->
+                          <!--<td class="saturdayH">0</td>-->
+                          <!--<td class="sundayH">0</td>-->
+                        <!--</tr>-->
 
 
                       </tbody>
                     </table>
 
 
-                    <table class="table table-hover activity-table">
-                      <thead>
-                        <tr>
-                          <th style="width: 300px;">Non-Billable Activities</th>
-                          <th><span class="invisible">Mon</span></th>
-                          <th><span class="invisible">Tue</span></th>
-                          <th><span class="invisible">Wed</span></th>
-                          <th><span class="invisible">Thu</span></th>
-                          <th><span class="invisible">Fri</span></th>
-                          <th><span class="invisible">Sat</span></th>
-                          <th><span class="invisible">Sun</span></th>
-                        </tr>
-                      </thead>
+                    <!--<table class="table table-hover activity-table">-->
+                      <!--<thead>-->
+                        <!--<tr>-->
+                          <!--<th style="width: 300px;">Non-Billable Activities</th>-->
+                          <!--<th><span class="invisible">Mon</span></th>-->
+                          <!--<th><span class="invisible">Tue</span></th>-->
+                          <!--<th><span class="invisible">Wed</span></th>-->
+                          <!--<th><span class="invisible">Thu</span></th>-->
+                          <!--<th><span class="invisible">Fri</span></th>-->
+                          <!--<th><span class="invisible">Sat</span></th>-->
+                          <!--<th><span class="invisible">Sun</span></th>-->
+                        <!--</tr>-->
+                      <!--</thead>-->
 
 
-                      <tbody>
-                        <tr class="activity-time-row">
-                          <td class="activity">The name of the activity</td>
-                          <td class="activity_monday">0</td>
-                          <td class="activity_tuesday">0</td>
-                          <td class="activity_wednesday">0</td>
-                          <td class="activity_thursday">0</td>
-                          <td class="activity_friday">0</td>
-                          <td class="activity_saturday">0</td>
-                          <td class="activity_sunday">0</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                      <!--<tbody>-->
+                        <!--<tr class="activity-time-row">-->
+                          <!--<td class="activity">The name of the activity</td>-->
+                          <!--<td class="activity_monday">0</td>-->
+                          <!--<td class="activity_tuesday">0</td>-->
+                          <!--<td class="activity_wednesday">0</td>-->
+                          <!--<td class="activity_thursday">0</td>-->
+                          <!--<td class="activity_friday">0</td>-->
+                          <!--<td class="activity_saturday">0</td>-->
+                          <!--<td class="activity_sunday">0</td>-->
+                        <!--</tr>-->
+                      <!--</tbody>-->
+                    <!--</table>-->
 
-                    <table class="table table-hover total-table">
-                      <thead>
-                        <tr>
-                          <th class="invisible" style="width: 300px;">Non-Billable</th>
-                          <th><span class="invisible">Mon</span></th>
-                          <th><span class="invisible">Tue</span></th>
-                          <th><span class="invisible">Wed</span></th>
-                          <th><span class="invisible">Thu</span></th>
-                          <th><span class="invisible">Fri</span></th>
-                          <th><span class="invisible">Sat</span></th>
-                          <th><span class="invisible">Sun</span></th>
-                        </tr>
-                      </thead>
-                        <tr class="total-row">
-                          <td>Total</td>
-                          <td class="monday_total">0</td>
-                          <td class="tuesday_total">0</td>
-                          <td class="wednesday_total">0</td>
-                          <td class="thursday_total">0</td>
-                          <td class="friday_total">0</td>
-                          <td class="saturday_total">0</td>
-                          <td class="sunday_total">0</td>
-                        </tr>
-                    </table>
+                    <!--<table class="table table-hover total-table">-->
+                      <!--<thead>-->
+                        <!--<tr>-->
+                          <!--<th class="invisible" style="width: 300px;">Non-Billable</th>-->
+                          <!--<th><span class="invisible">Mon</span></th>-->
+                          <!--<th><span class="invisible">Tue</span></th>-->
+                          <!--<th><span class="invisible">Wed</span></th>-->
+                          <!--<th><span class="invisible">Thu</span></th>-->
+                          <!--<th><span class="invisible">Fri</span></th>-->
+                          <!--<th><span class="invisible">Sat</span></th>-->
+                          <!--<th><span class="invisible">Sun</span></th>-->
+                        <!--</tr>-->
+                      <!--</thead>-->
+                        <!--<tr class="total-row">-->
+                          <!--<td>Total</td>-->
+                          <!--<td class="monday_total">0</td>-->
+                          <!--<td class="tuesday_total">0</td>-->
+                          <!--<td class="wednesday_total">0</td>-->
+                          <!--<td class="thursday_total">0</td>-->
+                          <!--<td class="friday_total">0</td>-->
+                          <!--<td class="saturday_total">0</td>-->
+                          <!--<td class="sunday_total">0</td>-->
+                        <!--</tr>-->
+                    <!--</table>-->
 
                         </div>
                         <div class="modal-footer background-login">
