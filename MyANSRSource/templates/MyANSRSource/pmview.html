@@ -247,12 +247,14 @@ Team member view
                           <td></td>
                       </tr>
 
-                      <tr>
+                      <tr class="project-time-row internal hours">
                           <td>Internal Hours</td>
+                          <td>Delivery Manager</td>
                       </tr>
 
-                      <tr>
+                      <tr class="project-time-row external hours">
                           <td>External Hours</td>
+                          <td>Delivery Manager</td>
                       </tr>
 
 
@@ -349,9 +351,12 @@ Team member view
 
 <script type="text/javascript">
 
-var project_time_row = $('.project-time-row').html();
-var activity_time_row = $('.activity-time-row').html();
-var total_row = $('.total-row').html();
+var time_in_office_row = $('.time_in_office').html();
+var leaves_row = $('.leaves').html();
+var total_hours_logged_row = $('.total_hours_logged').html();
+// var project_time_row = $('.project-time-row').html();
+// var activity_time_row = $('.activity-time-row').html();
+// var total_row = $('.total-row').html();
 
 
 
@@ -361,111 +366,118 @@ var time_iterate = function(e){
 
   var time_obj = e;
 
-  $('.project-time-row').html('');
-  $('.activity-time-row').html('');
+  $('.time_in_office').html('');
+  $('.leaves').html('');
+  $('.total_hours_logged').html('');
+  // $('.project-time-row').html('');
+  // $('.activity-time-row').html('');
 
   // Append employee name to modal header
 if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
+    
+
+  }
+}
   // tsdata iteration
 
-  for (var time_key in time_obj['tsData']){
-    if (time_obj['tsData'].hasOwnProperty(time_key)){
+//   for (var time_key in time_obj['tsData']){
+//     if (time_obj['tsData'].hasOwnProperty(time_key)){
+//
+//
+//
+//       // Get length
+//
+//       var obj_length = time_obj.tsData.length;
+//
+//
+//       // Populate project row
+//
+//         $('.project-table tbody').append('<tr class="project-time-row"></tr>')
+//         $('.project-time-row:last-child').append(project_time_row);
+//         $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
+//         $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task__name']);
+//         $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
+//         $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
+//         $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+//         $('.project-time-row:last-child td.thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
+//         $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
+//         $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
+//         $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
+//         if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
+//             $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
+//         else
+//             {  $('.project-time-row:last-child td.remarks').hide();}
+//     }
+//   } // ./ ts data iteration
+//
+// } else {
+//     $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
+// }
+//
+//   // atdata iteration
+//
+//   for (var time_key in time_obj['atData']){
+//     if (time_obj['atData'].hasOwnProperty(time_key)){
+//
+//       // Get length
+//
+//       var obj_length = time_obj.atData.length;
+//
+//       // Populate project row
+//
+//         $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
+//         $('.activity-time-row:last-child').append(activity_time_row);
+//         $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
+//         $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
+//         $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
+//         $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
+//         $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
+//         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
+//         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
+//         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
+//          if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
+//             $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
+//          else
+//            $('.activity-time-row:last-child td.activity_remarks').hide();
+//
+//     }else{
+//         $('.activity-time-row').append(activity_time_row);
+//         $('.activity-time-row:last-child td.activity').html('nil');
+//         $('.activity-time-row:last-child td.activity_monday').html('nil');
+//         $('.activity-time-row:last-child td.activity_tuesday').html('nil');
+//         $('.activity-time-row:last-child td.activity_wednesday').html('nil');
+//         $('.activity-time-row:last-child td.activity_thursday').html('nil');
+//         $('.activity-time-row:last-child td.activity_friday').html('nil');
+//         $('.activity-time-row:last-child td.activity_saturday').html('nil');
+//         $('.activity-time-row:last-child td.activity_sunday').html('nil');
+//         $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
+//         $('.activity-time-row:last-child td.activity_remarks a').html('nil');
+//     }
+//
+//   } // ./ at data iteration
+//
+//
+//
+//   // total_list iteration
+//
+//   for (var time_key in time_obj['total_list']){
+//     if (time_obj['total_list'].hasOwnProperty(time_key)){
+//       $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
+//       $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
+//       $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
+//       $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
+//       $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
+//       $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
+//       $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
+//     }
+//   }
 
 
 
-      // Get length
 
-      var obj_length = time_obj.tsData.length;
-
-
-      // Populate project row
-
-        $('.project-table tbody').append('<tr class="project-time-row"></tr>')
-        $('.project-time-row:last-child').append(project_time_row);
-        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
-        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task__name']);
-        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
-        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
-        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
-        $('.project-time-row:last-child td.thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
-        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
-        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
-        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-        if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
-            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
-        else
-            {  $('.project-time-row:last-child td.remarks').hide();}
-    }
-  } // ./ ts data iteration
-
-} else {
-    $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
-}
-
-  // atdata iteration
-
-  for (var time_key in time_obj['atData']){
-    if (time_obj['atData'].hasOwnProperty(time_key)){
-
-      // Get length
-
-      var obj_length = time_obj.atData.length;
-
-      // Populate project row
-
-        $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
-        $('.activity-time-row:last-child').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
-        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
-        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
-        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
-        $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
-        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
-        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
-        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
-         if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
-            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
-         else
-           $('.activity-time-row:last-child td.activity_remarks').hide();
-
-    }else{
-        $('.activity-time-row').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html('nil');
-        $('.activity-time-row:last-child td.activity_monday').html('nil');
-        $('.activity-time-row:last-child td.activity_tuesday').html('nil');
-        $('.activity-time-row:last-child td.activity_wednesday').html('nil');
-        $('.activity-time-row:last-child td.activity_thursday').html('nil');
-        $('.activity-time-row:last-child td.activity_friday').html('nil');
-        $('.activity-time-row:last-child td.activity_saturday').html('nil');
-        $('.activity-time-row:last-child td.activity_sunday').html('nil');
-        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
-        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
-    }
-
-  } // ./ at data iteration
-
-
-
-  // total_list iteration
-
-  for (var time_key in time_obj['total_list']){
-    if (time_obj['total_list'].hasOwnProperty(time_key)){
-      $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
-      $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
-      $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
-      $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
-      $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
-      $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
-      $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
-    }
-  }
-
-
-
-
-} // ./time_iterate function
+// } // ./time_iterate function
 
 var employeeTime = function(){
    $('.details').on('click', function()  {
@@ -571,13 +583,3 @@ $(document).ready(function() {
 
 {% endif %}
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
