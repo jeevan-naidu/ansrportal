@@ -203,31 +203,31 @@ Team member view
                       <tbody>
 
                       <tr class="project-time-row time_in_office">
-                          <td>Time in Office</td>
-                          <td>-</td>
-                          <td class="mondayH">0</td>
-                          <td class="tuesdayH">0</td>
-                          <td class="wednesdayH">0</td>
-                          <td class="thursdayH">0</td>
-                          <td class="fridayH">0</td>
-                          <td class="saturdayH">0</td>
-                          <td class="sundayH">0</td>
-                          <td class="TotalH">0</td>
+                          <td class="time_in_office_name">Time in Office</td>
+                          <td class="time_in_office_empty">-</td>
+                          <td class="time_in_office_mondayH">0</td>
+                          <td class="time_in_office_tuesdayH">0</td>
+                          <td class="time_in_office_wednesdayH">0</td>
+                          <td class="time_in_office_thursdayH">0</td>
+                          <td class="time_in_office_fridayH">0</td>
+                          <td class="time_in_office_saturdayH">0</td>
+                          <td class="time_in_office_sundayH">0</td>
+                          <td class="time_in_office_TotalH">0</td>
                           <td></td>
                           <td></td>
                       </tr>
 
                       <tr class="project-time-row leaves">
-                          <td>Leaves</td>
-                          <td class="practice_manager">-</td>
-                          <td class="mondayH">0</td>
-                          <td class="tuesdayH">0</td>
-                          <td class="wednesdayH">0</td>
-                          <td class="thursdayH">0</td>
-                          <td class="fridayH">0</td>
-                          <td class="saturdayH">0</td>
-                          <td class="sundayH">0</td>
-                          <td class="TotalH">0</td>
+                          <td class="leaves_name">Leaves</td>
+                          <td class="leaves_practice_manager">-</td>
+                          <td class="leaves_mondayH">0</td>
+                          <td class="leaves_tuesdayH">0</td>
+                          <td class="leaves_wednesdayH">0</td>
+                          <td class="leaves_thursdayH">0</td>
+                          <td class="leaves_fridayH">0</td>
+                          <td class="leaves_saturdayH">0</td>
+                          <td class="leaves_sundayH">0</td>
+                          <td class="leaves_TotalH">0</td>
                           <td></td>
                           <td></td>
                       </tr>
@@ -247,15 +247,15 @@ Team member view
                           <td></td>
                       </tr>
 
-                      <tr class="project-time-row internal hours">
-                          <td>Internal Hours</td>
-                          <td>Delivery Manager</td>
-                      </tr>
+                      <!--<tr class="project-time-row internal_hours">-->
+                          <!--<td>Internal Hours</td>-->
+                          <!--<td>Delivery Manager</td>-->
+                      <!--</tr>-->
 
-                      <tr class="project-time-row external hours">
-                          <td>External Hours</td>
-                          <td>Delivery Manager</td>
-                      </tr>
+                      <!--<tr class="project-time-row external_hours">-->
+                          <!--<td>External Hours</td>-->
+                          <!--<td>Delivery Manager</td>-->
+                      <!--</tr>-->
 
 
                         <!--<tr class="project-time-row">-->
@@ -354,6 +354,8 @@ Team member view
 var time_in_office_row = $('.time_in_office').html();
 var leaves_row = $('.leaves').html();
 var total_hours_logged_row = $('.total_hours_logged').html();
+var internal_hours_row = $('.internal_hours').html();
+var external_hours_row = $('.external_hours').html();
 // var project_time_row = $('.project-time-row').html();
 // var activity_time_row = $('.activity-time-row').html();
 // var total_row = $('.total-row').html();
@@ -376,7 +378,35 @@ var time_iterate = function(e){
 if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
-    
+  //Time_in_office
+
+  $('.project-table tbody').append('<tr class="project-time-row time_in_office"></tr>')
+  $('.time_in_office:last-child').append(time_in_office_row);
+  $('.time_in_office:last-child td.time_in_office_name').html('<b>Time in Office</b>');
+  $('.time_in_office:last-child td.time_in_office_empty').html('-');
+  $('.time_in_office:last-child td.time_in_office_mondayH').html(time_obj.week_data[0]);
+  $('.time_in_office:last-child td.time_in_office_tuesdayH').html(time_obj.week_data[1]);
+  $('.time_in_office:last-child td.time_in_office_wednesdayH').html(time_obj.week_data[2]);
+  $('.time_in_office:last-child td.time_in_office_thursdayH').html(time_obj.week_data[3]);
+  $('.time_in_office:last-child td.time_in_office_fridayH').html(time_obj.week_data[4]);
+  $('.time_in_office:last-child td.time_in_office_saturdayH').html(time_obj.week_data[5]);
+  $('.time_in_office:last-child td.time_in_office_sundayH').html(time_obj.week_data[6]);
+  $('.time_in_office:last-child td.time_in_office_TotalH').html(time_obj.time_in);
+
+  //Leaves
+
+  $('.project-table tbody').append('<tr class="project-time-row leaves"></tr>')
+  $('.leaves:last-child').append(leaves_row);
+  $('.leaves:last-child td.leaves_name').html('<b>Leaves</b>');
+  $('.leaves:last-child td.leaves_practice_manager').html(time_obj.practice_manager);
+  $('.leaves:last-child td.leaves_mondayH').html(time_obj.week_data[0]);
+  $('.leaves:last-child td.leaves_tuesdayH').html(time_obj.week_data[1]);
+  $('.leaves:last-child td.leaves_wednesdayH').html(time_obj.week_data[2]);
+  $('.leaves:last-child td.leaves_thursdayH').html(time_obj.week_data[3]);
+  $('.leaves:last-child td.leaves_fridayH').html(time_obj.week_data[4]);
+  $('.leaves:last-child td.leaves_saturdayH').html(time_obj.week_data[5]);
+  $('.leaves:last-child td.leaves_sundayH').html(time_obj.week_data[6]);
+  $('.leaves:last-child td.leaves_TotalH').html(time_obj.time_in);
 
   }
 }
