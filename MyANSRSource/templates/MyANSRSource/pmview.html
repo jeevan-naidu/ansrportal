@@ -247,31 +247,21 @@ Team member view
                           <td></td>
                       </tr>
 
-                       <tr class="project-time-row internal_hours_header">
-                            <td class="internal_hours_header_name"><b>Internal Hours</b></td>
-                           <td class="internal_hours_header_delivery_manager"><b>Delivery Manager</b></td>
-                       </tr>
 
-
-
-                      <tr class="project-time-row internal_hours">
-                          <td class="internal_hours_name">Time in Office</td>
-                          <td class="internal_hours_delivery_manager">-</td>
-                          <td class="internal_hours_mondayH">0</td>
-                          <td class="internal_hours_tuesdayH">0</td>
-                          <td class="internal_hours_wednesdayH">0</td>
-                          <td class="internal_hours_thursdayH">0</td>
-                          <td class="internal_hours_fridayH">0</td>
-                          <td class="internal_hours_saturdayH">0</td>
-                          <td class="internal_hours_sundayH">0</td>
-                          <td class="internal_hours_TotalH">0</td>
-                          <td></td>
-                          <td></td>
-                      </tr>
 
                       <tr class="project-time-row external_hours_header">
                             <td class="external_hours_header_name"><b>External Hours</b></td>
                           <td class="external_hours_header_delivery_manager"><b>Delivery Manager</b></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
                        </tr>
 
                       <tr class="project-time-row external_hours">
@@ -288,6 +278,38 @@ Team member view
                           <td></td>
                           <td></td>
                       </tr>
+
+                      <tr class="project-time-row internal_hours_header">
+                           <td class="internal_hours_header_name"><b>Internal Hours</b></td>
+                          <td class="internal_hours_header_delivery_manager"><b>Delivery Manager</b></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+
+
+
+                     <tr class="project-time-row internal_hours">
+                         <td class="internal_hours_name">Time in Office</td>
+                         <td class="internal_hours_delivery_manager">-</td>
+                         <td class="internal_hours_mondayH">0</td>
+                         <td class="internal_hours_tuesdayH">0</td>
+                         <td class="internal_hours_wednesdayH">0</td>
+                         <td class="internal_hours_thursdayH">0</td>
+                         <td class="internal_hours_fridayH">0</td>
+                         <td class="internal_hours_saturdayH">0</td>
+                         <td class="internal_hours_sundayH">0</td>
+                         <td class="internal_hours_TotalH">0</td>
+                         <td></td>
+                         <td></td>
+                     </tr>
 
 
                         <!--<tr class="project-time-row">-->
@@ -388,8 +410,8 @@ var leaves_row = $('.leaves').html();
 var total_hours_logged_row = $('.total_hours_logged').html();
 var internal_hours_row = $('.internal_hours').html();
 var external_hours_row = $('.external_hours').html();
-var external_hours_header_row = $('.external_hours_header').html('');
-var internal_hours_header_row = $('.internal_hours_header').html('');
+var external_hours_header_row = $('.external_hours_header').html();
+var internal_hours_header_row = $('.internal_hours_header').html();
 // var project_time_row = $('.project-time-row').html();
 // var activity_time_row = $('.activity-time-row').html();
 // var total_row = $('.total-row').html();
@@ -461,10 +483,16 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.total_hours_logged:last-child td.THL_sundayH').html(time_obj.daily_logged_hours[6]);
   $('.total_hours_logged:last-child td.THL_TotalH').html(time_obj.total_logged);
 
+   // External hours Header
+
+  $('.project-table tbody').append('<tr class="project-time-row external_hours_header"></tr>')
+  $('.external_hours_header:last-child').append(external_hours_header_row);
+  $('.external_hours_header:last-child td.external_hours_header_name').html('<b>External Hours</b>');
+  $('.external_hours_header:last-child td.external_hours_header_delivery_manager').html('<b>Delivery Manager</b>');
+
+
 
   // tsdata iteration
-
-
 
    for (var time_key in time_obj['tsData']){
      if (time_obj['tsData'].hasOwnProperty(time_key)){
@@ -478,8 +506,8 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
 
          $('.project-table tbody').append('<tr class="project-time-row external_hours"></tr>')
          $('.external_hours:last-child').append(external_hours_row);
-         $('.external_hours:last-child td.external_hours_name').html(time_obj.tsData[time_key]['project_name']);
-         <!--$('.external_hours:last-child td.external_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);-->
+         $('.external_hours:last-child td.external_hours_name').html(time_obj.tsData[time_key]['project_id']);
+         $('.external_hours:last-child td.external_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);
          $('.external_hours:last-child td.external_hours_mondayH').html(time_obj.tsData[time_key]['mondayH']);
          $('.external_hours:last-child td.external_hours_tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
          $('.external_hours:last-child td.external_hours_wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
@@ -488,17 +516,36 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          $('.external_hours:last-child td.external_hours_saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
          $('.external_hours:last-child td.external_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
         }
-        else{
 
-        $('.project-table tbody').append('<tr class="project-time-row internal_hours_header"></tr>')
-         $('.internal_hours_header:last-child').append(internal_hours_header_row);
-         $('.internal_hours_header:last-child td.internal_hours_header_name').html('<b>Internal Hours</b>');
-         $('.internal_hours_header:last-child td.internal_hours_header_delivery_manager').html('<b>Delivery Manager</b>');
+
+      }
+
+      }
+   }
+
+   // Internal hours header
+
+ $('.project-table tbody').append('<tr class="project-time-row internal_hours_header"></tr>')
+ $('.internal_hours_header:last-child').append(internal_hours_header_row);
+ $('.internal_hours_header:last-child td.internal_hours_header_name').html('<b>Internal Hours</b>');
+ $('.internal_hours_header:last-child td.internal_hours_header_delivery_manager').html('<b>Delivery Manager</b>');
+
+
+   for (var time_key in time_obj['tsData']){
+     if (time_obj['tsData'].hasOwnProperty(time_key)){
+
+       // Get length
+
+       var obj_length = time_obj.tsData.length;
+
+       // Populate project row
+        if(time_obj.tsData[time_key]['is_internal'] == 1){
+
 
          $('.project-table tbody').append('<tr class="project-time-row internal_hours"></tr>')
          $('.internal_hours:last-child').append(internal_hours_row);
-         $('.internal_hours:last-child td.internal_hours_name').html(time_obj.tsData[time_key]['project_name']);
-        <!--$('.internal_hours:last-child td.internal_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);-->
+         $('.internal_hours:last-child td.internal_hours_name').html(time_obj.tsData[time_key]['project_id']);
+        $('.internal_hours:last-child td.internal_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);
          $('.internal_hours:last-child td.internal_hours_mondayH').html(time_obj.tsData[time_key]['mondayH']);
          $('.internal_hours:last-child td.internal_hours_tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
          $('.internal_hours:last-child td.internal_hours_wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
@@ -506,9 +553,8 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          $('.internal_hours:last-child td.internal_hours_fridayH').html(time_obj.tsData[time_key]['fridayH']);
          $('.internal_hours:last-child td.internal_hours_saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
          $('.internal_hours:last-child td.internal_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
-        }
-      }
-   }
+       }
+     }
    // ./ ts data iteration
       }
 }

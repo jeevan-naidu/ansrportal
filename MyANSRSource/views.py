@@ -1701,7 +1701,7 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
             teamMember=user,
             activity__isnull=True
         )
-    ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
+    ).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
              'tuesdayH', 'wednesdayH',
              'thursdayH', 'fridayH', 'hold',
              'saturdayH', 'sundayH', 'approved',
@@ -1730,8 +1730,12 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
                     v = str(v)
             if user_id:
 
+                # if k == 'id':
+                #     tsData['delivery_manager'] = ProjectDetail.objects.filter(project_id=v).values('deliveryManager')
                 if k == 'teamMember__employee__employee_assigned_id':
                     tsData['employee_id'] = v
+                if k == 'project__projectId':
+                    tsData['project_id'] = v
                 if k == 'project':
                     tsData['project'] = v
                 if k == 'project__name':
