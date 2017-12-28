@@ -9,7 +9,6 @@ Team member view
 {% endblock %}
 
 
-
 {% block switch_dates %}
 {% if not exception_message %}
 <div class="dropdown week-selector pull-left">
@@ -56,6 +55,18 @@ Team member view
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
+<div>
+<table class="table table-striped myansr-table">
+<thead>
+<tr><th>Legend</th><th>Submission Status</th><th>Approval Status</th></tr>
+</thead>
+<tbody>
+<tr><td class="fa fa-circle" style="color:green;"></td><td>Submitted</td><td>Approved</td></tr>
+<tr><td class="fa fa-circle" style="color:orange;"></td><td>Saved</td><td>Pending Approval</td></tr>
+<tr><td class="fa fa-circle" style="color:red;"></td><td>Not Submitted</td><td>Rejected</td></tr>
+</tbody>
+</table>
+</div>
 
 
 <div class="panel pb-15">
@@ -63,7 +74,6 @@ Team member view
     <div class="panel-body">
                 <!--<button id="reminder_mail" class="btn btn-xs vd_btn vd_bg-blue pull-right" style="margin-bottom: 5px;">Send Reminder</button>-->
                 <form method="post" action=""> {% csrf_token %}
-
 
 {% if ts_data_list_approved_false or ts_data_list_approved_true %}
 <table class="table table-striped myansr-table" id="timesheet-approve-table">
@@ -311,77 +321,8 @@ Team member view
                          <td class="internal_hours_approval_status">0</td>
                      </tr>
 
-
-                        <!--<tr class="project-time-row">-->
-                          <!--<td class="project_name">The name of the project</td>-->
-                          <!--<td class="mondayH">0</td>-->
-                          <!--<td class="tuesdayH">0</td>-->
-                          <!--<td class="wednesdayH">0</td>-->
-                          <!--<td class="thursdayH">0</td>-->
-                          <!--<td class="fridayH">0</td>-->
-                          <!--<td class="saturdayH">0</td>-->
-                          <!--<td class="sundayH">0</td>-->
-                        <!--</tr>-->
-
-
                       </tbody>
                     </table>
-
-
-                    <!--<table class="table table-hover activity-table">-->
-                      <!--<thead>-->
-                        <!--<tr>-->
-                          <!--<th style="width: 300px;">Non-Billable Activities</th>-->
-                          <!--<th><span class="invisible">Mon</span></th>-->
-                          <!--<th><span class="invisible">Tue</span></th>-->
-                          <!--<th><span class="invisible">Wed</span></th>-->
-                          <!--<th><span class="invisible">Thu</span></th>-->
-                          <!--<th><span class="invisible">Fri</span></th>-->
-                          <!--<th><span class="invisible">Sat</span></th>-->
-                          <!--<th><span class="invisible">Sun</span></th>-->
-                        <!--</tr>-->
-                      <!--</thead>-->
-
-
-                      <!--<tbody>-->
-                        <!--<tr class="activity-time-row">-->
-                          <!--<td class="activity">The name of the activity</td>-->
-                          <!--<td class="activity_monday">0</td>-->
-                          <!--<td class="activity_tuesday">0</td>-->
-                          <!--<td class="activity_wednesday">0</td>-->
-                          <!--<td class="activity_thursday">0</td>-->
-                          <!--<td class="activity_friday">0</td>-->
-                          <!--<td class="activity_saturday">0</td>-->
-                          <!--<td class="activity_sunday">0</td>-->
-                        <!--</tr>-->
-                      <!--</tbody>-->
-                    <!--</table>-->
-
-                    <!--<table class="table table-hover total-table">-->
-                      <!--<thead>-->
-                        <!--<tr>-->
-                          <!--<th class="invisible" style="width: 300px;">Non-Billable</th>-->
-                          <!--<th><span class="invisible">Mon</span></th>-->
-                          <!--<th><span class="invisible">Tue</span></th>-->
-                          <!--<th><span class="invisible">Wed</span></th>-->
-                          <!--<th><span class="invisible">Thu</span></th>-->
-                          <!--<th><span class="invisible">Fri</span></th>-->
-                          <!--<th><span class="invisible">Sat</span></th>-->
-                          <!--<th><span class="invisible">Sun</span></th>-->
-                        <!--</tr>-->
-                      <!--</thead>-->
-                        <!--<tr class="total-row">-->
-                          <!--<td>Total</td>-->
-                          <!--<td class="monday_total">0</td>-->
-                          <!--<td class="tuesday_total">0</td>-->
-                          <!--<td class="wednesday_total">0</td>-->
-                          <!--<td class="thursday_total">0</td>-->
-                          <!--<td class="friday_total">0</td>-->
-                          <!--<td class="saturday_total">0</td>-->
-                          <!--<td class="sunday_total">0</td>-->
-                        <!--</tr>-->
-                    <!--</table>-->
-
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
@@ -412,11 +353,6 @@ var internal_hours_row = $('.internal_hours').html();
 var external_hours_row = $('.external_hours').html();
 var external_hours_header_row = $('.external_hours_header').html();
 var internal_hours_header_row = $('.internal_hours_header').html();
-// var project_time_row = $('.project-time-row').html();
-// var activity_time_row = $('.activity-time-row').html();
-// var total_row = $('.total-row').html();
-
-
 
 // Functions
 
@@ -431,8 +367,6 @@ var time_iterate = function(e){
   $('.external_hours').html('');
   $('.internal_hours_header').html('');
   $('.external_hours_header').html('');
-  // $('.project-time-row').html('');
-  // $('.activity-time-row').html('');
 
   // Append employee name to modal header
 if(!jQuery.isEmptyObject(time_obj.tsData) ){
@@ -517,9 +451,27 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          $('.external_hours:last-child td.external_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
          $('.external_hours:last-child td.external_hours_TotalH').html(total_hours);
          if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
-            <!--$('.external_hours:last-child td.external_hours_submission_status').html(time_obj.tsData[time_key]['approved']);-->
+            $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
          }
-         <!--$('.external_hours:last-child td.external_hours_approval_status').html(time_obj.tsData[time_key]['hold']);-->
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
+            $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+         }
+        }
+        else{
+          $('.external_hours_header').html('');
+  
         }
       }
 
@@ -558,76 +510,32 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          $('.internal_hours:last-child td.internal_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
          total_hours = parseFloat(time_obj.tsData[time_key]['mondayH']) + parseFloat(time_obj.tsData[time_key]['tuesdayH']) + parseFloat(time_obj.tsData[time_key]['wednesdayH']) + parseFloat(time_obj.tsData[time_key]['thursdayH']) + parseFloat(time_obj.tsData[time_key]['fridayH']) + parseFloat(time_obj.tsData[time_key]['saturdayH']) + parseFloat(time_obj.tsData[time_key]['sundayH'])
          $('.internal_hours:last-child td.internal_hours_TotalH').html(total_hours);
-         <!--$('.internal_hours:last-child td.internal_hours_submission_status').html(time_obj.tsData[time_key]['approved']);-->
-         <!--$('.internal_hours:last-child td.internal_hours_approval_status').html(time_obj.tsData[time_key]['approved']);-->
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('saved');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('submitted');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('not submitted');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('saved1');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('submitted1');
+         }
+         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('not submitted1');
+         }
+       }
+       else{
+            $('.internal_hours_header').html('');        
        }
      }
    // ./ ts data iteration
       }
 }
-
-
-// } else {
-//     $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
-// }
-//
-//   // atdata iteration
-//
-//   for (var time_key in time_obj['atData']){
-//     if (time_obj['atData'].hasOwnProperty(time_key)){
-//
-//       // Get length
-//
-//       var obj_length = time_obj.atData.length;
-//
-//       // Populate project row
-//
-//         $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
-//         $('.activity-time-row:last-child').append(activity_time_row);
-//         $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
-//         $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
-//         $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
-//         $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
-//         $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
-//         $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
-//         $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
-//         $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
-//          if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
-//             $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
-//          else
-//            $('.activity-time-row:last-child td.activity_remarks').hide();
-//
-//     }else{
-//         $('.activity-time-row').append(activity_time_row);
-//         $('.activity-time-row:last-child td.activity').html('nil');
-//         $('.activity-time-row:last-child td.activity_monday').html('nil');
-//         $('.activity-time-row:last-child td.activity_tuesday').html('nil');
-//         $('.activity-time-row:last-child td.activity_wednesday').html('nil');
-//         $('.activity-time-row:last-child td.activity_thursday').html('nil');
-//         $('.activity-time-row:last-child td.activity_friday').html('nil');
-//         $('.activity-time-row:last-child td.activity_saturday').html('nil');
-//         $('.activity-time-row:last-child td.activity_sunday').html('nil');
-//         $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
-//         $('.activity-time-row:last-child td.activity_remarks a').html('nil');
-//     }
-//
-//   } // ./ at data iteration
-//
-//
-//
-//   // total_list iteration
-//
-//   for (var time_key in time_obj['total_list']){
-//     if (time_obj['total_list'].hasOwnProperty(time_key)){
-//       $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
-//       $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
-//       $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
-//       $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
-//       $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
-//       $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
-//       $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
-//     }
-//   }
 
 
 
