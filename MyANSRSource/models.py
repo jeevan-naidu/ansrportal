@@ -572,10 +572,10 @@ class ProjectMilestone(models.Model):
                                    null=True, verbose_name="Description")
     name = models.ForeignKey(Milestone, default=None, verbose_name="Milestone Name", null=True)
     unit = models.IntegerField(verbose_name="Unit",blank=True, null=True, default= 0.0)
-    rate_per_unit = models.DecimalField(verbose_name="Rate per Unit", blank=True, null=True, default= 0.0, max_digits=20, decimal_places=2)
+    rate_per_unit = models.DecimalField(verbose_name="Rate per Unit", blank=True, null=True, default= 0.0, max_digits=50, decimal_places=20)
     amount = models.DecimalField(default=0.0,
-                                 max_digits=12,
-                                 decimal_places=2,
+                                 max_digits=50,
+                                 decimal_places=20,
                                  verbose_name="Amount")
     closed = models.BooleanField(
         default=False,
