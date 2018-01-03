@@ -1673,6 +1673,9 @@ def getMemberExactTsHours(request, start, end, report):
                 if eachData['project__projectId'] == eachStart['project__projectId'] and \
                         eachData['project__book__name'] == eachStart['project__book__name'] and \
                         eachData['chapter__name'] == eachStart['chapter__name'] and \
+                        eachData['teamMember__username'] == eachStart['teamMember__username'] and \
+                        eachData['hold'] == eachStart['hold'] and \
+                        eachData['task__name'] == eachStart['task__name'] and \
                         eachData['activity__name'] == eachStart['activity__name']:
                     total = eachData['total'] - eachStart['extra']
                     if total >= 0:
