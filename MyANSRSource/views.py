@@ -3754,7 +3754,7 @@ class ProjectChangeApproval(View):
         if business_unit_list:
             context['bu_queryset'] = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
         if portfolio_manager_list:
-            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0, closed=0).exclude(crId__startswith='BL')
+            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0).exclude(crId__startswith='BL')
         return context
 
     def get(self, request):
