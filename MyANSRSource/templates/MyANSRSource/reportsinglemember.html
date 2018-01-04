@@ -66,9 +66,9 @@
                 </tr>
                 <tr>
                     <td><b>Member: {{ member }}</b></td>
-                    <td class="text-right"><b>From: {{ startDate }}</b></td>
-                    <td class="text-right"><b>To: {{ endDate }}</b></td>
-                    <td class="text-right"><b>Planned Hour(s): {{ pH }}</b></td>
+                    <td class="text-left"><b>From: {{ startDate }}</b></td>
+                    <td class="text-left"><b>To: {{ endDate }}</b></td>
+                    <td class="text-right hidden"><b>Planned Hour(s): {{ pH }}</b></td>
                    
                 </tr>
             </table>
@@ -172,10 +172,7 @@
                         {% endif %}
                     </tr>
                 {% endfor %}
-                    <tr>
-                        <td colspan="3" class="text-center"><h3><small><b>Total-Non Project Hour(s)</b></small></h3><td>
-                        <td class="text-right"><h3><small><b>{{ grandTotal.nTotal }}</b></small></h3><td>
-                    <tr>
+
             {% endif %}
         </table>
     </div>
