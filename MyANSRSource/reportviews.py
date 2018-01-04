@@ -1359,9 +1359,8 @@ def generateMemberContent(request, header, report, worksheet,
         else:
             worksheet.write(row, 10, 'Not Submitted', content)
         row += 1
-    msg0 = u"Total Non-Project Hours(s) : {0}".format(grdTotal['nTotal'])
     msg1 = u"Total Project Hours(s) : {0}".format(grdTotal['pTotal'])
-    msg = msg0 + '  ' + msg1
+    msg = msg1
     generateReportFooter(request, worksheet, alp[12], row+1,
                          header, msg)
 
