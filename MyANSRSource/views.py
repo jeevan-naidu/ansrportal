@@ -24,7 +24,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee, Remainder, EmployeeArchive
+from employee.models import Attendance,Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
@@ -1652,6 +1652,26 @@ def pm_details(request):
         content_type="application/json"
     )
 
+def time_in_office(user, weekstartDate, ansrEndDate):
+    context = {}
+    week_data = []
+    employee_detail = Employee.objects.filter(user_id=user)[0]
+    delta = ansrEndDate - weekstartDate
+    for i in range(delta.days + 1):
+        attendance = Attendance.objects.filter(incoming_employee_id=employee_detail.employee_assigned_id, \
+                                               attdate=weekstartDate + timedelta(days=i))
+        for val in attendance:
+            if val:
+                time = val.swipe_out - val.swipe_in
+                sec = time.seconds
+                hours = sec // 3600
+                minutes = (sec // 60) - (hours * 60)
+                time_in = float('{0}.{1}'.format(hours, minutes))
+                week_data.append(round(time_in, 2))
+    context['time_in'] = round(sum(week_data),2)
+    context['week_data'] = week_data
+    return context
+
 @login_required
 def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
@@ -1660,19 +1680,6 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
         user = request.user
     else:
         user = user_id
-    cwActivityData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=user,
-            project__isnull=True
-        )
-    ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
-             'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
-             'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
-             'teamMember__employee__employee_assigned_id', 'remarks'
-             )
-
 
     cwTimesheetData = TimeSheetEntry.objects.filter(
         Q(
@@ -1681,15 +1688,15 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
             teamMember=user,
             activity__isnull=True
         )
-    ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
-             'tuesdayH', 'wednesdayH',
+    ).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
+             'tuesdayH', 'wednesdayH', 'project__id',
              'thursdayH', 'fridayH', 'hold',
              'saturdayH', 'sundayH', 'approved',
              'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
              'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks'
+             'remarks', 'approved', 'hold'
              )
-    # print cwActivityData
+
     # Changing data TS data
     tsData = {}
     tsDataList = []
@@ -1709,9 +1716,21 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
                 if isinstance(v, Decimal):
                     v = str(v)
             if user_id:
-
+                if k == 'project__id':
+                    delivery_manager_id = ProjectDetail.objects.filter(project_id=v).values('deliveryManager_id')
+                    if not delivery_manager_id:
+                        tsData['delivery_manager'] = ''
+                    else:
+                        delivery_manager = User.objects.filter(id=delivery_manager_id[0]['deliveryManager_id']).values('first_name', 'last_name')
+                        tsData['delivery_manager'] = delivery_manager[0]['first_name']  + ' ' + delivery_manager[0]['last_name']
+                if k == 'approved':
+                    tsData['approved'] = v
+                if k == 'hold':
+                    tsData['hold'] = v
                 if k == 'teamMember__employee__employee_assigned_id':
                     tsData['employee_id'] = v
+                if k == 'project__projectId':
+                    tsData['project_id'] = v
                 if k == 'project':
                     tsData['project'] = v
                 if k == 'project__name':
@@ -1758,56 +1777,55 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
 
         tsDataList.append(tsData.copy())
         tsData.clear()
-    atData = {}
-    atDataList = []
 
-    for eachData in cwActivityData:
-        for k, v in eachData.iteritems():
-            if user_id:
-                v = str(v)
-            if k == 'activity':
-                atData['activity'] = v
-            if k == 'hold':
-                atData['hold'] = v
-            if 'monday' in k:
-                atData['activity_monday'] = v
-                monday_total += float(v)
-            if 'tuesday' in k:
-                atData['activity_tuesday'] = v
-                tuesday_total += float(v)
-            if 'wednesday' in k:
-                atData['activity_wednesday'] = v
-                wednesday_total += float(v)
-            if 'thursday' in k:
-                atData['activity_thursday'] = v
-                thursday_total += float(v)
-            if 'friday' in k:
-                atData['activity_friday'] = v
-                friday_total += float(v)
-            if 'saturday' in k:
-                atData['activity_saturday'] = v
-                saturday_total += float(v)
-            if 'sunday' in k:
-                atData['activity_sunday'] = v
-                sunday_total += float(v)
-            if 'total' in k:
-                atData['activity_total'] = v
-            if k == 'managerFeedback':
-                atData['managerFeedback'] = v
-            if k == 'activity__name':
-                atData['activity__name'] = v
-            if k == 'id':
-                atData['atId'] = v
-            atData[k] = v
-        atDataList.append(atData.copy())
-        atData.clear()
+    total_time = time_in_office(user, weekstartDate, ansrEndDate)
+    time_in = total_time['time_in']
+    week_data = total_time['week_data']
+    user_name = User.objects.filter(id=request.user.id).values('first_name', 'last_name')[0]
+    practice_manager = user_name['first_name'] + ' ' + user_name['last_name']
+    leaves = leaveappliedinweek(user, weekstartDate, ansrEndDate)
+    leave_total = sum(leaves)
+    logged_hours = total_hours_logged(user, weekstartDate, ansrEndDate)
+    daily_logged_hours = logged_hours['daily_logged_hours']
+    total_logged = str(logged_hours['total_logged'])
     if user_id:
         total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
                             'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
                             'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
                             'sunday_total': str(round(sunday_total, 2))})
-    return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
+    return {'tsData': tsDataList, 'total_list': total_list, 'week_data':week_data, 'time_in':time_in, \
+         'practice_manager':practice_manager, 'leave_total':leave_total, 'leaves':leaves, 'total_logged':total_logged, \
+         'daily_logged_hours':daily_logged_hours}
 
+def total_hours_logged(user_id,start_date,end_date):
+    context = {}
+    daily_logged_hours = []
+    week_data = []
+    monday_data = []
+    tuesday_data = []
+    wednesday_data = []
+    thursday_data = []
+    friday_data = []
+    saturday_data = []
+    sunday_data = []
+    delta = end_date - start_date
+    TSdata = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id)
+    for val in TSdata:
+        data = val.mondayH + val.tuesdayH + val.wednesdayH + val.thursdayH + val.fridayH + val.saturdayH + val.sundayH
+        monday_data.append(float(val.mondayH))
+        tuesday_data.append(float(val.tuesdayH))
+        wednesday_data.append(float(val.wednesdayH))
+        thursday_data.append(float(val.thursdayH))
+        friday_data.append(float(val.fridayH))
+        saturday_data.append(float(val.saturdayH))
+        sunday_data.append(float(val.sundayH))
+        week_data.append(data)
+    daily_logged_hours.extend([float(sum(monday_data)),float(sum(tuesday_data)), float(sum(wednesday_data)), float(sum(thursday_data)),\
+     float(sum(friday_data)),float(sum(saturday_data)), float(sum(sunday_data))])
+    context['daily_logged_hours'] = daily_logged_hours
+    context['total_logged_week_data'] = week_data
+    context['total_logged'] = sum(week_data)
+    return context
 
 def pm_view(request):
     if request.method == 'GET':
@@ -1859,10 +1877,17 @@ def pm_view(request):
                             non_billable_total += float(others['totalH'])
                     ts_data_list[members]['non_billable_total'] = non_billable_total
                     billable_hours_obj = billable_hours(ts_obj)
+                    total_time = time_in_office(user_id, start_date, end_date)
+                    total_logged = total_hours_logged(user_id,start_date,end_date)
                     internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                    external_utilization = round(external_value/total_logged['total_logged']*100,2)
+                    ts_data_list[members]['total_hours_logged'] = total_logged['total_logged']
+                    ts_data_list[members]['total_time'] = total_time['time_in']
+                    ts_data_list[members]['week_data'] = total_time['week_data']
                     ts_data_list[members]['internal_value'] = internal_value
                     ts_data_list[members]['external_value'] = external_value
                     ts_data_list[members]['b_total'] = b_total
+                    ts_data_list[members]['external_utilization'] = external_utilization
                     ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
                 context['ts_data_list'] = ts_data_list
                 context['ts_final_list'] = ts_final_list
@@ -2571,6 +2596,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
+
         if projectObj:
             for eachData in milestoneData:
                 if eachData['id']:
@@ -2716,7 +2742,6 @@ class TrackMilestoneWizard(SessionWizardView):
 
 
 def saveData(self, pm, eachData, projectObj):
-
     if pm.closed:
         pass
     else:
@@ -3042,13 +3067,14 @@ class ManageTeamWizard(SessionWizardView):
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId,
-                    active=True).values('id', 'member','project_id__name',
-                                        'startDate', 'endDate',
-                                        'role',
-                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
-                                        )
+                    active=True).values('id', 'member','project_id__name', 'project_id__startDate',
+                                        'startDate', 'endDate', 'project_id__endDate',
+                                        'role', 'plannedEffort', 'project_id__plannedEffort')
                 try:
                     self.request.session['Pname'] = currentProject[0]['project_id__name']
+                    self.request.session['PstartDate'] = currentProject[0]['project_id__startDate']
+                    self.request.session['PendDate'] = currentProject[0]['project_id__endDate']
+                    self.request.session['PplannedEffort'] = currentProject[0]['project_id__plannedEffort']
                 except Exception as e:
                     logger.error(e)
 
@@ -3128,14 +3154,12 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.active = False
                         ptm.save()
                     else:
-                        eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
+                        # eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['product']== ptm.product) and \
                                 (eachData['endDate'] == ptm.endDate) and \
-                                (eachData['plannedcount'] == ptm.plannedcount) and \
                                 (eachData['role'] == ptm.role):
                             pass
                         else:
@@ -3695,9 +3719,11 @@ class NewCreatedProjectApproval(View):
             prtm_project_list.append(val.project_id)
         project_list = Project.objects.filter(id__in=prtm_project_list)
         if business_unit_list:
-            context['bu_queryset'] = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+            context['bu_queryset'] = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False,
+                                                            rejected=False)
         if portfolio_manager_list:
-            context['prtm_queryset'] = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False, rejected=False)
+            context['prtm_queryset'] = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False,
+                                                              rejected=False)
         return context
 
     def get(self, request):
@@ -3754,7 +3780,8 @@ class ProjectChangeApproval(View):
         if business_unit_list:
             context['bu_queryset'] = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
         if portfolio_manager_list:
-            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0).exclude(crId__startswith='BL')
+            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0,
+                                                                        closed=0).exclude(crId__startswith='BL')
         return context
 
     def get(self, request):
