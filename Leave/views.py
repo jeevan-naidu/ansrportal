@@ -1728,11 +1728,18 @@ def weekwisereport(month, userlist):
 
 def leavecheck(user, date):
 
-    leaveapplied = LeaveApplications.objects.filter(user=user.id,
-                                                    from_date__lte=date,
-                                                    to_date__gte=date,
-                                                    status__in=['open', 'approved']).exclude(
-        leave_type__in=[11, 8, 14, 15])
+    try:
+      leaveapplied = LeaveApplications.objects.filter(user=user.id,
+                                                      from_date__lte=date,
+                                                      to_date__gte=date,
+                                                      status__in=['open', 'approved']).exclude(
+          leave_type__in=[11, 8, 14, 15])
+    except:
+      leaveapplied = LeaveApplications.objects.filter(user=user,
+                                                      from_date__lte=date,
+                                                      to_date__gte=date,
+                                                      status__in=['open', 'approved']).exclude(
+          leave_type__in=[11, 8, 14, 15])
     holiday = Holiday.objects.all().values('date')
     if not leaveapplied:
         flag = 0
