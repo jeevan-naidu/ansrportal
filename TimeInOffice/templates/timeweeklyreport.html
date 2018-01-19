@@ -118,6 +118,12 @@
                 </div><!-- ./col-sm -->
 <script>
 
+$("#value").on('change', function() {
+  
+  yearchange(1,1,this.value)
+});
+
+
         $('#data-tables').dataTable({
           searching: true,
           scrollCollapse: true,
