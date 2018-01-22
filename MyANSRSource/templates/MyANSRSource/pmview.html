@@ -115,7 +115,7 @@ Team member view
     <tr class="odd gradeX">
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      <a class="timesheet-approve-user-details details" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
       </td>
       <td>{{values.total_time}}</td>
       <td>{{values.leave_hours}}</td>
@@ -452,21 +452,15 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          $('.external_hours:last-child td.external_hours_TotalH').html(total_hours);
          if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
             $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
          }
          if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
             $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
-            $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:red;"></p>');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
-            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
             $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
          }
          if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
-            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+            $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+            $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
          }
         }
         else{
@@ -511,22 +505,16 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
          total_hours = parseFloat(time_obj.tsData[time_key]['mondayH']) + parseFloat(time_obj.tsData[time_key]['tuesdayH']) + parseFloat(time_obj.tsData[time_key]['wednesdayH']) + parseFloat(time_obj.tsData[time_key]['thursdayH']) + parseFloat(time_obj.tsData[time_key]['fridayH']) + parseFloat(time_obj.tsData[time_key]['saturdayH']) + parseFloat(time_obj.tsData[time_key]['sundayH'])
          $('.internal_hours:last-child td.internal_hours_TotalH').html(total_hours);
          if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
-            $('.internal_hours:last-child td.internal_hours_submission_status').html('saved');
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
          }
          if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
-            $('.internal_hours:last-child td.internal_hours_submission_status').html('submitted');
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
          }
          if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
-            $('.internal_hours:last-child td.internal_hours_submission_status').html('not submitted');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
-            $('.internal_hours:last-child td.internal_hours_approval_status').html('saved1');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
-            $('.internal_hours:last-child td.internal_hours_approval_status').html('submitted1');
-         }
-         if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
-            $('.internal_hours:last-child td.internal_hours_approval_status').html('not submitted1');
+            $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+            $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
          }
        }
        else{
