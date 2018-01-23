@@ -75,7 +75,6 @@ Team member view
                 <!--<button id="reminder_mail" class="btn btn-xs vd_btn vd_bg-blue pull-right" style="margin-bottom: 5px;">Send Reminder</button>-->
                 <form method="post" action=""> {% csrf_token %}
 
-{% if ts_data_list_approved_false or ts_data_list_approved_true %}
 <table class="table table-striped myansr-table" id="timesheet-approve-table">
   <thead>
     <tr>
@@ -164,9 +163,7 @@ Team member view
   </tbody>
 </table>
             <!--<input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">-->
-        {% else %}
-        <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week </span>
-        {% endif %}
+
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
 

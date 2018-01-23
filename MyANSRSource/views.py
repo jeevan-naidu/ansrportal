@@ -1675,6 +1675,33 @@ def time_in_office(user, weekstartDate, ansrEndDate):
 @login_required
 def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
+    timesheetentry = TimeSheetEntry.objects.filter(teamMember_id = user_id, wkstart=weekstartDate, wkend=ansrEndDate)
+    if not timesheetentry:
+        total_list = []
+        total_time = time_in_office(user_id, weekstartDate, ansrEndDate)
+        time_in = total_time['time_in']
+        week_data = total_time['week_data']
+        user_name = User.objects.filter(id=request.user.id).values('first_name', 'last_name')[0]
+        practice_manager = user_name['first_name'] + ' ' + user_name['last_name']
+        leaves = leaveappliedinweek(user_id, weekstartDate, ansrEndDate)
+        leave_total = sum(leaves)
+        logged_hours = total_hours_logged(user_id, weekstartDate, ansrEndDate)
+        daily_logged_hours = logged_hours['daily_logged_hours']
+        total_logged = str(logged_hours['total_logged'])
+        tsData = {}
+        tsDataList = []
+
+        employee_id = User.objects.filter(id=user_id)[0]
+        tsData['teamMember__employee_id'] = employee_id.employee.employee_assigned_id
+        tsData['teamMember__first_name'] = employee_id.first_name
+        tsData['teamMember__last_name'] = employee_id.last_name
+
+        tsDataList.append(tsData.copy())
+        tsData.clear()
+        return {'tsData': tsDataList, 'week_data': week_data, 'time_in': time_in, \
+                'practice_manager': practice_manager, 'leave_total': leave_total, 'leaves': leaves,
+                'total_logged': total_logged, \
+                'daily_logged_hours': daily_logged_hours}
     total_list = []
     if not user_id:
         user = request.user
@@ -1794,8 +1821,8 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
                             'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
                             'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'total_list': total_list, 'week_data':week_data, 'time_in':time_in, \
-         'practice_manager':practice_manager, 'leave_total':leave_total, 'leaves':leaves, 'total_logged':total_logged, \
-         'daily_logged_hours':daily_logged_hours}
+            'practice_manager':practice_manager, 'leave_total':leave_total, 'leaves':leaves, 'total_logged':total_logged, \
+            'daily_logged_hours':daily_logged_hours}
 
 def total_hours_logged(user_id,start_date,end_date):
     context = {}
@@ -1861,34 +1888,37 @@ def pm_view(request):
 
                 members = Employee.objects.get(user=user_id)
                 ts_obj = time_week(start_date, end_date, members)
-                if ts_obj:
-                    ts_data_list[members] = {}
-                    status_tmp = [s.approved for s in ts_obj]
-                    if all(status_tmp):
-                        ts_data_list[members]['approved_status'] = True
-                    else:
-                        ts_data_list[members]['approved_status'] = False
 
-                    if members.user_id not in user_id_collection:
-                        non_billable_total = 0
-                    else:
-                        non_billable_obj = non_billable_hours(ts_obj)
-                        for others in non_billable_obj:
-                            non_billable_total += float(others['totalH'])
-                    ts_data_list[members]['non_billable_total'] = non_billable_total
-                    billable_hours_obj = billable_hours(ts_obj)
-                    total_time = time_in_office(user_id, start_date, end_date)
-                    total_logged = total_hours_logged(user_id,start_date,end_date)
-                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                ts_data_list[members] = {}
+                status_tmp = [s.approved for s in ts_obj]
+                if all(status_tmp):
+                    ts_data_list[members]['approved_status'] = True
+                else:
+                    ts_data_list[members]['approved_status'] = False
+
+                if members.user_id not in user_id_collection:
+                    non_billable_total = 0
+                else:
+                    non_billable_obj = non_billable_hours(ts_obj)
+                    for others in non_billable_obj:
+                        non_billable_total += float(others['totalH'])
+                ts_data_list[members]['non_billable_total'] = non_billable_total
+                billable_hours_obj = billable_hours(ts_obj)
+                total_time = time_in_office(user_id, start_date, end_date)
+                total_logged = total_hours_logged(user_id,start_date,end_date)
+                internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                if external_value == 0:
+                    external_utilization = 0
+                else:
                     external_utilization = round(external_value/total_logged['total_logged']*100,2)
-                    ts_data_list[members]['total_hours_logged'] = total_logged['total_logged']
-                    ts_data_list[members]['total_time'] = total_time['time_in']
-                    ts_data_list[members]['week_data'] = total_time['week_data']
-                    ts_data_list[members]['internal_value'] = internal_value
-                    ts_data_list[members]['external_value'] = external_value
-                    ts_data_list[members]['b_total'] = b_total
-                    ts_data_list[members]['external_utilization'] = external_utilization
-                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
+                ts_data_list[members]['total_hours_logged'] = total_logged['total_logged']
+                ts_data_list[members]['total_time'] = total_time['time_in']
+                ts_data_list[members]['week_data'] = total_time['week_data']
+                ts_data_list[members]['internal_value'] = internal_value
+                ts_data_list[members]['external_value'] = external_value
+                ts_data_list[members]['b_total'] = b_total
+                ts_data_list[members]['external_utilization'] = external_utilization
+                ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
                 context['ts_data_list'] = ts_data_list
                 context['ts_final_list'] = ts_final_list
                 context['weekstartDate'] = dates['start']
