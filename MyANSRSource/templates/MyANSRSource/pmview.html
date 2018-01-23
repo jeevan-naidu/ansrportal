@@ -250,7 +250,7 @@ Team member view
                           <td class="THL_saturdayH">0</td>
                           <td class="THL_sundayH">0</td>
                           <td class="THL_TotalH">0</td>
-                          <td></td>
+                          <td class="THL_submission">0</td>
                           <td></td>
                       </tr>
 
@@ -413,6 +413,9 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.total_hours_logged:last-child td.THL_saturdayH').html(time_obj.daily_logged_hours[5]);
   $('.total_hours_logged:last-child td.THL_sundayH').html(time_obj.daily_logged_hours[6]);
   $('.total_hours_logged:last-child td.THL_TotalH').html(time_obj.total_logged);
+  if(time_obj.total_logged == 0){
+    $('.total_hours_logged:last-child td.THL_submission').html('<p class="fa fa-circle" style="color:red;"></p>');
+  }
 
    // External hours Header
 
