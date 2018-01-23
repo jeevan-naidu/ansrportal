@@ -3100,11 +3100,12 @@ class ManageTeamWizard(SessionWizardView):
                     active=True).values('id', 'member','project_id__name', 'project_id__startDate',
                                         'startDate', 'endDate', 'project_id__endDate',
                                         'role', 'plannedEffort', 'project_id__plannedEffort')
+                project_detail = Project.objects.filter(id=projectId).values('name', 'startDate', 'endDate', 'plannedEffort')
                 try:
-                    self.request.session['Pname'] = currentProject[0]['project_id__name']
-                    self.request.session['PstartDate'] = currentProject[0]['project_id__startDate']
-                    self.request.session['PendDate'] = currentProject[0]['project_id__endDate']
-                    self.request.session['PplannedEffort'] = currentProject[0]['project_id__plannedEffort']
+                    self.request.session['Pname'] = project_detail[0]['name']
+                    self.request.session['PstartDate'] = project_detail[0]['startDate']
+                    self.request.session['PendDate'] = project_detail[0]['endDate']
+                    self.request.session['PplannedEffort'] = project_detail[0]['plannedEffort']
                 except Exception as e:
                     logger.error(e)
 
