@@ -826,6 +826,7 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         self.fields['endDate'].widget.attrs[
             'class'] = "form-control min-100 pro-end-date"
         self.fields['startDate'].widget.attrs['required'] = True
+        self.fields['endDate'].widget.attrs['required'] = True
         # self.fields['actualcount'].widget.attrs[
         #     'class'] = "form-control w-1000"
         # self.fields['actualcount'].widget.attrs[
