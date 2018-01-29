@@ -492,7 +492,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
              $('.internal_hours:last-child td.internal_hours_TotalH').html(total_hours);
              if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
                 $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
-                $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
              }
              if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
                 $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
