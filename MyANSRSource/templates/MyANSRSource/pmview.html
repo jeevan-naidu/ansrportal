@@ -442,9 +442,15 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
              $('.external_hours:last-child td.external_hours_saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
              $('.external_hours:last-child td.external_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
              $('.external_hours:last-child td.external_hours_TotalH').html(total_hours);
-             if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+             if(time_obj.tsData[time_key]['managerFeedback']){
+                 if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+             }
+             else if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
                 $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
-                $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                $('.external_hours:last-child td.external_hours_approval_status').html('');
              }
              if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
                 $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
@@ -454,10 +460,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
                 $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
                 $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
              }
-            if(time_obj.tsData[time_key]['remarks']){
-                    $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
-                    $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
-               }
             }
 
           }
@@ -490,8 +492,15 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
              $('.internal_hours:last-child td.internal_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
              total_hours = parseFloat(time_obj.tsData[time_key]['mondayH']) + parseFloat(time_obj.tsData[time_key]['tuesdayH']) + parseFloat(time_obj.tsData[time_key]['wednesdayH']) + parseFloat(time_obj.tsData[time_key]['thursdayH']) + parseFloat(time_obj.tsData[time_key]['fridayH']) + parseFloat(time_obj.tsData[time_key]['saturdayH']) + parseFloat(time_obj.tsData[time_key]['sundayH'])
              $('.internal_hours:last-child td.internal_hours_TotalH').html(total_hours);
-             if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+             if(time_obj.tsData[time_key]['managerFeedback']){
+                 if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+             }
+             else if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
                 $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                $('.internal_hours:last-child td.internal_hours_approval_status').html('');
              }
              if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
                 $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
@@ -500,12 +509,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
               if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
                 $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
                 $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
-             }
-             if(time_obj.tsData[time_key]['remarks']){
-                if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
-                    $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
-                    $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
-                }
              }
            }
 
