@@ -67,65 +67,45 @@ Approve Timesheet
 
 
 {% if ts_data_list_approved_false or ts_data_list_approved_true %}
-<table class="table table-striped myansr-table" id="timesheet-approve-table">
-  <thead>
-    <tr>
-      <th>Employee Id</th>
-      <th>Name</th>
-      <th>Billable (External) </th>
-      <th>Billable (Internal)</th>
-      <th>Non-Billable </th>
-      <th>Leave</th>
-      <th class="text-center">Options</th>
-      <th> Feedback</th>
-    </tr>
-  </thead>
-  <tbody>
+                    {% for project in projects %}
 
-  {% for team_members,values in ts_data_list_approved_false.iteritems %}
-    <tr class="odd gradeX approve-reject-options">
-      <td>{{team_members.employee_assigned_id}} </td>
-      <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
-      </td>
-      <td>{{values.external_value}}</td>
-      <td>{{values.internal_value}}  </td>
-      <td>{{values.non_billable_total}}</td>
-      <td> {{values.leave_hours}} </td>
+                        <table class="table table-striped myansr-table" id="timesheet-approve-table">
+                            <b>Project Name: {{ project }}</b>
+                          <thead>
+                            <tr>
+                              <th>Employee Id</th>
+                              <th>Name</th>
+                              <th>MON</th>
+                              <th>TUE</th>
+                              <th>WED</th>
+                              <th>THRU</th>
+                              <th>FRI</th>
+                              <th>SAT</th>
+                              <th>SUN</th>
+                              <th>Total Effort</th>
+                              <th>Submission Status</th>
+                              <th>Approval Status</th>
+                              <th class="text-center">Options</th>
+                            </tr>
+                          </thead>
+                          <tbody>
 
-                  <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header vd_bg-blue vd_white">
-                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
-                          <h4 class="modal-title" id="myModalLabel_{{team_members.user.id}}">Feedback</h4>
-                        </div>
-                        <div class="modal-body">
-                          <div class="row">
-                            <div class="col-sm-12">
-                              <div class="form-group">
-                                <label class="col-sm-4 control-label">Enter Your Feedback</label>
-                                <div class="col-sm-7 controls">
-                                  <textarea class="input-border-btm" name="feedback_{{team_members.user.id}}" type="text"></textarea>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-
-
-
-                        </div>
-                        <div class="modal-footer background-login">
-                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
-                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
-                        </div>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                  </div>
-
-
+                          {% for team_members,values in ts_data_list_approved_false.iteritems %}
+                            <tr class="odd gradeX approve-reject-options">
+                              <td>{{team_members.employee_assigned_id}} </td>
+                              <td>
+                              <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+                              </td>
+                              <td>{{values.external_value}}</td>
+                              <td>{{values.internal_value}}</td>
+                              <td>{{values.non_billable_total}}</td>
+                              <td>{{values.leave_hours}}</td>
+                              <td>{{values.external_value}}</td>
+                              <td>{{values.internal_value}}</td>
+                              <td>{{values.non_billable_total}}</td>
+                              <td>{{values.leave_hours}}</td>
+                              <td>{{values.non_billable_total}}</td>
+                              <td>{{values.leave_hours}}</td>
 
 <td class="timesheet-approve-options text-center radio-padding-mod">
 
@@ -145,16 +125,11 @@ Approve Timesheet
 
 </td>
 
-    <td class="menu-action">
-      <a data-toggle="modal" data-target="#myModal_{{team_members.user.id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown" disabled>
-        <i class="fa fa-comments-o"></i>
-      </a>
-    </td>
-
         <!-- Modal Area -->
 
 
 </tr>
+{%endfor %}
 {%endfor %}
 
    {% for team_members,values in ts_data_list_approved_true.iteritems %}

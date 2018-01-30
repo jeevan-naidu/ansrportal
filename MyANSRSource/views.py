@@ -852,28 +852,10 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
-                            include_activity=False):
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, project):
 
     ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                           teamMember=request_object.user)
-
-    if approve_time_sheet:
-
-        ts_obj = ts_obj.filter(hold=True)
-
-        if include_activity:
-            if dm_projects and dm_projects is not None:
-                ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
-            else:
-                ts_obj = ts_obj.filter(Q(project__isnull=True))
-
-        else:
-            if dm_projects and dm_projects is not None:
-                ts_obj = ts_obj.filter(project__in=dm_projects)
-
-            else:
-                ts_obj = []
+                                           teamMember=request_object.user, project_id=project.project.id)
     return ts_obj
 
 def time_week(week_start_date, week_end_date, request_object):
@@ -1941,6 +1923,16 @@ def pm_view(request):
             context['exception_message'] = "you don't have any team members"
     return render(request, 'pmview.html', context)
 
+
+def time_for_week(start_date, end_date, project):
+    ts_obj = TimeSheetEntry.objects.filter(wkstart = start_date, wkend = end_date, project_id = project.project.id)
+    return ts_obj
+
+def work_for_week(ts_obj, project):
+    print ts_obj
+    print project
+    return ts_obj
+
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
 
@@ -1960,45 +1952,18 @@ class ApproveTimesheetView(TemplateView):
             self.request.session['include_activity'] = {}
             start_date = dates['start']
             end_date = dates['end']
+            projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed = 0)
             status, week_collection, unapproved_count = status_member(Employee.objects.filter(
                 user_id__in=updated_dict.keys()))
-            for user_id, name in updated_dict.iteritems():
-                non_billable_total = 0.0
-                if user_id not in user_id_collection:
-                    include_activity = False
-                    self.request.session['include_activity'][int(user_id)] = False
-                else:
-                    include_activity = True
-                    self.request.session['include_activity'][int(user_id)] = True
-
-                # exclude dm non project activities from dashboard
-                if user_id == self.request.user.id and self.request.user.id in updated_dict:
-                    self.request.session['include_activity'][int(self.request.user.id)] = False
-
-                members = Employee.objects.get(user=user_id)
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
-                                                 self.request.session['dm_projects'], include_activity)
-                if ts_obj:
-                    ts_data_list[members] = {}
-                    status_tmp = [s.approved for s in ts_obj]
-                    if all(status_tmp):
-                        ts_data_list[members]['approved_status'] = True
-                    else:
-                        ts_data_list[members]['approved_status'] = False
-
-                    if members.user_id not in user_id_collection:
-                        non_billable_total = 0
-                    else:
-                        non_billable_obj = non_billable_hours(ts_obj)
-                        for others in non_billable_obj:
-                            non_billable_total += float(others['totalH'])
-                    ts_data_list[members]['non_billable_total'] = non_billable_total
-                    billable_hours_obj = billable_hours(ts_obj)
-                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
-                    ts_data_list[members]['internal_value'] = internal_value
-                    ts_data_list[members]['external_value'] = external_value
-                    ts_data_list[members]['b_total'] = b_total
-                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
+            context['projects'] = projects
+            for project in projects:
+                for user_id, name in updated_dict.iteritems():
+                    members = Employee.objects.get(user=user_id)
+                    print members.
+                    ts_obj = time_sheet_for_the_week(start_date, end_date, members, project)
+                    if ts_obj:
+                        ts_data_list[members]['project'] = project
+                        ts_data_list[members]['week_data'] = work_for_week(ts_obj, project)
                 context['ts_data_list'] = ts_data_list
                 context['ts_final_list'] = ts_final_list
                 context['weekstartDate'] = dates['start']
