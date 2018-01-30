@@ -574,7 +574,7 @@ class ProjectMilestone(models.Model):
     unit = models.IntegerField(verbose_name="Unit",blank=True, null=True, default= 0.0)
     rate_per_unit = models.DecimalField(verbose_name="Rate per Unit", blank=True, null=True, default= 0.0, max_digits=12, decimal_places=2)
     amount = models.DecimalField(default=0.0,
-                                 max_digits=12,
+                                 max_digits=13,
                                  decimal_places=2,
                                  verbose_name="Amount")
     closed = models.BooleanField(
