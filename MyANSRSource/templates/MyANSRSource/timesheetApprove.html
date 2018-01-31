@@ -56,7 +56,18 @@ Approve Timesheet
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
-
+<div>
+<table class="table table-striped myansr-table">
+<thead>
+<tr><th>Legend</th><th>Submission Status</th><th>Approval Status</th></tr>
+</thead>
+<tbody>
+<tr><td class="fa fa-circle" style="color:green;"></td><td>Submitted</td><td>Approved</td></tr>
+<tr><td class="fa fa-circle" style="color:orange;"></td><td>Saved</td><td>Pending Approval</td></tr>
+<tr><td class="fa fa-circle" style="color:red;"></td><td>Not Submitted</td><td>Rejected</td></tr>
+</tbody>
+</table>
+</div>
 
 <div class="panel pb-15">
 
@@ -87,6 +98,7 @@ Approve Timesheet
                               <th>Submission Status</th>
                               <th>Approval Status</th>
                               <th class="text-center">Options</th>
+                              <th>Feedback</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -97,7 +109,7 @@ Approve Timesheet
                               <tr class="odd gradeX approve-reject-options">
                                   <td>{{ k }}</td>
                                   <td>
-                                  <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{ k }}:{{ project }}" style="cursor: pointer;">{{ v.teamMember__first_name }} {{ v.teamMember__last_name }}</a>
+                                  <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{ v.teamMember__id }}:{{ project }}" style="cursor: pointer;">{{ v.teamMember__first_name }} {{ v.teamMember__last_name }}</a>
                                   </td>
                                   <td>{{ v.mondayH }}</td>
                                   <td>{{ v.tuesdayH }}</td>
@@ -112,23 +124,54 @@ Approve Timesheet
 
                                     <td class="timesheet-approve-options text-center radio-padding-mod">
 
-                                      <div class="checkbox checkbox-success radio-mod btn-xs">
-                                            <input id="approve_{{team_members.user.id}}"  type="checkbox" name="approve[]" class="approve" value="{{team_members.user.id}}" disabled>
-                                            <label for="approve_{{team_members.user.id}}"  data-placement="top" data-toggle="tooltip" data-original-title="View Timesheet First" class="ansr-orange-mod noselect disable-select ansr-brown">
-                                            Approve
-                                            </label>
-                                        </div>
+                              <div class="checkbox checkbox-success radio-mod btn-xs">
+                                    <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}">
+                                    <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                    Approve
+                                    </label>
+                                </div>
 
-                                        <div class="checkbox checkbox-danger radio-mod btn-xs">
-                                            <input id="reject_{{team_members.user.id}}" type="checkbox" name="reject[]" class="reject" value="{{team_members.user.id}}" disabled>
-                                            <label for="reject_{{team_members.user.id}}"  data-placement="top" data-toggle="tooltip" data-original-title="View Timesheet First"  class="noselect disable-select ansr-brown">
-                                            Reject
-                                            </label>
-                                        </div>
+                                <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                    <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}">
+                                    <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
+                                    Reject
+                                    </label>
+                                </div>
 
+                            </td>
+                                 <td class="menu-action">
+                                      <a data-toggle="modal" data-target="#myModal_{{v.teamMember__id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+                                        <i class="fa fa-comments-o"></i>
+                                      </a>
                                     </td>
-
-        <!-- Modal Area -->
+                                <div class="modal fade" id="myModal_{{v.teamMember__id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.teamMember__id}}" aria-hidden="true" style="display: none;">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content">
+                                        <div class="modal-header vd_bg-blue vd_white" >
+                                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                                          <h4 class="modal-title" id="myModalLabel_{{v.teamMember__id}}" >Feedback</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                          <div class="row">
+                                            <div class="col-sm-12">
+                                              <div class="form-group">
+                                                <label class="col-sm-4 control-label">Enter Your Feedback</label>
+                                                <div class="col-sm-7 controls">
+                                                  <textarea class="input-border-btm" name="feedback_{{v.teamMember__id}}" type="text"></textarea>
+                                                </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        </div>
+                                        <div class="modal-footer background-login">
+                                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                                        </div>
+                                      </div>
+                                      <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                  </div>
 
 
                                 </tr>
@@ -332,67 +375,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
     $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
 }
 
-  // atdata iteration
-
-  for (var time_key in time_obj['atData']){
-    if (time_obj['atData'].hasOwnProperty(time_key)){
-
-      // Get length
-
-      var obj_length = time_obj.atData.length;
-
-      // Populate project row
-
-        $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
-        $('.activity-time-row:last-child').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
-        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
-        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
-        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
-        $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
-        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
-        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
-        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
-         if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
-            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
-         else
-           $('.activity-time-row:last-child td.activity_remarks').hide();
-
-    }else{
-        $('.activity-time-row').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html('nil');
-        $('.activity-time-row:last-child td.activity_monday').html('nil');
-        $('.activity-time-row:last-child td.activity_tuesday').html('nil');
-        $('.activity-time-row:last-child td.activity_wednesday').html('nil');
-        $('.activity-time-row:last-child td.activity_thursday').html('nil');
-        $('.activity-time-row:last-child td.activity_friday').html('nil');
-        $('.activity-time-row:last-child td.activity_saturday').html('nil');
-        $('.activity-time-row:last-child td.activity_sunday').html('nil');
-        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
-        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
-    }
-
-  } // ./ at data iteration
-
-
-
-  // total_list iteration
-
-  for (var time_key in time_obj['total_list']){
-    if (time_obj['total_list'].hasOwnProperty(time_key)){
-      $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
-      $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
-      $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
-      $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
-      $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
-      $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
-      $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
-    }
-  }
-
-
-
-
 } // ./time_iterate function
 
 var employeeTime = function(){
@@ -421,13 +403,11 @@ var employeeTime = function(){
 $(document).ready(function() {
                 "use strict";
 
-            <!--$('#timesheet-approve-table').dataTable();-->
+
              $('#timesheet-approve-table').dataTable( {
-    "order": [],
-    "columnDefs": [ {
-      "targets"  : 'no-sort',
-      "orderable": false,
-    }]
+                "paging":   false,
+                "ordering": false,
+                "info":     false
 });
             $("[data-toggle='tooltip']").tooltip();
 
@@ -451,19 +431,20 @@ $(document).ready(function() {
 
 
         jQuery('.approve , .reject ').click(function(e){
-            var class_name = this.value;
+            var class_name = this.id;
+            var user_id = class_name.split('_')
             if(this.className == 'approve') {
-                $('#reject_'+class_name).prop('checked', false);
-                $('#cancel_'+class_name).prop('checked', false);
+                $('#reject_'+user_id[1]).prop('checked', false);
+                $('#cancel_'+user_id[1]).prop('checked', false);
                 $('.reject_all').prop('checked', false);
             }
             else if (this.className == 'reject') {
-                $('#approve_'+class_name).prop('checked', false);
+                $('#approve_'+user_id[1]).prop('checked', false);
 
             }
             else if (this.className == 'cancel') {
-                $('#approve_'+class_name).prop('checked', false);
-                $('#reject_'+class_name).prop('checked', false);
+                $('#approve_'+user_id[1]).prop('checked', false);
+                $('#reject_'+user_id[1]).prop('checked', false);
 
             }
 

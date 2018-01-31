@@ -842,10 +842,28 @@ def leaveappliedinweek(user, wkstart, wkend):
     return weekleave
 
 
-def time_sheet_for_the_week(week_start_date, week_end_date, request_object, project):
+def time_sheet_for_the_week(week_start_date, week_end_date, request_object, approve_time_sheet=False, dm_projects=None,
+                            include_activity=False):
 
     ts_obj = TimeSheetEntry.objects.filter(wkstart=week_start_date, wkend=week_end_date,
-                                           teamMember=request_object.user, project_id=project.project.id)
+                                           teamMember=request_object.user)
+
+    if approve_time_sheet:
+
+        ts_obj = ts_obj.filter(hold=True)
+
+        if include_activity:
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(Q(project__isnull=True) | Q(project__in=dm_projects))
+            else:
+                ts_obj = ts_obj.filter(Q(project__isnull=True))
+
+        else:
+            if dm_projects and dm_projects is not None:
+                ts_obj = ts_obj.filter(project__in=dm_projects)
+
+            else:
+                ts_obj = []
     return ts_obj
 
 def time_week(week_start_date, week_end_date, request_object):
@@ -1074,12 +1092,10 @@ def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
 def getData(request, start_date, end_date, user_id):
-    total_list = []
     start_date =  datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
     end_date =  datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
     user =  request.GET.get('user_id').split(':')
-    member = Employee.objects.filter(employee_assigned_id=user[0])[0]
-    user_id = member.user.id
+    user_id = user[0]
     project_id = Project.objects.filter(projectId=user[1][:-1])[0]
     project = project_id.id
     details = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id, project_id=project).values(
@@ -1973,26 +1989,6 @@ def time_for_week(start_date, end_date, project):
     ts_obj = TimeSheetEntry.objects.filter(wkstart = start_date, wkend = end_date, project_id = project.project.id)
     return ts_obj
 
-def data_for_project(data_for_week, project):
-    ts_data_list = []
-    for data in data_for_week:
-        ts_obj = {}
-        ts_obj['name'] = data.teamMember.first_name  + ' ' + data.teamMember.first_name
-        ts_obj['employee_assigned_id'] = data.teamMember.employee.employee_assigned_id
-        ts_obj['project'] = project.project
-        ts_obj['approved'] = data.approved
-        ts_obj['hold'] = data.hold
-        ts_obj['manager_feedback'] = data.managerFeedback
-        ts_obj['mon'] = data.mondayH
-        ts_obj['tue'] = data.tuesdayH
-        ts_obj['wed'] = data.wednesdayH
-        ts_obj['thur'] = data.thursdayH
-        ts_obj['fri'] = data.fridayH
-        ts_obj['sat'] = data.saturdayH
-        ts_obj['sun'] = data.sundayH
-        ts_data_list.append(ts_obj)
-    return ts_data_list
-
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
 
@@ -2019,7 +2015,7 @@ class ApproveTimesheetView(TemplateView):
              'saturdayH', 'sundayH', 'approved',
              'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
              'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks', 'approved', 'hold'
+             'remarks', 'approved', 'hold', 'teamMember__id',
              )
 
             if data_for_week:
@@ -2046,54 +2042,6 @@ class ApproveTimesheetView(TemplateView):
         context['weekendDate'] = dates['end']
         context['status_dict'] = status
         context['week_collection'] = week_collection[::-1]
-        # context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
-        # ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
-        # manager_team_members, team_members = dem_members(self.request, pm_view=0)
-        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
-        # own_team = {members.user_id: members.user.email for members in team_members}
-        # updated_dict = team_dict.copy()
-        # updated_dict.update(own_team)
-        #
-        # user_id_collection = [k[0] for k in manager_team_members]
-        # if updated_dict:
-        #     dates = switchWeeks(self.request)
-        #     ts_data_list = {}
-        #     self.request.session['include_activity'] = {}
-        #     start_date = dates['start']
-        #     end_date = dates['end']
-        #     projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed = 0)
-        #     status, week_collection, unapproved_count = status_member(Employee.objects.filter(
-        #         user_id__in=updated_dict.keys()))
-        #     context['projects'] = projects
-        #     for project in projects:
-        #         for user_id, name in updated_dict.iteritems():
-        #             members = Employee.objects.get(user=user_id)
-        #             print members
-        #             ts_obj = time_sheet_for_the_week(start_date, end_date, members, project)
-        #             if ts_obj:
-        #                 ts_data_list[members]['project'] = project
-        #                 ts_data_list[members]['week_data'] = work_for_week(ts_obj, project)
-        #         context['ts_data_list'] = ts_data_list
-        #         context['ts_final_list'] = ts_final_list
-        #         context['weekstartDate'] = dates['start']
-        #         context['weekendDate'] = dates['end']
-        #         context['status_dict'] = status
-        #         context['disabled'] = dates['disabled']
-        #     context['week_collection'] = week_collection[::-1]
-        #     ts_data_list_approved_false = {}
-        #     ts_data_list_approved_true = {}
-        #
-        #     for k, v in ts_data_list.iteritems():
-        #
-        #         if v['approved_status']:
-        #             ts_data_list_approved_true[k] = v
-        #         else:
-        #             ts_data_list_approved_false[k] = v
-        #     context['ts_data_list_approved_false'] = ts_data_list_approved_false
-        #     context['ts_data_list_approved_true'] = ts_data_list_approved_true
-        # else:
-        #     context['exception_message'] = "you don't have any team members"
-        # return context
         return context
 
     def post(self, request, **kwargs):
@@ -2114,86 +2062,27 @@ class ApproveTimesheetView(TemplateView):
             feedback_dict[user_id[1]] = v
         if approve_list:
             for user_id in approve_list:
+                user = user_id.split('_')[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1].split(':')[0][:-1])[0]
                 try:
-                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
-                        if not request.session["include_activity"][int(user_id)]:
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                          project__in=request.session['dm_projects'],
-                                                          teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-
-                        else:
-                            TimeSheetEntry.objects.filter(Q(project__in=request.session['dm_projects'])
-                                                          |Q(project__isnull=True), wkstart=start_date,
-                                                          wkend=end_date, teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-                    else:
-                        # get manager obj
-                        emp = Employee.objects.get(user=request.user)
-                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
-                            TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
-                                                          wkend=end_date, teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-                        else:
-                            fail += 1
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  project_id=project.id,
+                                                  teamMember_id=user).update(
+                        managerFeedback=feedback_dict[user], approved=True)
                 except Exception as e:
                     fail += 1
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))
         if reject_list:
-            present_id = []
             for user_id in reject_list:
+                user = user_id.split('_')[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1].split(':')[0][:-1])[0]
                 try:
-                    activities = TimeSheetEntry.objects.filter(teamMember_id=user_id, wkstart=start_date, hold=True,
-                                                               wkend=end_date, project__isnull=True). \
-                        values_list('activity__name', flat=True)
-                    a = [str(s) for s in activities]
-                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
-                        for proj in request.session['dm_projects']:
 
-                            if TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                             teamMember_id=user_id, project_id=proj).exists():
-                                present_id.append(proj)
-                        if present_id:
-                            projects = Project.objects.filter(pk__in=present_id)
-                            p = [str(s) for s in projects]
-                        else:
-                            p = []
-                        if not request.session["include_activity"][int(user_id)]:
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                          teamMember_id=user_id, project__in=present_id
-                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
-
-                        else:
-                            TimeSheetEntry.objects.filter(Q(project__in=present_id) |
-                                                          Q(project__isnull=True), wkstart=start_date, wkend=end_date,
-                                                          teamMember_id=user_id,
-                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
-
-                            p.extend(a)
-
-                    else:
-                        # get manager obj
-                        emp = Employee.objects.get(user=request.user)
-                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
-                                                          teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id],
-                                hold=False)
-                            p = a
-                        else:
-                            p = []
-
-                    fail = 0
-                    user_obj = User.objects.get(id=user_id)
-                    if p:
-                        projects = ",".join(p)
-                        TimeSheetRejectionNotification.delay(request.user,
-                                                             str(user_obj.email), start_date,
-                                                             end_date, projects, feedback_dict[user_id])
-                    else:
-                        fail += 1
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  teamMember_id=user, project_id=project
+                                                  ).update(managerFeedback=feedback_dict[user], hold=False)
                 except Exception as e:
                     fail += 1
                     # print str(e)
