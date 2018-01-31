@@ -776,16 +776,6 @@ def get_time_sheet(request, is_approve=False):
             content_type="application/json"
         )
 
-
-def time_sheet_employee(request):
-    s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
-                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-    return HttpResponse(
-        json.dumps(s),
-        content_type="application/json"
-    )
-
-
 @login_required
 def switchWeeks(request):
     today = datetime.now().date()
@@ -1082,6 +1072,61 @@ class ModifyProjectWizard(SessionWizardView):
 
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
+
+def getData(request, start_date, end_date, user_id):
+    total_list = []
+    start_date =  datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
+    end_date =  datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
+    user =  request.GET.get('user_id').split(':')
+    member = Employee.objects.filter(employee_assigned_id=user[0])[0]
+    user_id = member.user.id
+    project_id = Project.objects.filter(projectId=user[1][:-1])[0]
+    project = project_id.id
+    details = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id, project_id=project).values(
+                    'id', 'project', 'project__name', 'task__name',
+                     'chapter__name', 'managerFeedback', 'project__internal',
+                     'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                     'remarks', 'totalH'
+                     )
+    tsData = {}
+    tsDataList = []
+
+    for eachData in details:
+        for k, v in eachData.iteritems():
+            # print k,v
+
+            if k == 'teamMember__employee__employee_assigned_id':
+                tsData['employee_id'] = v
+            if k == 'teamMember__first_name':
+                tsData['first_name'] = v
+            if k == 'teamMember__last_name':
+                tsData['last_name'] = v
+            if k == 'project':
+                tsData['project'] = v
+            if k == 'project__name':
+                tsData['project_name'] = v
+            if k == 'location':
+                tsData['location'] = v
+            if k == 'chapter__name':
+                tsData['chapter'] = v
+            if k == 'task__name':
+                tsData['task'] = v
+            if k == 'totalH':
+                tsData['totalH'] = str(round(v, 2))
+
+        tsDataList.append(tsData.copy())
+        tsData.clear()
+
+    return {'tsData': tsDataList}
+
+
+def time_sheet_employee(request):
+    s = getData(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
+                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
+    return HttpResponse(
+        json.dumps(s),
+        content_type="application/json"
+    )
 
 @login_required
 def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
@@ -1928,10 +1973,25 @@ def time_for_week(start_date, end_date, project):
     ts_obj = TimeSheetEntry.objects.filter(wkstart = start_date, wkend = end_date, project_id = project.project.id)
     return ts_obj
 
-def work_for_week(ts_obj, project):
-    print ts_obj
-    print project
-    return ts_obj
+def data_for_project(data_for_week, project):
+    ts_data_list = []
+    for data in data_for_week:
+        ts_obj = {}
+        ts_obj['name'] = data.teamMember.first_name  + ' ' + data.teamMember.first_name
+        ts_obj['employee_assigned_id'] = data.teamMember.employee.employee_assigned_id
+        ts_obj['project'] = project.project
+        ts_obj['approved'] = data.approved
+        ts_obj['hold'] = data.hold
+        ts_obj['manager_feedback'] = data.managerFeedback
+        ts_obj['mon'] = data.mondayH
+        ts_obj['tue'] = data.tuesdayH
+        ts_obj['wed'] = data.wednesdayH
+        ts_obj['thur'] = data.thursdayH
+        ts_obj['fri'] = data.fridayH
+        ts_obj['sat'] = data.saturdayH
+        ts_obj['sun'] = data.sundayH
+        ts_data_list.append(ts_obj)
+    return ts_data_list
 
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
@@ -1944,46 +2004,96 @@ class ApproveTimesheetView(TemplateView):
         own_team = {members.user_id: members.user.email for members in team_members}
         updated_dict = team_dict.copy()
         updated_dict.update(own_team)
+        dates = switchWeeks(self.request)
+        start_date = dates['start']
+        end_date = dates['end']
+        projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed=0)
+        status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+                    user_id__in=updated_dict.keys()))
+        ts_list = []
+        project_with_data = []
+        for project in projects:
+            data_for_week = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project_id=project.project.id).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
+             'tuesdayH', 'wednesdayH', 'project__id',
+             'thursdayH', 'fridayH', 'hold',
+             'saturdayH', 'sundayH', 'approved',
+             'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
+             'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
+             'remarks', 'approved', 'hold'
+             )
 
-        user_id_collection = [k[0] for k in manager_team_members]
-        if updated_dict:
-            dates = switchWeeks(self.request)
-            ts_data_list = {}
-            self.request.session['include_activity'] = {}
-            start_date = dates['start']
-            end_date = dates['end']
-            projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed = 0)
-            status, week_collection, unapproved_count = status_member(Employee.objects.filter(
-                user_id__in=updated_dict.keys()))
-            context['projects'] = projects
-            for project in projects:
-                for user_id, name in updated_dict.iteritems():
-                    members = Employee.objects.get(user=user_id)
-                    print members.
-                    ts_obj = time_sheet_for_the_week(start_date, end_date, members, project)
-                    if ts_obj:
-                        ts_data_list[members]['project'] = project
-                        ts_data_list[members]['week_data'] = work_for_week(ts_obj, project)
-                context['ts_data_list'] = ts_data_list
-                context['ts_final_list'] = ts_final_list
-                context['weekstartDate'] = dates['start']
-                context['weekendDate'] = dates['end']
-                context['status_dict'] = status
-                context['disabled'] = dates['disabled']
-            context['week_collection'] = week_collection[::-1]
-            ts_data_list_approved_false = {}
-            ts_data_list_approved_true = {}
-
-            for k, v in ts_data_list.iteritems():
-
-                if v['approved_status']:
-                    ts_data_list_approved_true[k] = v
-                else:
-                    ts_data_list_approved_false[k] = v
-            context['ts_data_list_approved_false'] = ts_data_list_approved_false
-            context['ts_data_list_approved_true'] = ts_data_list_approved_true
-        else:
-            context['exception_message'] = "you don't have any team members"
+            if data_for_week:
+                project_with_data.append(project)
+                users = []
+                ts_data_dict = {}
+                for data in data_for_week:
+                    users.append(data['teamMember__employee__employee_assigned_id'])
+                users = list(set(users))
+                ts_user_list = []
+                for user in users:
+                    for data in data_for_week:
+                        if user == data['teamMember__employee__employee_assigned_id']:
+                            if user != self.request.user.employee.employee_assigned_id:
+                                ts_data = {}
+                                ts_data[user] = data
+                                ts_user_list.append(ts_data)
+                    ts_data_dict[project] = ts_user_list
+                ts_list.append(ts_data_dict)
+        context['ts_list'] = ts_list
+        context['project_with_data'] = project_with_data
+        context['ts_final_list'] = ts_final_list
+        context['weekstartDate'] = dates['start']
+        context['weekendDate'] = dates['end']
+        context['status_dict'] = status
+        context['week_collection'] = week_collection[::-1]
+        # context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
+        # ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
+        # manager_team_members, team_members = dem_members(self.request, pm_view=0)
+        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+        # own_team = {members.user_id: members.user.email for members in team_members}
+        # updated_dict = team_dict.copy()
+        # updated_dict.update(own_team)
+        #
+        # user_id_collection = [k[0] for k in manager_team_members]
+        # if updated_dict:
+        #     dates = switchWeeks(self.request)
+        #     ts_data_list = {}
+        #     self.request.session['include_activity'] = {}
+        #     start_date = dates['start']
+        #     end_date = dates['end']
+        #     projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed = 0)
+        #     status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+        #         user_id__in=updated_dict.keys()))
+        #     context['projects'] = projects
+        #     for project in projects:
+        #         for user_id, name in updated_dict.iteritems():
+        #             members = Employee.objects.get(user=user_id)
+        #             print members
+        #             ts_obj = time_sheet_for_the_week(start_date, end_date, members, project)
+        #             if ts_obj:
+        #                 ts_data_list[members]['project'] = project
+        #                 ts_data_list[members]['week_data'] = work_for_week(ts_obj, project)
+        #         context['ts_data_list'] = ts_data_list
+        #         context['ts_final_list'] = ts_final_list
+        #         context['weekstartDate'] = dates['start']
+        #         context['weekendDate'] = dates['end']
+        #         context['status_dict'] = status
+        #         context['disabled'] = dates['disabled']
+        #     context['week_collection'] = week_collection[::-1]
+        #     ts_data_list_approved_false = {}
+        #     ts_data_list_approved_true = {}
+        #
+        #     for k, v in ts_data_list.iteritems():
+        #
+        #         if v['approved_status']:
+        #             ts_data_list_approved_true[k] = v
+        #         else:
+        #             ts_data_list_approved_false[k] = v
+        #     context['ts_data_list_approved_false'] = ts_data_list_approved_false
+        #     context['ts_data_list_approved_true'] = ts_data_list_approved_true
+        # else:
+        #     context['exception_message'] = "you don't have any team members"
+        # return context
         return context
 
     def post(self, request, **kwargs):
