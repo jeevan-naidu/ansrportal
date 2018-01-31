@@ -135,20 +135,41 @@ Approve Timesheet
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                   {% endif %}
                                     <td class="timesheet-approve-options text-center radio-padding-mod">
+                              {% if v.approved == True and v.hold == True %}
+                                       <button type="button" class="btn btn-success">Approved</button>
+                              {% elif v.managerFeedback%}
+                                        {% if v.approved == False and v.hold == False %}
+                                            <button type="button" class="btn btn-danger">Rejected</button>
+                                        {% endif %}
+                              {% elif v.approved == False and v.hold == False %}
+                                  <div class="checkbox checkbox-success radio-mod btn-xs disabled">
+                                        <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}" disabled>
+                                        <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                        Approve
+                                        </label>
+                                    </div>
 
-                              <div class="checkbox checkbox-success radio-mod btn-xs">
-                                    <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}">
-                                    <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
-                                    Approve
-                                    </label>
-                                </div>
+                                    <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
+                                        <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}" disabled>
+                                        <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
+                                        Reject
+                                        </label>
+                                    </div>
+                              {% else %}
+                                  <div class="checkbox checkbox-success radio-mod btn-xs">
+                                        <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}">
+                                        <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                        Approve
+                                        </label>
+                                    </div>
 
-                                <div class="checkbox checkbox-danger radio-mod btn-xs">
-                                    <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}">
-                                    <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
-                                    Reject
-                                    </label>
-                                </div>
+                                    <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                        <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}">
+                                        <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
+                                        Reject
+                                        </label>
+                                    </div>
+                              {% endif %}
 
                             </td>
                                  <td class="menu-action">
