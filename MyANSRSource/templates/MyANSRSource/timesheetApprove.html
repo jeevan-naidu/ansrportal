@@ -119,9 +119,21 @@ Approve Timesheet
                                   <td>{{ v.saturdayH }}</td>
                                   <td>{{ v.sundayH }}</td>
                                   <td>{{ v.totalH }}</td>
-                                  <td>{{ v.approved }}</td>
-                                  <td>{{ v.hold }}</td>
-
+                                  {% if v.approved == False and v.hold == False %}
+                                    <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                    <td><p>Yet to submit</p></td>
+                                  {% elif v.managerFeeback%}
+                                    {% if v.approved == False and v.hold == False %}
+                                        <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                        <td><p class="fa fa-circle" style="color:red;"></p></td>
+                                    {% endif %}
+                                  {% elif v.approved == False and v.hold == True %}
+                                    <td><p class="fa fa-circle" style="color:green;"></p></td>
+                                    <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                  {% elif v.approved == True and v.hold == True %}
+                                    <td><p class="fa fa-circle" style="color:green;"></p></td>
+                                    <td><p class="fa fa-circle" style="color:green;"></p></td>
+                                  {% endif %}
                                     <td class="timesheet-approve-options text-center radio-padding-mod">
 
                               <div class="checkbox checkbox-success radio-mod btn-xs">
