@@ -164,6 +164,20 @@ Approve Timesheet
                                         Reject
                                         </label>
                                     </div>
+                              {% elif v.approved == False and v.hold == True %}
+                                  <div class="checkbox checkbox-success radio-mod btn-xs disabled">
+                                        <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                        <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                        Approve
+                                        </label>
+                                    </div>
+
+                                    <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
+                                        <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                        <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                        Reject
+                                        </label>
+                                    </div>
                               {% else %}
                                   <div class="checkbox checkbox-success radio-mod btn-xs">
                                         <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
