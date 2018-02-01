@@ -2012,7 +2012,7 @@ class ApproveTimesheetView(TemplateView):
              'saturdayH', 'sundayH', 'approved',
              'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
              'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks', 'approved', 'hold', 'teamMember__id',
+             'remarks', 'approved', 'hold', 'teamMember__id', 'project__projectId',
              )
 
             if data_for_week:
@@ -2060,7 +2060,7 @@ class ApproveTimesheetView(TemplateView):
         if approve_list:
             for user_id in approve_list:
                 user = user_id.split('_')[0]
-                project = Project.objects.filter(projectId=user_id.split('_')[1].split(':')[0][:-1])[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1])[0]
                 try:
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
                                                   project_id=project.id,
@@ -2074,7 +2074,7 @@ class ApproveTimesheetView(TemplateView):
         if reject_list:
             for user_id in reject_list:
                 user = user_id.split('_')[0]
-                project = Project.objects.filter(projectId=user_id.split('_')[1].split(':')[0][:-1])[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1])[0]
                 try:
 
                     TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,

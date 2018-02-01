@@ -152,29 +152,29 @@ Approve Timesheet
                                         {% endif %}
                               {% elif v.approved == False and v.hold == False %}
                                   <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                        <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}" disabled>
-                                        <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                        <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                        <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                         Approve
                                         </label>
                                     </div>
 
                                     <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                        <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}" disabled>
-                                        <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
+                                        <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                        <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
                                         Reject
                                         </label>
                                     </div>
                               {% else %}
                                   <div class="checkbox checkbox-success radio-mod btn-xs">
-                                        <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}">
-                                        <label for="approve_{{v.teamMember__id}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                        <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
+                                        <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                         Approve
                                         </label>
                                     </div>
 
                                     <div class="checkbox checkbox-danger radio-mod btn-xs">
-                                        <input id="reject_{{v.teamMember__id}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{project}}">
-                                        <label for="reject_{{v.teamMember__id}}" class="noselect disable-select ansr-brown">
+                                        <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}">
+                                        <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
                                         Reject
                                         </label>
                                     </div>
@@ -182,11 +182,11 @@ Approve Timesheet
 
                             </td>
                                  <td class="menu-action">
-                                      <a data-toggle="modal" data-target="#myModal_{{v.teamMember__id}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+                                      <a data-toggle="modal" data-target="#myModal_{{v.teamMember__id}}_{{v.project__projectId}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
                                         <i class="fa fa-comments-o"></i>
                                       </a>
                                     </td>
-                                <div class="modal fade" id="myModal_{{v.teamMember__id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.teamMember__id}}" aria-hidden="true" style="display: none;">
+                                <div class="modal fade" id="myModal_{{v.teamMember__id}}__{{v.project__projectId}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.teamMember__id}}" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
                                         <div class="modal-header vd_bg-blue vd_white" >
@@ -416,18 +416,19 @@ $(document).ready(function() {
             var class_name = this.id;
             var user_id = class_name.split('_')
             if(this.className == 'approve') {
-                $('#reject_'+user_id[1]).prop('checked', false);
-                $('#cancel_'+user_id[1]).prop('checked', false);
+                $('#reject_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
+                $('#cancel_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
                 $('.reject_all').prop('checked', false);
             }
             else if (this.className == 'reject') {
-                $('#myModal_'+user_id[1]).modal('show')
-                $('#approve_'+user_id[1]).prop('checked', false);
+                console.log('#myModal_'+user_id[1]+'_'+user_id[2])
+                $('#myModal_'+user_id[1]+'__'+user_id[2]).modal('show')
+                $('#approve_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
 
             }
             else if (this.className == 'cancel') {
-                $('#approve_'+user_id[1]).prop('checked', false);
-                $('#reject_'+user_id[1]).prop('checked', false);
+                $('#approve_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
+                $('#reject_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
 
             }
 
