@@ -123,7 +123,7 @@ Approve Timesheet
                                     <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                     <td><p>Yet to submit</p></td>
                                   {% elif v.managerFeeback%}
-                                    {% if v.approved == False and v.hold == False %}
+                                    {% if v.approved == False and v.hold == False or v.approved == True and v.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
                                     {% endif %}
@@ -138,7 +138,7 @@ Approve Timesheet
                               {% if v.approved == True and v.hold == True %}
                                        <button type="button" class="btn btn-success btn-xs">Approved</button>
                               {% elif v.managerFeedback%}
-                                        {% if v.approved == False and v.hold == False %}
+                                        {% if v.approved == False and v.hold == False or v.approved == True and v.hold == False%}
                                             <button type="button" class="btn btn-danger btn-xs">Rejected</button>
                                         {% endif %}
                               {% elif v.approved == False and v.hold == False %}
@@ -316,7 +316,7 @@ var time_iterate = function(e){
 
   // Append employee name to modal header
 if(!jQuery.isEmptyObject(time_obj.tsData) ){
-  $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
+  $('.timesheet-member-name').html(time_obj.tsData[0]['first_name'] +'  ' + time_obj.tsData[0]['last_name'] + ' ('+ time_obj.tsData[0]['employee_id'] +')');
 
   // tsdata iteration
 

@@ -1322,7 +1322,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                             'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
 
-
 def status_member(team_members, ignore_previous_year=False):
     status = {}
     week_collection = []
@@ -1996,14 +1995,12 @@ class ApproveTimesheetView(TemplateView):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
         manager_team_members, team_members = dem_members(self.request, pm_view=0)
-        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
         own_team = {members.user_id: members.user.email for members in team_members}
-        updated_dict = team_dict.copy()
-        updated_dict.update(own_team)
+        updated_dict = own_team.copy()
         dates = switchWeeks(self.request)
         start_date = dates['start']
         end_date = dates['end']
-        projects = ProjectDetail.objects.filter(deliveryManager_id=self.request.user.id, project_id__closed=0)
+        projects = ProjectDetail.objects.filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user), project_id__closed=0)
         status, week_collection, unapproved_count = status_member(Employee.objects.filter(
                     user_id__in=updated_dict.keys()))
         ts_list = []
