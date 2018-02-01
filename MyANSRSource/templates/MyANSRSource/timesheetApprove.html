@@ -119,6 +119,8 @@ Approve Timesheet
                                   <td>{{ v.saturdayH }}</td>
                                   <td>{{ v.sundayH }}</td>
                                   <td>{{ v.totalH }}</td>
+                                  <td>{{ v.approved }}</td>
+                                  <td>{{ v.hold }}</td>
                                   {% if v.approved == False and v.hold == False %}
                                     <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                     <td><p>Yet to submit</p></td>
