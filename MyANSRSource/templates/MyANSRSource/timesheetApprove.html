@@ -146,6 +146,10 @@ Approve Timesheet
                                         {% if v.approved == False and v.hold == False %}
                                             <button type="button" class="btn btn-danger btn-xs">Rejected</button>
                                         {% endif %}
+                              {% elif v.managerFeedback%}
+                                        {% if v.approved == True and v.hold == False %}
+                                            <button type="button" class="btn btn-danger btn-xs">Rejected</button>
+                                        {% endif %}
                               {% elif v.approved == False and v.hold == False %}
                                   <div class="checkbox checkbox-success radio-mod btn-xs disabled">
                                         <input id="approve_{{v.teamMember__id}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{project}}" disabled>
