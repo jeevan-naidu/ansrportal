@@ -2028,9 +2028,9 @@ class ApproveTimesheetView(TemplateView):
                 ts_user_list = []
                 for user in users:
                     for data in data_for_week:
+                        ts_data = {}
                         if user == data['teamMember__employee__employee_assigned_id']:
                             if user != self.request.user.employee.employee_assigned_id:
-                                ts_data = {}
                                 ts_data[user] = data
                                 ts_user_list.append(ts_data)
                     ts_data_dict[project] = ts_user_list
