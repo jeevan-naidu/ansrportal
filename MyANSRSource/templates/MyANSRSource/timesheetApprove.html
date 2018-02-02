@@ -119,10 +119,10 @@ Approve Timesheet
                                   <td>{{ v.saturdayH }}</td>
                                   <td>{{ v.sundayH }}</td>
                                   <td>{{ v.totalH }}</td>
-                                  {% if v.managerFeeback and v.approved == True and v.hold == False %}
+                                  {% if v.managerFeedback and v.approved == True and v.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
-                                  {% elif v.managerFeeback and v.approved == False and v.hold == False%}
+                                  {% elif v.managerFeedback and v.approved == False and v.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
                                   {% elif v.approved == False and v.hold == True %}
@@ -131,44 +131,42 @@ Approve Timesheet
                                   {% elif v.approved == True and v.hold == True %}
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
-                                  {% elif v.approved == False and v.hold == False %}
-                                    <td><p class="fa fa-circle" style="color:orange;"></p></td>
-                                    <td><p>Yet to submit</p></td>
+                                  {% elif not v.managerFeedback and v.approved == False and v.hold == False%}
+                                        <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                        <td><p>Yet to submit</p></td>
                                   {% endif %}
 
                              <td class="timesheet-approve-options text-center radio-padding-mod">
-                                    {% if v.managerFeedback %}
-                                        {% if v.approved == True and v.hold == False %}
+                                    {% if v.managerFeedback and v.approved == True and v.hold == False %}
                                             <button type="button" class="btn btn-danger btn-xs">Rejected</button>
-                                        {% elif v.approved == False and v.hold == True %}
-                                                <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                                <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                                <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
-                                                Approve
-                                                </label>
-                                            </div>
+                                    {% elif v.managerFeedback and v.approved == False and v.hold == True %}
+                                            <div class="checkbox checkbox-success radio-mod btn-xs disabled">
+                                            <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
+                                            <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                            Approve
+                                            </label>
+                                        </div>
 
-                                            <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                                <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                                <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
-                                                Reject
-                                                </label>
-                                            </div>
-                                            {% elif v.approved == False and v.hold == False %}
-                                                <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                                <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                                <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
-                                                Approve
-                                                </label>
-                                            </div>
+                                        <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
+                                            <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}">
+                                            <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                            Reject
+                                            </label>
+                                        </div>
+                                    {% elif v.managerFeedback and v.approved == False and v.hold == False %}
+                                            <div class="checkbox checkbox-success radio-mod btn-xs disabled">
+                                            <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                            <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                            Approve
+                                            </label>
+                                        </div>
 
-                                            <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                                <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                                <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
-                                                Reject
-                                                </label>
-                                            </div>
-                                         {% endif %}
+                                        <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
+                                            <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
+                                            <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                            Reject
+                                            </label>
+                                        </div>
                                     {% elif v.approved == True and v.hold == True %}
                                        <button type="button" class="btn btn-success btn-xs">Approved</button>
                                     {% elif v.managerFeedback %}
@@ -282,10 +280,10 @@ Approve Timesheet
                     <table class="table table-hover project-table">
                       <thead>
                         <tr>
-                          <th>Project ID</th>
-                          <th>Project Name</th>
                           <th>Employee ID</th>
                           <th>Employee Name</th>
+                          <th>Project ID</th>
+                          <th>Project Name</th>
                           <th>Chapter/Course</th>
                           <th>Task</th>
                           <th>Effort</th>
@@ -295,10 +293,10 @@ Approve Timesheet
 
 
                         <tr class="project-time-row">
-                          <td class="project">Project ID</td>
-                          <td class="project_name">Project Name</td>
                           <td class="employee_id">Employee ID</td>
                           <td class="employee_name">Employee Name</td>
+                          <td class="project">Project ID</td>
+                          <td class="project_name">Project Name</td>
                           <td class="chapter">chapter/course</td>
                           <td class="task">Task</td>
                           <td class="effort">effort</td>
@@ -367,10 +365,10 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
 
         $('.project-table tbody').append('<tr class="project-time-row"></tr>')
         $('.project-time-row:last-child').append(project_time_row);
-        $('.project-time-row:last-child td.project').html(time_obj.tsData[time_key]['project']);
-        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
         $('.project-time-row:last-child td.employee_id').html(time_obj.tsData[time_key]['employee_id']);
         $('.project-time-row:last-child td.employee_name').html(time_obj.tsData[time_key]['first_name']);
+        $('.project-time-row:last-child td.project').html(time_obj.tsData[time_key]['project']);
+        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
         $('.project-time-row:last-child td.chapter').html(time_obj.tsData[time_key]['chapter']);
         $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task']);
         $('.project-time-row:last-child td.effort').html(time_obj.tsData[time_key]['totalH']);
@@ -445,7 +443,6 @@ $(document).ready(function() {
                 $('.reject_all').prop('checked', false);
             }
             else if (this.className == 'reject') {
-                console.log('#myModal_'+user_id[1]+'_'+user_id[2])
                 $('#myModal_'+user_id[1]+'__'+user_id[2]).modal('show')
                 $('#approve_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
 
