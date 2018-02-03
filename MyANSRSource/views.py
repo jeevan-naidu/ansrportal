@@ -1988,6 +1988,52 @@ def time_for_week(start_date, end_date, project):
     ts_obj = TimeSheetEntry.objects.filter(wkstart = start_date, wkend = end_date, project_id = project.project.id)
     return ts_obj
 
+def user_details(ts_user_list):
+    ts_list = []
+    if len(ts_user_list) > 1:
+        ts_data = {}
+        monday_total = 0.0
+        tuesday_total = 0.0
+        wednesday_total = 0.0
+        thursday_total = 0.0
+        friday_total = 0.0
+        saturday_total = 0.0
+        sunday_total = 0.0
+        total_total = 0.0
+        for data in ts_user_list:
+            ts_data['teamMember__employee__employee_assigned_id'] = data['teamMember__employee__employee_assigned_id']
+            ts_data['project__id'] = data['project__id']
+            ts_data['project__projectType__code'] = data['project__projectType__code']
+            ts_data['project__projectId'] = data['project__projectId']
+            ts_data['remarks'] = data['remarks']
+            ts_data['project__internal'] = data['project__internal']
+            ts_data['project__projectType__code'] = data['project__projectType__code']
+            ts_data['approved'] = data['approved']
+            ts_data['hold'] = data['hold']
+            ts_data['teamMember__id'] = data['teamMember__id']
+            ts_data['teamMember__first_name'] = data['teamMember__first_name']
+            ts_data['teamMember__last_name'] = data['teamMember__last_name']
+            monday_total += float(data['mondayH'])
+            tuesday_total += float(data['tuesdayH'])
+            wednesday_total += float(data['wednesdayH'])
+            thursday_total += float(data['thursdayH'])
+            friday_total += float(data['fridayH'])
+            saturday_total += float(data['saturdayH'])
+            sunday_total += float(data['sundayH'])
+            total_total += float(data['totalH'])
+        ts_data['mondayH'] = monday_total
+        ts_data['tuesdayH'] = tuesday_total
+        ts_data['wednesdayH'] = wednesday_total
+        ts_data['thursdayH'] = thursday_total
+        ts_data['fridayH'] = friday_total
+        ts_data['saturdayH'] = saturday_total
+        ts_data['sundayH'] = sunday_total
+        ts_data['totalH'] = total_total
+        ts_list.append(ts_data)
+    else:
+        ts_list = ts_user_list
+    return ts_list
+
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
 
@@ -2012,7 +2058,7 @@ class ApproveTimesheetView(TemplateView):
              'saturdayH', 'sundayH', 'approved',
              'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
              'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks', 'approved', 'hold', 'teamMember__id', 'project__projectId',
+             'remarks', 'approved', 'hold', 'teamMember__id',
              )
 
             if data_for_week:
@@ -2022,15 +2068,17 @@ class ApproveTimesheetView(TemplateView):
                 for data in data_for_week:
                     users.append(data['teamMember__employee__employee_assigned_id'])
                 users = list(set(users))
-                ts_user_list = []
+                user_detail = []
                 for user in users:
+                    ts_data = {}
+                    ts_user_list = []
                     for data in data_for_week:
-                        ts_data = {}
-                        if user == data['teamMember__employee__employee_assigned_id']:
-                            if user != self.request.user.employee.employee_assigned_id:
-                                ts_data[user] = data
-                                ts_user_list.append(ts_data)
-                    ts_data_dict[project] = ts_user_list
+                        if user != self.request.user.employee.employee_assigned_id:
+                            if user == data['teamMember__employee__employee_assigned_id']:
+                                ts_user_list.append(data)
+                    ts_data[user] = user_details(ts_user_list)
+                    user_detail.append(ts_data)
+                ts_data_dict[project] = user_detail
                 ts_list.append(ts_data_dict)
         context['ts_list'] = ts_list
         context['project_with_data'] = project_with_data

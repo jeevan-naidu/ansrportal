@@ -103,117 +103,116 @@ Approve Timesheet
                           </thead>
                           <tbody>
 
-
                           {% for data in user_list %}
-                              {% for k,v in data.items %}
+                            {% for k,v in data.items %}
                               <tr class="odd gradeX approve-reject-options">
                                   <td>{{ k }}</td>
                                   <td>
-                                  <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{ v.teamMember__id }}:{{ project }}" style="cursor: pointer;">{{ v.teamMember__first_name }} {{ v.teamMember__last_name }}</a>
+                                  <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{ v.0.teamMember__id }}:{{ project }}" style="cursor: pointer;">{{ v.0.teamMember__first_name }} {{ v.0.teamMember__last_name }}</a>
                                   </td>
-                                  <td>{{ v.mondayH }}</td>
-                                  <td>{{ v.tuesdayH }}</td>
-                                  <td>{{ v.wednesdayH }}</td>
-                                  <td>{{ v.thursdayH }}</td>
-                                  <td>{{ v.fridayH }}</td>
-                                  <td>{{ v.saturdayH }}</td>
-                                  <td>{{ v.sundayH }}</td>
-                                  <td>{{ v.totalH }}</td>
-                                  {% if v.managerFeedback and v.approved == True and v.hold == False %}
+                                  <td>{{ v.0.mondayH }}</td>
+                                  <td>{{ v.0.tuesdayH }}</td>
+                                  <td>{{ v.0.wednesdayH }}</td>
+                                  <td>{{ v.0.thursdayH }}</td>
+                                  <td>{{ v.0.fridayH }}</td>
+                                  <td>{{ v.0.saturdayH }}</td>
+                                  <td>{{ v.0.sundayH }}</td>
+                                  <td>{{ v.0.totalH }}</td>
+                                  {% if v.0.managerFeedback and v.0.approved == True and v.0.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
-                                  {% elif v.managerFeedback and v.approved == False and v.hold == False %}
+                                  {% elif v.0.managerFeedback and v.0.approved == False and v.0.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
-                                  {% elif v.approved == False and v.hold == True %}
+                                  {% elif v.0.approved == False and v.0.hold == True %}
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                     <td><p class="fa fa-circle" style="color:orange;"></p></td>
-                                  {% elif v.approved == True and v.hold == True %}
+                                  {% elif v.0.approved == True and v.0.hold == True %}
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
-                                  {% elif not v.managerFeedback and v.approved == False and v.hold == False%}
+                                  {% elif not v.0.managerFeedback and v.0.approved == False and v.0.hold == False%}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p>Yet to submit</p></td>
                                   {% endif %}
 
                              <td class="timesheet-approve-options text-center radio-padding-mod">
-                                    {% if v.managerFeedback and v.approved == True and v.hold == False %}
+                                    {% if v.0.managerFeedback and v.0.approved == True and v.0.hold == False %}
                                             <button type="button" class="btn btn-danger btn-xs">Rejected</button>
-                                    {% elif v.managerFeedback and v.approved == False and v.hold == True %}
+                                    {% elif v.0.managerFeedback and v.0.approved == False and v.0.hold == True %}
                                             <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                            <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                            <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                            <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                            <label for="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                             Approve
                                             </label>
                                         </div>
 
                                         <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                            <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                            <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                            <input id="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                            <label for="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="noselect disable-select ansr-brown">
                                             Reject
                                             </label>
                                         </div>
-                                    {% elif v.managerFeedback and v.approved == False and v.hold == False %}
+                                    {% elif v.0.managerFeedback and v.0.approved == False and v.0.hold == False %}
                                             <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                            <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                            <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                            <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}" disabled>
+                                            <label for="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                             Approve
                                             </label>
                                         </div>
 
                                         <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                            <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                            <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                            <input id="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}" disabled>
+                                            <label for="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="noselect disable-select ansr-brown">
                                             Reject
                                             </label>
                                         </div>
-                                    {% elif v.approved == True and v.hold == True %}
+                                    {% elif v.0.approved == True and v.0.hold == True %}
                                        <button type="button" class="btn btn-success btn-xs">Approved</button>
-                                    {% elif v.managerFeedback %}
-                                        {% if v.approved == False and v.hold == False %}
+                                    {% elif v.0.managerFeedback %}
+                                        {% if v.0.approved == False and v.0.hold == False %}
                                             <button type="button" class="btn btn-danger btn-xs">Rejected</button>
                                         {% endif %}
-                                     {% elif v.approved == False and v.hold == False %}
+                                     {% elif v.0.approved == False and v.0.hold == False %}
                                       <div class="checkbox checkbox-success radio-mod btn-xs disabled">
-                                            <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                            <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                            <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}" disabled>
+                                            <label for="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                             Approve
                                             </label>
                                         </div>
 
                                         <div class="checkbox checkbox-danger radio-mod btn-xs disabled">
-                                            <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}" disabled>
-                                            <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                            <input id="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}" disabled>
+                                            <label for="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="noselect disable-select ansr-brown">
                                             Reject
                                             </label>
                                         </div>
                                       {% else %}
                                           <div class="checkbox checkbox-success radio-mod btn-xs">
-                                                <input id="approve_{{v.teamMember__id}}_{{v.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                                <label for="approve_{{v.teamMember__id}}_{{v.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
+                                                <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                                <label for="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="ansr-orange-mod noselect disable-select ansr-brown">
                                                 Approve
                                                 </label>
                                             </div>
 
                                             <div class="checkbox checkbox-danger radio-mod btn-xs">
-                                                <input id="reject_{{v.teamMember__id}}_{{v.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.teamMember__id}}_{{v.project__projectId}}">
-                                                <label for="reject_{{v.teamMember__id}}_{{v.project__projectId}}" class="noselect disable-select ansr-brown">
+                                                <input id="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                                <label for="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="noselect disable-select ansr-brown">
                                                 Reject
                                                 </label>
                                             </div>
                                       {% endif %}
                             </td>
                                  <td class="menu-action">
-                                      <a data-toggle="modal" data-target="#myModal_{{v.teamMember__id}}_{{v.project__projectId}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
+                                      <a data-toggle="modal" data-target="#myModal_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
                                         <i class="fa fa-comments-o"></i>
                                       </a>
                                     </td>
-                                <div class="modal fade" id="myModal_{{v.teamMember__id}}__{{v.project__projectId}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.teamMember__id}}" aria-hidden="true" style="display: none;">
+                                <div class="modal fade" id="myModal_{{v.0.teamMember__id}}__{{v.0.project__projectId}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.0.teamMember__id}}" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
                                         <div class="modal-header vd_bg-blue vd_white" >
                                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
-                                          <h4 class="modal-title" id="myModalLabel_{{v.teamMember__id}}" >Feedback</h4>
+                                          <h4 class="modal-title" id="myModalLabel_{{v.0.teamMember__id}}" >Feedback</h4>
                                         </div>
                                         <div class="modal-body">
                                           <div class="row">
@@ -221,7 +220,7 @@ Approve Timesheet
                                               <div class="form-group">
                                                 <label class="col-sm-4 control-label">Enter Your Feedback</label>
                                                 <div class="col-sm-7 controls">
-                                                  <textarea class="input-border-btm" name="feedback_{{v.teamMember__id}}" type="text"></textarea>
+                                                  <textarea class="input-border-btm" name="feedback_{{v.0.teamMember__id}}" type="text"></textarea>
                                                 </div>
                                             </div>
                                           </div>
@@ -240,10 +239,9 @@ Approve Timesheet
 
                                 </tr>
                                 {% endfor %}
-                                {% endfor %}
-                                {% endfor %}
+                            {% endfor %}
                           {% endfor %}
-
+                        {% endfor %}
 
   </tbody>
 </table>
