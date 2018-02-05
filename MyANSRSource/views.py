@@ -2066,20 +2066,21 @@ class ApproveTimesheetView(TemplateView):
                 users = []
                 ts_data_dict = {}
                 for data in data_for_week:
-                    users.append(data['teamMember__employee__employee_assigned_id'])
+                    if data['teamMember__id'] != self.request.user.id:
+                        users.append(data['teamMember__employee__employee_assigned_id'])
                 users = list(set(users))
                 user_detail = []
                 for user in users:
-                    ts_data = {}
-                    ts_user_list = []
-                    for data in data_for_week:
-                        if user != self.request.user.employee.employee_assigned_id:
+                        ts_data = {}
+                        ts_user_list = []
+                        for data in data_for_week:
                             if user == data['teamMember__employee__employee_assigned_id']:
                                 ts_user_list.append(data)
-                    ts_data[user] = user_details(ts_user_list)
-                    user_detail.append(ts_data)
-                ts_data_dict[project] = user_detail
-                ts_list.append(ts_data_dict)
+                        ts_data[user] = user_details(ts_user_list)
+                        user_detail.append(ts_data)
+                if user_detail:
+                    ts_data_dict[project] = user_detail
+                    ts_list.append(ts_data_dict)
         context['ts_list'] = ts_list
         context['project_with_data'] = project_with_data
         context['ts_final_list'] = ts_final_list
