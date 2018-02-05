@@ -127,6 +127,9 @@ Approve Timesheet
                                   {% elif v.0.approved == False and v.0.hold == True %}
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                     <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                    {% elif v.0.approved == True and v.0.hold == False %}
+                                      <td><p class="fa fa-circle" style="color:green;"></p></td>
+                                      <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                   {% elif v.0.approved == True and v.0.hold == True %}
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
                                     <td><p class="fa fa-circle" style="color:green;"></p></td>
@@ -180,6 +183,20 @@ Approve Timesheet
                                            Reject
                                            </label>
                                        </div>
+                                       {% elif v.0.approved == True and v.0.hold == False %}
+                                        <div class="checkbox checkbox-success radio-mod btn-xs">
+                                              <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                              <label  for="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                              Approve
+                                              </label>
+                                          </div>
+
+                                          <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                              <input id="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" type="checkbox" name="reject[]" class="reject" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                              <label  for="reject_{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
+                                              Reject
+                                              </label>
+                                          </div>
                                      {% elif v.0.approved == False and v.0.hold == True %}
                                      <div class="checkbox checkbox-success radio-mod btn-xs">
                                            <input id="approve_{{v.0.teamMember__id}}_{{v.0.project__projectId}}"  type="checkbox" name="approve[]" class="approve" value="{{v.0.teamMember__id}}_{{v.0.project__projectId}}">
