@@ -98,7 +98,6 @@ Approve Timesheet
                               <th>Submission Status</th>
                               <th>Approval Status</th>
                               <th class="text-center">Options</th>
-                              <th>Feedback</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -122,6 +121,9 @@ Approve Timesheet
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
                                   {% elif v.0.managerFeedback and v.0.approved == False and v.0.hold == False %}
+                                        <td><p class="fa fa-circle" style="color:orange;"></p></td>
+                                        <td><p class="fa fa-circle" style="color:red;"></p></td>
+                                  {% elif v.0.approved == False and v.0.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
                                   {% elif v.0.approved == False and v.0.hold == True %}
@@ -214,11 +216,6 @@ Approve Timesheet
 
                                 {% endif %}
                             </td>
-                                 <td class="menu-action">
-                                      <a data-toggle="modal" data-target="#myModal_{{v.0.teamMember__id}}_{{v.0.project__projectId}}" class="btn menu-icon vd_bd-yellow vd_yellow ansr-brown">
-                                        <i class="fa fa-comments-o"></i>
-                                      </a>
-                                    </td>
                                 <div class="modal fade" id="myModal_{{v.0.teamMember__id}}__{{v.0.project__projectId}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{v.0.teamMember__id}}" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
@@ -239,7 +236,7 @@ Approve Timesheet
                                         </div>
                                         </div>
                                         <div class="modal-footer background-login">
-                                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                                          <button type="button" class="btn vd_btn vd_bg-grey" id="closed" data-dismiss="modal">Close</button>
                                           <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
                                         </div>
                                       </div>
@@ -455,7 +452,6 @@ $(document).ready(function() {
             else if (this.className == 'reject') {
                 $('#myModal_'+user_id[1]+'__'+user_id[2]).modal('show')
                 $('#approve_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
-
             }
             else if (this.className == 'cancel') {
                 $('#approve_'+user_id[1]+'__'+user_id[2]).prop('checked', false);
