@@ -2051,8 +2051,8 @@ class ApproveTimesheetView(TemplateView):
         status, week_collection, unapproved_count = status_member(Employee.objects.filter(
                     user_id__in=updated_dict.keys()))
         ts_list = []
-        project_with_data = []
         for project in projects:
+            user_data = ProjectTeamMember.objects.filter(project_id=project.project.id)
             data_for_week = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project_id=project.project.id).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
              'tuesdayH', 'wednesdayH', 'project__id',
              'thursdayH', 'fridayH', 'hold',
@@ -2063,27 +2063,81 @@ class ApproveTimesheetView(TemplateView):
              )
 
             if data_for_week:
-                project_with_data.append(project)
-                users = []
                 ts_data_dict = {}
-                for data in data_for_week:
-                    if data['teamMember__id'] != self.request.user.id:
-                        users.append(data['teamMember__employee__employee_assigned_id'])
-                users = list(set(users))
                 user_detail = []
-                for user in users:
-                        ts_data = {}
-                        ts_user_list = []
-                        for data in data_for_week:
-                            if user == data['teamMember__employee__employee_assigned_id']:
+                for user in user_data:
+                    if user.member.id != self.request.user.id:
+                        if user.startDate < start_date < user.endDate:
+                            print 1
+                            ts_data = {}
+                            ts_user_list = []
+                            for data in data_for_week:
+                                if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
+                                    ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            if not ts_data[user.member.employee.employee_assigned_id]:
+                                data={}
+                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                                data['project__id'] = user.project_id
+                                data['project__projectType__code'] = user.project.projectType
+                                data['project__projectId'] = user.project.projectId
+                                data['remarks'] = ''
+                                data['project__internal'] = user.project.internal
+                                data['approved'] = 'no'
+                                data['hold'] = 'no'
+                                data['teamMember__id'] = user.member_id
+                                data['teamMember__first_name'] = user.member.first_name
+                                data['teamMember__last_name'] = user.member.last_name
+                                data['mondayH'] = 0
+                                data['tuesdayH'] = 0
+                                data['wednesdayH'] = 0
+                                data['thursdayH'] = 0
+                                data['fridayH'] = 0
+                                data['saturdayH'] = 0
+                                data['sundayH'] = 0
+                                data['totalH'] = 0
                                 ts_user_list.append(data)
-                        ts_data[user] = user_details(ts_user_list)
-                        user_detail.append(ts_data)
+                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
                 if user_detail:
                     ts_data_dict[project] = user_detail
                     ts_list.append(ts_data_dict)
+            else:
+                user_detail = []
+                ts_data_dict = {}
+                for user in user_data:
+                    if user.startDate < start_date < user.endDate:
+                        ts_data = {}
+                        ts_user_list = []
+                        if user.member_id != self.request.user.id:
+                            data = {}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
+                if user_detail:
+                    ts_data_dict[project] = user_detail
+                    ts_list.append(ts_data_dict)
+
         context['ts_list'] = ts_list
-        context['project_with_data'] = project_with_data
         context['ts_final_list'] = ts_final_list
         context['weekstartDate'] = dates['start']
         context['weekendDate'] = dates['end']
