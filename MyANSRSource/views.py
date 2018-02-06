@@ -2071,7 +2071,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 for user in user_data:
                     if user.member.id != self.request.user.id:
-                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week):
+                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
                             ts_data = {}
                             ts_user_list = []
                             for data in data_for_week:
@@ -2109,7 +2109,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 ts_data_dict = {}
                 for user in user_data:
-                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week):
+                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
                         ts_data = {}
                         ts_user_list = []
                         if user.member_id != self.request.user.id:
