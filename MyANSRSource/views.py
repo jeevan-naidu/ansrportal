@@ -2047,6 +2047,10 @@ class ApproveTimesheetView(TemplateView):
         dates = switchWeeks(self.request)
         start_date = dates['start']
         end_date = dates['end']
+        date_in_week = []
+        delta = end_date - start_date
+        for i in range(delta.days + 1):
+            date_in_week.append(start_date + timedelta(days=i))
         projects = ProjectDetail.objects.filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user), project_id__closed=0)
         status, week_collection, unapproved_count = status_member(Employee.objects.filter(
                     user_id__in=updated_dict.keys()))
@@ -2067,7 +2071,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 for user in user_data:
                     if user.member.id != self.request.user.id:
-                        if user.startDate < start_date and user.endDate < end_date:
+                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week):
                             ts_data = {}
                             ts_user_list = []
                             for data in data_for_week:
@@ -2105,7 +2109,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 ts_data_dict = {}
                 for user in user_data:
-                    if user.startDate < start_date and user.endDate < end_date:
+                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week):
                         ts_data = {}
                         ts_user_list = []
                         if user.member_id != self.request.user.id:
