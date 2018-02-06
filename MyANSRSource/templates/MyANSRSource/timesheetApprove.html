@@ -119,7 +119,7 @@ Approve Timesheet
                                   <td>{{ v.0.totalH }}</td>
                                   {% if v.0.approved == 'no' and v.0.hold == 'no' %}
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
-                                        <td>Not submitted</p></td>
+                                        <td></td>
                                   {% elif v.0.managerFeedback and v.0.approved == True and v.0.hold == False %}
                                         <td><p class="fa fa-circle" style="color:orange;"></p></td>
                                         <td><p class="fa fa-circle" style="color:red;"></p></td>
