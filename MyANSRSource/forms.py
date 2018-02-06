@@ -788,7 +788,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
 class ChangeProjectTeamMemberForm(forms.ModelForm):
     id = forms.IntegerField(label="teamRecId",widget=forms.HiddenInput() )
     member = forms.ModelChoiceField(
-        queryset=User.objects.all(),
+        queryset=User.objects.filter(is_active=True),
         # label="Project Leader",
         widget=autocomplete.ModelSelect2(url='AutocompleteUser', attrs={
             # Set some placeholder
@@ -803,34 +803,34 @@ class ChangeProjectTeamMemberForm(forms.ModelForm):
         fields = (
             'member',
             'role',
-            'product',
             'startDate',
-            'plannedcount',
-            'actualcount',
+            'endDate',
             'plannedEffort',
         )
         widgets = {
             'startDate': DateTimePicker(options=dateTimeOption),
+            'endDate': DateTimePicker(options=dateTimeOption),
             'project': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
         super(ChangeProjectTeamMemberForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
-        self.fields['plannedEffort'].widget.attrs['max'] = 40
-        self.fields['plannedEffort'].widget.attrs[
-            'required'] = "true"
+        # self.fields['plannedEffort'].widget.attrs['max'] = 40
+        # self.fields['plannedEffort'].widget.attrs[
+        #     'required'] = "true"
         self.fields['id'].widget.attrs['class'] = "set-zero"
         self.fields['member'].widget.attrs['class'] = "form-control min-200"
         self.fields['startDate'].widget.attrs[
             'class'] = "form-control min-100 pro-start-date"
-        # self.fields['endDate'].widget.attrs[
-        #     'class'] = "form-control  min-100 pro-end-date"
+        self.fields['endDate'].widget.attrs[
+            'class'] = "form-control min-100 pro-end-date"
         self.fields['startDate'].widget.attrs['required'] = True
-        self.fields['actualcount'].widget.attrs[
-            'class'] = "form-control w-1000"
-        self.fields['actualcount'].widget.attrs[
-            'required'] = "true"
+        self.fields['endDate'].widget.attrs['required'] = True
+        # self.fields['actualcount'].widget.attrs[
+        #     'class'] = "form-control w-1000"
+        # self.fields['actualcount'].widget.attrs[
+        #     'required'] = "true"
         self.fields['plannedEffort'].widget.attrs[
             'class'] = "form-control w-100"
 

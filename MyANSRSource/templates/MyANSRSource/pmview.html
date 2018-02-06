@@ -1,13 +1,12 @@
 {% extends 'timesheetEntry.html'  %}
 
-{% block siteTitle %}Timesheet{% endblock %}
+{% block siteTitle %}Team Member View{% endblock %}
 
 {% load permissions %}
 {% block pageTitle %}
 Team member view
 
 {% endblock %}
-
 
 
 {% block switch_dates %}
@@ -56,6 +55,18 @@ Team member view
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
 
+<div>
+<table class="table table-striped myansr-table">
+<thead>
+<tr><th>Legend</th><th>Submission Status</th><th>Approval Status</th></tr>
+</thead>
+<tbody>
+<tr><td class="fa fa-circle" style="color:green;"></td><td>Submitted</td><td>Approved</td></tr>
+<tr><td class="fa fa-circle" style="color:orange;"></td><td>Saved</td><td>Pending Approval</td></tr>
+<tr><td class="fa fa-circle" style="color:red;"></td><td>Not Submitted</td><td>Rejected</td></tr>
+</tbody>
+</table>
+</div>
 
 
 <div class="panel pb-15">
@@ -64,31 +75,34 @@ Team member view
                 <!--<button id="reminder_mail" class="btn btn-xs vd_btn vd_bg-blue pull-right" style="margin-bottom: 5px;">Send Reminder</button>-->
                 <form method="post" action=""> {% csrf_token %}
 
-
-{% if ts_data_list_approved_false or ts_data_list_approved_true %}
 <table class="table table-striped myansr-table" id="timesheet-approve-table">
   <thead>
     <tr>
       <th>Employee Id</th>
       <th>Name</th>
-      <th>Billable (External) </th>
-      <th>Billable (Internal)</th>
-      <th>Non-Billable </th>
-      <th>Leave</th>
+      <th>Time in Office</th>
+      <th>Leaves </th>
+      <th>Total Hours Logged</th>
+      <th>Internal Hours</th>
+      <th>External Hours</th>
+      <th>External Utilization(%)</th>
     </tr>
   </thead>
   <tbody>
 
   {% for team_members,values in ts_data_list_approved_false.iteritems %}
+
     <tr class="odd gradeX approve-reject-options">
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
       <a class="timesheet-approve-user-details details" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
       </td>
-      <td>{{values.external_value}}</td>
+      <td>{{values.total_time}}</td>
+      <td>{{values.leave_hours}}</td>
+      <td>{{values.total_hours_logged}}</td>
       <td>{{values.internal_value}}  </td>
-      <td>{{values.non_billable_total}}</td>
-      <td> {{values.leave_hours}} </td>
+      <td>{{values.external_value}}</td>
+      <td>{{values.external_utilization}}</td>
 
         <!-- Modal Area -->
 
@@ -100,12 +114,14 @@ Team member view
     <tr class="odd gradeX">
       <td>{{team_members.employee_assigned_id}} </td>
       <td>
-      <a class="timesheet-approve-user-details employee" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
+      <a class="timesheet-approve-user-details details" data-toggle="modal" data-target="#timesheet-approve-report" data-value="{{team_members.user.id}}" style="cursor: pointer;">{{team_members.user.first_name}} {{team_members.user.last_name}}</a>
       </td>
+      <td>{{values.total_time}}</td>
+      <td>{{values.leave_hours}}</td>
+      <td>{{values.total_hours_logged}}</td>
+       <td>{{values.internal_value}}  </td>
       <td>{{values.external_value}}</td>
-      <td>{{values.internal_value}} </td>
-      <td>{{values.non_billable_total}}</td>
-      <td> {{values.leave_hours}} </td>
+      <td>{{values.external_utilization}}</td>
 
                   <div class="modal fade" id="myModal_{{team_members.user.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{{team_members.user.id}}" aria-hidden="true" style="display: none;">
                     <div class="modal-dialog">
@@ -147,9 +163,7 @@ Team member view
   </tbody>
 </table>
             <!--<input type="submit" name="submit" class="btn btn-sm vd_btn vd_bg-green pull-right" value="Submit">-->
-        {% else %}
-        <span>Sorry None Of Your Team Members Have Submitted Their Time Sheet For this Week </span>
-        {% endif %}
+
         <input type="hidden" name="weekstartDate" id="weekstartDate" value="{{weekstartDate|date:"dmY"}}">
         <input type="hidden" name="weekendDate" id="weekendDate" value="{{weekendDate|date:"dmY"}}">
 
@@ -179,7 +193,8 @@ Team member view
                     <table class="table table-hover project-table">
                       <thead>
                         <tr>
-                          <th style="width: 300px;">Billable Project</th>
+                          <th></th>
+                          <th>Manager</th>
                           <th>Mon</th>
                           <th>Tue</th>
                           <th>Wed</th>
@@ -187,81 +202,124 @@ Team member view
                           <th>Fri</th>
                           <th>Sat</th>
                           <th>Sun</th>
+                          <th>Total</th>
+                          <th>Submission Status</th>
+                          <th>Approval Status</th>
                         </tr>
                       </thead>
                       <tbody>
 
+                      <tr class="project-time-row time_in_office">
+                          <td class="time_in_office_name">Time in Office</td>
+                          <td class="time_in_office_empty">-</td>
+                          <td class="time_in_office_mondayH">0</td>
+                          <td class="time_in_office_tuesdayH">0</td>
+                          <td class="time_in_office_wednesdayH">0</td>
+                          <td class="time_in_office_thursdayH">0</td>
+                          <td class="time_in_office_fridayH">0</td>
+                          <td class="time_in_office_saturdayH">0</td>
+                          <td class="time_in_office_sundayH">0</td>
+                          <td class="time_in_office_TotalH">0</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
 
-                        <tr class="project-time-row">
-                          <td class="project_name">The name of the project</td>
-                          <td class="mondayH">0</td>
-                          <td class="tuesdayH">0</td>
-                          <td class="wednesdayH">0</td>
-                          <td class="thursdayH">0</td>
-                          <td class="fridayH">0</td>
-                          <td class="saturdayH">0</td>
-                          <td class="sundayH">0</td>
-                        </tr>
+                      <tr class="project-time-row leaves">
+                          <td class="leaves_name">Leaves</td>
+                          <td class="leaves_practice_manager">-</td>
+                          <td class="leaves_mondayH">0</td>
+                          <td class="leaves_tuesdayH">0</td>
+                          <td class="leaves_wednesdayH">0</td>
+                          <td class="leaves_thursdayH">0</td>
+                          <td class="leaves_fridayH">0</td>
+                          <td class="leaves_saturdayH">0</td>
+                          <td class="leaves_sundayH">0</td>
+                          <td class="leaves_TotalH">0</td>
+                          <td></td>
+                          <td></td>
+                      </tr>
 
+                      <tr class="project-time-row total_hours_logged">
+                          <td class="THL_name">Total Hours Logged</td>
+                          <td class="THL_empty">-</td>
+                          <td class="THL_mondayH">0</td>
+                          <td class="THL_tuesdayH">0</td>
+                          <td class="THL_wednesdayH">0</td>
+                          <td class="THL_thursdayH">0</td>
+                          <td class="THL_fridayH">0</td>
+                          <td class="THL_saturdayH">0</td>
+                          <td class="THL_sundayH">0</td>
+                          <td class="THL_TotalH">0</td>
+                          <td class="THL_submission"></td>
+                          <td></td>
+                      </tr>
+
+
+
+                      <tr class="project-time-row external_hours_header">
+                            <td class="external_hours_header_name"><b>External Hours</b></td>
+                          <td class="external_hours_header_delivery_manager"><b>Delivery Manager</b></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                       </tr>
+
+                      <tr class="project-time-row external_hours">
+                          <td class="external_hours_name">External Hours</td>
+                          <td class="external_hours_delivery_manager">-</td>
+                          <td class="external_hours_mondayH">0</td>
+                          <td class="external_hours_tuesdayH">0</td>
+                          <td class="external_hours_wednesdayH">0</td>
+                          <td class="external_hours_thursdayH">0</td>
+                          <td class="external_hours_fridayH">0</td>
+                          <td class="external_hours_saturdayH">0</td>
+                          <td class="external_hours_sundayH">0</td>
+                          <td class="external_hours_TotalH">0</td>
+                          <td class="external_hours_submission_status">0</td>
+                          <td class="external_hours_approval_status">0</td>
+                      </tr>
+
+                      <tr class="project-time-row internal_hours_header">
+                           <td class="internal_hours_header_name"><b>Internal Hours</b></td>
+                          <td class="internal_hours_header_delivery_manager"><b>Delivery Manager</b></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                      </tr>
+
+
+
+                     <tr class="project-time-row internal_hours">
+                         <td class="internal_hours_name">Internal Hours</td>
+                         <td class="internal_hours_delivery_manager">-</td>
+                         <td class="internal_hours_mondayH">0</td>
+                         <td class="internal_hours_tuesdayH">0</td>
+                         <td class="internal_hours_wednesdayH">0</td>
+                         <td class="internal_hours_thursdayH">0</td>
+                         <td class="internal_hours_fridayH">0</td>
+                         <td class="internal_hours_saturdayH">0</td>
+                         <td class="internal_hours_sundayH">0</td>
+                         <td class="internal_hours_TotalH">0</td>
+                         <td class="internal_hours_submission_status">0</td>
+                         <td class="internal_hours_approval_status">0</td>
+                     </tr>
 
                       </tbody>
                     </table>
-
-
-                    <table class="table table-hover activity-table">
-                      <thead>
-                        <tr>
-                          <th style="width: 300px;">Non-Billable Activities</th>
-                          <th><span class="invisible">Mon</span></th>
-                          <th><span class="invisible">Tue</span></th>
-                          <th><span class="invisible">Wed</span></th>
-                          <th><span class="invisible">Thu</span></th>
-                          <th><span class="invisible">Fri</span></th>
-                          <th><span class="invisible">Sat</span></th>
-                          <th><span class="invisible">Sun</span></th>
-                        </tr>
-                      </thead>
-
-
-                      <tbody>
-                        <tr class="activity-time-row">
-                          <td class="activity">The name of the activity</td>
-                          <td class="activity_monday">0</td>
-                          <td class="activity_tuesday">0</td>
-                          <td class="activity_wednesday">0</td>
-                          <td class="activity_thursday">0</td>
-                          <td class="activity_friday">0</td>
-                          <td class="activity_saturday">0</td>
-                          <td class="activity_sunday">0</td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <table class="table table-hover total-table">
-                      <thead>
-                        <tr>
-                          <th class="invisible" style="width: 300px;">Non-Billable</th>
-                          <th><span class="invisible">Mon</span></th>
-                          <th><span class="invisible">Tue</span></th>
-                          <th><span class="invisible">Wed</span></th>
-                          <th><span class="invisible">Thu</span></th>
-                          <th><span class="invisible">Fri</span></th>
-                          <th><span class="invisible">Sat</span></th>
-                          <th><span class="invisible">Sun</span></th>
-                        </tr>
-                      </thead>
-                        <tr class="total-row">
-                          <td>Total</td>
-                          <td class="monday_total">0</td>
-                          <td class="tuesday_total">0</td>
-                          <td class="wednesday_total">0</td>
-                          <td class="thursday_total">0</td>
-                          <td class="friday_total">0</td>
-                          <td class="saturday_total">0</td>
-                          <td class="sunday_total">0</td>
-                        </tr>
-                    </table>
-
                         </div>
                         <div class="modal-footer background-login">
                           <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
@@ -284,124 +342,211 @@ Team member view
 
 
 <script type="text/javascript">
-
-var project_time_row = $('.project-time-row').html();
-var activity_time_row = $('.activity-time-row').html();
-var total_row = $('.total-row').html();
-
-
+var time_in_office_row = $('.time_in_office').html();
+var leaves_row = $('.leaves').html();
+var total_hours_logged_row = $('.total_hours_logged').html();
+var internal_hours_row = $('.internal_hours').html();
+var external_hours_row = $('.external_hours').html();
+var external_hours_header_row = $('.external_hours_header').html();
+var internal_hours_header_row = $('.internal_hours_header').html();
 
 // Functions
-
 var time_iterate = function(e){
-
   var time_obj = e;
-
-  $('.project-time-row').html('');
-  $('.activity-time-row').html('');
-
+  $('.time_in_office').html('');
+  $('.leaves').html('');
+  $('.total_hours_logged').html('');
+  $('.internal_hours').html('');
+  $('.external_hours').html('');
+  $('.internal_hours_header').html('');
+  $('.external_hours_header').html('');
   // Append employee name to modal header
+
 if(!jQuery.isEmptyObject(time_obj.tsData) ){
   $('.timesheet-member-name').html(time_obj.tsData[0]['teamMember__first_name'] +'  ' + time_obj.tsData[0]['teamMember__last_name'] + ' ('+ time_obj.tsData[0]['teamMember__employee__employee_assigned_id'] +')');
 
-  // tsdata iteration
+  //Time_in_office
 
-  for (var time_key in time_obj['tsData']){
-    if (time_obj['tsData'].hasOwnProperty(time_key)){
+  $('.project-table tbody').append('<tr class="project-time-row time_in_office"></tr>')
+  $('.time_in_office:last-child').append(time_in_office_row);
+  $('.time_in_office:last-child td.time_in_office_name').html('<b>Time in Office</b>');
+  $('.time_in_office:last-child td.time_in_office_empty').html('-');
+  $('.time_in_office:last-child td.time_in_office_mondayH').html(time_obj.week_data[0]);
+  $('.time_in_office:last-child td.time_in_office_tuesdayH').html(time_obj.week_data[1]);
+  $('.time_in_office:last-child td.time_in_office_wednesdayH').html(time_obj.week_data[2]);
+  $('.time_in_office:last-child td.time_in_office_thursdayH').html(time_obj.week_data[3]);
+  $('.time_in_office:last-child td.time_in_office_fridayH').html(time_obj.week_data[4]);
+  $('.time_in_office:last-child td.time_in_office_saturdayH').html(time_obj.week_data[5]);
+  $('.time_in_office:last-child td.time_in_office_sundayH').html(time_obj.week_data[6]);
+  $('.time_in_office:last-child td.time_in_office_TotalH').html(time_obj.time_in);
 
+  //Leaves
 
+  $('.project-table tbody').append('<tr class="project-time-row leaves"></tr>')
+  $('.leaves:last-child').append(leaves_row);
+  $('.leaves:last-child td.leaves_name').html('<b>Leaves</b>');
+  $('.leaves:last-child td.leaves_practice_manager').html(time_obj.practice_manager);
+  $('.leaves:last-child td.leaves_mondayH').html(time_obj.leaves[0]);
+  $('.leaves:last-child td.leaves_tuesdayH').html(time_obj.leaves[1]);
+  $('.leaves:last-child td.leaves_wednesdayH').html(time_obj.leaves[2]);
+  $('.leaves:last-child td.leaves_thursdayH').html(time_obj.leaves[3]);
+  $('.leaves:last-child td.leaves_fridayH').html(time_obj.leaves[4]);
+  $('.leaves:last-child td.leaves_saturdayH').html(time_obj.leaves[5]);
+  $('.leaves:last-child td.leaves_sundayH').html(time_obj.leaves[6]);
+  $('.leaves:last-child td.leaves_TotalH').html(time_obj.leave_total);
 
-      // Get length
+  //Total hours Logged
 
-      var obj_length = time_obj.tsData.length;
+  $('.project-table tbody').append('<tr class="project-time-row total_hours_logged"></tr>')
+  $('.total_hours_logged:last-child').append(total_hours_logged_row);
+  $('.total_hours_logged:last-child td.THL_name').html('<b>Total Hours Logged</b>');
+  $('.total_hours_logged:last-child td.THL_empty').html('-');
+  $('.total_hours_logged:last-child td.THL_mondayH').html(time_obj.daily_logged_hours[0]);
+  $('.total_hours_logged:last-child td.THL_tuesdayH').html(time_obj.daily_logged_hours[1]);
+  $('.total_hours_logged:last-child td.THL_wednesdayH').html(time_obj.daily_logged_hours[2]);
+  $('.total_hours_logged:last-child td.THL_thursdayH').html(time_obj.daily_logged_hours[3]);
+  $('.total_hours_logged:last-child td.THL_fridayH').html(time_obj.daily_logged_hours[4]);
+  $('.total_hours_logged:last-child td.THL_saturdayH').html(time_obj.daily_logged_hours[5]);
+  $('.total_hours_logged:last-child td.THL_sundayH').html(time_obj.daily_logged_hours[6]);
+  $('.total_hours_logged:last-child td.THL_TotalH').html(time_obj.total_logged);
 
-
-      // Populate project row
-
-        $('.project-table tbody').append('<tr class="project-time-row"></tr>')
-        $('.project-time-row:last-child').append(project_time_row);
-        $('.project-time-row:last-child td.project_name').html(time_obj.tsData[time_key]['project_name']);
-        $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task__name']);
-        $('.project-time-row:last-child td.mondayH').html(time_obj.tsData[time_key]['mondayH']);
-        $('.project-time-row:last-child td.tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
-        $('.project-time-row:last-child td.wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
-        $('.project-time-row:last-child td.thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
-        $('.project-time-row:last-child td.fridayH').html(time_obj.tsData[time_key]['fridayH']);
-        $('.project-time-row:last-child td.saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
-        $('.project-time-row:last-child td.sundayH').html(time_obj.tsData[time_key]['sundayH']);
-        if (time_obj.tsData[time_key]['remarks'] !="None" && time_obj.tsData[time_key]['remarks'] !=="" && time_obj.tsData[time_key]['remarks'] !=null){
-            $('.project-time-row:last-child td.remarks a').attr("title",time_obj.tsData[time_key]['remarks']);}
-        else
-            {  $('.project-time-row:last-child td.remarks').hide();}
-    }
-  } // ./ ts data iteration
-
-} else {
-    $('.timesheet-member-name').html(time_obj.atData[0]['teamMember__first_name'] +'  ' + time_obj.atData[0]['teamMember__last_name'] + ' ('+ time_obj.atData[0]['teamMember__employee__employee_assigned_id'] +')');
-}
-
-  // atdata iteration
-
-  for (var time_key in time_obj['atData']){
-    if (time_obj['atData'].hasOwnProperty(time_key)){
-
-      // Get length
-
-      var obj_length = time_obj.atData.length;
-
-      // Populate project row
-
-        $('.activity-table tbody').append('<tr class="activity-time-row"></tr>')
-        $('.activity-time-row:last-child').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html(time_obj.atData[time_key]['activity__name']);
-        $('.activity-time-row:last-child td.activity_monday').html(time_obj.atData[time_key]['activity_monday']);
-        $('.activity-time-row:last-child td.activity_tuesday').html(time_obj.atData[time_key]['activity_tuesday']);
-        $('.activity-time-row:last-child td.activity_wednesday').html(time_obj.atData[time_key]['activity_wednesday']);
-        $('.activity-time-row:last-child td.activity_thursday').html(time_obj.atData[time_key]['activity_thursday']);
-        $('.activity-time-row:last-child td.activity_friday').html(time_obj.atData[time_key]['activity_friday']);
-        $('.activity-time-row:last-child td.activity_saturday').html(time_obj.atData[time_key]['activity_saturday']);
-        $('.activity-time-row:last-child td.activity_sunday').html(time_obj.atData[time_key]['activity_sunday']);
-         if (time_obj.atData[time_key]['remarks'] !="None" && time_obj.atData[time_key]['remarks'] !== ""  && time_obj.atData[time_key]['remarks'] !=null)
-            $('.activity-time-row:last-child td.activity_remarks a').attr("title",time_obj.atData[time_key]['remarks']);
-         else
-           $('.activity-time-row:last-child td.activity_remarks').hide();
-
-    }else{
-        $('.activity-time-row').append(activity_time_row);
-        $('.activity-time-row:last-child td.activity').html('nil');
-        $('.activity-time-row:last-child td.activity_monday').html('nil');
-        $('.activity-time-row:last-child td.activity_tuesday').html('nil');
-        $('.activity-time-row:last-child td.activity_wednesday').html('nil');
-        $('.activity-time-row:last-child td.activity_thursday').html('nil');
-        $('.activity-time-row:last-child td.activity_friday').html('nil');
-        $('.activity-time-row:last-child td.activity_saturday').html('nil');
-        $('.activity-time-row:last-child td.activity_sunday').html('nil');
-        $('.activity-time-row:last-child td.activity_remarks a').attr("title", '');
-        $('.activity-time-row:last-child td.activity_remarks a').html('nil');
-    }
-
-  } // ./ at data iteration
-
-
-
-  // total_list iteration
-
-  for (var time_key in time_obj['total_list']){
-    if (time_obj['total_list'].hasOwnProperty(time_key)){
-      $('#timesheet-approve-report .monday_total').html(time_obj.total_list[0]['monday_total']);
-      $('#timesheet-approve-report .tuesday_total').html(time_obj.total_list[0]['tuesday_total']);
-      $('#timesheet-approve-report .wednesday_total').html(time_obj.total_list[0]['wednesday_total']);
-      $('#timesheet-approve-report .thursday_total').html(time_obj.total_list[0]['thursday_total']);
-      $('#timesheet-approve-report .friday_total').html(time_obj.total_list[0]['friday_total']);
-      $('#timesheet-approve-report .saturday_total').html(time_obj.total_list[0]['saturday_total']);
-      $('#timesheet-approve-report .sunday_total').html(time_obj.total_list[0]['sunday_total']);
-    }
+   // External hours Header
+  if(time_obj.total_logged == 0 && time_obj.leave_total != 40){
+    $('.project-table tbody').append('<tr class="project-time-row external_hours_header"></tr>')
+        $('.external_hours_header:last-child').append('<b>Timesheet not submitted</b>');
   }
+  else{
+      $('.project-table tbody').append('<tr class="project-time-row external_hours_header"></tr>')
+      $('.external_hours_header:last-child').append(external_hours_header_row);
+      $('.external_hours_header:last-child td.external_hours_header_name').html('<b>External Hours</b>');
+      $('.external_hours_header:last-child td.external_hours_header_delivery_manager').html('<b>Delivery Manager</b>');
 
+      // tsdata iteration
 
+       for (var time_key in time_obj['tsData']){
+         if (time_obj['tsData'].hasOwnProperty(time_key)){
+           // Get length
+           var obj_length = time_obj.tsData.length;
+           // Populate project row
+            if(time_obj.tsData[time_key]['is_internal'] == 0){
+              total_hours = parseFloat(time_obj.tsData[time_key]['mondayH']) + parseFloat(time_obj.tsData[time_key]['tuesdayH']) + parseFloat(time_obj.tsData[time_key]['wednesdayH']) + parseFloat(time_obj.tsData[time_key]['thursdayH']) + parseFloat(time_obj.tsData[time_key]['fridayH']) + parseFloat(time_obj.tsData[time_key]['saturdayH']) + parseFloat(time_obj.tsData[time_key]['sundayH'])
+             $('.project-table tbody').append('<tr class="project-time-row external_hours"></tr>')
+             $('.external_hours:last-child').append(external_hours_row);
+             $('.external_hours:last-child td.external_hours_name').html(time_obj.tsData[time_key]['project_id']);
+             $('.external_hours:last-child td.external_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);
+             $('.external_hours:last-child td.external_hours_mondayH').html(time_obj.tsData[time_key]['mondayH']);
+             $('.external_hours:last-child td.external_hours_tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
+             $('.external_hours:last-child td.external_hours_wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+             $('.external_hours:last-child td.external_hours_thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
+             $('.external_hours:last-child td.external_hours_fridayH').html(time_obj.tsData[time_key]['fridayH']);
+             $('.external_hours:last-child td.external_hours_saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
+             $('.external_hours:last-child td.external_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
+             $('.external_hours:last-child td.external_hours_TotalH').html(total_hours.toFixed(2));
+             if(time_obj.tsData[time_key]['managerFeedback']){
+                 if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+                 if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+             else{
+               if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                  $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                  $('.external_hours:last-child td.external_hours_approval_status').html('Yet to submit');
+               }
+             }
+            }
+             if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+             }
+             else if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+                $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+                $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+             }
+             else if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
+                $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+                $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+             }
+            else if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
+                $('.external_hours:last-child td.external_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+                $('.external_hours:last-child td.external_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+             }
 
+            }
 
-} // ./time_iterate function
+          }
+          }
+       }
+
+       // Internal hours header
+
+     $('.project-table tbody').append('<tr class="project-time-row internal_hours_header"></tr>')
+     $('.internal_hours_header:last-child').append(internal_hours_header_row);
+     $('.internal_hours_header:last-child td.internal_hours_header_name').html('<b>Internal Hours</b>');
+     $('.internal_hours_header:last-child td.internal_hours_header_delivery_manager').html('<b>Delivery Manager</b>');
+
+       for (var time_key in time_obj['tsData']){
+         if (time_obj['tsData'].hasOwnProperty(time_key)){
+           // Get length
+           var obj_length = time_obj.tsData.length;
+           // Populate project row
+            if(time_obj.tsData[time_key]['is_internal'] == 1){
+             $('.project-table tbody').append('<tr class="project-time-row internal_hours"></tr>')
+             $('.internal_hours:last-child').append(internal_hours_row);
+             $('.internal_hours:last-child td.internal_hours_name').html(time_obj.tsData[time_key]['project_id']);
+             $('.internal_hours:last-child td.internal_hours_delivery_manager').html(time_obj.tsData[time_key]['delivery_manager']);
+             $('.internal_hours:last-child td.internal_hours_mondayH').html(time_obj.tsData[time_key]['mondayH']);
+             $('.internal_hours:last-child td.internal_hours_tuesdayH').html(time_obj.tsData[time_key]['tuesdayH']);
+             $('.internal_hours:last-child td.internal_hours_wednesdayH').html(time_obj.tsData[time_key]['wednesdayH']);
+             $('.internal_hours:last-child td.internal_hours_thursdayH').html(time_obj.tsData[time_key]['thursdayH']);
+             $('.internal_hours:last-child td.internal_hours_fridayH').html(time_obj.tsData[time_key]['fridayH']);
+             $('.internal_hours:last-child td.internal_hours_saturdayH').html(time_obj.tsData[time_key]['saturdayH']);
+             $('.internal_hours:last-child td.internal_hours_sundayH').html(time_obj.tsData[time_key]['sundayH']);
+             total_hours = parseFloat(time_obj.tsData[time_key]['mondayH']) + parseFloat(time_obj.tsData[time_key]['tuesdayH']) + parseFloat(time_obj.tsData[time_key]['wednesdayH']) + parseFloat(time_obj.tsData[time_key]['thursdayH']) + parseFloat(time_obj.tsData[time_key]['fridayH']) + parseFloat(time_obj.tsData[time_key]['saturdayH']) + parseFloat(time_obj.tsData[time_key]['sundayH'])
+             $('.internal_hours:last-child td.internal_hours_TotalH').html(total_hours.toFixed(2));
+             if(time_obj.tsData[time_key]['managerFeedback']){
+                 if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+                 if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
+                    $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                    $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+                 }
+             else{
+               if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+                  $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+                  $('.internal_hours:last-child td.internal_hours_approval_status').html('Yet to submit');
+               }
+             }
+            }
+            if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '0' ){
+               $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+               $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:red;"></p>');
+            }
+            else if(time_obj.tsData[time_key]['approved'] == '0' && time_obj.tsData[time_key]['hold'] == '1' ){
+               $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+               $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+            }
+            else if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '1' ){
+               $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+               $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+            }
+           else if(time_obj.tsData[time_key]['approved'] == '1' && time_obj.tsData[time_key]['hold'] == '0' ){
+               $('.internal_hours:last-child td.internal_hours_submission_status').html('<p class="fa fa-circle" style="color:green;"></p>');
+               $('.internal_hours:last-child td.internal_hours_approval_status').html('<p class="fa fa-circle" style="color:orange;"></p>');
+            }
+           }
+
+         }
+       // ./ ts data iteration
+      }
+   }
+}
+// } // ./time_iterate function
 
 var employeeTime = function(){
    $('.details').on('click', function()  {
@@ -507,13 +652,3 @@ $(document).ready(function() {
 
 {% endif %}
 {% endblock %}
-
-
-
-
-
-
-
-
-
-

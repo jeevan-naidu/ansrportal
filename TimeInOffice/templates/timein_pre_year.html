@@ -1,5 +1,5 @@
 
-
+<div id="user-leave-report">
               <div class="col-sm-12">
 
                 <div class="panel">
@@ -11,13 +11,13 @@
 
                     <div class="col-sm-12">
 
-
                       <div class="btn-group mr-15">
                         <select id="value" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown";>
                           <option value={{year}}>{{year}}</option>
                           <option value="{{pre_year}}">{{pre_year}}</option>
                         </select>
                     </div>
+
 
                       <div class="btn-group mr-15">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">{{ month_in_english }}
@@ -42,8 +42,10 @@
                       </div>
 
 
+
+
                       <div class="btn-group">
-                        <a onclick="monthchange({{ previous_week.0 }}, {{ previous_week.1 }}, 0)" id="lr-prev" class="btn btn-default btn-sm">
+                        <a onclick="monthchange({{ previous_week.0 }}, {{ previous_week.1 }})" id="lr-prev" class="btn btn-default btn-sm">
                           <span class="glyphicon glyphicon-arrow-left"></span>
                         </a>
 
@@ -52,22 +54,18 @@
                           <i class="fa fa-caret-down prepend-icon"></i>
                         </button>
 
-                        <a onclick="monthchange({{ next_week.0 }}, {{ next_week.1 }}, 0)" id="lr-next" class="btn btn-default btn-sm">
+                        <a onclick="monthchange({{ next_week.0 }}, {{ next_week.1 }})" id="lr-next" class="btn btn-default btn-sm">
                           <span class="glyphicon glyphicon-arrow-right"></span>
                         </a>
 
                         <ul class="dropdown-menu" role="menu">
                             {% for val in  current_month_week_details%}
-                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }}, 0)"><span class="week-number">
+                              <li><a onclick="weekchange({{ forloop.counter }}, {{ month }})"><span class="week-number">
                                   Week {{ forloop.counter }} : </span><span class="week-range">{{ val.0 }} - {{ val.1}}</span></a></li>
                             {% endfor %}
 
                         </ul>
                       </div>
-
-
-
-
 
 
                       <!-- <div class="inline-block font-bold pull-right month-week">{{ startdate }} - {{ enddate}}</div> -->
@@ -90,52 +88,82 @@
                           <th>Average</th>
                         </tr>
                       </thead>
+
                       <tbody>
+
                  {% for person in timereport%}
 
-                        <tr class="gradeX">
+                 <tr class="gradeX">
                           <td>{{ person.0 }}</td>
                             {% for val1 in  person.1%}
-                                <td>{{ val1 }}</td>
-
-{% endfor %}
-
+                        <td>{{ val1 }}</td>
+                    {% endfor %}
                         <td>{{ person.2 }}</td>
+
                         </tr>
                         {% endfor %}
-
                       </tbody>
-
                     </table>
 
                   </div><!-- ./panel-body -->
 
-                    <div id="lr-legend">
+        <div id="lr-legend">
                       <button id="get-summary" class="btn btn-primary pull-right">Summary</button>
                     </div>
-
                 </div><!-- ./panel -->
-                </div><!-- ./col-sm -->
-<script>
-
-$("#value").on('change', function() {
-  
-  yearchange(1,1,this.value)
-});
 
 
-        $('#data-tables').dataTable({
-          searching: true,
-          scrollCollapse: true,
-            destroy: true,
-        });
+              </div><!-- ./col-sm -->
+
+</div>
+
+<div id="monthly-leave-report">
+  <div class="col-md-12 mgbt-xs-20 mgbt-md-0">
+    <div class="panel widget  light-widget">
+      <div class="panel-body-list jsh4">
+<!-- Bar chart -->
 
 
-    // Go to summary function
 
-    $('#get-summary').click(function(){
-      $('html, body').animate({scrollTop: 9999}, 'slow');
-    })
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+<!-- Spacer -->
+
+<div class="col-lg-2 col-sm-1"></div>
+
+        <div class="col-lg-4 col-sm-5 pd-25" style="width:100%">
 
 
-    </script>
+          <table class="table  table-striped leave-report-table" id="data-tables1">
+<thead>     <h4>Monthly Data</h4>
+              <tr>
+              <th>Person</th>
+              {% for val in weekreport %}
+                <th> week {{ forloop.counter }}</th>
+              {% endfor %}
+
+            </tr>
+</thead>
+              <tbody>
+
+                  {% for person in weekly_average%}
+                <tr class="gradeX">
+                  {% for val in person%}
+                  <td>{{ val }}</td>
+                  {% endfor %}
+                </tr>
+                  {% endfor %}
+                </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- col-md-6 -->
+  </div><!-- ./col -->
+
+
+</div>
+
+</div><!-- ./row -->

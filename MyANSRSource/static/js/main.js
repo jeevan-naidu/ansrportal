@@ -1469,7 +1469,8 @@ app.getSum = function($elements, $outputElement) {
                     for(i=0;i<30;i++){
                             var $unit = $('#id_Manage_Milestones-'+i+'-unit').val()
                             var $rate_per_unit = $('#id_Manage_Milestones-'+i+'-rate_per_unit').val()
-                            $('#id_Manage_Milestones-'+i+'-amount').val($unit*$rate_per_unit)
+                            var $value = $unit*$rate_per_unit
+                            $('#id_Manage_Milestones-'+i+'-amount').val($value.toFixed(2))
                             amountTotal()
                     }
                 }

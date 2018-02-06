@@ -24,7 +24,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Q, Sum
 from django.utils.timezone import utc
 from django.conf import settings
-from employee.models import Employee, Remainder, EmployeeArchive
+from employee.models import Attendance,Employee, Remainder, EmployeeArchive
 from Leave.views import leavecheck, daterange
 from django.views.generic import View, TemplateView
 from django.core.exceptions import PermissionDenied
@@ -776,16 +776,6 @@ def get_time_sheet(request, is_approve=False):
             content_type="application/json"
         )
 
-
-def time_sheet_employee(request):
-    s = getTSDataList(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
-                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
-    return HttpResponse(
-        json.dumps(s),
-        content_type="application/json"
-    )
-
-
 @login_required
 def switchWeeks(request):
     today = datetime.now().date()
@@ -1101,6 +1091,59 @@ class ModifyProjectWizard(SessionWizardView):
 def append_tsstatus_msg(request, tsSet, msg):
     messages.info(request, msg + str(tsSet))
 
+def getData(request, start_date, end_date, user_id):
+    start_date =  datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date()
+    end_date =  datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
+    user =  request.GET.get('user_id').split(':')
+    user_id = user[0]
+    project_id = Project.objects.filter(projectId=user[1][:-1])[0]
+    project = project_id.id
+    details = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id, project_id=project).values(
+                    'id', 'project', 'project__projectId','project__name', 'task__name',
+                     'chapter__name', 'managerFeedback', 'project__internal',
+                     'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
+                     'remarks', 'totalH'
+                     )
+    tsData = {}
+    tsDataList = []
+
+    for eachData in details:
+        for k, v in eachData.iteritems():
+            # print k,v
+
+            if k == 'teamMember__employee__employee_assigned_id':
+                tsData['employee_id'] = v
+            if k == 'teamMember__first_name':
+                tsData['first_name'] = v
+            if k == 'teamMember__last_name':
+                tsData['last_name'] = v
+            if k == 'project__projectId':
+                tsData['project'] = v
+            if k == 'project__name':
+                tsData['project_name'] = v
+            if k == 'location':
+                tsData['location'] = v
+            if k == 'chapter__name':
+                tsData['chapter'] = v
+            if k == 'task__name':
+                tsData['task'] = v
+            if k == 'totalH':
+                tsData['totalH'] = str(round(v, 2))
+
+        tsDataList.append(tsData.copy())
+        tsData.clear()
+
+    return {'tsData': tsDataList}
+
+
+def time_sheet_employee(request):
+    s = getData(request, datetime.strptime(request.GET.get('start_date'), '%d%m%Y').date(),
+                      datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date(), request.GET.get('user_id'))
+    return HttpResponse(
+        json.dumps(s),
+        content_type="application/json"
+    )
+
 @login_required
 def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
@@ -1278,7 +1321,6 @@ def getTSDataList(request, weekstartDate, ansrEndDate, user_id=None):
                             'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
                             'sunday_total': str(round(sunday_total, 2))})
     return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
-
 
 def status_member(team_members, ignore_previous_year=False):
     status = {}
@@ -1572,17 +1614,18 @@ def send_reminder_mail(request):
     end_date = datetime.strptime(request.GET.get('end_date'), '%d%m%Y').date()
     manager_team_members, team_members = dem_members(request)
     try:
-        # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
-        own_team = {members.user: members.user.email for members in team_members}
-        # updated_dict = team_dict.copy()
-        # updated_dict.update(own_team)
-        for user, email in own_team.iteritems():
-            result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                   teamMember=user, hold=True).exists()
-            if not result and email not in email_list:
-                email_list.append(email)
-        TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
-        json_obj = {'status': True}
+        if team_members:
+            # team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
+            own_team = {members.user: members.user.email for members in team_members}
+            # updated_dict = team_dict.copy()
+            # updated_dict.update(own_team)
+            for user, email in own_team.iteritems():
+                result = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                       teamMember=user, hold=True).exists()
+                if not result and email not in email_list:
+                    email_list.append(email)
+            TimeSheetWeeklyReminder.delay(request.user, email_list, start_date, end_date)
+            json_obj = {'status': True}
     except Exception as e:
         logger.error(
             u'send_reminder_mail function error {0}'.format(
@@ -1652,27 +1695,61 @@ def pm_details(request):
         content_type="application/json"
     )
 
+def time_in_office(user, weekstartDate, ansrEndDate):
+    context = {}
+    week_data = []
+    employee_detail = Employee.objects.filter(user_id=user)[0]
+    delta = ansrEndDate - weekstartDate
+    for i in range(delta.days + 1):
+        attendance = Attendance.objects.filter(incoming_employee_id=employee_detail.employee_assigned_id, \
+                                               attdate=weekstartDate + timedelta(days=i))
+        for val in attendance:
+            if val:
+                time = val.swipe_out - val.swipe_in
+                sec = time.seconds
+                hours = sec // 3600
+                minutes = (sec // 60) - (hours * 60)
+                time_in = float('{0}.{1}'.format(hours, minutes))
+                week_data.append(round(time_in, 2))
+    context['time_in'] = round(sum(week_data),2)
+    context['week_data'] = week_data
+    return context
+
 @login_required
 def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
     # To be approved TS data
+    timesheetentry = TimeSheetEntry.objects.filter(teamMember_id = user_id, wkstart=weekstartDate, wkend=ansrEndDate)
+    if not timesheetentry:
+        total_list = []
+        total_time = time_in_office(user_id, weekstartDate, ansrEndDate)
+        time_in = total_time['time_in']
+        week_data = total_time['week_data']
+        user_name = User.objects.filter(id=request.user.id).values('first_name', 'last_name')[0]
+        practice_manager = user_name['first_name'] + ' ' + user_name['last_name']
+        leaves = leaveappliedinweek(user_id, weekstartDate, ansrEndDate)
+        leave_total = sum(leaves)
+        logged_hours = total_hours_logged(user_id, weekstartDate, ansrEndDate)
+        daily_logged_hours = logged_hours['daily_logged_hours']
+        total_logged = str(logged_hours['total_logged'])
+        tsData = {}
+        tsDataList = []
+
+        employee_id = User.objects.filter(id=user_id)[0]
+        tsData['teamMember__employee_id'] = employee_id.employee.employee_assigned_id
+        tsData['teamMember__first_name'] = employee_id.first_name
+        tsData['teamMember__last_name'] = employee_id.last_name
+
+        tsDataList.append(tsData.copy())
+        tsData.clear()
+        return {'tsData': tsDataList, 'week_data': week_data, 'time_in': time_in, \
+                'practice_manager': practice_manager, 'leave_total': leave_total, 'leaves': leaves,
+                'total_logged': total_logged, \
+                'daily_logged_hours': daily_logged_hours}
     total_list = []
     if not user_id:
         user = request.user
     else:
         user = user_id
-    cwActivityData = TimeSheetEntry.objects.filter(
-        Q(
-            wkstart=weekstartDate,
-            wkend=ansrEndDate,
-            teamMember=user,
-            project__isnull=True
-        )
-    ).values('id', 'activity', 'activity__name', 'mondayH', 'tuesdayH', 'wednesdayH',
-             'thursdayH', 'fridayH', 'saturdayH', 'sundayH', 'totalH',
-             'managerFeedback', 'approved', 'hold', 'teamMember__first_name', 'teamMember__last_name',
-             'teamMember__employee__employee_assigned_id', 'remarks'
-             )
-
 
     cwTimesheetData = TimeSheetEntry.objects.filter(
         Q(
@@ -1681,15 +1758,15 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
             teamMember=user,
             activity__isnull=True
         )
-    ).values('id', 'project', 'project__name', 'location', 'chapter', 'task', 'mondayH',
-             'tuesdayH', 'wednesdayH',
+    ).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
+             'tuesdayH', 'wednesdayH', 'project__id',
              'thursdayH', 'fridayH', 'hold',
              'saturdayH', 'sundayH', 'approved',
              'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
              'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
-             'remarks'
+             'remarks', 'approved', 'hold'
              )
-    # print cwActivityData
+
     # Changing data TS data
     tsData = {}
     tsDataList = []
@@ -1709,9 +1786,21 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
                 if isinstance(v, Decimal):
                     v = str(v)
             if user_id:
-
+                if k == 'project__id':
+                    delivery_manager_id = ProjectDetail.objects.filter(project_id=v).values('deliveryManager_id')
+                    if not delivery_manager_id:
+                        tsData['delivery_manager'] = ''
+                    else:
+                        delivery_manager = User.objects.filter(id=delivery_manager_id[0]['deliveryManager_id']).values('first_name', 'last_name')
+                        tsData['delivery_manager'] = delivery_manager[0]['first_name']  + ' ' + delivery_manager[0]['last_name']
+                if k == 'approved':
+                    tsData['approved'] = v
+                if k == 'hold':
+                    tsData['hold'] = v
                 if k == 'teamMember__employee__employee_assigned_id':
                     tsData['employee_id'] = v
+                if k == 'project__projectId':
+                    tsData['project_id'] = v
                 if k == 'project':
                     tsData['project'] = v
                 if k == 'project__name':
@@ -1758,56 +1847,55 @@ def getTSData(request, weekstartDate, ansrEndDate, user_id=None):
 
         tsDataList.append(tsData.copy())
         tsData.clear()
-    atData = {}
-    atDataList = []
 
-    for eachData in cwActivityData:
-        for k, v in eachData.iteritems():
-            if user_id:
-                v = str(v)
-            if k == 'activity':
-                atData['activity'] = v
-            if k == 'hold':
-                atData['hold'] = v
-            if 'monday' in k:
-                atData['activity_monday'] = v
-                monday_total += float(v)
-            if 'tuesday' in k:
-                atData['activity_tuesday'] = v
-                tuesday_total += float(v)
-            if 'wednesday' in k:
-                atData['activity_wednesday'] = v
-                wednesday_total += float(v)
-            if 'thursday' in k:
-                atData['activity_thursday'] = v
-                thursday_total += float(v)
-            if 'friday' in k:
-                atData['activity_friday'] = v
-                friday_total += float(v)
-            if 'saturday' in k:
-                atData['activity_saturday'] = v
-                saturday_total += float(v)
-            if 'sunday' in k:
-                atData['activity_sunday'] = v
-                sunday_total += float(v)
-            if 'total' in k:
-                atData['activity_total'] = v
-            if k == 'managerFeedback':
-                atData['managerFeedback'] = v
-            if k == 'activity__name':
-                atData['activity__name'] = v
-            if k == 'id':
-                atData['atId'] = v
-            atData[k] = v
-        atDataList.append(atData.copy())
-        atData.clear()
+    total_time = time_in_office(user, weekstartDate, ansrEndDate)
+    time_in = total_time['time_in']
+    week_data = total_time['week_data']
+    user_name = User.objects.filter(id=request.user.id).values('first_name', 'last_name')[0]
+    practice_manager = user_name['first_name'] + ' ' + user_name['last_name']
+    leaves = leaveappliedinweek(user, weekstartDate, ansrEndDate)
+    leave_total = sum(leaves)
+    logged_hours = total_hours_logged(user, weekstartDate, ansrEndDate)
+    daily_logged_hours = logged_hours['daily_logged_hours']
+    total_logged = str(logged_hours['total_logged'])
     if user_id:
         total_list .append({'monday_total': str(round(monday_total, 2)), 'tuesday_total': str(round(tuesday_total, 2)),
                             'wednesday_total': str(round(wednesday_total, 2)), 'thursday_total': str(round(thursday_total, 2)),
                             'friday_total': str(round(friday_total, 2)), 'saturday_total': str(round(saturday_total, 2)),
                             'sunday_total': str(round(sunday_total, 2))})
-    return {'tsData': tsDataList, 'atData': atDataList, 'total_list': total_list}
+    return {'tsData': tsDataList, 'total_list': total_list, 'week_data':week_data, 'time_in':time_in, \
+            'practice_manager':practice_manager, 'leave_total':leave_total, 'leaves':leaves, 'total_logged':total_logged, \
+            'daily_logged_hours':daily_logged_hours}
 
+def total_hours_logged(user_id,start_date,end_date):
+    context = {}
+    daily_logged_hours = []
+    week_data = []
+    monday_data = []
+    tuesday_data = []
+    wednesday_data = []
+    thursday_data = []
+    friday_data = []
+    saturday_data = []
+    sunday_data = []
+    delta = end_date - start_date
+    TSdata = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id)
+    for val in TSdata:
+        data = val.mondayH + val.tuesdayH + val.wednesdayH + val.thursdayH + val.fridayH + val.saturdayH + val.sundayH
+        monday_data.append(float(val.mondayH))
+        tuesday_data.append(float(val.tuesdayH))
+        wednesday_data.append(float(val.wednesdayH))
+        thursday_data.append(float(val.thursdayH))
+        friday_data.append(float(val.fridayH))
+        saturday_data.append(float(val.saturdayH))
+        sunday_data.append(float(val.sundayH))
+        week_data.append(data)
+    daily_logged_hours.extend([float(sum(monday_data)),float(sum(tuesday_data)), float(sum(wednesday_data)), float(sum(thursday_data)),\
+     float(sum(friday_data)),float(sum(saturday_data)), float(sum(sunday_data))])
+    context['daily_logged_hours'] = daily_logged_hours
+    context['total_logged_week_data'] = week_data
+    context['total_logged'] = sum(week_data)
+    return context
 
 def pm_view(request):
     if request.method == 'GET':
@@ -1843,27 +1931,37 @@ def pm_view(request):
 
                 members = Employee.objects.get(user=user_id)
                 ts_obj = time_week(start_date, end_date, members)
-                if ts_obj:
-                    ts_data_list[members] = {}
-                    status_tmp = [s.approved for s in ts_obj]
-                    if all(status_tmp):
-                        ts_data_list[members]['approved_status'] = True
-                    else:
-                        ts_data_list[members]['approved_status'] = False
 
-                    if members.user_id not in user_id_collection:
-                        non_billable_total = 0
-                    else:
-                        non_billable_obj = non_billable_hours(ts_obj)
-                        for others in non_billable_obj:
-                            non_billable_total += float(others['totalH'])
-                    ts_data_list[members]['non_billable_total'] = non_billable_total
-                    billable_hours_obj = billable_hours(ts_obj)
-                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
-                    ts_data_list[members]['internal_value'] = internal_value
-                    ts_data_list[members]['external_value'] = external_value
-                    ts_data_list[members]['b_total'] = b_total
-                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
+                ts_data_list[members] = {}
+                status_tmp = [s.approved for s in ts_obj]
+                if all(status_tmp):
+                    ts_data_list[members]['approved_status'] = True
+                else:
+                    ts_data_list[members]['approved_status'] = False
+
+                if members.user_id not in user_id_collection:
+                    non_billable_total = 0
+                else:
+                    non_billable_obj = non_billable_hours(ts_obj)
+                    for others in non_billable_obj:
+                        non_billable_total += float(others['totalH'])
+                ts_data_list[members]['non_billable_total'] = non_billable_total
+                billable_hours_obj = billable_hours(ts_obj)
+                total_time = time_in_office(user_id, start_date, end_date)
+                total_logged = total_hours_logged(user_id,start_date,end_date)
+                internal_value, external_value, b_total = billable_value(billable_hours_obj)
+                if external_value == 0:
+                    external_utilization = 0
+                else:
+                    external_utilization = round(external_value/total_logged['total_logged']*100,2)
+                ts_data_list[members]['total_hours_logged'] = total_logged['total_logged']
+                ts_data_list[members]['total_time'] = total_time['time_in']
+                ts_data_list[members]['week_data'] = total_time['week_data']
+                ts_data_list[members]['internal_value'] = internal_value
+                ts_data_list[members]['external_value'] = external_value
+                ts_data_list[members]['b_total'] = b_total
+                ts_data_list[members]['external_utilization'] = external_utilization
+                ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
                 context['ts_data_list'] = ts_data_list
                 context['ts_final_list'] = ts_final_list
                 context['weekstartDate'] = dates['start']
@@ -1886,6 +1984,57 @@ def pm_view(request):
             context['exception_message'] = "you don't have any team members"
     return render(request, 'pmview.html', context)
 
+
+def time_for_week(start_date, end_date, project):
+    ts_obj = TimeSheetEntry.objects.filter(wkstart = start_date, wkend = end_date, project_id = project.project.id)
+    return ts_obj
+
+def user_details(ts_user_list):
+    ts_list = []
+    if len(ts_user_list) > 1:
+        ts_data = {}
+        monday_total = 0.0
+        tuesday_total = 0.0
+        wednesday_total = 0.0
+        thursday_total = 0.0
+        friday_total = 0.0
+        saturday_total = 0.0
+        sunday_total = 0.0
+        total_total = 0.0
+        for data in ts_user_list:
+            ts_data['teamMember__employee__employee_assigned_id'] = data['teamMember__employee__employee_assigned_id']
+            ts_data['project__id'] = data['project__id']
+            ts_data['project__projectType__code'] = data['project__projectType__code']
+            ts_data['project__projectId'] = data['project__projectId']
+            ts_data['remarks'] = data['remarks']
+            ts_data['project__internal'] = data['project__internal']
+            ts_data['project__projectType__code'] = data['project__projectType__code']
+            ts_data['approved'] = data['approved']
+            ts_data['hold'] = data['hold']
+            ts_data['teamMember__id'] = data['teamMember__id']
+            ts_data['teamMember__first_name'] = data['teamMember__first_name']
+            ts_data['teamMember__last_name'] = data['teamMember__last_name']
+            monday_total += float(data['mondayH'])
+            tuesday_total += float(data['tuesdayH'])
+            wednesday_total += float(data['wednesdayH'])
+            thursday_total += float(data['thursdayH'])
+            friday_total += float(data['fridayH'])
+            saturday_total += float(data['saturdayH'])
+            sunday_total += float(data['sundayH'])
+            total_total += float(data['totalH'])
+        ts_data['mondayH'] = monday_total
+        ts_data['tuesdayH'] = tuesday_total
+        ts_data['wednesdayH'] = wednesday_total
+        ts_data['thursdayH'] = thursday_total
+        ts_data['fridayH'] = friday_total
+        ts_data['saturdayH'] = saturday_total
+        ts_data['sundayH'] = sunday_total
+        ts_data['totalH'] = total_total
+        ts_list.append(ts_data)
+    else:
+        ts_list = ts_user_list
+    return ts_list
+
 class ApproveTimesheetView(TemplateView):
     template_name = "MyANSRSource/timesheetApprove.html"
 
@@ -1893,77 +2042,110 @@ class ApproveTimesheetView(TemplateView):
         context = super(ApproveTimesheetView, self).get_context_data(**kwargs)
         ts_final_list, mondays_list, ts_week_info_dict = date_range_picker(self.request)
         manager_team_members, team_members = dem_members(self.request, pm_view=0)
-        team_dict = {members[0]: members[1] for members in manager_team_members if members[1] not in team_members}
         own_team = {members.user_id: members.user.email for members in team_members}
-        updated_dict = team_dict.copy()
-        updated_dict.update(own_team)
+        updated_dict = own_team.copy()
+        dates = switchWeeks(self.request)
+        start_date = dates['start']
+        end_date = dates['end']
+        date_in_week = []
+        delta = end_date - start_date
+        for i in range(delta.days + 1):
+            date_in_week.append(start_date + timedelta(days=i))
+        projects = ProjectDetail.objects.filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user), project_id__closed=0)
+        status, week_collection, unapproved_count = status_member(Employee.objects.filter(
+                    user_id__in=updated_dict.keys()))
+        ts_list = []
+        for project in projects:
+            user_data = ProjectTeamMember.objects.filter(project_id=project.project.id)
+            data_for_week = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project_id=project.project.id).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
+             'tuesdayH', 'wednesdayH', 'project__id',
+             'thursdayH', 'fridayH', 'hold',
+             'saturdayH', 'sundayH', 'approved',
+             'totalH', 'managerFeedback', 'project__projectType__code', 'project__internal',
+             'teamMember__employee__employee_assigned_id','teamMember__first_name', 'teamMember__last_name',
+             'remarks', 'approved', 'hold', 'teamMember__id',
+             )
 
-        user_id_collection = [k[0] for k in manager_team_members]
-        if updated_dict:
-            dates = switchWeeks(self.request)
-            ts_data_list = {}
-            self.request.session['include_activity'] = {}
-            start_date = dates['start']
-            end_date = dates['end']
-            status, week_collection, unapproved_count = status_member(Employee.objects.filter(
-                user_id__in=updated_dict.keys()))
-            for user_id, name in updated_dict.iteritems():
-                non_billable_total = 0.0
-                if user_id not in user_id_collection:
-                    include_activity = False
-                    self.request.session['include_activity'][int(user_id)] = False
-                else:
-                    include_activity = True
-                    self.request.session['include_activity'][int(user_id)] = True
+            if data_for_week:
+                ts_data_dict = {}
+                user_detail = []
+                for user in user_data:
+                    if user.member.id != self.request.user.id:
+                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
+                            ts_data = {}
+                            ts_user_list = []
+                            for data in data_for_week:
+                                if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
+                                    ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            if not ts_data[user.member.employee.employee_assigned_id]:
+                                data={}
+                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                                data['project__id'] = user.project_id
+                                data['project__projectType__code'] = user.project.projectType
+                                data['project__projectId'] = user.project.projectId
+                                data['remarks'] = ''
+                                data['project__internal'] = user.project.internal
+                                data['approved'] = 'no'
+                                data['hold'] = 'no'
+                                data['teamMember__id'] = user.member_id
+                                data['teamMember__first_name'] = user.member.first_name
+                                data['teamMember__last_name'] = user.member.last_name
+                                data['mondayH'] = 0
+                                data['tuesdayH'] = 0
+                                data['wednesdayH'] = 0
+                                data['thursdayH'] = 0
+                                data['fridayH'] = 0
+                                data['saturdayH'] = 0
+                                data['sundayH'] = 0
+                                data['totalH'] = 0
+                                ts_user_list.append(data)
+                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
+                if user_detail:
+                    ts_data_dict[project] = user_detail
+                    ts_list.append(ts_data_dict)
+            else:
+                user_detail = []
+                ts_data_dict = {}
+                for user in user_data:
+                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
+                        ts_data = {}
+                        ts_user_list = []
+                        if user.member_id != self.request.user.id:
+                            data = {}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
+                if user_detail:
+                    ts_data_dict[project] = user_detail
+                    ts_list.append(ts_data_dict)
 
-                # exclude dm non project activities from dashboard
-                if user_id == self.request.user.id and self.request.user.id in updated_dict:
-                    self.request.session['include_activity'][int(self.request.user.id)] = False
-
-                members = Employee.objects.get(user=user_id)
-                ts_obj = time_sheet_for_the_week(start_date, end_date, members, True,
-                                                 self.request.session['dm_projects'], include_activity)
-                if ts_obj:
-                    ts_data_list[members] = {}
-                    status_tmp = [s.approved for s in ts_obj]
-                    if all(status_tmp):
-                        ts_data_list[members]['approved_status'] = True
-                    else:
-                        ts_data_list[members]['approved_status'] = False
-
-                    if members.user_id not in user_id_collection:
-                        non_billable_total = 0
-                    else:
-                        non_billable_obj = non_billable_hours(ts_obj)
-                        for others in non_billable_obj:
-                            non_billable_total += float(others['totalH'])
-                    ts_data_list[members]['non_billable_total'] = non_billable_total
-                    billable_hours_obj = billable_hours(ts_obj)
-                    internal_value, external_value, b_total = billable_value(billable_hours_obj)
-                    ts_data_list[members]['internal_value'] = internal_value
-                    ts_data_list[members]['external_value'] = external_value
-                    ts_data_list[members]['b_total'] = b_total
-                    ts_data_list[members]['leave_hours'] = pull_members_week(members, start_date, end_date)
-                context['ts_data_list'] = ts_data_list
-                context['ts_final_list'] = ts_final_list
-                context['weekstartDate'] = dates['start']
-                context['weekendDate'] = dates['end']
-                context['status_dict'] = status
-                context['disabled'] = dates['disabled']
-            context['week_collection'] = week_collection[::-1]
-            ts_data_list_approved_false = {}
-            ts_data_list_approved_true = {}
-
-            for k, v in ts_data_list.iteritems():
-
-                if v['approved_status']:
-                    ts_data_list_approved_true[k] = v
-                else:
-                    ts_data_list_approved_false[k] = v
-            context['ts_data_list_approved_false'] = ts_data_list_approved_false
-            context['ts_data_list_approved_true'] = ts_data_list_approved_true
-        else:
-            context['exception_message'] = "you don't have any team members"
+        context['ts_list'] = ts_list
+        context['ts_final_list'] = ts_final_list
+        context['weekstartDate'] = dates['start']
+        context['weekendDate'] = dates['end']
+        context['status_dict'] = status
+        context['week_collection'] = week_collection[::-1]
         return context
 
     def post(self, request, **kwargs):
@@ -1984,86 +2166,27 @@ class ApproveTimesheetView(TemplateView):
             feedback_dict[user_id[1]] = v
         if approve_list:
             for user_id in approve_list:
+                user = user_id.split('_')[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1])[0]
                 try:
-                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
-                        if not request.session["include_activity"][int(user_id)]:
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                          project__in=request.session['dm_projects'],
-                                                          teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-
-                        else:
-                            TimeSheetEntry.objects.filter(Q(project__in=request.session['dm_projects'])
-                                                          |Q(project__isnull=True), wkstart=start_date,
-                                                          wkend=end_date, teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-                    else:
-                        # get manager obj
-                        emp = Employee.objects.get(user=request.user)
-                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
-                            TimeSheetEntry.objects.filter(project__isnull=True, wkstart=start_date,
-                                                          wkend=end_date, teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id], approved=True)
-                        else:
-                            fail += 1
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  project_id=project.id,
+                                                  teamMember_id=user).update(
+                        managerFeedback=feedback_dict[user], approved=True)
                 except Exception as e:
                     fail += 1
                     logger.error(
                         u'Unable to make changes(approve) for time sheet approval  {0}{1}{2} and the error is  {3} '
                         u' '.format(start_date, end_date, user_id, str(e)))
         if reject_list:
-            present_id = []
             for user_id in reject_list:
+                user = user_id.split('_')[0]
+                project = Project.objects.filter(projectId=user_id.split('_')[1])[0]
                 try:
-                    activities = TimeSheetEntry.objects.filter(teamMember_id=user_id, wkstart=start_date, hold=True,
-                                                               wkend=end_date, project__isnull=True). \
-                        values_list('activity__name', flat=True)
-                    a = [str(s) for s in activities]
-                    if request.session['dm_projects'] and request.session['dm_projects'] is not None:
-                        for proj in request.session['dm_projects']:
 
-                            if TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                             teamMember_id=user_id, project_id=proj).exists():
-                                present_id.append(proj)
-                        if present_id:
-                            projects = Project.objects.filter(pk__in=present_id)
-                            p = [str(s) for s in projects]
-                        else:
-                            p = []
-                        if not request.session["include_activity"][int(user_id)]:
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
-                                                          teamMember_id=user_id, project__in=present_id
-                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
-
-                        else:
-                            TimeSheetEntry.objects.filter(Q(project__in=present_id) |
-                                                          Q(project__isnull=True), wkstart=start_date, wkend=end_date,
-                                                          teamMember_id=user_id,
-                                                          ).update(managerFeedback=feedback_dict[user_id], hold=False)
-
-                            p.extend(a)
-
-                    else:
-                        # get manager obj
-                        emp = Employee.objects.get(user=request.user)
-                        if Employee.objects.filter(user_id=user_id, manager=emp.employee_assigned_id).exists():
-                            TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project__isnull=True,
-                                                          teamMember_id=user_id).update(
-                                managerFeedback=feedback_dict[user_id],
-                                hold=False)
-                            p = a
-                        else:
-                            p = []
-
-                    fail = 0
-                    user_obj = User.objects.get(id=user_id)
-                    if p:
-                        projects = ",".join(p)
-                        TimeSheetRejectionNotification.delay(request.user,
-                                                             str(user_obj.email), start_date,
-                                                             end_date, projects, feedback_dict[user_id])
-                    else:
-                        fail += 1
+                    TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date,
+                                                  teamMember_id=user, project_id=project
+                                                  ).update(managerFeedback=feedback_dict[user], hold=False)
                 except Exception as e:
                     fail += 1
                     # print str(e)
@@ -2571,6 +2694,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
+
         if projectObj:
             for eachData in milestoneData:
                 if eachData['id']:
@@ -2716,7 +2840,6 @@ class TrackMilestoneWizard(SessionWizardView):
 
 
 def saveData(self, pm, eachData, projectObj):
-
     if pm.closed:
         pass
     else:
@@ -3039,16 +3162,19 @@ class ManageTeamWizard(SessionWizardView):
         if step == 'Manage Team':
             projectId = self.storage.get_step_data(
                 'My Projects')['My Projects-project']
+            print projectId
             if projectId is not None:
                 currentProject = ProjectTeamMember.objects.filter(
                     project__id=projectId,
-                    active=True).values('id', 'member','project_id__name',
-                                        'startDate', 'endDate',
-                                        'role',
-                                        'plannedEffort', 'plannedcount', 'product', 'actualcount'
-                                        )
+                    active=True).values('id', 'member','project_id__name', 'project_id__startDate',
+                                        'startDate', 'endDate', 'project_id__endDate',
+                                        'role', 'plannedEffort', 'project_id__plannedEffort')
+                project_detail = Project.objects.filter(id=projectId).values('name', 'startDate', 'endDate', 'plannedEffort')
                 try:
-                    self.request.session['Pname'] = currentProject[0]['project_id__name']
+                    self.request.session['Pname'] = project_detail[0]['name']
+                    self.request.session['PstartDate'] = project_detail[0]['startDate']
+                    self.request.session['PendDate'] = project_detail[0]['endDate']
+                    self.request.session['PplannedEffort'] = project_detail[0]['plannedEffort']
                 except Exception as e:
                     logger.error(e)
 
@@ -3128,14 +3254,12 @@ class ManageTeamWizard(SessionWizardView):
                         ptm.active = False
                         ptm.save()
                     else:
-                        eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
+                        # eachData['endDate'] = eachData['startDate']+ timedelta(days=7)
                         ptm = ProjectTeamMember.objects.get(pk=eachData['id'])
                         if (eachData['startDate'] == ptm.startDate) and \
                                 (eachData['plannedEffort'] == ptm.plannedEffort) and \
                                 (eachData['member'] == ptm.member) and \
-                                (eachData['product']== ptm.product) and \
                                 (eachData['endDate'] == ptm.endDate) and \
-                                (eachData['plannedcount'] == ptm.plannedcount) and \
                                 (eachData['role'] == ptm.role):
                             pass
                         else:
@@ -3695,9 +3819,11 @@ class NewCreatedProjectApproval(View):
             prtm_project_list.append(val.project_id)
         project_list = Project.objects.filter(id__in=prtm_project_list)
         if business_unit_list:
-            context['bu_queryset'] = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False, rejected=False)
+            context['bu_queryset'] = Project.objects.filter(bu__in=business_unit_list, active=False, closed=False,
+                                                            rejected=False)
         if portfolio_manager_list:
-            context['prtm_queryset'] = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False, rejected=False)
+            context['prtm_queryset'] = Project.objects.filter(id__in=prtm_project_list, active=False, closed=False,
+                                                              rejected=False)
         return context
 
     def get(self, request):
@@ -3754,7 +3880,8 @@ class ProjectChangeApproval(View):
         if business_unit_list:
             context['bu_queryset'] = ProjectChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
         if portfolio_manager_list:
-            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0).exclude(crId__startswith='BL')
+            context['prtm_queryset'] = ProjectChangeInfo.objects.filter(project_id__in=prtm_project_list, approved=0,
+                                                                        closed=0).exclude(crId__startswith='BL')
         return context
 
     def get(self, request):

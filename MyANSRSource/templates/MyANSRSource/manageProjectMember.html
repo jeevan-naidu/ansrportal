@@ -12,6 +12,10 @@
 }
 </style>
 <button type="button" class="btn info disabled">Project Name:- {{request.session.Pname}}</button>
+<button type="button" class="btn info disabled">Project Start Date:- {{request.session.PstartDate}}</button>
+<button type="button" class="btn info disabled">Project End Date:- {{request.session.PendDate}}</button>
+<button type="button" class="btn info disabled">Project Planned Effort:- {{request.session.PplannedEffort}}</button>
+
 <span class="">
 	<a id="addForm" href="javascript:;" class="btn btn-success btn-xs addForm">
 		<i class="fa fa-plus"></i>
@@ -135,15 +139,7 @@ $('.form-control.min-100.pro-start-date .input-group.date').on('click', function
  $(this).parent().parent().parent().find('.pro-end-date').val(formatDate(d_to_date))
 })
 
-$('.form-control.w-100').on('keyup focus', function(){
- var name = parseInt($(this).val())
- if (name > 40)
- {
-	swal("Hold On!", "you can't assign an Employee more than a week")
-	$(this).val('0.00')
-  }
-          });
-
+#('.input-group date')..disabled=false;
     </script>
 {% endblock %}
 

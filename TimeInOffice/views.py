@@ -13,74 +13,140 @@ import json
 from calendar import monthrange
 from Leave.views import current_week, weekdetail, current_month_week_details, month_in_english, next_week_detail, previous_week_detail
 
+
+def weekdetail_year(week, month, year):
+    currentmontdetail = monthrange(year, month)
+    daysinpreviousmonth = currentmontdetail[0]
+    startdate = date(year=year,
+                                 month=month,
+                                 day=1+7*(week-1)) - timedelta(daysinpreviousmonth)
+    return startdate
+
+def current_month_week_details_year(no_of_week, month, year):
+    weeks_detail = []
+    week_detail = [0, 0]
+    for val in range(1, no_of_week+1):
+        week_detail[0] = weekdetail_year(val, month, year)
+        week_detail[1] = week_detail[0] + timedelta(5)
+        weeks_detail.append(week_detail)
+        week_detail = [0, 0]
+    return weeks_detail
+
 def timein(request):
 
-    if request.method == 'GET':
+    year = request.GET.get('year')
+    if year == '2017':
         if request.user.groups.filter(name__in=['myansrsourcePM']).exists():
+            year = 2017
             context = {'weekly_average':[]}
             weekly_avg = []
             weekly_avg_user_list = []
-            month = date.today().month
+            month = int(request.GET.get('month'))
             user = request.user.id
             manager = Employee.objects.get(user_id=user)
             userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
             userid = [user.user_id for user in userlist]
             userlist = User.objects.filter(id__in=userid, is_active=True)
             context['weekreport'] = weekwisereport(month, userlist)
-            current_week_no = current_week()
+            current_week_no = int(request.GET.get('week'))
             no_of_week = len(context['weekreport'])
             for user in userlist:
                 weekly_avg.append(user.first_name + " " + user.last_name)
                 for val in xrange(1, no_of_week + 1):
-                    weekly_avg.append(weeklyavg(user, val, month))
+                    weekly_avg.append(weeklyavg(user, val, month, year))
                 weekly_avg_user_list.append(weekly_avg)
                 weekly_avg = []
             context['weekly_average'] = weekly_avg_user_list
-            context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no)
+            context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no, year)
             context['current_week_no'] = current_week_no
-            context['startdate'] = weekdetail(current_week_no, month)
+            context['startdate'] = weekdetail_year(current_week_no, month, year)
             context['enddate'] = context['startdate'] + timedelta(5)
             no_of_avaliable_week = len(context['weekreport'])
-            context['current_month_week_details'] = current_month_week_details(no_of_avaliable_week, month)
+            context['current_month_week_details'] = current_month_week_details_year(no_of_avaliable_week, month, year)
             context['month'] = month
             context['month_in_english'] = month_in_english(month)
             context['week_in_english'] = "Week " + str(current_week_no)
             context['next_week'] = next_week_detail(no_of_avaliable_week, current_week_no, month)
+            context['year'] = date.today().year
+            context['pre_year'] = date.today().year - 1
             if month == 1:
                 previous_month_detail = weekwisereport(12, userlist)
             else:
                 previous_month_detail = weekwisereport(month - 1, userlist)
             context['previous_week'] = previous_week_detail(len(previous_month_detail), current_week_no, month)
-            return render(request, 'timein.html', context)
+            print context
+            return render(request, 'timein_pre_year.html', context)
         else:
             return render(request, '403.html', {})
+    else:
+        if request.method == 'GET':
+            if request.user.groups.filter(name__in=['myansrsourcePM']).exists():
+                context = {'weekly_average':[]}
+                weekly_avg = []
+                weekly_avg_user_list = []
+                month = date.today().month
+                year = date.today().year
+                user = request.user.id
+                manager = Employee.objects.get(user_id=user)
+                userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
+                userid = [user.user_id for user in userlist]
+                userlist = User.objects.filter(id__in=userid, is_active=True)
+                context['weekreport'] = weekwisereport(month, userlist)
+                current_week_no = current_week()
+                no_of_week = len(context['weekreport'])
+                for user in userlist:
+                    weekly_avg.append(user.first_name + " " + user.last_name)
+                    for val in xrange(1, no_of_week + 1):
+                        weekly_avg.append(weeklyavg(user, val, month, year))
+                    weekly_avg_user_list.append(weekly_avg)
+                    weekly_avg = []
+                context['weekly_average'] = weekly_avg_user_list
+                context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no, year)
+                context['current_week_no'] = current_week_no
+                context['startdate'] = weekdetail_year(current_week_no, month, year)
+                context['enddate'] = context['startdate'] + timedelta(5)
+                no_of_avaliable_week = len(context['weekreport'])
+                context['current_month_week_details'] = current_month_week_details_year(no_of_avaliable_week, month, year)
+                context['month'] = month
+                context['month_in_english'] = month_in_english(month)
+                context['week_in_english'] = "Week " + str(current_week_no)
+                context['next_week'] = next_week_detail(no_of_avaliable_week, current_week_no, month)
+                context['year'] = date.today().year
+                context['pre_year'] = date.today().year - 1
+                if month == 1:
+                    previous_month_detail = weekwisereport(12, userlist)
+                else:
+                    previous_month_detail = weekwisereport(month - 1, userlist)
+                context['previous_week'] = previous_week_detail(len(previous_month_detail), current_week_no, month)
+                return render(request, 'timein.html', context)
+            else:
+                return render(request, '403.html', {})
 
-def timereportweeklybasedonuser(month, userlist, week):
+def timereportweeklybasedonuser(month, userlist, week, year):
     weekreport = []
     userdata = []
     for user in userlist:
         userdata.append(user.first_name + " " + user.last_name)
-        userdata.append(userweeklytimereport(user, week, month))
-        week_avg = weeklyavg(user, week, month)
+        userdata.append(userweeklytimereport(user, week, month, year))
+        week_avg = weeklyavg(user, week, month, year)
         userdata.append(week_avg)
         weekreport.append(userdata)
         userdata = []
     return weekreport
 
 # returns hours for each day for a user for a week
-def userweeklytimereport(user, week, month):
+def userweeklytimereport(user, week, month, year):
     timelist = []
-    startdate = weekdetail(week, month)
+    startdate = weekdetail_year(week, month, year)
     enddate = startdate + timedelta(5)
     for single_date in daterange(startdate, enddate):
         time_detail = timecheck(user, single_date)
         timelist.append(time_detail)
-
     return timelist
 
-def weeklyavg(user, week, month):
+def weeklyavg(user, week, month, year):
     total_avg = []
-    total = userweeklytimereport(user, week, month)
+    total = userweeklytimereport(user, week, month, year)
     for time in total:
         if time == 0:
             pass
@@ -120,16 +186,17 @@ def weekwisedata(request):
         context = {}
         week = int(request.GET.get('week'))
         month = int(request.GET.get('month'))
+        year = int(request.GET.get('year'))
         user = request.user.id
         manager = Employee.objects.get(user_id=user)
         userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
         userid = [user.user_id for user in userlist]
         userlist = User.objects.filter(id__in=userid, is_active=True)
         context['weekreport'] = weekwisereport(month, userlist)
-        context['timereport'] = timereportweeklybasedonuser(month, userlist, week)
+        context['timereport'] = timereportweeklybasedonuser(month, userlist, week, year)
         no_of_avaliable_week = len(context['weekreport'])
-        context['current_month_week_details'] = current_month_week_details(no_of_avaliable_week, month)
-        context['startdate'] = weekdetail(week, month)
+        context['current_month_week_details'] = current_month_week_details_year(no_of_avaliable_week, month, year)
+        context['startdate'] = weekdetail_year(week, month, year)
         context['enddate'] = context['startdate'] + timedelta(5)
         context['month'] = month
         context['month_in_english'] = month_in_english(month)
@@ -141,6 +208,8 @@ def weekwisedata(request):
         context['previous_week'] = previous_week_detail(len(previous_month_detail), week, month)
         context['current_week_no'] = week
         context['week_in_english'] = "Week " + str(week)
+        context['year'] = date.today().year
+        context['pre_year'] = date.today().year - 1
         return render(request, 'timeweeklyreport.html', context)
     else:
         return render(request, '403.html', {})
@@ -148,6 +217,7 @@ def weekwisedata(request):
 def monthwisedata(request):
     if request.user.groups.filter(name__in=['myansrsourcePM']).exists():
         month = int(request.GET.get('month'))
+        year = int(request.GET.get('year'))
         context = {'weekly_average': []}
         weekly_avg = []
         weekly_avg_user_list = []
@@ -162,13 +232,15 @@ def monthwisedata(request):
         for user in userlist:
             weekly_avg.append(user.first_name + " " + user.last_name)
             for val in xrange(1, no_of_week + 1):
-                weekly_avg.append(weeklyavg(user, val, month))
+                weekly_avg.append(weeklyavg(user, val, month, year))
             weekly_avg_user_list.append(weekly_avg)
             weekly_avg = []
         context['weekly_average'] = weekly_avg_user_list
-        context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no)
-        context['startdate'] = weekdetail(current_week_no, month)
+        context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no, year)
+        context['startdate'] = weekdetail_year(current_week_no, month, year)
         context['enddate'] = context['startdate'] + timedelta(5)
+        context['year'] = date.today().year
+        context['pre_year'] = date.today().year - 1
         return render(request, 'timemonthlyreport.html', context)
     else:
         return render(request, '403.html', {})
