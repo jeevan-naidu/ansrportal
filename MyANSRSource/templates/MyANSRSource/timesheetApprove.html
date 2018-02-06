@@ -313,7 +313,6 @@ Approve Timesheet
                           <td class="chapter">chapter/course</td>
                           <td class="task">Task</td>
                           <td class="effort">effort</td>
-                          <td class="remarks"></td>
                         </tr>
 
 
@@ -386,7 +385,6 @@ if(!jQuery.isEmptyObject(time_obj.tsData) ){
         $('.project-time-row:last-child td.chapter').html(time_obj.tsData[time_key]['chapter']);
         $('.project-time-row:last-child td.task').html(time_obj.tsData[time_key]['task']);
         $('.project-time-row:last-child td.effort').html(time_obj.tsData[time_key]['totalH']);
-        $('.project-time-row:last-child td.remarks').html(time_obj.tsData[time_key]['remarks']);
     }
   } // ./ ts data iteration
 
