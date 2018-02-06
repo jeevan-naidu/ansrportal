@@ -1099,7 +1099,7 @@ def getData(request, start_date, end_date, user_id):
     project_id = Project.objects.filter(projectId=user[1][:-1])[0]
     project = project_id.id
     details = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, teamMember_id=user_id, project_id=project).values(
-                    'id', 'project', 'project__name', 'task__name',
+                    'id', 'project', 'project__projectId','project__name', 'task__name',
                      'chapter__name', 'managerFeedback', 'project__internal',
                      'teamMember__first_name', 'teamMember__last_name', 'teamMember__employee__employee_assigned_id',
                      'remarks', 'totalH'
@@ -1117,7 +1117,7 @@ def getData(request, start_date, end_date, user_id):
                 tsData['first_name'] = v
             if k == 'teamMember__last_name':
                 tsData['last_name'] = v
-            if k == 'project':
+            if k == 'project__projectId':
                 tsData['project'] = v
             if k == 'project__name':
                 tsData['project_name'] = v
