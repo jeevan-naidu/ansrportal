@@ -2056,7 +2056,7 @@ class ApproveTimesheetView(TemplateView):
                     user_id__in=updated_dict.keys()))
         ts_list = []
         for project in projects:
-            user_data = ProjectTeamMember.objects.filter(project_id=project.project.id)
+            user_data = ProjectTeamMember.objects.filter(project_id=project.project.id, startDate__lte=start_date, endDate__gte=end_date)
             data_for_week = TimeSheetEntry.objects.filter(wkstart=start_date, wkend=end_date, project_id=project.project.id).values('id', 'project', 'project__name', 'project__projectId',  'location', 'chapter', 'task', 'mondayH',
              'tuesdayH', 'wednesdayH', 'project__id',
              'thursdayH', 'fridayH', 'hold',
@@ -2071,7 +2071,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 for user in user_data:
                     if user.member.id != self.request.user.id:
-                        if user.startDate in date_in_week and user.endDate in date_in_week:
+                        if user.startDate in date_in_week or user.endDate in date_in_week:
                             ts_data = {}
                             ts_user_list = []
                             for data in data_for_week:
@@ -2109,7 +2109,7 @@ class ApproveTimesheetView(TemplateView):
                 user_detail = []
                 ts_data_dict = {}
                 for user in user_data:
-                    if user.startDate in date_in_week and user.endDate in date_in_week:
+                    if user.startDate in date_in_week or user.endDate in date_in_week:
                         ts_data = {}
                         ts_user_list = []
                         if user.member_id != self.request.user.id:
