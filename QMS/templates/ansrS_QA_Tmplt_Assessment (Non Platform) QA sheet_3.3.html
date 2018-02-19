@@ -1141,6 +1141,7 @@ $(document).ready(function(){
         });
 
         $('#submit_review').on('click', function()  {
+         if( $("#questions").val() <=0) {sweetAlert("Oops...", "Add questions before submitting your feedback!", "error"); return false; }
          if( $('#review_modal').length ) {
             submitted_by = "reviewer"
          }
