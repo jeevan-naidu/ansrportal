@@ -729,7 +729,8 @@ class ReviewReportManipulationView(AssessmentView):
                     qa_obj = QASheetHeader.objects.get(id=request.session['QA_sheet_header_id'])
                     report.QA_sheet_header = qa_obj
                     report.updated_by = request.user
-                    report.count = int(request.POST.get('questions'))
+                    if request.POST.get('questions'):
+                        report.count = int(request.POST.get('questions'))
                     report.save()
                     try:
                         qa_obj.count = int(request.POST.get('questions'))
