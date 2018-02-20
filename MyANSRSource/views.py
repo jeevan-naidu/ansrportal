@@ -2070,38 +2070,37 @@ class ApproveTimesheetView(TemplateView):
                 ts_data_dict = {}
                 user_detail = []
                 for user in user_data:
-                    if user.member.id != self.request.user.id:
-                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
-                            ts_data = {}
-                            ts_user_list = []
-                            for data in data_for_week:
-                                if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
-                                    ts_user_list.append(data)
-                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                            if not ts_data[user.member.employee.employee_assigned_id]:
-                                data={}
-                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
-                                data['project__id'] = user.project_id
-                                data['project__projectType__code'] = user.project.projectType
-                                data['project__projectId'] = user.project.projectId
-                                data['remarks'] = ''
-                                data['project__internal'] = user.project.internal
-                                data['approved'] = 'no'
-                                data['hold'] = 'no'
-                                data['teamMember__id'] = user.member_id
-                                data['teamMember__first_name'] = user.member.first_name
-                                data['teamMember__last_name'] = user.member.last_name
-                                data['mondayH'] = 0
-                                data['tuesdayH'] = 0
-                                data['wednesdayH'] = 0
-                                data['thursdayH'] = 0
-                                data['fridayH'] = 0
-                                data['saturdayH'] = 0
-                                data['sundayH'] = 0
-                                data['totalH'] = 0
+                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
+                        ts_data = {}
+                        ts_user_list = []
+                        for data in data_for_week:
+                            if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
                                 ts_user_list.append(data)
-                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                            user_detail.append(ts_data)
+                        ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                        if not ts_data[user.member.employee.employee_assigned_id]:
+                            data={}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                        user_detail.append(ts_data)
                 if user_detail:
                     ts_data_dict[project] = user_detail
                     ts_list.append(ts_data_dict)
@@ -2113,30 +2112,29 @@ class ApproveTimesheetView(TemplateView):
                         if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
                             ts_data = {}
                             ts_user_list = []
-                            if user.member_id != self.request.user.id:
-                                data = {}
-                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
-                                data['project__id'] = user.project_id
-                                data['project__projectType__code'] = user.project.projectType
-                                data['project__projectId'] = user.project.projectId
-                                data['remarks'] = ''
-                                data['project__internal'] = user.project.internal
-                                data['approved'] = 'no'
-                                data['hold'] = 'no'
-                                data['teamMember__id'] = user.member_id
-                                data['teamMember__first_name'] = user.member.first_name
-                                data['teamMember__last_name'] = user.member.last_name
-                                data['mondayH'] = 0
-                                data['tuesdayH'] = 0
-                                data['wednesdayH'] = 0
-                                data['thursdayH'] = 0
-                                data['fridayH'] = 0
-                                data['saturdayH'] = 0
-                                data['sundayH'] = 0
-                                data['totalH'] = 0
-                                ts_user_list.append(data)
-                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                                user_detail.append(ts_data)
+                            data = {}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
                 if user_detail:
                     ts_data_dict[project] = user_detail
                     ts_list.append(ts_data_dict)
