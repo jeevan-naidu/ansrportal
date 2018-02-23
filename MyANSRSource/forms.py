@@ -875,7 +875,7 @@ class CloseProjectMilestoneForm(forms.ModelForm):
         self.fields['name'].widget.attrs['class'] = "d-item input-item form-control"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
-        self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "closed form-control"
         self.fields['amount'].widget.attrs['style'] = "width: inherit;"
 
 
@@ -922,7 +922,7 @@ class CloseProjectMilestoneFormDelivery(forms.ModelForm):
         self.fields['rate_per_unit'].widget.attrs['class'] = "d-item input-item form-control rate_per_unit"
         self.fields['amount'].widget.attrs['class'] = \
             "milestone-item-amount d-item input-item form-control"
-        self.fields['closed'].widget.attrs['class'] = "form-control"
+        self.fields['closed'].widget.attrs['class'] = "closed form-control"
         self.fields['amount'].widget.attrs['class'] = "milestone-item-amount milestone_delivery"
 
 

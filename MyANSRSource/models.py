@@ -593,6 +593,7 @@ class ProjectMilestone(models.Model):
                                     )
     reason = models.CharField(default=None, blank=True, max_length=100,
                               verbose_name="Reason for change", null=True)
+    is_active = models.BooleanField(default=True)
     # Record Entered / Updated Date
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)

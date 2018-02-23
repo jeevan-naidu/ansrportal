@@ -2677,7 +2677,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId, financial = False,
+                project__id=selectedProjectId, financial = False, is_active = True,
             ).values(
                 'id',
                 'name',
@@ -2686,7 +2686,8 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
                 'unit',
                 'rate_per_unit',
                 'amount',
-                'closed'
+                'closed',
+                'is_active'
             )
         return self.initial_dict.get(step, projectMS)
 
@@ -2698,10 +2699,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
             for eachData in milestoneData:
                 if eachData['id']:
                     pm = ProjectMilestone.objects.get(id=eachData['id'])
-                    if eachData['DELETE']:
-                        pm.delete()
-                    else:
-                        SaveDelivery(self, pm, eachData, projectObj)
+                    SaveDelivery(self, pm, eachData, projectObj)
                 else:
                     pm = ProjectMilestone()
                     if eachData['DELETE']:
@@ -2717,6 +2715,8 @@ def SaveDelivery(self, pm, eachData, projectObj):
     if pm.closed:
         pass
     else:
+        if eachData['DELETE']:
+            pm.is_active = False
         pm.rate_per_unit = eachData['rate_per_unit']
         pm.unit = eachData['unit']
         pm.project = projectObj
