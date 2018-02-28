@@ -2764,37 +2764,38 @@ class TrackMilestoneWizard(SessionWizardView):
             project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
         if step == 'Manage Milestones':
-            for eachForm in form:
-                eachForm.fields['DELETE'].widget.attrs[
-                    'class'
-                ] = 'form-control'
+            if form.is_valid():
+                for eachForm in form:
+                    eachForm.fields['DELETE'].widget.attrs[
+                        'class'
+                    ] = 'delete form-control'
 
-                if form.is_valid():
                     selectedProjectId = self.storage.get_step_data(
                         'My Projects'
                     )['My Projects-project']
                     projectObj = Project.objects.get(pk=selectedProjectId)
                     projectTotal = projectObj.totalValue
                     totalRate = 0
-                    for eachForm in form:
-                        if eachForm.is_valid():
-                            totalRate += eachForm.cleaned_data['amount']
-                            if eachForm['closed'].value():
-                                continue
-                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
-                                milestone_type.\
-                                milestone_type
-                            if eachForm.cleaned_data['amount'] == 0:
-                                amount = eachForm.cleaned_data['amount']
-                                errors = eachForm._errors.setdefault(
-                                    amount, ErrorList())
-                                errors.append(u'Financial Milestone amount \
-                                            cannot be 0')
-                    if float(projectTotal) != float(totalRate):
-                        errors = eachForm._errors.setdefault(
-                            totalRate, ErrorList())
-                        errors.append(u'Total amount must be \
-                                    equal to project value')
+                    totalAmount = 0
+                    # for eachForm in form:
+                    if eachForm.cleaned_data['DELETE'] == False:
+                        totalAmount += eachForm.cleaned_data['amount']
+                    # for eachForm in form:
+                    if eachForm.is_valid():
+                        totalRate += eachForm.cleaned_data['amount']
+                        milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
+                            milestone_type.\
+                            milestone_type
+                        if eachForm.cleaned_data['amount'] == 0:
+                            amount = eachForm.cleaned_data['amount']
+                            errors = eachForm._errors.setdefault(
+                                amount, ErrorList())
+                            errors.append(u'Financial Milestone amount cannot be 0')
+                if float(projectTotal) != float(totalRate) or float(projectTotal) != float(totalAmount):
+                    errors = eachForm._errors.setdefault(
+                        totalRate, ErrorList())
+                    errors.append(u'Total amount must be equal to project value')
+
         return form
 
     def get_form_initial(self, step):
@@ -2804,7 +2805,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId, financial = True,
+                project__id=selectedProjectId, financial = True, is_active = True
             ).values(
                 'id',
                 'name',
@@ -2818,15 +2819,11 @@ class TrackMilestoneWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
-
         if projectObj:
             for eachData in milestoneData:
                 if eachData['id']:
                     pm = ProjectMilestone.objects.get(id=eachData['id'])
-                    if eachData['DELETE']:
-                        pm.delete()
-                    else:
-                        saveData(self, pm, eachData, projectObj)
+                    saveData(self, pm, eachData, projectObj)
                 else:
                     pm = ProjectMilestone()
                     if eachData['DELETE']:
@@ -2835,13 +2832,15 @@ class TrackMilestoneWizard(SessionWizardView):
                         saveData(self, pm, eachData, projectObj)
         else:
             logging.error("Request: " + self.request)
-        return HttpResponseRedirect('/myansrsource/dashboard')
+        return HttpResponseRedirect('/myansrsource/project/trackmilestone')
 
 
 def saveData(self, pm, eachData, projectObj):
     if pm.closed:
         pass
     else:
+        if eachData['DELETE'] == True:
+            pm.is_active = False
         pm.project = projectObj
         pm.name = eachData['name']
         pm.description = eachData['description']
