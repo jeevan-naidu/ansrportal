@@ -1510,7 +1510,7 @@ app.getSum = function($elements, $outputElement) {
                     var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
                     var $project_value = document.getElementsByClassName("holiday")[0].innerHTML;
                     if($project_value.split(" ")[1] != $total_milestone_value){
-                        sweetAlert("sorry...", "Cannot add with a empty level!");
+                        sweetAlert("sorry...", "Total value is not equal to project value!");
                         event.preventDefault();
                     }
                     var $amountsLen = $amounts.length,
@@ -1521,7 +1521,7 @@ app.getSum = function($elements, $outputElement) {
                     for (i = 0; i < $amountsLen; i += 1) {
                         if(document.getElementById('id_Manage_Milestones-'+i+'-DELETE').checked){
                             if(document.getElementById('id_Manage_Milestones-'+i+'-closed').checked){
-                                sweetAlert("sorry...", "Cannot delete completed project!");
+                                sweetAlert("sorry...", "Cannot delete completed milestone!");
                                 event.preventDefault();
                             }
                         }
