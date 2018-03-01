@@ -1459,6 +1459,7 @@ app.getSum = function($elements, $outputElement) {
                     $amounts = $table.find('.milestone-item-amount', '.milestone_delivery'),
                     $amountTotal = $('.milestone-total-amount'),
                     $delete_box = $('.delete'),
+                    $closed = $('.closed'),
                     $submit_check_while_deleting = $('#submit'),
                     $links = $('#add-milestone-btn, #del-milestone-btn'),
                     $projectTotalValueHidden = $('.project-total-value-hidden'),
@@ -1512,6 +1513,19 @@ app.getSum = function($elements, $outputElement) {
                         sweetAlert("sorry...", "Cannot add with a empty level!");
                         event.preventDefault();
                     }
+                    var $amountsLen = $amounts.length,
+                        i,
+                        $curItem,
+                        temp = 0;
+
+                    for (i = 0; i < $amountsLen; i += 1) {
+                        if(document.getElementById('id_Manage_Milestones-'+i+'-DELETE').checked){
+                            if(document.getElementById('id_Manage_Milestones-'+i+'-closed').checked){
+                                sweetAlert("sorry...", "Cannot delete completed project!");
+                                event.preventDefault();
+                            }
+                        }
+                    }
                 };
 
                 // amount validation
@@ -1534,8 +1548,13 @@ app.getSum = function($elements, $outputElement) {
                         temp = 0;
 
                     for (i = 0; i < $amountsLen; i += 1) {
-                        $curItem = Number($($amounts[i]).val());
-                        temp += $curItem;
+                        if(document.getElementById('id_Manage_Milestones-'+i+'-DELETE').checked){
+                            console.log('')
+                        }
+                        else{
+                            $curItem = Number($($amounts[i]).val());
+                            temp += $curItem;
+                        }
                     }
                     temp = temp.toFixed(2);
                     $amountTotal.text(temp);
@@ -1547,7 +1566,7 @@ app.getSum = function($elements, $outputElement) {
 
                 $amounts.on({
                     keyup: amountTotal,
-                    click: amountTotal
+                    click: amountTotal,
                 });
 
                 $units.on({

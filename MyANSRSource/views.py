@@ -2777,12 +2777,10 @@ class TrackMilestoneWizard(SessionWizardView):
                     projectObj = Project.objects.get(pk=selectedProjectId)
                     projectTotal = projectObj.totalValue
                     totalRate = 0
-                    total_after_delete = 0
                     for eachForm in form:
                         if eachForm.is_valid():
-                            totalRate += eachForm.cleaned_data['amount']
-                            if eachForm['closed'].value():
-                                continue
+                            if eachForm.cleaned_data['DELETE'] == False:
+                                totalRate += eachForm.cleaned_data['amount']
                             milestone_type = Milestone.objects.get(id=eachForm['name'].value()). \
                                 milestone_type. \
                                 milestone_type
@@ -2797,6 +2795,7 @@ class TrackMilestoneWizard(SessionWizardView):
                             totalRate, ErrorList())
                         errors.append(u'Total amount must be \
                                     equal to project value')
+        print form.errors
         return form
 
     def get_form_initial(self, step):
