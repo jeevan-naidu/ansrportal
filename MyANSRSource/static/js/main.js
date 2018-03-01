@@ -1458,6 +1458,8 @@ app.getSum = function($elements, $outputElement) {
                     $units = $table.find('.unit'),
                     $amounts = $table.find('.milestone-item-amount', '.milestone_delivery'),
                     $amountTotal = $('.milestone-total-amount'),
+                    $delete_box = $('.delete'),
+                    $submit_check_while_deleting = $('#submit'),
                     $links = $('#add-milestone-btn, #del-milestone-btn'),
                     $projectTotalValueHidden = $('.project-total-value-hidden'),
                     projectTotalValueHidden = Number($projectTotalValueHidden.val());
@@ -1475,6 +1477,42 @@ app.getSum = function($elements, $outputElement) {
                     }
                 }
 
+                var delete_checkbox = function(){
+                    if(this.checked){
+                        var $id = this.id
+                        var $id_number = $id.charAt("21")
+                        var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
+                        var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                        var $value_after_selecting_delete = parseFloat($total_milestone_value) - parseFloat($amount);;
+                        document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
+                    }
+                    else{
+                        var $id = this.id
+                        var $id_number = $id.charAt("21")
+                        var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
+                        var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                        var $value_after_selecting_delete = parseFloat($total_milestone_value) + parseFloat($amount);
+                        document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
+                    }
+                    if (projectTotalValueHidden !== Number($amountTotal.text())) {
+                        if (!($amountTotal.hasClass('t-danger'))) {
+                            $amountTotal.addClass('t-danger');
+                        }
+                    } else {
+                        if ($amountTotal.hasClass('t-danger')) {
+                            $amountTotal.removeClass('t-danger');
+                        }
+                    }
+                };
+
+                var submit_check = function(event){
+                    var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                    var $project_value = document.getElementsByClassName("holiday")[0].innerHTML;
+                    if($project_value.split(" ")[1] != $total_milestone_value){
+                        sweetAlert("sorry...", "Cannot add with a empty level!");
+                        event.preventDefault();
+                    }
+                };
 
                 // amount validation
                 var amountValidatoinFun = function() {
@@ -1518,6 +1556,14 @@ app.getSum = function($elements, $outputElement) {
 
                 $rate_per_units.on({
                     keyup: unit_rate_per_unit,
+                   });
+
+                $submit_check_while_deleting.on({
+                    click: submit_check,
+                })
+
+                $delete_box.on({
+                    click: delete_checkbox,
                    });
             }
         };

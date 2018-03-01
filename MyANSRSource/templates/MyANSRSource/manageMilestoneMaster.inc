@@ -72,7 +72,7 @@
                         <b>Choose Project</b>
                             </button>
                 {% endif %}
-                    <button type="submit" value="submit" class="btn btn-info pull-right">
+                    <button id="submit" type="submit" value="submit" class="btn btn-info pull-right">
                         {% if wizard.steps.current == wizard.steps.last %}
                             <i class="fa fa-upload fa-lg"></i>
                     <b>Create / Update Milestone(s)</b>

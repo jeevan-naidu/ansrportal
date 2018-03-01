@@ -2758,44 +2758,45 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                                                                    project__closed=False).values(
+            project_detail = ProjectDetail.objects.select_related('project').filter(
+                Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
         if step == 'Manage Milestones':
-            if form.is_valid():
-                for eachForm in form:
-                    eachForm.fields['DELETE'].widget.attrs[
-                        'class'
-                    ] = 'delete form-control'
+            for eachForm in form:
+                eachForm.fields['DELETE'].widget.attrs[
+                    'class'
+                ] = 'delete form-control'
 
+                if form.is_valid():
                     selectedProjectId = self.storage.get_step_data(
                         'My Projects'
                     )['My Projects-project']
                     projectObj = Project.objects.get(pk=selectedProjectId)
                     projectTotal = projectObj.totalValue
                     totalRate = 0
-                    totalAmount = 0
-                    # for eachForm in form:
-                    if eachForm.cleaned_data['DELETE'] == False:
-                        totalAmount += eachForm.cleaned_data['amount']
-                    # for eachForm in form:
-                    if eachForm.is_valid():
-                        totalRate += eachForm.cleaned_data['amount']
-                        milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
-                            milestone_type.\
-                            milestone_type
-                        if eachForm.cleaned_data['amount'] == 0:
-                            amount = eachForm.cleaned_data['amount']
-                            errors = eachForm._errors.setdefault(
-                                amount, ErrorList())
-                            errors.append(u'Financial Milestone amount cannot be 0')
-                if float(projectTotal) != float(totalRate) or float(projectTotal) != float(totalAmount):
-                    errors = eachForm._errors.setdefault(
-                        totalRate, ErrorList())
-                    errors.append(u'Total amount must be equal to project value')
-
+                    total_after_delete = 0
+                    for eachForm in form:
+                        if eachForm.is_valid():
+                            totalRate += eachForm.cleaned_data['amount']
+                            if eachForm['closed'].value():
+                                continue
+                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()). \
+                                milestone_type. \
+                                milestone_type
+                            if eachForm.cleaned_data['amount'] == 0:
+                                amount = eachForm.cleaned_data['amount']
+                                errors = eachForm._errors.setdefault(
+                                    amount, ErrorList())
+                                errors.append(u'Financial Milestone amount \
+                                            cannot be 0')
+                    if float(projectTotal) != float(totalRate):
+                        errors = eachForm._errors.setdefault(
+                            totalRate, ErrorList())
+                        errors.append(u'Total amount must be \
+                                    equal to project value')
         return form
 
     def get_form_initial(self, step):
