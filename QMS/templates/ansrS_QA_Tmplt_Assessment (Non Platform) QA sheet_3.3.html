@@ -177,7 +177,7 @@
                            {% endfor %}
 {% if not request.session.hide_export %}
                          <div class="no_questions"> <div style="float:left">
-                             <a style="margin-right: 11px; margin-top: -11px;" href= "/qms/export_review" class="btn vd_btn vd_bg-blue" > Export</a>
+                             <a style="margin-right: 11px; margin-top: -11px;" href= "/qms/export_review" class="btn vd_btn vd_bg-blue template_export" > Export</a>
                          </div>
                              <label>Questions : </label>
                            {% if request.session.is_pm or request.session.author_logged_in == False %}
@@ -1136,11 +1136,19 @@ $(document).ready(function(){
         $( "#review_completed" ).click(function() {
             $('#review_feedback').prop('required', true);
         });
+        $( ".template_export" ).click(function(event) {
+            option = $('#id_form-0-severity_type').find(":selected").text()
+            if(option == '---------'){
+                event.preventDefault();
+                alert('Please select a defect type before export')
+            }
+        });
         $( "#cancel_review" ).click(function() {
             $('#review_feedback').prop('required', false);
         });
 
         $('#submit_review').on('click', function()  {
+         if( $("#questions").val() <=0) {sweetAlert("Oops...", "Add questions before submitting your feedback!", "error"); return false; }
          if( $('#review_modal').length ) {
             submitted_by = "reviewer"
          }

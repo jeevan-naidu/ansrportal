@@ -2070,38 +2070,37 @@ class ApproveTimesheetView(TemplateView):
                 ts_data_dict = {}
                 user_detail = []
                 for user in user_data:
-                    if user.member.id != self.request.user.id:
-                        if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
-                            ts_data = {}
-                            ts_user_list = []
-                            for data in data_for_week:
-                                if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
-                                    ts_user_list.append(data)
-                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                            if not ts_data[user.member.employee.employee_assigned_id]:
-                                data={}
-                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
-                                data['project__id'] = user.project_id
-                                data['project__projectType__code'] = user.project.projectType
-                                data['project__projectId'] = user.project.projectId
-                                data['remarks'] = ''
-                                data['project__internal'] = user.project.internal
-                                data['approved'] = 'no'
-                                data['hold'] = 'no'
-                                data['teamMember__id'] = user.member_id
-                                data['teamMember__first_name'] = user.member.first_name
-                                data['teamMember__last_name'] = user.member.last_name
-                                data['mondayH'] = 0
-                                data['tuesdayH'] = 0
-                                data['wednesdayH'] = 0
-                                data['thursdayH'] = 0
-                                data['fridayH'] = 0
-                                data['saturdayH'] = 0
-                                data['sundayH'] = 0
-                                data['totalH'] = 0
+                    if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
+                        ts_data = {}
+                        ts_user_list = []
+                        for data in data_for_week:
+                            if user.member.employee.employee_assigned_id == data['teamMember__employee__employee_assigned_id']:
                                 ts_user_list.append(data)
-                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                            user_detail.append(ts_data)
+                        ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                        if not ts_data[user.member.employee.employee_assigned_id]:
+                            data={}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                        user_detail.append(ts_data)
                 if user_detail:
                     ts_data_dict[project] = user_detail
                     ts_list.append(ts_data_dict)
@@ -2113,30 +2112,29 @@ class ApproveTimesheetView(TemplateView):
                         if (user.startDate <= start_date and user.endDate <= end_date) or (user.startDate in date_in_week) or (user.endDate in date_in_week) or (user.startDate <= start_date and user.endDate >= end_date):
                             ts_data = {}
                             ts_user_list = []
-                            if user.member_id != self.request.user.id:
-                                data = {}
-                                data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
-                                data['project__id'] = user.project_id
-                                data['project__projectType__code'] = user.project.projectType
-                                data['project__projectId'] = user.project.projectId
-                                data['remarks'] = ''
-                                data['project__internal'] = user.project.internal
-                                data['approved'] = 'no'
-                                data['hold'] = 'no'
-                                data['teamMember__id'] = user.member_id
-                                data['teamMember__first_name'] = user.member.first_name
-                                data['teamMember__last_name'] = user.member.last_name
-                                data['mondayH'] = 0
-                                data['tuesdayH'] = 0
-                                data['wednesdayH'] = 0
-                                data['thursdayH'] = 0
-                                data['fridayH'] = 0
-                                data['saturdayH'] = 0
-                                data['sundayH'] = 0
-                                data['totalH'] = 0
-                                ts_user_list.append(data)
-                                ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
-                                user_detail.append(ts_data)
+                            data = {}
+                            data['teamMember__employee__employee_assigned_id'] = user.member.employee.employee_assigned_id
+                            data['project__id'] = user.project_id
+                            data['project__projectType__code'] = user.project.projectType
+                            data['project__projectId'] = user.project.projectId
+                            data['remarks'] = ''
+                            data['project__internal'] = user.project.internal
+                            data['approved'] = 'no'
+                            data['hold'] = 'no'
+                            data['teamMember__id'] = user.member_id
+                            data['teamMember__first_name'] = user.member.first_name
+                            data['teamMember__last_name'] = user.member.last_name
+                            data['mondayH'] = 0
+                            data['tuesdayH'] = 0
+                            data['wednesdayH'] = 0
+                            data['thursdayH'] = 0
+                            data['fridayH'] = 0
+                            data['saturdayH'] = 0
+                            data['sundayH'] = 0
+                            data['totalH'] = 0
+                            ts_user_list.append(data)
+                            ts_data[user.member.employee.employee_assigned_id] = user_details(ts_user_list)
+                            user_detail.append(ts_data)
                 if user_detail:
                     ts_data_dict[project] = user_detail
                     ts_list.append(ts_data_dict)
@@ -2679,7 +2677,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId, financial = False,
+                project__id=selectedProjectId, financial = False, is_active = True,
             ).values(
                 'id',
                 'name',
@@ -2688,7 +2686,8 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
                 'unit',
                 'rate_per_unit',
                 'amount',
-                'closed'
+                'closed',
+                'is_active'
             )
         return self.initial_dict.get(step, projectMS)
 
@@ -2700,10 +2699,7 @@ class TrackMilestoneWizardDelivery(SessionWizardView):
             for eachData in milestoneData:
                 if eachData['id']:
                     pm = ProjectMilestone.objects.get(id=eachData['id'])
-                    if eachData['DELETE']:
-                        pm.delete()
-                    else:
-                        SaveDelivery(self, pm, eachData, projectObj)
+                    SaveDelivery(self, pm, eachData, projectObj)
                 else:
                     pm = ProjectMilestone()
                     if eachData['DELETE']:
@@ -2719,6 +2715,8 @@ def SaveDelivery(self, pm, eachData, projectObj):
     if pm.closed:
         pass
     else:
+        if eachData['DELETE']:
+            pm.is_active = False
         pm.rate_per_unit = eachData['rate_per_unit']
         pm.unit = eachData['unit']
         pm.project = projectObj
@@ -2760,8 +2758,9 @@ class TrackMilestoneWizard(SessionWizardView):
         form = super(TrackMilestoneWizard, self).get_form(step, data, files)
         step = step if step else self.steps.current
         if step == 'My Projects':
-            project_detail = ProjectDetail.objects.select_related('project').filter(Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
-                                                                                    project__closed=False).values(
+            project_detail = ProjectDetail.objects.select_related('project').filter(
+                Q(deliveryManager=self.request.user) | Q(pmDelegate=self.request.user),
+                project__closed=False).values(
                 'project_id')
             project = Project.objects.filter(id__in=project_detail, active=True)
             form.fields['project'].queryset = project
@@ -2769,7 +2768,7 @@ class TrackMilestoneWizard(SessionWizardView):
             for eachForm in form:
                 eachForm.fields['DELETE'].widget.attrs[
                     'class'
-                ] = 'form-control'
+                ] = 'delete form-control'
 
                 if form.is_valid():
                     selectedProjectId = self.storage.get_step_data(
@@ -2780,11 +2779,10 @@ class TrackMilestoneWizard(SessionWizardView):
                     totalRate = 0
                     for eachForm in form:
                         if eachForm.is_valid():
-                            totalRate += eachForm.cleaned_data['amount']
-                            if eachForm['closed'].value():
-                                continue
-                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()).\
-                                milestone_type.\
+                            if eachForm.cleaned_data['DELETE'] == False:
+                                totalRate += eachForm.cleaned_data['amount']
+                            milestone_type = Milestone.objects.get(id=eachForm['name'].value()). \
+                                milestone_type. \
                                 milestone_type
                             if eachForm.cleaned_data['amount'] == 0:
                                 amount = eachForm.cleaned_data['amount']
@@ -2797,6 +2795,7 @@ class TrackMilestoneWizard(SessionWizardView):
                             totalRate, ErrorList())
                         errors.append(u'Total amount must be \
                                     equal to project value')
+
         return form
 
     def get_form_initial(self, step):
@@ -2806,7 +2805,7 @@ class TrackMilestoneWizard(SessionWizardView):
                 'My Projects'
             )['My Projects-project']
             projectMS = ProjectMilestone.objects.filter(
-                project__id=selectedProjectId, financial = True,
+                project__id=selectedProjectId, financial = True, is_active = True
             ).values(
                 'id',
                 'name',
@@ -2820,15 +2819,11 @@ class TrackMilestoneWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         milestoneData = [form.cleaned_data for form in form_list][1]
         projectObj = [form.cleaned_data for form in form_list][0]['project']
-
         if projectObj:
             for eachData in milestoneData:
                 if eachData['id']:
                     pm = ProjectMilestone.objects.get(id=eachData['id'])
-                    if eachData['DELETE']:
-                        pm.delete()
-                    else:
-                        saveData(self, pm, eachData, projectObj)
+                    saveData(self, pm, eachData, projectObj)
                 else:
                     pm = ProjectMilestone()
                     if eachData['DELETE']:
@@ -2837,13 +2832,15 @@ class TrackMilestoneWizard(SessionWizardView):
                         saveData(self, pm, eachData, projectObj)
         else:
             logging.error("Request: " + self.request)
-        return HttpResponseRedirect('/myansrsource/dashboard')
+        return HttpResponseRedirect('/myansrsource/project/trackmilestone')
 
 
 def saveData(self, pm, eachData, projectObj):
     if pm.closed:
         pass
     else:
+        if eachData['DELETE'] == True:
+            pm.is_active = False
         pm.project = projectObj
         pm.name = eachData['name']
         pm.description = eachData['description']
