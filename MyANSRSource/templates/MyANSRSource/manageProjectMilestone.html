@@ -84,5 +84,20 @@
     <script>
    $(".unit, .rate_per_unit, .milestone_delivery").css("width", "76px");
 
+    $(document).ready(function() {
+        $('#add-milestone-btn').on('click', function(){
+            for(i=0; i<=30; i++){
+                $('#id_Manage_Milestones-'+i+'-DELETE').attr( "disabled", "disabled" );
+            }
+        });
+
+        $('.delete').on('click', function(){
+            if(this.checked) {
+                $('#add-milestone-btn').attr( "disabled", "disabled" );
+            }
+        });
+
+    });
+
         </script>
 {% endblock %}{% endblock %}

@@ -2795,7 +2795,7 @@ class TrackMilestoneWizard(SessionWizardView):
                             totalRate, ErrorList())
                         errors.append(u'Total amount must be \
                                     equal to project value')
-        print form.errors
+
         return form
 
     def get_form_initial(self, step):

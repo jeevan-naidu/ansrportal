@@ -1066,12 +1066,16 @@ app.getSum = function($elements, $outputElement) {
 
 //                console.log('index: ' + index + ' - ' + curId); // Check the index value of the elements
 
+
+
             });
 
-
+//            delete_action();
             daysTotalFun();
             billableTotalFun();
             amountTotalFun();
+
+
 
             if (options.plannedEffortCalc) {
                 app.proPlannedEffortPercentItems = $('.pro-planned-effort-percent, .pro-planned-effort');
@@ -1440,6 +1444,100 @@ app.getSum = function($elements, $outputElement) {
             }
         };
 
+        var delete_action = function() {
+
+            var deliverables = $table.find('.milestone-item-deliverable'),
+                $rate_per_units = $table.find('.rate_per_unit'),
+                $units = $table.find('.unit'),
+                $amounts = $table.find('.milestone-item-amount', '.milestone_delivery'),
+                $amountTotal = $('.milestone-total-amount'),
+                $delete_box = $('.delete'),
+                $closed = $('.closed'),
+                $submit_check_while_deleting = $('#submit'),
+                $projectTotalValueHidden = $('.project-total-value-hidden'),
+                projectTotalValueHidden = Number($projectTotalValueHidden.val());
+            $('.milestone_delivery').prop("readonly", true);
+            console.log($delete_box)
+            var delete_checkbox = function(){
+
+                if(this.checked){
+                    $addBtn.attr("disabled", "disabled");
+                    var $id = this.id
+                    var $id_number = $id.charAt("21")
+                    var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
+                    var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                    var $value_after_selecting_delete = parseFloat($total_milestone_value) - parseFloat($amount);
+                    console.log($value_after_selecting_delete)
+                    document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
+                    }
+                else{
+                    var $id = this.id
+                    var $id_number = $id.charAt("21")
+                    var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
+                    var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                    var $value_after_selecting_delete = parseFloat($total_milestone_value) + parseFloat($amount);
+                    console.log($value_after_selecting_delete)
+                    document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
+                    }
+                if (projectTotalValueHidden !== Number($amountTotal.text())) {
+                    if (!($amountTotal.hasClass('t-danger'))) {
+                        $amountTotal.addClass('t-danger');
+                    }
+                } else {
+                    if ($amountTotal.hasClass('t-danger')) {
+                        $amountTotal.removeClass('t-danger');
+                    }
+                }
+            };
+
+            $delete_box.on({
+                click: delete_checkbox,
+            });
+        };
+
+        var submit_action = function() {
+
+            var deliverables = $table.find('.milestone-item-deliverable'),
+                $rate_per_units = $table.find('.rate_per_unit'),
+                $units = $table.find('.unit'),
+                $amounts = $table.find('.milestone-item-amount', '.milestone_delivery'),
+                $amountTotal = $('.milestone-total-amount'),
+                $delete_box = $('.delete'),
+                $closed = $('.closed'),
+                $submit_check_while_deleting = $('#submit'),
+                $projectTotalValueHidden = $('.project-total-value-hidden'),
+                projectTotalValueHidden = Number($projectTotalValueHidden.val());
+
+            $('.milestone_delivery').prop("readonly", true);
+
+            var submit_check = function(){
+
+                var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
+                var $project_value = document.getElementsByClassName("holiday")[0].innerHTML;
+                if($project_value.split(" ")[1] != $total_milestone_value){
+                    sweetAlert("sorry...", "Total value is not equal to project value!");
+                    event.preventDefault();
+                }
+                var $amountsLen = $amounts.length,
+                    i,
+                    $curItem,
+                    temp = 0;
+
+                for (i = 0; i < $amountsLen; i += 1) {
+                    if(document.getElementById('id_Manage_Milestones-'+i+'-DELETE').checked){
+                        if(document.getElementById('id_Manage_Milestones-'+i+'-closed').checked){
+                            sweetAlert("sorry...", "Cannot delete completed milestone!");
+                            event.preventDefault();
+                        }
+                    }
+                }
+            };
+
+            $submit_check_while_deleting.on({
+                    click: submit_check,
+                });
+        };
+
         var amountTotalFun = function() {
             if (options.isAmountTotal) {
                 var $datePickers = $('.date-picker');
@@ -1467,7 +1565,6 @@ app.getSum = function($elements, $outputElement) {
 
                 $('.milestone_delivery').prop("readonly", true);
 
-
                 var unit_rate_per_unit = function(){
                     for(i=0;i<30;i++){
                             var $unit = $('#id_Manage_Milestones-'+i+'-unit').val()
@@ -1477,56 +1574,6 @@ app.getSum = function($elements, $outputElement) {
                             amountTotal()
                     }
                 }
-
-                var delete_checkbox = function(){
-                    if(this.checked){
-                        var $id = this.id
-                        var $id_number = $id.charAt("21")
-                        var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
-                        var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
-                        var $value_after_selecting_delete = parseFloat($total_milestone_value) - parseFloat($amount);;
-                        document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
-                    }
-                    else{
-                        var $id = this.id
-                        var $id_number = $id.charAt("21")
-                        var $amount = document.getElementById("id_Manage_Milestones-"+$id_number+"-amount").value;
-                        var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
-                        var $value_after_selecting_delete = parseFloat($total_milestone_value) + parseFloat($amount);
-                        document.getElementsByClassName("milestone-total-amount")[0].innerHTML = $value_after_selecting_delete.toFixed(2)
-                    }
-                    if (projectTotalValueHidden !== Number($amountTotal.text())) {
-                        if (!($amountTotal.hasClass('t-danger'))) {
-                            $amountTotal.addClass('t-danger');
-                        }
-                    } else {
-                        if ($amountTotal.hasClass('t-danger')) {
-                            $amountTotal.removeClass('t-danger');
-                        }
-                    }
-                };
-
-                var submit_check = function(event){
-                    var $total_milestone_value = document.getElementsByClassName("milestone-total-amount")[0].innerHTML;
-                    var $project_value = document.getElementsByClassName("holiday")[0].innerHTML;
-                    if($project_value.split(" ")[1] != $total_milestone_value){
-                        sweetAlert("sorry...", "Total value is not equal to project value!");
-                        event.preventDefault();
-                    }
-                    var $amountsLen = $amounts.length,
-                        i,
-                        $curItem,
-                        temp = 0;
-
-                    for (i = 0; i < $amountsLen; i += 1) {
-                        if(document.getElementById('id_Manage_Milestones-'+i+'-DELETE').checked){
-                            if(document.getElementById('id_Manage_Milestones-'+i+'-closed').checked){
-                                sweetAlert("sorry...", "Cannot delete completed milestone!");
-                                event.preventDefault();
-                            }
-                        }
-                    }
-                };
 
                 // amount validation
                 var amountValidatoinFun = function() {
@@ -1576,20 +1623,13 @@ app.getSum = function($elements, $outputElement) {
                 $rate_per_units.on({
                     keyup: unit_rate_per_unit,
                    });
-
-                $submit_check_while_deleting.on({
-                    click: submit_check,
-                })
-
-                $delete_box.on({
-                    click: delete_checkbox,
-                   });
             }
         };
 
         daysTotalFun();
         billableTotalFun();
         amountTotalFun();
+        submit_action();
 
         if (options.plannedEffortCalc) {
             app.plannedEfforInit($table);
@@ -1920,3 +1960,4 @@ $('.coordinatorcount').on('change', function(e){
                     $('.btn.btn-info.pull-right').prop('disabled', false);
                   }
         })
+
