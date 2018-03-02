@@ -1070,7 +1070,7 @@ app.getSum = function($elements, $outputElement) {
 
             });
 
-//            delete_action();
+
             daysTotalFun();
             billableTotalFun();
             amountTotalFun();
@@ -1494,6 +1494,8 @@ app.getSum = function($elements, $outputElement) {
                 click: delete_checkbox,
             });
         };
+
+        delete_action();
 
         var submit_action = function() {
 
