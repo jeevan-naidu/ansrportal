@@ -1827,7 +1827,7 @@ def RevenueRecogniation(request):
                                                                                                                 'project_id__customer__name','project_id__totalValue',
                                                                                                                 'project_id__name',
                                                                                                                 'project_id__customer',
-                                                                                                                'project_id__startDate',
+                                                                                                                'project_id__startDate', 'milestoneDate',
                                                                                                                 'project_id__endDate', 'project_id__signed','project_id__po',
                                                                                                                 'project_id__salesForceNumber', 'project_id__plannedEffort','unit')))
                     for val in values:
@@ -1837,7 +1837,7 @@ def RevenueRecogniation(request):
                                                                                                                'project_id__name','project_id__customer__name','project_id__totalValue',
                                                                                                                'project_id__customer',
                                                                                                                'project_id__startDate',
-                                                                                                               'project_id__endDate',
+                                                                                                               'project_id__endDate', 'milestoneDate',
                                                                                                              'project_id__salesForceNumber','project_id__plannedEffort','project_id__signed','project_id__po',
                                                                                                                    'unit')))
                     for val in values:
@@ -1863,7 +1863,7 @@ def RevenueRecogniation(request):
                     'bu': reportData.cleaned_data['bu']
                 }, user=request.user)
 
-            return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'fresh': 1, 'report': values})
+            return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
         else:
             if reportData.is_valid():
                 bu = reportData.cleaned_data['bu']
@@ -1872,7 +1872,7 @@ def RevenueRecogniation(request):
                                                                                                                 'project_id__customer__name','project_id__totalValue',
                                                                                                                 'project_id__name',
                                                                                                                 'project_id__customer',
-                                                                                                                'project_id__startDate',
+                                                                                                                'project_id__startDate', 'milestoneDate',
                                                                                                                 'project_id__endDate', 'project_id__signed','project_id__po',
                                                                                                                 'project_id__salesForceNumber', 'project_id__plannedEffort','unit')))
                     for val in values:
@@ -1882,7 +1882,7 @@ def RevenueRecogniation(request):
                                                                                                                'project_id__name','project_id__customer__name','project_id__totalValue',
                                                                                                                'project_id__customer',
                                                                                                                'project_id__startDate',
-                                                                                                               'project_id__endDate',
+                                                                                                               'project_id__endDate', 'milestoneDate',
                                                                                                              'project_id__salesForceNumber','project_id__plannedEffort','project_id__signed','project_id__po',
                                                                                                                    'unit')))
                     for val in values:
@@ -1908,7 +1908,7 @@ def RevenueRecogniation(request):
                     'bu': reportData.cleaned_data['bu']
                 }, user=request.user)
 
-            return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'fresh': 1, 'report': values})
+            return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
