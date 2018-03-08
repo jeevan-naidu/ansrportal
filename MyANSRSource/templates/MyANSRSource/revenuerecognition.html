@@ -4,6 +4,16 @@
 {% load humanize %}
 {% block pageTitle %}Revenue Recognition Summary{% endblock %}
 {%block childcontent %}
+
+<style>
+
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus{width: 100% !important;}
+.table-condensed>thead>tr>th, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>tbody>tr>td, .table-condensed>tfoot>tr>td {
+    padding: 5px 8px;
+}
+
+</style>
+
 <div class="panel clearfix">
 
 
@@ -32,16 +42,6 @@
                         <i class="fa fa-line-chart"></i>
                         Get Report
                     </button></td>
-                    <td class="col-lg-1">
-                        {% if fresh == 1 %}
-                            <button type="submit" class="btn btn-success" name="generate">
-                        {% else %}
-                            <button type="submit" class="btn btn-success" disabled>
-                        {% endif %}
-                                <i class="fa fa-file-excel-o"></i>
-                                Export to Excel
-                            </button>
-                    </td>
                 </tr>
             </table>
         </form>
@@ -52,9 +52,11 @@
                 <th>SO-No</th>
                 <th>Project-ID</th>
                 <th>Project-Name</th>
+                <th>Project End Date</th>
                 <th>Project Value</th>
                 <th>Revenue Recognised</th>
                 <th>BTG</th>
+                <th class="hidden">BU</th>
             </tr>
             </thead>
             <script>
@@ -73,12 +75,14 @@
             </script>
             {% for val in report %}
             <tr>
-            <td>{{val.project_id__salesForceNumber}}</td>
-            <td>{{val.project_id__projectId}}</td>
-            <td>{{val.project_id__name}}</td>
-            <td>$ {{val.project_id__totalValue}}</td>
-            <td>$ {{val.amount}}</td>
+            <td>{{val.salesForceNumber}}</td>
+            <td>{{val.projectId}}</td>
+            <td>{{val.name}}</td>
+            <td>{{val.endDate}}</td>
+            <td>$ {{val.totalValue}}</td>
+            <td>$ {{val.revenue}}</td>
             <td>$ {{val.unit}}</td>
+             <td class="hidden">{{val.bu}}</td>
         </tr>
             {% endfor %}
             {% else %}

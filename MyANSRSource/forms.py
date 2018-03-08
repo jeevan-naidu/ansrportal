@@ -1145,6 +1145,18 @@ class RevenueReportForm(forms.Form):
         label="Business Unit",
         required=True,
     )
+    startDate = forms.DateField(
+        label="From",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now,
+        required=False,
+    )
+    endDate = forms.DateField(
+        label="To",
+        widget=DateTimePicker(options=dateTimeOption),
+        initial=timezone.now,
+        required=False,
+    )
 
 
     def __init__(self, *args, **kwargs):
@@ -1162,6 +1174,8 @@ class RevenueReportForm(forms.Form):
                 ).order_by('name'))
             self.fields['bu'].choices = [(rec.id, rec.name) for rec in bu]
         self.fields['bu'].widget.attrs['class'] = "form-control"
+        self.fields['startDate'].widget.attrs['class'] = "form-control"
+        self.fields['endDate'].widget.attrs['class'] = "form-control"
 
 class InvoiceReportForm(forms.Form):
     bu = forms.ChoiceField(
