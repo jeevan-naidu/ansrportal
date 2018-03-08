@@ -27,13 +27,13 @@
             </script>
             {% for val in data %}
             <tr>
-                <td class="hidden">{{val.project_id__salesForceNumber}}</td>
-                <td>{{val.project_id__projectId}}</td>
-                <td>{{val.project_id__name}}</td>
-                <td>$ {{val.project_id__totalValue}}</td>
-                <td>$ {{val.amount}}</td>
-                <td>$ {{val.balance}}</td>
-                <td class="hidden">{{val.project_id__bu_id__name}}
+                <td class="hidden">{{val.salesForceNumber}}</td>
+                <td>{{val.projectId}}</td>
+                <td>{{val.name}}</td>
+                <td>$ {{val.totalValue}}</td>
+                <td>$ {{val.revenue}}</td>
+                <td>$ {{val.unit}}</td>
+                <td class="hidden">{{val.bu}}
             </tr>
 
             {% endfor %}

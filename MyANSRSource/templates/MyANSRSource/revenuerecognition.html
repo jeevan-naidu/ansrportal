@@ -56,6 +56,7 @@
                 <th>Project Value</th>
                 <th>Revenue Recognised</th>
                 <th>BTG</th>
+                <th class="hidden">BU</th>
             </tr>
             </thead>
             <script>
@@ -81,6 +82,7 @@
             <td>$ {{val.totalValue}}</td>
             <td>$ {{val.revenue}}</td>
             <td>$ {{val.unit}}</td>
+             <td class="hidden">{{val.bu}}</td>
         </tr>
             {% endfor %}
             {% else %}

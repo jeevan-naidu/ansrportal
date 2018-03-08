@@ -1060,29 +1060,85 @@ def InvoiceReport(request):
         endDate = request.POST.get('endDate')
         if datetime.strptime(startDate, '%Y-%m-%d').date() == datetime.now().date() and datetime.strptime(endDate, '%Y-%m-%d').date() == datetime.now().date():
             if bu == '0':
-                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
-                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
-                for val in data:
-                    val['balance'] = val['project_id__totalValue'] - val['amount']
+                values = []
+                Projects = (list(Project.objects.all()))
+                for val in Projects:
+                    val_data = {}
+                    data = ProjectMilestone.objects.filter(project_id=val.id, closed=1, financial=True)
+                    if data:
+                        milestone_total = []
+                        for milestone in data:
+                            milestone_total.append(milestone.amount)
+                        val_data['revenue'] = sum(milestone_total)
+                        val_data['unit'] = val.totalValue - sum(milestone_total)
+                        val_data['salesForceNumber'] = val.salesForceNumber
+                        val_data['projectId'] = val.projectId
+                        val_data['endDate'] = val.endDate
+                        val_data['totalValue'] = val.totalValue
+                        val_data['name'] = val.name
+                        val_data['bu'] = val.bu.name
+                        values.append(val_data)
             else:
-                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, financial=True, closed=1).values('project_id__totalValue', 'project_id__bu_id__name',
-                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
-                for val in data:
-                    val['balance'] = val['project_id__totalValue'] - val['amount']
+                values = []
+                Projects = (list(Project.objects.filter(bu_id=bu)))
+                for val in Projects:
+                    val_data = {}
+                    data = ProjectMilestone.objects.filter(project_id=val.id, closed=1, financial=True)
+                    if data:
+                        milestone_total = []
+                        for milestone in data:
+                            milestone_total.append(milestone.amount)
+                        val_data['revenue'] = sum(milestone_total)
+                        val_data['unit'] = val.totalValue - sum(milestone_total)
+                        val_data['salesForceNumber'] = val.salesForceNumber
+                        val_data['projectId'] = val.projectId
+                        val_data['endDate'] = val.endDate
+                        val_data['totalValue'] = val.totalValue
+                        val_data['name'] = val.name
+                        val_data['bu'] = val.bu.name
+                        values.append(val_data)
         else:
             if bu == '0':
-                data = (list(ProjectMilestone.objects.filter(financial=True, closed=1, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
-                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
-                for val in data:
-                    val['balance'] = val['project_id__totalValue'] - val['amount']
+                values = []
+                Projects = (list(Project.objects.all()))
+                for val in Projects:
+                    val_data = {}
+                    data = ProjectMilestone.objects.filter(project_id=val.id, closed=1, financial=True, milestoneDate__range=(startDate, endDate))
+                    if data:
+                        milestone_total = []
+                        for milestone in data:
+                            milestone_total.append(milestone.amount)
+                        val_data['revenue'] = sum(milestone_total)
+                        val_data['unit'] = val.totalValue - sum(milestone_total)
+                        val_data['salesForceNumber'] = val.salesForceNumber
+                        val_data['projectId'] = val.projectId
+                        val_data['endDate'] = val.endDate
+                        val_data['totalValue'] = val.totalValue
+                        val_data['name'] = val.name
+                        val_data['bu'] = val.bu.name
+                        values.append(val_data)
             else:
-                data = (list(ProjectMilestone.objects.filter(project_id__bu__id=bu, closed=1,financial=True, milestoneDate__range=(startDate, endDate)).values('project_id__totalValue', 'project_id__bu_id__name',
-                'project_id__name','project_id__projectId','project_id__salesForceNumber', 'amount','closed')))
-                for val in data:
-                    val['balance'] = val['project_id__totalValue'] - val['amount']
+                values = []
+                Projects = (list(Project.objects.filter(bu_id=bu)))
+                for val in Projects:
+                    val_data = {}
+                    data = ProjectMilestone.objects.filter(project_id=val.id, closed=1, financial=True, milestoneDate__range=(startDate, endDate))
+                    if data:
+                        milestone_total = []
+                        for milestone in data:
+                            milestone_total.append(milestone.amount)
+                        val_data['revenue'] = sum(milestone_total)
+                        val_data['unit'] = val.totalValue - sum(milestone_total)
+                        val_data['salesForceNumber'] = val.salesForceNumber
+                        val_data['projectId'] = val.projectId
+                        val_data['endDate'] = val.endDate
+                        val_data['totalValue'] = val.totalValue
+                        val_data['name'] = val.name
+                        val_data['bu'] = val.bu.name
+                        values.append(val_data)
 
         return render(request, 'MyANSRSource/invoicereportdata.html',
-                      {'form': form, 'data':data})
+                      {'form': form, 'data':values})
 
 @login_required
 @permission_required('MyANSRSource.view_all_reports')
@@ -1797,34 +1853,38 @@ def RevenueRecogniation(request):
                     for val in Projects:
                         val_data = {}
                         data = ProjectMilestone.objects.filter(project_id=val.id, closed=1, financial=0)
-                        milestone_total = []
-                        for milestone in data:
-                            milestone_total.append(milestone.amount)
-                        val_data['revenue'] = sum(milestone_total)
-                        val_data['unit'] = val.totalValue - sum(milestone_total)
-                        val_data['salesForceNumber'] = val.salesForceNumber
-                        val_data['projectId'] = val.projectId
-                        val_data['endDate'] = val.endDate
-                        val_data['totalValue'] = val.totalValue
-                        val_data['name'] = val.name
-                        values.append(val_data)
+                        if data:
+                            milestone_total = []
+                            for milestone in data:
+                                milestone_total.append(milestone.amount)
+                            val_data['revenue'] = sum(milestone_total)
+                            val_data['unit'] = val.totalValue - sum(milestone_total)
+                            val_data['salesForceNumber'] = val.salesForceNumber
+                            val_data['projectId'] = val.projectId
+                            val_data['endDate'] = val.endDate
+                            val_data['totalValue'] = val.totalValue
+                            val_data['name'] = val.name
+                            val_data['bu'] = val.bu.name
+                            values.append(val_data)
                 else:
                     values = []
                     Projects = (list(Project.objects.filter(bu_id=bu)))
                     for val in Projects:
                         val_data = {}
                         data = ProjectMilestone.objects.filter(project_id = val.id, closed=1, financial=0)
-                        milestone_total = []
-                        for milestone in data:
-                            milestone_total.append(milestone.amount)
-                        val_data['revenue'] = sum(milestone_total)
-                        val_data['unit'] = val.totalValue - sum(milestone_total)
-                        val_data['salesForceNumber'] = val.salesForceNumber
-                        val_data['projectId'] = val.projectId
-                        val_data['endDate'] = val.endDate
-                        val_data['totalValue'] = val.totalValue
-                        val_data['name'] = val.name
-                        values.append(val_data)
+                        if data:
+                            milestone_total = []
+                            for milestone in data:
+                                milestone_total.append(milestone.amount)
+                            val_data['revenue'] = sum(milestone_total)
+                            val_data['unit'] = val.totalValue - sum(milestone_total)
+                            val_data['salesForceNumber'] = val.salesForceNumber
+                            val_data['projectId'] = val.projectId
+                            val_data['endDate'] = val.endDate
+                            val_data['totalValue'] = val.totalValue
+                            val_data['name'] = val.name
+                            val_data['bu'] = val.bu.name
+                            values.append(val_data)
 
             return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
         else:
@@ -1837,35 +1897,40 @@ def RevenueRecogniation(request):
                         val_data = {}
                         data = ProjectMilestone.objects.filter(financial=0, project_id=val.id, closed=1,
                                                                milestoneDate__range=(startDate, endDate))
-                        milestone_total = []
-                        for milestone in data:
-                            milestone_total.append(milestone.amount)
-                        val_data['revenue'] = sum(milestone_total)
-                        val_data['unit'] = val.totalValue - sum(milestone_total)
-                        val_data['salesForceNumber'] = val.salesForceNumber
-                        val_data['projectId'] = val.projectId
-                        val_data['endDate'] = val.endDate
-                        val_data['totalValue'] = val.totalValue
-                        val_data['name'] = val.name
-                        values.append(val_data)
+                        if data:
+                            milestone_total = []
+                            for milestone in data:
+                                milestone_total.append(milestone.amount)
+                            val_data['revenue'] = sum(milestone_total)
+                            val_data['unit'] = val.totalValue - sum(milestone_total)
+                            val_data['salesForceNumber'] = val.salesForceNumber
+                            val_data['projectId'] = val.projectId
+                            val_data['endDate'] = val.endDate
+                            val_data['totalValue'] = val.totalValue
+                            val_data['name'] = val.name
+                            val_data['bu'] = val.bu.name
+                            values.append(val_data)
                 else:
+                    print bu
                     values = []
                     Projects = (list(Project.objects.filter(bu_id=bu)))
                     for val in Projects:
                         val_data = {}
                         data = ProjectMilestone.objects.filter(financial=0, project_id=val.id, closed=1,
                                                                milestoneDate__range=(startDate, endDate))
-                        milestone_total = []
-                        for milestone in data:
-                            milestone_total.append(milestone.amount)
-                        val_data['revenue'] = sum(milestone_total)
-                        val_data['unit'] = val.totalValue - sum(milestone_total)
-                        val_data['salesForceNumber'] = val.salesForceNumber
-                        val_data['projectId'] = val.projectId
-                        val_data['endDate'] = val.endDate
-                        val_data['totalValue'] = val.totalValue
-                        val_data['name'] = val.name
-                        values.append(val_data)
+                        if data:
+                            milestone_total = []
+                            for milestone in data:
+                                milestone_total.append(milestone.amount)
+                            val_data['revenue'] = sum(milestone_total)
+                            val_data['unit'] = val.totalValue - sum(milestone_total)
+                            val_data['salesForceNumber'] = val.salesForceNumber
+                            val_data['projectId'] = val.projectId
+                            val_data['endDate'] = val.endDate
+                            val_data['totalValue'] = val.totalValue
+                            val_data['name'] = val.name
+                            val_data['bu'] = val.bu.name
+                            values.append(val_data)
 
             return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
 
