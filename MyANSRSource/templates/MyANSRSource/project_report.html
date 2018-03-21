@@ -1,0 +1,119 @@
+{% extends 'reportMaster.inc' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load humanize %}
+{% block pageTitle %}Revenue Recognition Summary{% endblock %}
+{%block childcontent %}
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<!--<style>-->
+    <!--.btg{-->
+    <!--width: 10px;-->
+    <!--height: 25px;-->
+    <!--}-->
+
+
+<!--</style>-->
+
+
+  <form action="" method="post">
+    {% csrf_token %}
+<div class="panel pb-15">
+
+    <div class="panel-body">
+
+
+<table class="table table-striped myansr-table" id="active_projects">
+
+    <input type="submit" id="" class="btn btn-sm vd_bg-green vd_white pull-right active_projects" style="margin-bottom:4px" value="Export">
+
+
+
+  <thead>
+    <tr>
+        <th> Project ID </th>
+        <th> Project Name </th>
+        <th> Project Value </th>
+        <th> Start Date </th>
+        <th> End Date </th>
+        <th> Delivery Manager </th>
+        <th> Portfolio Manager </th>
+        <th> BU Head </th>
+        <th> Planned Hrs </th>
+        <th> Hrs Consumed </th>
+        <th> Available Hrs </th>
+        <th> Extra hours</th>
+        <th> BTG Hrs Required </th>
+        <th> Last Updated </th>
+        <th class="hidden"> Project_id </th>
+        <!--<th> Action </th>-->
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in project_Details %}
+        <tr>
+            <td >{{obj.project_id__projectId}}</td>
+            <td >{{obj.project_id__name}} </td>
+            <td >{{obj.project_id__totalValue}}</td>
+            <td>{{obj.project_id__startDate}}</td>
+            <td>{{obj.project_id__endDate}}</td>
+            <td>{{obj.deliveryManager_id__first_name}} {{obj.deliveryManager_id__last_name}}</td>
+            <td>{{obj.portfolio_manager_id__first_name}} {{obj.portfolio_manager_id__last_name}}</td>
+            <td>{{obj.project_id__bu_id__new_bu_head__first_name}} {{obj.project_id__bu_id__new_bu_head__last_name}}</td>
+            <td >{{obj.project_id__plannedEffort}} </td>
+            <td>{{obj.total_efforts}}</td>
+            <td>{{obj.avaliable_efforts}}</td>
+            <td>{{obj.extra_efforts}}</td>
+            <td width="10px" height="10px"><div class="form-group">
+                  <input class="btg" id="btg_{{forloop.counter}}" type="text" value="">
+                </div></td>
+            <td></td>
+            <td class="hidden" id="project_{{forloop.counter}}">{{obj.project_id}}</td>
+    </tr>
+    {% endfor %}
+      </tbody>
+</table>
+
+<button type="button" class="btn btn-success pull-right pull-right-space" id="submit">Submit</button>
+
+</div>
+</div>
+
+  </form>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/export_excel.js"></script>
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    "use strict";
+    $('#active_projects').dataTable({
+        searching: true,
+        scrollCollapse: true,
+        destroy: true,
+
+       });
+    });
+
+
+$(document).ready(function(){
+    $("#submit").on('click', function(){
+
+        info = document.getElementById('active_projects_info').innerHTML
+        no_of_rows = info.split("of")[1]
+        tr = no_of_rows[1]+no_of_rows[2]
+        for(i=1;i<=tr;i++){
+            console.log(document.getElementById('btg_'+i), i)
+        }
+
+    });
+});
+
+
+
+
+</script>
+{% endblock %}
+

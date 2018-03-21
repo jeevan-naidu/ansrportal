@@ -1936,3 +1936,52 @@ def RevenueRecogniation(request):
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
+
+@login_required
+def ProjectReport(request):
+    user_id = request.user.id
+    project_details = ProjectDetail.objects.filter(Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id) | Q(pmDelegate_id=user_id)).values(
+            'project_id',
+            'project_id__name',
+            'project_id__totalValue',
+            'project_id__plannedEffort',
+            'project_id__projectId',
+            'project_id__startDate',
+            'project_id__endDate',
+            'deliveryManager_id__first_name',
+            'deliveryManager_id__last_name',
+            'project_id__bu_id__new_bu_head__first_name',
+            'project_id__bu_id__new_bu_head__last_name',
+            'portfolio_manager_id__first_name',
+            'portfolio_manager_id__last_name'
+        )
+
+    for project in project_details:
+        total = []
+        timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH', 'approved',
+                                                                                                   'hold', 'project_id')
+        if timesheet_details:
+            for timesheet in timesheet_details:
+                if (timesheet['approved'] == True and timesheet['hold'] == True) or (
+                        timesheet['approved'] == False and timesheet['hold'] == False) or (
+                        timesheet['approved'] == False and timesheet['hold'] == True):
+                    total.append(timesheet['totalH'])
+
+        project['total_efforts'] = sum(total)
+        if (project['project_id__plannedEffort'] - sum(total)) >= 0:
+            project['avaliable_efforts'] = project['project_id__plannedEffort'] - sum(total)
+        else:
+            project['avaliable_efforts'] = 0
+        if (sum(total) - project['project_id__plannedEffort']) >= 0:
+            project['extra_efforts'] = sum(total) - project['project_id__plannedEffort']
+        else:
+            project['extra_efforts'] = 0
+
+    return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
+
+
+def btg_hours(request):
+    projectid = request.GET.get('project_id')
+    import ipdb;ipdb.set_trace()
+
+     # return render(request, 'MyANSRSource/project_report.html', {})
