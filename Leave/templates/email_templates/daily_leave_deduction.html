@@ -11,15 +11,15 @@
 
 <p>Admin has raised leave notification. </p>
 
-{% for leave in leaveType %}
+
     <p><b>Leave</b></p>
     <p>Leave Type : {{leave.leave}} </p>
     <p>For Date : {{leave.date}}</p>
     <p>Due Date : {{duedate}}</p>
-    {% if reason %} <p> Reason : {{reason}} </p> {% endif %}
+
 
     <p></p><p></p>
-{% endfor %}
+
 <p>Regards,<br>
  HR Support<br>
 </body>

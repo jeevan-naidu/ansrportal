@@ -18,6 +18,7 @@
             <td><b>Leave Type</b></td>
             <td><b>For Date</b></td>
             <td><b>Reason</b></td>
+            <td><b>Due Date</b></td>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,7 @@
             <td>{{leave.leave}} </td>
             <td>{{leave.date}}</td>
             {% if reason %} <td>{{leave.reason}} </td> {% endif %}
+            <td>{{leave.due_date}}</td>
         </tr>
         {% endfor %}
     </tbody>

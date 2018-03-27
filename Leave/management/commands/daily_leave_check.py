@@ -38,19 +38,25 @@ def dates_to_check_leave(start_date,end_date):
 class Command(BaseCommand):
     help = 'Daily leave Check.'
 
-    def handle(self, *args, **options):
-        daily_leave_check()
+    def add_arguments(self, parser):
+        parser.add_argument('year', type=int)
+        parser.add_argument('month', type=int)
+        parser.add_argument('day', type=int)
 
-def daily_leave_check():
+    def handle(self, *args, **options):
+        daily_leave_check(options['year'], options['month'], options['day'])
+
+def daily_leave_check(year, month, day):
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    today = datetime.now().date()
-    start_date, end_date = previous_week_range(today)
-    dates = dates_to_check_leave(start_date,end_date)
+    date = datetime(year, month, day)
+    start_date = date.date()
+    end_date = start_date + timedelta(days=4)
+    dates = dates_to_check_leave(start_date, end_date)
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = today + timedelta(days=7)
+    dueDate = end_date + timedelta(days=7)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
@@ -79,7 +85,7 @@ def daily_leave_check():
                             reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
                             leave = 'full_day'
                         elif tdelta < fullDayOfficeStayTimeLimit:
-                            reason = "you had put {0} hours which is below 9 hours".format(stayInTime)
+                            reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                             leave = 'half_day'
                     else:
                         swipeIn = datetime.now(pytz.timezone("Asia/Kolkata")) \
@@ -112,6 +118,7 @@ def daily_leave_check():
                             leave_for_date['date'] = date
                             leave_for_date['leave'] = leave
                             leave_for_date['reason'] = reason
+                            leave_for_date['due_date'] = dueDate
                             leaves.append(leave_for_date)
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
@@ -120,10 +127,11 @@ def daily_leave_check():
                     leave_for_date['date'] = date
                     leave_for_date['leave'] = leave
                     leave_for_date['reason'] = reason
+                    leave_for_date['due_date'] = dueDate
                     leaves.append(leave_for_date)
         if leaves:
             try:
-                send_mail(user, leaves, dates, dueDate, reason, "open")
+                send_mail(user, leaves, dates, reason, "open")
             except:
                 logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Daily leave check raised finished running"
@@ -141,12 +149,11 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def send_mail(user, leavetype, fordate, duedate, status_comments, status):
+def send_mail(user, leavetype, fordate, status_comments, status):
     msg_html = render_to_string('email_templates/short_attendance_raised.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leavetype,
                                  'fordate': fordate,
-                                 'duedate': duedate,
                                  'reason': status_comments,
                                  'status': status,
                                  })
