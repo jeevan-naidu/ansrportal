@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+
+<body>
+
+<p>Hi, {{registered_by}},</p>
+
+<p>Admin has raised leave notification. </p>
+
+<table border="1">
+
+    <thead>
+        <tr>
+            <td><b>Total Hours</b></td>
+            <td><b>From Date</b></td>
+            <td><b>To Date</b></td>
+            <td><b>Total leaves</b></td>
+            <td><b>Reason</b></td>
+            <td><b>Due Date</b></td>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>{{total_hours}} </td>
+            <td>{{from_date}}</td>
+            <td>{{to_date}}</td>
+            <td>{{leaveType}}</td>
+            {% if reason %} <td>{{reason}} </td> {% endif %}
+            <td>{{dueDate}}</td>
+        </tr>
+
+    </tbody>
+</table>
+<p>Regards,<br>
+ HR Support<br>
+</body>
