@@ -348,6 +348,7 @@ class ApplyLeaveView(View):
                                   'loss_of_pay',
                                   'ooo_dom',
                                   'ooo_int']
+            work_from_home = ['work_from_home']
             form = LeaveForm(leavetype, user_id)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(leave_type__leave_type=leavetype,
@@ -357,10 +358,10 @@ class ApplyLeaveView(View):
                 context_data['leave'] = 'data'
             if leavetype in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
-
+            if leavetype in work_from_home:
+                context_data['leave'] = 'work_from_home'
             if leavetype not in count_not_required and leave_count:
                 context_data['leave_count'] = leave_count[0].balance
-
             return render(request, 'leave_apply.html', context_data)
         except:
             form = LeaveForm('None', request.user.id)
@@ -368,6 +369,7 @@ class ApplyLeaveView(View):
             return render(request, 'leave_apply.html', context_data)
 
     def post(self, request):
+
         user_id = request.POST['name']
         if not user_id:
             user_id = request.user.id
@@ -396,6 +398,7 @@ class ApplyLeaveView(View):
                 context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected,
                                                                           user_id=user_id,
                                                                           year=leave_applied_year)[0].balance
+
             except:
                 context_data['errors'].append('No leave records found on myansrsource portal. Please contact HR.')
                 context_data['form'] = leave_form
@@ -404,6 +407,7 @@ class ApplyLeaveView(View):
                              'comp_off_earned',
                              'comp_off_avail',
                              'pay_off']
+            work_from_home = ['work_from_home']
             # , 'short_leave'
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
@@ -418,7 +422,13 @@ class ApplyLeaveView(View):
                 if leave_selected in ['comp_off_earned', 'pay_off']:
                     duedate = validate['due_date']
 
-
+            elif leave_selected in work_from_home:
+                validate = leaveValidation(leave_form, user_id, leave_applied_year, attachment)
+                fromdate = leave_form.cleaned_data['fromDate']
+                todate = leave_form.cleaned_data['toDate']
+                hours = leave_form.cleaned_data['hours']
+                fromsession = leave_form.cleaned_data['from_session']
+                tosession = leave_form.cleaned_data['to_session']
             else:
                 validate=leaveValidation(leave_form, user_id, leave_applied_year, attachment)
                 fromdate = leave_form.cleaned_data['fromDate']
@@ -436,7 +446,6 @@ class ApplyLeaveView(View):
                 context_data['errors'].append('From Date and To date need to be in same year')
                 context_data['form'] = leave_form
             else:
-
                 leavecount = validate['success']
                 leaveType=LeaveType.objects.get(leave_type= leave_form.cleaned_data['leave'])
 
@@ -451,7 +460,6 @@ class ApplyLeaveView(View):
                                                                    approved=0,
                                                                    balance=0,
                                                                    year=leave_applied_year)
-
                 if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate,
                                                                                                          user_id):
@@ -470,6 +478,7 @@ class ApplyLeaveView(View):
                                            to_session=tosession,
                                            days_count=leavecount,
                                            reason=reason,
+                                           hours=hours,
                                            atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user,
@@ -481,6 +490,7 @@ class ApplyLeaveView(View):
                                              tosession,
                                              leavecount,
                                              reason,
+                                             hours,
                                              'save')
                     else:
                          LeaveApplications(leave_type=leaveType,
@@ -489,7 +499,7 @@ class ApplyLeaveView(View):
                                            from_session=fromsession,
                                            to_session=tosession,
                                            days_count=leavecount,
-                                           reason=reason).saveas(user_id, request.user.id)
+                                           reason=reason, hours=hours).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user,
                                              manager,
@@ -500,13 +510,13 @@ class ApplyLeaveView(View):
                                              tosession,
                                              leavecount,
                                              reason,
+                                             hours,
                                              'save')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
                 else:
                     if leave_form.cleaned_data['leave'] in ['comp_off_earned',
-                                                            'work_from_home',
                                                             'pay_off',
                                                             'loss_of_pay',
                                                             'ooo_dom',
@@ -522,6 +532,7 @@ class ApplyLeaveView(View):
                                                days_count=leavecount,
                                                reason=reason,
                                                atachement=attachment,
+                                               hours=hours,
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
@@ -534,6 +545,7 @@ class ApplyLeaveView(View):
                                                  tosession,
                                                  leavecount,
                                                  reason,
+                                                 hours,
                                                  'save')
                         else:
                              LeaveApplications(leave_type=leaveType,
@@ -543,6 +555,7 @@ class ApplyLeaveView(View):
                                                to_session=tosession,
                                                days_count=leavecount,
                                                reason=reason,
+                                               hours=hours,
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
@@ -555,9 +568,56 @@ class ApplyLeaveView(View):
                                                  tosession,
                                                  leavecount,
                                                  reason,
+                                                 hours,
                                                  'save')
 
                         context_data['success']= 'leave saved'
+                        context_data['record_added'] = 'True'
+
+                    elif leave_form.cleaned_data['leave'] in ['work_from_home']:
+                        leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
+
+                        if attachment:
+                            LeaveApplications(leave_type=leaveType,
+                                              from_date=fromdate,
+                                              to_date=todate,
+                                              days_count=leavecount,
+                                              reason=reason,
+                                              atachement=attachment,
+                                              hours=hours,
+                                              due_date=duedate).saveas(user_id,
+                                                                       request.user.id)
+                            leavesummry_temp.save()
+                            EmailSendTask.delay(request.user,
+                                                manager,
+                                                leave_selected,
+                                                fromdate,
+                                                todate,
+                                                leavecount,
+                                                reason,
+                                                hours,
+                                                'save')
+                        else:
+                            LeaveApplications(leave_type=leaveType,
+                                              from_date=fromdate,
+                                              to_date=todate,
+                                              days_count=leavecount,
+                                              reason=reason,
+                                              hours=hours,
+                                              due_date=duedate).saveas(user_id,
+                                                                       request.user.id)
+                            leavesummry_temp.save()
+                            EmailSendTask.delay(request.user,
+                                                manager,
+                                                leave_selected,
+                                                fromdate,
+                                                todate,
+                                                leavecount,
+                                                reason,
+                                                hours,
+                                                'save')
+
+                        context_data['success'] = 'leave saved'
                         context_data['record_added'] = 'True'
                     else:
                         context_data['errors'].append('You do'
@@ -566,6 +626,7 @@ class ApplyLeaveView(View):
                 if context_data['errors']:
                     return render(request, 'leave_apply.html', context_data)
                 else:
+                    import ipdb; ipdb.set_trace()
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content

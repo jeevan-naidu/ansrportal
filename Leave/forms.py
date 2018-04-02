@@ -105,6 +105,48 @@ def LeaveForm(leavetype, user, data=None):
               'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
             }
 
+    class ApplyLeaveForm3(forms.ModelForm):
+        leave_attachment = forms.FileField(label='Attachment', required=False, help_text=mark_safe("Allowed file types: jpg, csv, png, pdf, xls, xlsx, doc, docx, jpeg, eml.<br>Maximum allowed file size: 1MB"))
+        # Add Bootstrap widgets
+        leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
+
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave.widget.attrs = {'class': 'form-control', 'required':'true'}
+
+        Reason = forms.CharField(max_length=100, required=False)
+        # Add Bootstrap widgets
+        Reason.widget.attrs = {'class': 'form-control'}
+
+        hours = forms.CharField(max_length=100, required=False)
+        # Add Bootstrap widgets
+        hours.widget.attrs = {'class': 'form-control'}
+
+        from_session = forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        from_session.widget.attrs = {'class': 'form-control', 'required': 'false'}
+
+        to_session = forms.ChoiceField(choices=SESSION_STATUS_CHOICES)
+        to_session.widget.attrs = {'class': 'form-control', 'required': 'false'}
+
+        fromDate = forms.DateField(
+            label="From",
+            widget=DateTimePicker(options=dateTimeOption),
+        )
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true'}
+
+        toDate = forms.DateField(
+            label="To",
+            widget=DateTimePicker(options=dateTimeOption),
+        )
+        toDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'false'}
+        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+        class Meta:
+            model = LeaveApplications
+
+            fields = ['leave', 'fromDate', 'from_session', 'toDate', 'to_session', 'Reason', 'hours', 'leave_attachment','name']
+            widgets = {
+              'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
+            }
+
     onetime_leave = ['maternity_leave',
                      'paternity_leave',
                      'comp_off_avail',
@@ -116,10 +158,10 @@ def LeaveForm(leavetype, user, data=None):
                      'bereavement_leave',
                      'casual_leave',
                      'loss_of_pay',
-                     'work_from_home',
                      'sabbatical',
                      'ooo_dom',
                      'ooo_int']
+    work_from_home = ['work_from_home']
 
     if leavetype in onetime_leave:
         if data:
@@ -134,6 +176,13 @@ def LeaveForm(leavetype, user, data=None):
             return form
         else:
             form = ApplyLeaveForm2()
+            return form
+    elif leavetype in work_from_home:
+        if data:
+            form = ApplyLeaveForm3(data)
+            return form
+        else:
+            form = ApplyLeaveForm3()
             return form
     else:
         form = ApplyLeaveForm()
