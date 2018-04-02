@@ -1,16 +1,17 @@
 import logging
+import json
 logger = logging.getLogger('MyANSRSource')
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
     BTGReportForm, InvoiceForm,RevenueReportForm, InvoiceReportForm
-from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo, \
+from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo,BTGUpdate,\
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
     BTGReport, ProjectDetail
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from datetime import timedelta, datetime, date
 from django.db.models import Sum, Avg, Min, Max, F
 from employee.models import Employee
@@ -1871,7 +1872,7 @@ def RevenueRecogniation(request):
                     Projects = (list(Project.objects.filter(bu_id=bu)))
                     for val in Projects:
                         val_data = {}
-                        data = ProjectMilestone.objects.filter(project_id = val.id, closed=1, financial=0)
+                        data = ProjectMilestone.objects.filter(project_id =val.id, closed=1, financial=0)
                         if data:
                             milestone_total = []
                             for milestone in data:
@@ -1939,8 +1940,10 @@ def RevenueRecogniation(request):
 
 @login_required
 def ProjectReport(request):
-    user_id = request.user.id
-    project_details = ProjectDetail.objects.filter(Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id) | Q(pmDelegate_id=user_id)).values(
+    if request.method == 'GET':
+        user_id = request.user.id
+        project_details = ProjectDetail.objects.filter(
+            Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id) | Q(pmDelegate_id=user_id) | Q(new_bu_head=user_id)).values(
             'project_id',
             'project_id__name',
             'project_id__totalValue',
@@ -1954,34 +1957,60 @@ def ProjectReport(request):
             'project_id__bu_id__new_bu_head__last_name',
             'portfolio_manager_id__first_name',
             'portfolio_manager_id__last_name'
+
         )
 
-    for project in project_details:
-        total = []
-        timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH', 'approved',
-                                                                                                   'hold', 'project_id')
-        if timesheet_details:
-            for timesheet in timesheet_details:
-                if (timesheet['approved'] == True and timesheet['hold'] == True) or (
-                        timesheet['approved'] == False and timesheet['hold'] == False) or (
-                        timesheet['approved'] == False and timesheet['hold'] == True):
-                    total.append(timesheet['totalH'])
+        for project in project_details:
+            total = []
+            timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH'
+                                                                                    , 'approved', 'hold', 'project_id')
+            if timesheet_details:
+                for timesheet in timesheet_details:
+                    if (timesheet['approved'] == True and timesheet['hold'] == True) or (
+                                    timesheet['approved'] == False and timesheet['hold'] == False) or (
+                                    timesheet['approved'] == False and timesheet['hold'] == True):
+                        total.append(timesheet['totalH'])
 
-        project['total_efforts'] = sum(total)
-        if (project['project_id__plannedEffort'] - sum(total)) >= 0:
-            project['avaliable_efforts'] = project['project_id__plannedEffort'] - sum(total)
-        else:
-            project['avaliable_efforts'] = 0
-        if (sum(total) - project['project_id__plannedEffort']) >= 0:
-            project['extra_efforts'] = sum(total) - project['project_id__plannedEffort']
-        else:
-            project['extra_efforts'] = 0
+            project['total_efforts'] = sum(total)
+            if (project['project_id__plannedEffort'] - sum(total)) >= 0:
+                project['avaliable_efforts'] = project['project_id__plannedEffort'] - sum(total)
+            else:
+                project['avaliable_efforts'] = 0
+            if (sum(total) - project['project_id__plannedEffort']) >= 0:
+                project['extra_efforts'] = sum(total) - project['project_id__plannedEffort']
+            else:
+                project['extra_efforts'] = 0
 
-    return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
+            btg_details = BTGUpdate.objects.filter(project_id=project['project_id']).values('BTG_Hours', 'project_id',
+                                                                                            'is_appproved')
+            if btg_details:
+                for btg in btg_details:
+                    project['btgs'] = btg['BTG_Hours']
+                    project['approved'] = btg['is_appproved']
+
+        return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
+
+    if request.method == 'POST':
+
+        btg_data = json.loads(request.POST.get('project_id'))
+        for k, v in btg_data.iteritems():
+            print k, v
+            btg_update = BTGUpdate(project_id=k, BTG_Hours=v, user_id=request.user.id, is_appproved=False)
+            btg_update.save()
+            redirect('/')
 
 
-def btg_hours(request):
-    projectid = request.GET.get('project_id')
-    import ipdb;ipdb.set_trace()
 
-     # return render(request, 'MyANSRSource/project_report.html', {})
+
+
+
+
+
+
+
+
+
+
+
+
+

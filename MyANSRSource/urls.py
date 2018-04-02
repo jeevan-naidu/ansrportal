@@ -150,6 +150,10 @@ urlpatterns = [
     url(r'^reports/project-report$',
         reportviews.ProjectReport,
         name=u'ProjectReport'),
+    # url('<int:project_id>/',
+    #     reportviews.btg_Updation,
+    #     name=u'BTGUpdate'),
+
     url(r'^reports/project-perfomance$',
         reportviews.ProjectPerfomanceReport,
         name=u'projectperfomancereport'),
