@@ -147,6 +147,41 @@ def LeaveForm(leavetype, user, data=None):
               'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
             }
 
+    class ApplyLeaveForm4(forms.ModelForm):
+
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave.widget.attrs = {'class': 'form-control', 'required':'true'}
+
+        Reason = forms.CharField(max_length=100, required=False)
+        # Add Bootstrap widgets
+        Reason.widget.attrs = {'class': 'form-control'}
+
+        fromDate = forms.DateField(
+            label="From",
+            widget=DateTimePicker(options=dateTimeOption),
+        )
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
+
+        toDate = forms.DateField(
+            label="To",
+            widget=DateTimePicker(options=dateTimeOption),
+        )
+        toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
+
+        temp_id = forms.CharField(max_length=100, required=False)
+        # Add Bootstrap widgets
+        temp_id.widget.attrs = {'class': 'form-control'}
+
+        name = forms.CharField(initial = user, widget=forms.HiddenInput())
+
+        class Meta:
+            model = LeaveApplications
+
+            fields = ['leave', 'fromDate', 'toDate', 'Reason', 'temp_id', 'name']
+            widgets = {
+              'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
+            }
+
     onetime_leave = ['maternity_leave',
                      'paternity_leave',
                      'comp_off_avail',
@@ -162,6 +197,7 @@ def LeaveForm(leavetype, user, data=None):
                      'ooo_dom',
                      'ooo_int']
     work_from_home = ['work_from_home']
+    temp_id = ['temp_id']
 
     if leavetype in onetime_leave:
         if data:
@@ -183,6 +219,13 @@ def LeaveForm(leavetype, user, data=None):
             return form
         else:
             form = ApplyLeaveForm3()
+            return form
+    elif leavetype in temp_id:
+        if data:
+            form = ApplyLeaveForm4(data)
+            return form
+        else:
+            form = ApplyLeaveForm4()
             return form
     else:
         form = ApplyLeaveForm()

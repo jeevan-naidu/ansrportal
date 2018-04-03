@@ -349,6 +349,7 @@ class ApplyLeaveView(View):
                                   'ooo_dom',
                                   'ooo_int']
             work_from_home = ['work_from_home']
+            temp_id = ['temp_id']
             form = LeaveForm(leavetype, user_id)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(leave_type__leave_type=leavetype,
@@ -360,6 +361,8 @@ class ApplyLeaveView(View):
                 context_data['leave_type_check'] = 'OneTime'
             if leavetype in work_from_home:
                 context_data['leave'] = 'work_from_home'
+            if leavetype in temp_id:
+                context_data['leave'] = 'temp_id'
             if leavetype not in count_not_required and leave_count:
                 context_data['leave_count'] = leave_count[0].balance
             return render(request, 'leave_apply.html', context_data)
@@ -369,7 +372,6 @@ class ApplyLeaveView(View):
             return render(request, 'leave_apply.html', context_data)
 
     def post(self, request):
-
         user_id = request.POST['name']
         if not user_id:
             user_id = request.user.id
@@ -394,20 +396,22 @@ class ApplyLeaveView(View):
             leave_applied_year = fromdate.year
             duedate = date.today()
             leave_selected = leave_form.cleaned_data['leave']
-            try:
-                context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected,
-                                                                          user_id=user_id,
-                                                                          year=leave_applied_year)[0].balance
+            if leave_selected != 'temp_id':
+                try:
+                    context_data['leave_count'] = LeaveSummary.objects.filter(leave_type__leave_type=leave_selected,
+                                                                              user_id=user_id,
+                                                                              year=leave_applied_year)[0].balance
 
-            except:
-                context_data['errors'].append('No leave records found on myansrsource portal. Please contact HR.')
-                context_data['form'] = leave_form
+                except:
+                    context_data['errors'].append('No leave records found on myansrsource portal. Please contact HR.')
+                    context_data['form'] = leave_form
             onetime_leave = ['maternity_leave',
                              'paternity_leave',
                              'comp_off_earned',
                              'comp_off_avail',
                              'pay_off']
             work_from_home = ['work_from_home']
+            temp_id = ['temp_id']
             # , 'short_leave'
             if leave_selected in onetime_leave:
                 context_data['leave_type_check'] = 'OneTime'
@@ -429,6 +433,13 @@ class ApplyLeaveView(View):
                 hours = leave_form.cleaned_data['hours']
                 fromsession = leave_form.cleaned_data['from_session']
                 tosession = leave_form.cleaned_data['to_session']
+            elif leave_selected in temp_id:
+                validate = oneTimeLeaveValidation(leave_form, user_id, leave_applied_year)
+                fromdate = leave_form.cleaned_data['fromDate']
+                todate = leave_form.cleaned_data['toDate']
+                temp_id = leave_form.cleaned_data['temp_id']
+                fromsession = 'session_first'
+                tosession = 'session_second'
             else:
                 validate=leaveValidation(leave_form, user_id, leave_applied_year, attachment)
                 fromdate = leave_form.cleaned_data['fromDate']
@@ -615,6 +626,46 @@ class ApplyLeaveView(View):
                                                 leavecount,
                                                 reason,
                                                 hours,
+                                                'save')
+                    elif leave_form.cleaned_data['leave'] in ['temp_id']:
+                        leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
+
+                        if attachment:
+                            LeaveApplications(leave_type=leaveType,
+                                              from_date=fromdate,
+                                              to_date=todate,
+                                              days_count=leavecount,
+                                              reason=reason,
+                                              temp_id=temp_id,
+                                              ).saveas(user_id,
+                                                                       request.user.id)
+                            leavesummry_temp.save()
+                            EmailSendTask.delay(request.user,
+                                                manager,
+                                                leave_selected,
+                                                fromdate,
+                                                todate,
+                                                leavecount,
+                                                reason,
+                                                temp_id,
+                                                'save')
+                        else:
+                            LeaveApplications(leave_type=leaveType,
+                                              from_date=fromdate,
+                                              to_date=todate,
+                                              days_count=leavecount,
+                                              reason=reason,
+                                              temp_id=temp_id,).saveas(user_id,
+                                                                       request.user.id)
+                            leavesummry_temp.save()
+                            EmailSendTask.delay(request.user,
+                                                manager,
+                                                leave_selected,
+                                                fromdate,
+                                                todate,
+                                                leavecount,
+                                                reason,
+                                                temp_id,
                                                 'save')
 
                         context_data['success'] = 'leave saved'
