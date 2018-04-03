@@ -65,7 +65,24 @@ def daily_leave_check(year, month, day):
                                                                      status__in=['open', 'approved'])
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
-                    if attendance:
+                    if appliedLeaveCheck.leave_type_id == '16':
+                        temp_id = appliedLeaveCheck.temp_id
+                        attendance = Attendance.objects.filter(attdate=date,
+                                                               incoming_employee_id=temp_id)
+                        if attendance:
+                            swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                            swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                            swipeInTime = swipeIn.strftime("%H:%M:%S")
+                            swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                            tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                            stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                            if tdelta < halfDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                leave = 'full_day'
+                            elif tdelta < fullDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                leave = 'half_day'
+                    elif attendance:
                         swipeIn = attendance[0].swipe_in.astimezone(tzone)
                         swipeOut = attendance[0].swipe_out.astimezone(tzone)
                         swipeInTime = swipeIn.strftime("%H:%M:%S")
@@ -78,19 +95,14 @@ def daily_leave_check(year, month, day):
                         elif tdelta < fullDayOfficeStayTimeLimit:
                             reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                             leave = 'half_day'
-                    else:
-                        swipeIn = datetime.now(pytz.timezone("Asia/Kolkata")) \
-                            .replace(hour=0, minute=0, second=0, microsecond=0) \
-                            .astimezone(pytz.utc)
-                        swipeOut = datetime.now(pytz.timezone("Asia/Kolkata")) \
-                            .replace(hour=0, minute=0, second=0, microsecond=0) \
-                            .astimezone(pytz.utc)
-                        swipeInTime = swipeIn.strftime("%H:%M:%S")
-                        swipeOutTime = swipeOut.strftime("%H:%M:%S")
-                        tdelta = timedelta(hours=0, minutes=0, seconds=0)
-                        stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                        reason = "you were absent"
-                        leave = 'full_day'
+                        elif appliedLeaveCheck.leave_type_id == '11':
+                            tdelta = appliedLeaveCheck.hours
+                            if tdelta < halfDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                leave = 'full_day'
+                            elif tdelta < fullDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                leave = 'half_day'
                     if  len(appliedLeaveCheck)>1:
                         pass
                     elif len(appliedLeaveCheck)==1 and leave == 'half_day':

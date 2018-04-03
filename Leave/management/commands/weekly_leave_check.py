@@ -77,6 +77,21 @@ def daily_leave_check(year, month, day):
                                                                      status__in=['open', 'approved'])
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
+                    if appliedLeaveCheck.leave_type_id == '16':
+                        temp_id = appliedLeaveCheck.temp_id
+                        attendance = Attendance.objects.filter(attdate=date,
+                                                               incoming_employee_id=temp_id)
+                        if attendance:
+                            swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                            swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                            swipeInTime = swipeIn.strftime("%H:%M:%S")
+                            swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                            tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                            stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                            employee_attendance.append(tdelta)
+                    elif appliedLeaveCheck.leave_type_id == '11':
+                            tdelta = appliedLeaveCheck.hours
+                            employee_attendance.append(tdelta)
                     if attendance:
                         for att in attendance:
                             if att.swipe_out and att.swipe_in is not None:
