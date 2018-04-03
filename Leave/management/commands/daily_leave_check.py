@@ -123,12 +123,7 @@ def daily_leave_check(year, month, day):
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
             except:
-                if leave:
-                    leave_for_date['date'] = date
-                    leave_for_date['leave'] = leave
-                    leave_for_date['reason'] = reason
-                    leave_for_date['due_date'] = dueDate
-                    leaves.append(leave_for_date)
+                logger.debug("missing records")
         if leaves:
             try:
                 send_mail(user, leaves, dates, reason, "open")

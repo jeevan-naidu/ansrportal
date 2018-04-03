@@ -113,11 +113,7 @@ def daily_leave_deduction(year, month, day):
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
             except:
-                if leave:
-                    leave_for_date['date'] = date
-                    leave_for_date['leave'] = leave
-                    leave_for_date['reason'] = reason
-                    leaves.append(leave_for_date)
+                logger.debug("missing records")
         if leaves:
             try:
                 applyLeave(user, leaves, year)

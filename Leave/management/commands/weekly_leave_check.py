@@ -113,7 +113,7 @@ def daily_leave_check(year, month, day):
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
             except:
-                send_mail(user, 'full_day', date, "missing records", "open")
+                logger.debug("missing records")
         if employee_attendance:
             try:
                 if 39.5 < sum(employee_attendance) < 44:
