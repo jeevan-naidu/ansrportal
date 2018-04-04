@@ -1942,8 +1942,27 @@ def RevenueRecogniation(request):
 def ProjectReport(request):
     if request.method == 'GET':
         user_id = request.user.id
-        project_details = ProjectDetail.objects.filter(
-            Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id) | Q(pmDelegate_id=user_id) | Q(new_bu_head=user_id)).values(
+        deliveryManager_id=1
+        # portfolio_manager_id=1
+        # pmDelegate_id=1
+        # new_bu_head=1
+        if deliveryManager_id==1:
+            project_details = data(user_id)
+            if project_details:
+                return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
+                #
+                # if request.method == 'POST':
+                #     btg_data = json.loads(request.POST.get('project_id'))
+                #     for k, v in btg_data.iteritems():
+                #         print k, v
+                #         btg_update = BTGUpdate(project_id=k, BTG_Hours=v, user_id=request.user.id,is_appproved=False)
+                #         btg_update.save()
+                #         redirect('/')
+
+
+def data(user_id):
+        project_details = ProjectDetail.objects.filter(Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id)
+                                                       | Q(pmDelegate_id=user_id)).values(
             'project_id',
             'project_id__name',
             'project_id__totalValue',
@@ -1959,11 +1978,12 @@ def ProjectReport(request):
             'portfolio_manager_id__last_name'
 
         )
-
         for project in project_details:
             total = []
             timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH'
-                                                                                    , 'approved', 'hold', 'project_id')
+                                                                                                       , 'approved',
+                                                                                                       'hold',
+                                                                                                       'project_id')
             if timesheet_details:
                 for timesheet in timesheet_details:
                     if (timesheet['approved'] == True and timesheet['hold'] == True) or (
@@ -1981,36 +2001,13 @@ def ProjectReport(request):
             else:
                 project['extra_efforts'] = 0
 
-            btg_details = BTGUpdate.objects.filter(project_id=project['project_id']).values('BTG_Hours', 'project_id',
+            btg_details = BTGUpdate.objects.filter(project_id=project['project_id']).values('BTG_Hours',
+                                                                                            'project_id',
                                                                                             'is_appproved')
             if btg_details:
                 for btg in btg_details:
                     project['btgs'] = btg['BTG_Hours']
                     project['approved'] = btg['is_appproved']
-
-        return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
-
-    if request.method == 'POST':
-
-        btg_data = json.loads(request.POST.get('project_id'))
-        for k, v in btg_data.iteritems():
-            print k, v
-            btg_update = BTGUpdate(project_id=k, BTG_Hours=v, user_id=request.user.id, is_appproved=False)
-            btg_update.save()
-            redirect('/')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return project_details
 
 
