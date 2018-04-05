@@ -79,7 +79,7 @@ def weekly_leave_deduction(year, month, day):
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
-                        if appliedLeaveCheck[0].leave_type_id == '16' and appliedLeaveCheck[0].status != 'cancelled':
+                        if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck.temp_id
                             attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
@@ -91,7 +91,7 @@ def weekly_leave_deduction(year, month, day):
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                 employee_attendance.append(tdelta)
-                        elif appliedLeaveCheck[0].leave_type_id == '11' and appliedLeaveCheck[0].status != 'cancelled':
+                        elif appliedLeaveCheck[0].leave_type_id == 11 and appliedLeaveCheck[0].status != 'cancelled':
                                 tdelta = appliedLeaveCheck[0].hours
                                 employee_attendance.append(tdelta)
                     if attendance:

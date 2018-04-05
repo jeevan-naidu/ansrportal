@@ -66,7 +66,7 @@ def daily_leave_check(year, month, day):
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
-                        if appliedLeaveCheck[0].leave_type_id == '16' and appliedLeaveCheck[0].status != 'cancelled':
+                        if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck[0].temp_id
                             attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
@@ -83,7 +83,7 @@ def daily_leave_check(year, month, day):
                                 elif tdelta < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                     leave = 'half_day'
-                        elif appliedLeaveCheck[0].leave_type_id == '11' and appliedLeaveCheck[0].status != 'cancelled':
+                        elif appliedLeaveCheck[0].leave_type_id == 11 and appliedLeaveCheck[0].status != 'cancelled':
                                 tdelta = appliedLeaveCheck[0].hours
                                 if tdelta < halfDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
