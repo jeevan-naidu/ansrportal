@@ -135,34 +135,43 @@ def daily_leave_check(year, month, day):
                 if 39.5 < sum(employee_attendance) < 44:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 44 hours"
                     leave = 'half_day'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 35 < sum(employee_attendance) < 39.5:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 39.5 hours"
                     leave = 'full_day'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 30.5 < sum(employee_attendance) < 35:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 35 hours"
                     leave = '1.5'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 26 < sum(employee_attendance) < 30.5:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 30.5 hours"
                     leave = '2'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 21.5 < sum(employee_attendance) < 26:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 26 hours"
                     leave = '2.5'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 17 < sum(employee_attendance) < 21.5:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 21.5 hours"
                     leave = '3'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 12.5 < sum(employee_attendance) < 17:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 17.5 hours"
                     leave = '3.5'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 9 < sum(employee_attendance) < 12.5:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 12.5 hours"
                     leave = '4'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 4.5 < sum(employee_attendance) < 9:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 9 hours"
                     leave = '4.5'
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 0 < sum(employee_attendance) < 4.5:
                     reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave = '5'
-                send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate,  reason, "open")
+                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate,  reason, "open")
             except:
                 logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Daily leave check raised finished running"
