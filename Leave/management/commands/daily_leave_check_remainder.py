@@ -165,7 +165,7 @@ def send_mail(user, leavetype, fordate, status_comments, status):
                                  'status': status,
                                  })
 
-    mail_obj = EmailMessage('Short Attendance Raised',
+    mail_obj = EmailMessage('Daily Leave check remainder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[])
 
