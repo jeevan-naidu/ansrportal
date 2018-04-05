@@ -5,7 +5,7 @@ import datetime, os
 
 
 LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),
-                       ('short_leave', 'Short Leave'), ('loss_of_pay', 'Loss Of Pay'),
+                       ('loss_of_pay', 'Loss Of Pay'),
                        ('bereavement_leave', 'Bereavement Leave'),
                        ('maternity_leave', 'Maternity Leave'),
                        ('paternity_leave', 'Paternity Leave'),
