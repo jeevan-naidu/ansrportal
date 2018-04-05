@@ -489,7 +489,6 @@ class ApplyLeaveView(View):
                                            to_session=tosession,
                                            days_count=leavecount,
                                            reason=reason,
-                                           hours=hours,
                                            atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user,
@@ -501,7 +500,6 @@ class ApplyLeaveView(View):
                                              tosession,
                                              leavecount,
                                              reason,
-                                             hours,
                                              'save')
                     else:
                          LeaveApplications(leave_type=leaveType,
@@ -510,7 +508,7 @@ class ApplyLeaveView(View):
                                            from_session=fromsession,
                                            to_session=tosession,
                                            days_count=leavecount,
-                                           reason=reason, hours=hours).saveas(user_id, request.user.id)
+                                           reason=reason).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
                          EmailSendTask.delay(request.user,
                                              manager,
@@ -521,7 +519,6 @@ class ApplyLeaveView(View):
                                              tosession,
                                              leavecount,
                                              reason,
-                                             hours,
                                              'save')
 
                     context_data['success']= 'leave saved'
@@ -543,7 +540,6 @@ class ApplyLeaveView(View):
                                                days_count=leavecount,
                                                reason=reason,
                                                atachement=attachment,
-                                               hours=hours,
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
@@ -556,7 +552,6 @@ class ApplyLeaveView(View):
                                                  tosession,
                                                  leavecount,
                                                  reason,
-                                                 hours,
                                                  'save')
                         else:
                              LeaveApplications(leave_type=leaveType,
@@ -566,7 +561,6 @@ class ApplyLeaveView(View):
                                                to_session=tosession,
                                                days_count=leavecount,
                                                reason=reason,
-                                               hours=hours,
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
@@ -579,7 +573,6 @@ class ApplyLeaveView(View):
                                                  tosession,
                                                  leavecount,
                                                  reason,
-                                                 hours,
                                                  'save')
 
                         context_data['success']= 'leave saved'
