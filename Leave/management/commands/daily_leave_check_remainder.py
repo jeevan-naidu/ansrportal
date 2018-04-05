@@ -66,7 +66,7 @@ def daily_leave_check(year, month, day):
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
-                        if appliedLeaveCheck[0].leave_type_id == '16':
+                        if appliedLeaveCheck[0].leave_type_id == '16' and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck[0].temp_id
                             attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
@@ -83,7 +83,7 @@ def daily_leave_check(year, month, day):
                                 elif tdelta < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                     leave = 'half_day'
-                        elif appliedLeaveCheck[0].leave_type_id == '11':
+                        elif appliedLeaveCheck[0].leave_type_id == '11' and appliedLeaveCheck[0].status != 'cancelled':
                                 tdelta = appliedLeaveCheck[0].hours
                                 if tdelta < halfDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
@@ -116,14 +116,14 @@ def daily_leave_check(year, month, day):
                         pass
                     elif len(appliedLeaveCheck)==1 and leave == 'half_day':
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second':
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date:
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].status != 'cancelled':
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first':
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].status != 'cancelled':
                         pass
                     elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and appliedLeaveCheck[
-                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second':
+                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
                         pass
                     else:
                         if leave:
