@@ -63,7 +63,7 @@ def daily_leave_check():
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
-                        if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
+                        if appliedLeaveCheck[0].leave_type_id == 16:
                             temp_id = appliedLeaveCheck[0].temp_id
                             temp_attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
@@ -80,7 +80,13 @@ def daily_leave_check():
                                 elif tdelta < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                     leave = 'half_day'
-                        elif appliedLeaveCheck[0].leave_type_id == 11 and appliedLeaveCheck[0].status != 'cancelled':
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
+                                    leave_for_date['due_date'] = dueDate
+                                    leaves.append(leave_for_date)
+                        elif appliedLeaveCheck[0].leave_type_id == 11:
                                 tdelta = appliedLeaveCheck[0].hours
                                 if tdelta < halfDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
@@ -88,6 +94,12 @@ def daily_leave_check():
                                 elif tdelta < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                     leave = 'half_day'
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
+                                    leave_for_date['due_date'] = dueDate
+                                    leaves.append(leave_for_date)
                     if attendance:
                         swipeIn = attendance[0].swipe_in.astimezone(tzone)
                         swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -98,9 +110,21 @@ def daily_leave_check():
                         if tdelta < halfDayOfficeStayTimeLimit:
                             reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
                             leave = 'full_day'
+                            if leave:
+                                leave_for_date['date'] = date
+                                leave_for_date['leave'] = leave
+                                leave_for_date['reason'] = reason
+                                leave_for_date['due_date'] = dueDate
+                                leaves.append(leave_for_date)
                         elif tdelta < fullDayOfficeStayTimeLimit:
                             reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                             leave = 'half_day'
+                            if leave:
+                                leave_for_date['date'] = date
+                                leave_for_date['leave'] = leave
+                                leave_for_date['reason'] = reason
+                                leave_for_date['due_date'] = dueDate
+                                leaves.append(leave_for_date)
                         elif appliedLeaveCheck.leave_type_id == '11':
                             tdelta = appliedLeaveCheck.hours
                             if tdelta < halfDayOfficeStayTimeLimit:
@@ -109,26 +133,45 @@ def daily_leave_check():
                             elif tdelta < fullDayOfficeStayTimeLimit:
                                 reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                 leave = 'half_day'
-                    if  len(appliedLeaveCheck)>1:
-                        pass
-                    elif len(appliedLeaveCheck)==1 and leave == 'half_day':
-                        pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
-                        pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].status != 'cancelled':
-                        pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].status != 'cancelled':
-                        pass
-                    elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and appliedLeaveCheck[
-                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
-                        pass
-                    else:
-                        if leave:
-                            leave_for_date['date'] = date
-                            leave_for_date['leave'] = leave
-                            leave_for_date['reason'] = reason
-                            leave_for_date['due_date'] = dueDate
-                            leaves.append(leave_for_date)
+                            if leave:
+                                leave_for_date['date'] = date
+                                leave_for_date['leave'] = leave
+                                leave_for_date['reason'] = reason
+                                leave_for_date['due_date'] = dueDate
+                                leaves.append(leave_for_date)
+                    elif not attendance and not appliedLeaveCheck[0].leave_type_id in [16,11]:
+                        swipeIn = datetime.now(pytz.timezone("Asia/Kolkata")) \
+                            .replace(hour=0, minute=0, second=0, microsecond=0) \
+                            .astimezone(pytz.utc)
+                        swipeOut = datetime.now(pytz.timezone("Asia/Kolkata")) \
+                            .replace(hour=0, minute=0, second=0, microsecond=0) \
+                            .astimezone(pytz.utc)
+                        swipeInTime = swipeIn.strftime("%H:%M:%S")
+                        swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                        tdelta = timedelta(hours=0, minutes=0, seconds=0)
+                        stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                        reason = "you were absent"
+                        leave = 'full_day'
+                        if len(appliedLeaveCheck)>1:
+                            pass
+                        elif len(appliedLeaveCheck)==1 and leave == 'half_day':
+                            pass
+                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second':
+                            pass
+                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date:
+                            pass
+                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first':
+                            pass
+                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and appliedLeaveCheck[
+                            0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second':
+                            pass
+                        else:
+                            if leave:
+                                leave_for_date['date'] = date
+                                leave_for_date['leave'] = leave
+                                leave_for_date['reason'] = reason
+                                leave_for_date['due_date'] = dueDate
+                                leaves.append(leave_for_date)
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
             except:
