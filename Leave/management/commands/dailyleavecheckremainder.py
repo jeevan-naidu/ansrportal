@@ -88,7 +88,7 @@ def daily_leave_check():
                                 elif tdelta < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
                                     leave = 'half_day'
-                    elif attendance:
+                    if attendance:
                         swipeIn = attendance[0].swipe_in.astimezone(tzone)
                         swipeOut = attendance[0].swipe_out.astimezone(tzone)
                         swipeInTime = swipeIn.strftime("%H:%M:%S")
