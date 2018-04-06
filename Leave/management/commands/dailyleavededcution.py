@@ -62,7 +62,29 @@ def daily_leave_deduction(year, month, day):
                                                                      status__in=['open', 'approved'])
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
-                    if appliedLeaveCheck:
+                    if appliedLeaveCheck and attendance:
+                        if appliedLeaveCheck[0].leave_type_id == 11:
+                            swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                            swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                            swipeInTime = swipeIn.strftime("%H:%M:%S")
+                            swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                            tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                            stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                            wfh_hours = appliedLeaveCheck[0].hours
+                            total_hours = float(tdelta) + float(wfh_hours)
+                            if total_hours < halfDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                leave = 'full_day'
+                            elif total_hours < fullDayOfficeStayTimeLimit:
+                                reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                leave = 'half_day'
+                            if leave:
+                                leave_for_date['date'] = date
+                                leave_for_date['leave'] = leave
+                                leave_for_date['reason'] = reason
+
+                                leaves.append(leave_for_date)
+                    elif appliedLeaveCheck:
                         if appliedLeaveCheck[0].leave_type_id == 16:
                             temp_id = appliedLeaveCheck[0].temp_id
                             temp_attendance = Attendance.objects.filter(attdate=date,
@@ -86,6 +108,7 @@ def daily_leave_deduction(year, month, day):
                                     leave_for_date['reason'] = reason
 
                                     leaves.append(leave_for_date)
+
                         elif appliedLeaveCheck[0].leave_type_id == 11:
                                 tdelta = appliedLeaveCheck[0].hours
                                 if tdelta < halfDayOfficeStayTimeLimit:
