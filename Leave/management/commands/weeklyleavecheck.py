@@ -38,25 +38,22 @@ def dates_to_check_leave(start_date,end_date):
 class Command(BaseCommand):
     help = 'Weekly leave Check.'
 
-    def add_arguments(self, parser):
-        parser.add_argument('year', type=int)
-        parser.add_argument('month', type=int)
-        parser.add_argument('day', type=int)
-
     def handle(self, *args, **options):
-        daily_leave_check(options['year'], options['month'], options['day'])
+        daily_leave_check()
 
 def daily_leave_check(year, month, day):
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    date = datetime(year, month, day)
-    start_date = date.date()
-    end_date = start_date + timedelta(days=4)
+    date = datetime.now().date()
+    year = date.year
+    week_dates = previous_week_range(date)
+    start_date = week_dates[0]
+    end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = end_date + timedelta(days=7)
+    dueDate = end_date + timedelta(days=12)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:

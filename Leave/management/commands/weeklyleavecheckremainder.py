@@ -23,7 +23,7 @@ logger = logging.getLogger('MyANSRSource')
 #     return week_dates
 
 def previous_week_range(date):
-    start_date = date + timedelta(-date.weekday(), weeks=-1)
+    start_date = date + timedelta(-date.weekday(), weeks=-2)
     end_date = date + timedelta(-date.weekday() - 1)
     return start_date, end_date
 
@@ -36,27 +36,24 @@ def dates_to_check_leave(start_date,end_date):
     return dates
 
 class Command(BaseCommand):
-    help = 'Weekly leave Check.'
-
-    def add_arguments(self, parser):
-        parser.add_argument('year', type=int)
-        parser.add_argument('month', type=int)
-        parser.add_argument('day', type=int)
+    help = 'Daily leave Check.'
 
     def handle(self, *args, **options):
-        daily_leave_check(options['year'], options['month'], options['day'])
+        daily_leave_check()
 
-def daily_leave_check(year, month, day):
+def daily_leave_check():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
-    date = datetime(year, month, day)
-    start_date = date.date()
-    end_date = start_date + timedelta(days=4)
+    date = datetime.now().date()
+    year = date.year
+    week_dates = previous_week_range(date)
+    start_date = week_dates[0]
+    end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = end_date + timedelta(days=7)
+    dueDate = end_date + timedelta(days=12)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
@@ -190,7 +187,7 @@ def getTimeFromTdelta(tdelta, fmt):
     return f.format(fmt, **d)
 
 def send_mail(user, total_hours, leavetype, from_date, to_date, dueDate, status_comments, status):
-    msg_html = render_to_string('email_templates/weekly_check.html',
+    msg_html = render_to_string('email_templates/weekly_check_remainder.html',
                                 {'registered_by': user.first_name,
                                  'total_hours' : total_hours,
                                  'leaveType': leavetype,
@@ -201,7 +198,7 @@ def send_mail(user, total_hours, leavetype, from_date, to_date, dueDate, status_
                                  'status': status,
                                  })
 
-    mail_obj = EmailMessage('Weekly check',
+    mail_obj = EmailMessage('Weekly check remainder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[])
 
