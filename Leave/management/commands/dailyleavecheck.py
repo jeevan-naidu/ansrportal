@@ -70,11 +70,11 @@ def daily_leave_check():
                     if appliedLeaveCheck:
                         if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck[0].temp_id
-                            attendance = Attendance.objects.filter(attdate=date,
+                            temp_attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
-                            if attendance:
-                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
-                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                            if temp_attendance:
+                                swipeIn = temp_attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = temp_attendance[0].swipe_out.astimezone(tzone)
                                 swipeInTime = swipeIn.strftime("%H:%M:%S")
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
