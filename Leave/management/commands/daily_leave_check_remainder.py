@@ -64,7 +64,7 @@ def daily_leave_check(year, month, day):
                                                                      user=user.id,
                                                                      status__in=['open', 'approved'])
                 if employee:
-                    attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
+                    attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
                         if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck[0].temp_id

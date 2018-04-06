@@ -73,7 +73,7 @@ def weekly_leave_deduction():
                                                                      user=user.id,
                                                                      status__in=['open', 'approved'])
                 if employee:
-                    attendance = Attendance.objects.filter(attdate=date, employee_id=employee[0].employee_assigned_id)
+                    attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
                         if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
                             temp_id = appliedLeaveCheck.temp_id
