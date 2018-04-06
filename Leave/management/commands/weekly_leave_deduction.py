@@ -79,7 +79,7 @@ def weekly_leave_deduction(year, month, day):
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
                     if appliedLeaveCheck:
-                        if appliedLeaveCheck[0].leave_type_id == 16 and appliedLeaveCheck[0].status != 'cancelled':
+                        if appliedLeaveCheck[0].leave_type_id == 16:
                             temp_id = appliedLeaveCheck.temp_id
                             attendance = Attendance.objects.filter(attdate=date,
                                                                    incoming_employee_id=temp_id)
@@ -91,7 +91,7 @@ def weekly_leave_deduction(year, month, day):
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                 employee_attendance.append(tdelta)
-                        elif appliedLeaveCheck[0].leave_type_id == 11 and appliedLeaveCheck[0].status != 'cancelled':
+                        elif appliedLeaveCheck[0].leave_type_id == 11:
                                 tdelta = appliedLeaveCheck[0].hours
                                 employee_attendance.append(tdelta)
                     if attendance:
@@ -114,22 +114,22 @@ def weekly_leave_deduction(year, month, day):
                         leaves.append(leave_for_date)
                     if len(appliedLeaveCheck)>1:
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second':
                         employee_attendance.append(9)
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].status != 'cancelled':
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date:
                         pass
-                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].status != 'cancelled':
+                    elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first':
                         pass
                     elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and appliedLeaveCheck[
-                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
+                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second':
                         pass
                     elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date == date and appliedLeaveCheck[
-                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].from_session== 'session_second' and appliedLeaveCheck[0].status != 'cancelled':
+                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second' and appliedLeaveCheck[0].from_session== 'session_second':
                         employee_attendance.append(4.5)
                         pass
                     elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date == date and appliedLeaveCheck[
-                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_first' and appliedLeaveCheck[0].from_session== 'session_first' and appliedLeaveCheck[0].status != 'cancelled':
+                        0].to_date == date and appliedLeaveCheck[0].to_session== 'session_first' and appliedLeaveCheck[0].from_session== 'session_first':
                         employee_attendance.append(4.5)
                         pass
                 else:
