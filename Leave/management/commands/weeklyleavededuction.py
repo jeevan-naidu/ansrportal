@@ -51,6 +51,7 @@ def weekly_leave_deduction():
     start_date = week_dates[0]
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
+    holiday = Holiday.objects.all().values('date')
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     dueDate = end_date + timedelta(days=7)
