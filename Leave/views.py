@@ -471,7 +471,7 @@ class ApplyLeaveView(View):
                                                                    approved=0,
                                                                    balance=0,
                                                                    year=leave_applied_year)
-                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount:
+                if leavesummry_temp.balance and float(leavesummry_temp.balance) >= leavecount and leave_form.cleaned_data['leave'] not in ['work_from_home'] :
                     if leave_form.cleaned_data['leave'] == 'comp_off_avail' and compOffAvailibilityCheck(fromdate,
                                                                                                          user_id):
                         context_data['errors'].append('For this time period there is no comp off ')
@@ -586,6 +586,8 @@ class ApplyLeaveView(View):
                                               from_date=fromdate,
                                               to_date=todate,
                                               days_count=leavecount,
+                                              from_session=fromsession,
+                                              to_session=tosession,
                                               reason=reason,
                                               atachement=attachment,
                                               hours=hours,
@@ -597,6 +599,8 @@ class ApplyLeaveView(View):
                                                 leave_selected,
                                                 fromdate,
                                                 todate,
+                                                fromsession,
+                                                tosession,
                                                 leavecount,
                                                 reason,
                                                 hours,
@@ -605,6 +609,8 @@ class ApplyLeaveView(View):
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
                                               to_date=todate,
+                                              from_session=fromsession,
+                                              to_session=tosession,
                                               days_count=leavecount,
                                               reason=reason,
                                               hours=hours,
@@ -616,6 +622,8 @@ class ApplyLeaveView(View):
                                                 leave_selected,
                                                 fromdate,
                                                 todate,
+                                                fromsession,
+                                                tosession,
                                                 leavecount,
                                                 reason,
                                                 hours,

@@ -117,7 +117,7 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
-        hours = forms.CharField(max_length=100, required=False)
+        hours = forms.CharField(max_length=100, required=False, help_text = 'Hours format(hhmm), example:0430')
         # Add Bootstrap widgets
         hours.widget.attrs = {'class': 'form-control'}
 
@@ -146,6 +146,7 @@ def LeaveForm(leavetype, user, data=None):
             widgets = {
               'Reason': forms.Textarea(attrs={ 'rows':8, 'cols':70}),
             }
+
 
     class ApplyLeaveForm4(forms.ModelForm):
 
