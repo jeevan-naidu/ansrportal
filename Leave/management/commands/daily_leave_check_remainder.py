@@ -91,53 +91,6 @@ def daily_leave_check(year, month, day):
                                 leave_for_date['reason'] = reason
                                 leave_for_date['due_date'] = dueDate
                                 leaves.append(leave_for_date)
-                        elif appliedLeaveCheck:
-                            for leave in appliedLeaveCheck:
-                                if leave.from_session == 'session_first' and leave.to_session == 'session_first':
-                                    if attendance:
-                                        swipeIn = attendance[0].swipe_in.astimezone(tzone)
-                                        swipeOut = attendance[0].swipe_out.astimezone(tzone)
-                                        swipeInTime = swipeIn.strftime("%H:%M:%S")
-                                        swipeOutTime = swipeOut.strftime("%H:%M:%S")
-                                        tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
-                                                                                                          FMT)
-                                        stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                                        leave_hours = timedelta(hours=04,minutes=30, seconds=00)
-                                        if leave_hours < halfDayOfficeStayTimeLimit:
-                                            reason = "you had put {0} hours which is below 3 hours".format(tdelta + wfh)
-                                            leave = 'full_day'
-                                        elif leave_hours < fullDayOfficeStayTimeLimit:
-                                            reason = "you had put {0} hours which is below 6 hours".format(tdelta + wfh)
-                                            leave = 'half_day'
-
-                                        if leave:
-                                            leave_for_date['date'] = date
-                                            leave_for_date['leave'] = leave
-                                            leave_for_date['reason'] = reason
-                                            leave_for_date['due_date'] = dueDate
-                                            leaves.append(leave_for_date)
-                                if leave.from_session == 'session_second' and leave.to_session == 'session_second':
-                                    swipeIn = attendance[0].swipe_in.astimezone(tzone)
-                                    swipeOut = attendance[0].swipe_out.astimezone(tzone)
-                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
-                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
-                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
-                                                                                                      FMT)
-                                    stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                                    leave_hours = timedelta(hours=04, minutes=30, seconds=00)
-                                    if leave_hours < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(tdelta + wfh)
-                                        leave = 'full_day'
-                                    elif leave_hours < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(tdelta + wfh)
-                                        leave = 'half_day'
-
-                                    if leave:
-                                        leave_for_date['date'] = date
-                                        leave_for_date['leave'] = leave
-                                        leave_for_date['reason'] = reason
-                                        leave_for_date['due_date'] = dueDate
-                                        leaves.append(leave_for_date)
                         else:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
