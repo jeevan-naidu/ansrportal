@@ -37,6 +37,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         daily_leave_check()
 
+def getTime(t):
+    return [t[:2],t[2:]]
+
 def daily_leave_check():
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)

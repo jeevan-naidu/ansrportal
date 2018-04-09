@@ -37,6 +37,9 @@ def dates_to_check_leave(start_date,end_date):
         dates.append(start_date + timedelta(days=i))
     return dates
 
+def getTime(t):
+    return [t[:2],t[2:]]
+
 def daily_leave_deduction(year, month, day):
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')

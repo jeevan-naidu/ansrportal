@@ -26,6 +26,9 @@ def dates_to_check_leave(start_date,end_date):
         dates.append(start_date + timedelta(days=i))
     return dates
 
+def getTime(t):
+    return [t[:2],t[2:]]
+
 class Command(BaseCommand):
     help = 'Daily leave Check.'
 
