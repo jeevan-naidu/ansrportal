@@ -32,11 +32,11 @@ def leaveValidation(leave_form, user, leave_applied_year, attachment=None):
         if fromDate == toDate and fromSession == 'session_second' and tosession == 'session_first':
             result['errors'].append("Please enter the correct session details.")
             return result
-        leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte=fromDate) &
+        leave_between_applied_date = LeaveApplications.objects.filter(Q(~Q(leave_type_id=16) & Q(from_date__lte=fromDate) &
                                                                         Q(to_date__gte=fromDate))|
-                                                                      Q(Q(from_date__gte=fromDate) &
+                                                                      Q(~Q(leave_type_id=16) & Q(from_date__gte=fromDate) &
                                                                         Q(to_date__lte=toDate))|
-                                                                      Q(Q(from_date__lte=toDate) &
+                                                                      Q(~Q(leave_type_id=16) & Q(from_date__lte=toDate) &
                                                                         Q(to_date__gte=toDate)),
                                                                       status__in=['approved', 'open'],
                                                                       user=user)
@@ -123,10 +123,14 @@ def oneTimeLeaveValidation(leave_form, user, leave_applied_year):
         toDate = result['todate']
     else:
         toDate = fromDate
-    leave_between_applied_date = LeaveApplications.objects.filter(Q(Q(from_date__lte =fromDate) & Q(to_date__gte= fromDate))| Q(Q(from_date__gte=fromDate) & Q(to_date__lte=toDate))| Q(Q(from_date__lte = toDate) & Q(to_date__gte = toDate)),
+    leave_between_applied_date = LeaveApplications.objects.filter(Q(
+        ~Q(leave_type_id=16) & Q(from_date__lte=fromDate) & Q(to_date__gte=fromDate))| Q(
+        ~Q(leave_type_id=16) & Q(from_date__gte=fromDate) & Q(to_date__lte=toDate)) | Q(
+        ~Q(leave_type_id=16) & Q(from_date__lte=toDate) & Q(to_date__gte=toDate)),
     status__in=['approved', 'open'],user=user)
-    if leave_between_applied_date:
-        result['errors'].append( "You have already applied for leave in this time period")
+    if leaveType_selected != 'temp_id':
+        if leave_between_applied_date:
+            result['errors'].append( "You have already applied for leave in this time period")
 
     return result
 
