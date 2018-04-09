@@ -89,8 +89,9 @@ def weekly_leave_deduction():
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                 employee_attendance.append(tdelta)
                         elif appliedLeaveCheck[0].leave_type_id == 11:
-                                tdelta = appliedLeaveCheck[0].hours
-                                employee_attendance.append(tdelta)
+                            tdelta = appliedLeaveCheck[0].hours
+                            wfh_hours = float(tdelta[:2] + '.' + tdelta[2:])
+                            employee_attendance.append(wfh_hours)
                     if attendance:
                         for att in attendance:
                             if att.swipe_out and att.swipe_in is not None:
