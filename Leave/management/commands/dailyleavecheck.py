@@ -58,6 +58,7 @@ def daily_leave_check():
     for user in user_list:
         leaves = []
         for date in dates:
+            hours_in_office = []
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 break

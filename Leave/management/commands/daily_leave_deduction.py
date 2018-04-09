@@ -56,6 +56,7 @@ def daily_leave_deduction(year, month, day):
     for user in user_list:
         leaves = []
         for date in dates:
+            hours_in_office = []
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 break
@@ -104,7 +105,6 @@ def daily_leave_deduction(year, month, day):
                             leave_for_date['date'] = date
                             leave_for_date['leave'] = leave
                             leave_for_date['reason'] = reason
-
                             leaves.append(leave_for_date)
                     elif appliedLeaveCheck and attendance:
                         if appliedLeaveCheck[0].leave_type_id == 11:
@@ -257,7 +257,6 @@ def daily_leave_deduction(year, month, day):
                                 leave_for_date['date'] = date
                                 leave_for_date['leave'] = leave
                                 leave_for_date['reason'] = reason
-
                                 leaves.append(leave_for_date)
                 else:
                     print(user.first_name + user.last_name + " hr need to take care")
@@ -286,7 +285,6 @@ def getTimeFromTdelta(tdelta, fmt):
     return f.format(fmt, **d)
 
 def applyLeave(user, leaves, year):
-
     for leave in leaves:
         user_id = user.id
         reason = "applied by system"
@@ -313,6 +311,21 @@ def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                              to_date__gte=leave['date'],
                                              user=user)
+    if leave_check:
+        if leave_check[0].hours:
+            wfh = timedelta(hours=int(getTime(leave_check[0].hours)[0]),
+                            minutes=int(getTime(leave_check[0].hours)[1]), seconds=00)
+            fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
+            halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
+            if wfh < halfDayOfficeStayTimeLimit:
+                return True
+            elif wfh < fullDayOfficeStayTimeLimit:
+                return True
+    if leave_check:
+        if leave_check[0].days_count == '0.5':
+            return True
+        if leave_check[0].days_count == '1':
+            return True
     if leave_check and \
                     len(leave_check) > 1 or\
                     leave['leave'] == 'half_day' and leave_check or leave_check and\
