@@ -65,6 +65,7 @@ def daily_leave_check(year, month, day):
     for user in user_list:
         leaves = []
         for date in dates:
+            hours_in_office = []
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 break
@@ -77,6 +78,42 @@ def daily_leave_check(year, month, day):
                                                                      status__in=['open', 'approved'])
                 if employee:
                     attendance = Attendance.objects.filter(attdate=date, incoming_employee_id=employee[0].employee_assigned_id)
+                    if len(appliedLeaveCheck) >= 2:
+                        for leave in appliedLeaveCheck:
+                            if leave.leave_type_id == 16:
+                                temp_id = appliedLeaveCheck[0].temp_id
+                                temp_attendance = Attendance.objects.filter(attdate=date,
+                                                                            incoming_employee_id=temp_id)
+                                if temp_attendance:
+                                    swipeIn = temp_attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = temp_attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
+                                                                                                      FMT)
+                                    hours_in_office.append(tdelta)
+                            if leave.leave_type_id != 16:
+                                if leave.leave_type_id == 11:
+                                    wfh = timedelta(hours=int(getTime(leave.hours)[0]),
+                                                    minutes=int(getTime(leave.hours)[1]), seconds=00)
+                                    hours_in_office.append(wfh)
+                            if leave.leave_type_id not in [11, 16]:
+                                if leave.days_count == '0.5':
+                                    tdelta = timedelta(hours=04, minutes=30, seconds=00)
+                                hours_in_office.append(tdelta)
+                        if hours_in_office[0] < halfDayOfficeStayTimeLimit:
+                            reason = "you had put {0} hours which is below 3 hours".format(hours_in_office[0] + hours_in_office[1])
+                            leave = 'full_day'
+                        elif hours_in_office[1] < fullDayOfficeStayTimeLimit:
+                            reason = "you had put {0} hours which is below 6 hours".format(hours_in_office[0] + hours_in_office[1])
+                            leave = 'half_day'
+
+                        if leave:
+                            leave_for_date['date'] = date
+                            leave_for_date['leave'] = leave
+                            leave_for_date['reason'] = reason
+                            leave_for_date['due_date'] = dueDate
+                            leaves.append(leave_for_date)
                     if appliedLeaveCheck and attendance:
                         if appliedLeaveCheck[0].leave_type_id == 11:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
