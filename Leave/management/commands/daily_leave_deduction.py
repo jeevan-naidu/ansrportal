@@ -353,12 +353,13 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                                                  to_date__gte=leave['date'],
                                                  user=user_id,
                                                     status__in=['open', 'approved'])
-        if leaveapp and leave['leave'] == 'full_day':
-            leavecount = .5
+        if leaveapp and leave['leave'] == 'full_day' and leaveapp[0].leave_type_id not in [16, 11]:
             if leaveapp[0].from_session == 'session_first':
+                leavecount = .5
                 fromsession = 'session_second'
                 tosession = 'session_second'
             else:
+                leavecount = .5
                 fromsession = 'session_first'
                 tosession = 'session_first'
         elif leave['leave'] == 'full_day':
