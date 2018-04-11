@@ -500,7 +500,7 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
             return leave[0].leave_type
         elif short_leave_type == 'half_day' and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
             return leave[0].leave_type
-        elif leave and leave and float(leave[0].balance.encode('utf-8'))>0.5:
+        elif leave and leave and float(leave[0].balance.encode('utf-8')) > 0:
             return leave[0].leave_type
     return 0
 
