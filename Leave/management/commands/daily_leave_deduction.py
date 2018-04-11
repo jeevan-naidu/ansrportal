@@ -129,6 +129,26 @@ def daily_leave_deduction(year, month, day):
                                     leave_for_date['reason'] = reason
 
                                     leaves.append(leave_for_date)
+                            elif appliedLeaveCheck[0].leave_type_id != 11 and attendance:
+                                leave_for_date = {}
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                if appliedLeaveCheck[0].days_count == '0.5':
+                                    app = timedelta(hours=04, minutes=30, seconds=00)
+                                if tdelta + app < halfDayOfficeStayTimeLimit:
+                                    reason = "you had put {0} hours which is below 3 hours".format(tdelta + app)
+                                    leave = 'full_day'
+                                elif tdelta + app < fullDayOfficeStayTimeLimit:
+                                    reason = "you had put {0} hours which is below 6 hours".format(tdelta + app)
+                                    leave = 'half_day'
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
+                                    leaves.append(leave_for_date)
                             else:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -337,12 +357,13 @@ def leavecheckonautoapplydate(leave, user):
         return True
 
 def avaliableLeaveCheck(user_id, short_leave_type, year):
+    import ipdb; ipdb.set_trace()
     leavesavaliableforapply = ['casual_leave', 'earned_leave']
     for val in leavesavaliableforapply:
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=year)
-        if short_leave_type == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
+        if short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
             return leave[0].leave_type
-        elif short_leave_type == 'half_day' and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
+        elif short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) > 0.5:
             return leave[0].leave_type
         elif leave and leave and float(leave[0].balance.encode('utf-8')) > 0:
             return leave[0].leave_type

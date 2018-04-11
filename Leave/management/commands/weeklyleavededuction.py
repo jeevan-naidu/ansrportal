@@ -157,6 +157,19 @@ def weekly_leave_deduction():
                                 atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                             (timediff.seconds % 3600) // 60)
                                 employee_attendance.append(float(atttime))
+                            elif appliedLeaveCheck[0].leave_type_id != 11 and attendance:
+                                leave_for_date = {}
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                if appliedLeaveCheck[0].days_count == '0.5':
+                                    app = timedelta(hours=04, minutes=30, seconds=00)
+                                timediff = tdelta + app
+                                atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                            (timediff.seconds % 3600) // 60)
+                                employee_attendance.append(float(atttime))
                             else:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
