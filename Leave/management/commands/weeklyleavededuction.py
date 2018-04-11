@@ -459,23 +459,31 @@ def applyLeave(user, leaves, year):
         user_id = user.id
         reason = "applied by system"
         applied_by = User.objects.get(id=35).id
-        avaliable_leave = avaliableLeaveCheck(user_id, leave['leave'], year)
-        if avaliable_leave != 0:
-            leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
+        avaliable_leave = avaliableLeaveCheck(user_id, leave, year)
+        if len(avaliable_leave) >= 2:
+            for leave_ava in avaliable_leave:
+                if leave_ava['balance'] == 0.5:
+                    leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ava['leave_type'], year=year)
+                    if leavecheckonautoapplydate(leave, user_id):
+                        leave['leave'] = 'half_day'
+                        leavesubmit(leave, leave_type, user_id, applied_by)
         else:
-            leave_type = LeaveSummary.objects.filter(user=user_id,
-                                             leave_type__leave_type='loss_of_pay',
-                                             year=year)
-            if leave_type:
-                leave_type = leave_type[0]
+            if avaliable_leave != 0:
+                leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
             else:
-                leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
-                                            leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
-                                            applied=0, approved=0,
-                                            balance=0,
-                                            year=year)
-        if leavecheckonautoapplydate(leave, user_id):
-            leavesubmit(leave, leave_type, user_id, applied_by)
+                leave_type = LeaveSummary.objects.filter(user=user_id,
+                                                 leave_type__leave_type='loss_of_pay',
+                                                 year=year)
+                if leave_type:
+                    leave_type = leave_type[0]
+                else:
+                    leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
+                                                leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
+                                                applied=0, approved=0,
+                                                balance=0,
+                                                year=year)
+            if leavecheckonautoapplydate(leave, user_id):
+                leavesubmit(leave, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],

@@ -311,24 +311,34 @@ def applyLeave(user, leaves, year):
         reason = "applied by system"
         applied_by = User.objects.get(id=35).id
         avaliable_leave = avaliableLeaveCheck(user_id, leave, year)
-        if avaliable_leave != 0:
-            leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
+        if len(avaliable_leave) >= 2:
+            for leave_ava in avaliable_leave:
+                if leave_ava['balance'] == 0.5:
+                    leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ava['leave_type'], year=year)
+                    if leavecheckonautoapplydate(leave, user_id):
+                        leave['leave'] = 'half_day'
+                        leavesubmit(leave, leave_type, user_id, applied_by)
         else:
-            leave_type = LeaveSummary.objects.filter(user=user_id,
-                                             leave_type__leave_type='loss_of_pay',
-                                             year=year)
-            if leave_type:
-                leave_type = leave_type[0]
+            if avaliable_leave != 0:
+                leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
             else:
-                leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
-                                            leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
-                                            applied=0, approved=0,
-                                            balance=0,
-                                            year=year)
-        if leavecheckonautoapplydate(leave, user_id):
-            leavesubmit(leave, leave_type, user_id, applied_by)
+                leave_type = LeaveSummary.objects.filter(user=user_id,
+                                                 leave_type__leave_type='loss_of_pay',
+                                                 year=year)
+                if leave_type:
+                    leave_type = leave_type[0]
+                else:
+                    leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
+                                                leave_type=LeaveType.objects.get(leave_type='loss_of_pay'),
+                                                applied=0, approved=0,
+                                                balance=0,
+                                                year=year)
+            if leavecheckonautoapplydate(leave, user_id):
+                leavesubmit(leave, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
+    # import ipdb;
+    # ipdb.set_trace()
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                              to_date__gte=leave['date'],
                                              user=user)
@@ -358,15 +368,26 @@ def leavecheckonautoapplydate(leave, user):
 
 def avaliableLeaveCheck(user_id, short_leave_type, year):
     leavesavaliableforapply = ['casual_leave', 'earned_leave']
+    leaves_ava = []
     for val in leavesavaliableforapply:
+        leave_ava_dict = {}
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=year)
         if short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
-            return leave[0].leave_type
-        elif short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) > 0.5:
-            return leave[0].leave_type
-        elif leave and leave and float(leave[0].balance.encode('utf-8')) > 0.5:
-            return leave[0].leave_type
-    return 0
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+        elif short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+        elif leave and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+    if leaves_ava:
+        return leaves_ava
+    else:
+        return 0
 
 
 def leavesubmit(leave, leave_type,  user_id, applied_by):
