@@ -62,6 +62,7 @@ def weekly_leave_deduction():
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
         leaves = []
+        dates_av = []
         leave_for_date = {}
         employee_attendance = []
         for date in dates:
@@ -72,6 +73,7 @@ def weekly_leave_deduction():
                 pass
             else:
                 try:
+                    dates_av.append(date)
                     employee = Employee.objects.filter(user_id=user.id)
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
@@ -80,6 +82,7 @@ def weekly_leave_deduction():
                     if employee:
                         attendance = Attendance.objects.filter(attdate=date,
                                                                incoming_employee_id=employee[0].employee_assigned_id)
+                        # import ipdb; ipdb.set_trace()
                         if len(appliedLeaveCheck) >= 2:
                             for appliedleave in appliedLeaveCheck:
                                 if appliedleave.leave_type_id == 16:
@@ -102,7 +105,7 @@ def weekly_leave_deduction():
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
 
-                                        timediff = tdelta
+                                        timediff = wfh
                                         atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                                     (timediff.seconds % 3600) // 60)
                                         employee_attendance.append(float(atttime))
@@ -114,7 +117,33 @@ def weekly_leave_deduction():
                                                                     (timediff.seconds % 3600) // 60)
                                         employee_attendance.append(float(atttime))
                         elif appliedLeaveCheck and attendance:
-                            if appliedLeaveCheck[0].leave_type_id == 11:
+                            if appliedLeaveCheck[0].leave_type_id == 16:
+                                temp_id = appliedLeaveCheck[0].temp_id
+                                temp_attendance = Attendance.objects.filter(attdate=date,
+                                                                            incoming_employee_id=temp_id)
+                                if temp_attendance:
+                                    swipeIn = temp_attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = temp_attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
+                                                                                                      FMT)
+                                    timediff = tdelta
+                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                                (timediff.seconds % 3600) // 60)
+                                    employee_attendance.append(float(atttime))
+                                if attendance:
+                                    swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                    stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                    timediff = tdelta
+                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                                (timediff.seconds % 3600) // 60)
+                                    employee_attendance.append(float(atttime))
+                            elif appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
                                 swipeInTime = swipeIn.strftime("%H:%M:%S")
@@ -176,16 +205,22 @@ def weekly_leave_deduction():
                             employee_attendance.append(float(atttime))
                         else:
                             employee_attendance.append(0)
-                        if  len(appliedLeaveCheck)>1:
+                        if len(appliedLeaveCheck) > 1:
                             pass
-                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second':
+                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date == date and \
+                                        appliedLeaveCheck[0].to_date == date and appliedLeaveCheck[
+                            0].from_session == 'session_first' and appliedLeaveCheck[0].to_session == 'session_second':
                             pass
-                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date<date and appliedLeaveCheck[0].to_date>date:
+                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and \
+                                        appliedLeaveCheck[0].to_date > date:
                             pass
-                        elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date>date and appliedLeaveCheck[0].from_session=='session_first':
+                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date == date and \
+                                        appliedLeaveCheck[0].to_date > date and appliedLeaveCheck[
+                            0].from_session == 'session_first':
                             pass
-                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and appliedLeaveCheck[
-                            0].to_date == date and appliedLeaveCheck[0].to_session== 'session_second':
+                        elif len(appliedLeaveCheck) == 1 and appliedLeaveCheck[0].from_date < date and \
+                                        appliedLeaveCheck[
+                                            0].to_date == date and appliedLeaveCheck[0].to_session == 'session_second':
                             pass
                     else:
                         print(user.first_name + user.last_name + " hr need to take care")
@@ -197,209 +232,209 @@ def weekly_leave_deduction():
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 44 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 35 < sum(employee_attendance) < 39.5:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 39.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 30.5 < sum(employee_attendance) < 35:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 35 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 35 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 26 < sum(employee_attendance) < 30.5:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 30.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 30.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 21.5 < sum(employee_attendance) < 26:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 26 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 26 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 26 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 17 < sum(employee_attendance) < 21.5:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 21.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 21.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 21.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 12.5 < sum(employee_attendance) < 17:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 17.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 17.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 17.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 17.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
-                    leave_for_date['date'] = dates[3]
+                    leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 9 < sum(employee_attendance) < 12.5:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 12.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 12.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 12.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 12.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[3]
+                    leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 4.5 < sum(employee_attendance) < 9:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 9 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 9 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 9 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 9 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[3]
+                    leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 9 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
-                    leave_for_date['date'] = dates[4]
+                    leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
                 elif 0 < sum(employee_attendance) < 4.5:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[0]
+                    leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[1]
+                    leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[2]
+                    leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[3]
+                    leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
-                    leave_for_date['date'] = dates[4]
+                    leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
             except:
@@ -433,6 +468,21 @@ def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                              to_date__gte=leave['date'],
                                              user=user)
+    if leave_check:
+        if leave_check[0].hours:
+            wfh = timedelta(hours=int(getTime(leave_check[0].hours)[0]),
+                            minutes=int(getTime(leave_check[0].hours)[1]), seconds=00)
+            fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
+            halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
+            if wfh < halfDayOfficeStayTimeLimit:
+                return True
+            elif wfh < fullDayOfficeStayTimeLimit:
+                return True
+    if leave_check:
+        if leave_check[0].days_count == '0.5':
+            return True
+        if leave_check[0].days_count == '1':
+            return True
     if leave_check and \
                     len(leave_check) > 1 or\
                     leave['leave'] == 'half_day' and leave_check or leave_check and\
@@ -458,7 +508,7 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                                                  to_date__gte=leave['date'],
                                                  user=user_id,
                                                     status__in=['open', 'approved'])
-        if leaveapp and leave['leave'] == 'full_day':
+        if leaveapp and leave['leave'] == 'full_day' and leaveapp[0].leave_type_id not in [16, 11]:
             leavecount = .5
             if leaveapp[0].from_session == 'session_first':
                 fromsession = 'session_second'
