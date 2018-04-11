@@ -80,6 +80,7 @@ def daily_leave_check(year, month, day):
                     if employee:
                         attendance = Attendance.objects.filter(attdate=date,
                                                                incoming_employee_id=employee[0].employee_assigned_id)
+                        # import ipdb; ipdb.set_trace()
                         if len(appliedLeaveCheck) >= 2:
                             for appliedleave in appliedLeaveCheck:
                                 if appliedleave.leave_type_id == 16:
@@ -102,7 +103,7 @@ def daily_leave_check(year, month, day):
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
 
-                                        timediff = tdelta
+                                        timediff = wfh
                                         atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                                     (timediff.seconds % 3600) // 60)
                                         employee_attendance.append(float(atttime))
@@ -114,7 +115,33 @@ def daily_leave_check(year, month, day):
                                                                     (timediff.seconds % 3600) // 60)
                                         employee_attendance.append(float(atttime))
                         elif appliedLeaveCheck and attendance:
-                            if appliedLeaveCheck[0].leave_type_id == 11:
+                            if appliedLeaveCheck[0].leave_type_id == 16:
+                                temp_id = appliedLeaveCheck[0].temp_id
+                                temp_attendance = Attendance.objects.filter(attdate=date,
+                                                                            incoming_employee_id=temp_id)
+                                if temp_attendance:
+                                    swipeIn = temp_attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = temp_attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
+                                                                                                      FMT)
+                                    timediff = tdelta
+                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                                (timediff.seconds % 3600) // 60)
+                                    employee_attendance.append(float(atttime))
+                                if attendance:
+                                    swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                    stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                    timediff = tdelta
+                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                                (timediff.seconds % 3600) // 60)
+                                    employee_attendance.append(float(atttime))
+                            elif appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
                                 swipeInTime = swipeIn.strftime("%H:%M:%S")
@@ -192,6 +219,7 @@ def daily_leave_check(year, month, day):
                 except:
                     logger.debug("missing records")
         print employee_attendance
+        print sum(employee_attendance)
         if employee_attendance:
             try:
                 if 39.5 < sum(employee_attendance) < 44:
