@@ -109,7 +109,7 @@ def daily_leave_check(year, month, day):
                                         employee_attendance.append(float(atttime))
                                 if appliedleave.leave_type_id not in [11, 16]:
                                     if appliedleave.days_count == '0.5':
-                                        tdelta = timedelta(hours=04, minutes=30, seconds=00)
+                                        tdelta = timedelta(hours=04, minutes=50, seconds=00)
                                         timediff = tdelta
                                         atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                                     (timediff.seconds % 3600) // 60)
@@ -163,7 +163,7 @@ def daily_leave_check(year, month, day):
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 if appliedLeaveCheck[0].days_count == '0.5':
-                                    app = timedelta(hours=04, minutes=30, seconds=00)
+                                    app = timedelta(hours=04, minutes=50, seconds=00)
                                 if appliedLeaveCheck[0].days_count == '1':
                                     app = timedelta(hours=9, minutes=00, seconds=00)
                                 timediff = tdelta + app
@@ -205,6 +205,8 @@ def daily_leave_check(year, month, day):
                                     employee_attendance.append(float(atttime))
                             elif appliedLeaveCheck[0].days_count == '0.5':
                                 employee_attendance.append(4.5)
+                            elif appliedLeaveCheck[0].days_count == '1':
+                                employee_attendance.append(9)
                         elif attendance:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
