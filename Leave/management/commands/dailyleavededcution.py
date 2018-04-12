@@ -366,15 +366,26 @@ def leavecheckonautoapplydate(leave, user):
 
 def avaliableLeaveCheck(user_id, short_leave_type, year):
     leavesavaliableforapply = ['casual_leave', 'earned_leave']
+    leaves_ava = []
     for val in leavesavaliableforapply:
+        leave_ava_dict = {}
         leave = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=year)
         if short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 1:
-            return leave[0].leave_type
-        elif short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) > 0.5:
-            return leave[0].leave_type
-        elif leave and leave and float(leave[0].balance.encode('utf-8')) > 0.5:
-            return leave[0].leave_type
-    return 0
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+        elif short_leave_type['leave'] == 'full_day' and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+        elif leave and leave and float(leave[0].balance.encode('utf-8')) >= 0.5:
+            leave_ava_dict['balance'] = float(leave[0].balance.encode('utf-8'))
+            leave_ava_dict['leave_type'] = leave[0].leave_type
+            leaves_ava.append(leave_ava_dict)
+    if leaves_ava:
+        return leaves_ava
+    else:
+        return 0
 
 
 def leavesubmit(leave, leave_type,  user_id, applied_by):
