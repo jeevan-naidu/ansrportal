@@ -95,13 +95,15 @@ def daily_leave_check():
                                 if appliedleave.leave_type_id not in [11, 16]:
                                     if appliedleave.days_count == '0.5':
                                         tdelta = timedelta(hours=04, minutes=30, seconds=00)
+                                    if appliedleave.days_count == '1':
+                                        tdelta = timedelta(hours=9, minutes=00, seconds=00)
                                     hours_in_office.append(tdelta)
                             if len(hours_in_office) > 2:
                                 if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 3 hours".format(
                                         hours_in_office[0] + hours_in_office[1])
                                     leave = 'full_day'
-                                elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
+                                elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 6 hours".format(
                                         hours_in_office[0] + hours_in_office[1])
                                     leave = 'half_day'

@@ -90,25 +90,26 @@ def daily_leave_deduction(year, month, day):
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         hours_in_office.append(wfh)
-                                if appliedleave.leave_type_id not in [11, 16]:
-                                    if appliedleave.days_count == '0.5':
-                                        tdelta = timedelta(hours=04, minutes=30, seconds=00)
-                                    hours_in_office.append(tdelta)
-                            if len(hours_in_office) > 2:
-                                if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(
-                                        hours_in_office[0] + hours_in_office[1])
-                                    leave = 'full_day'
-                                elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(
-                                        hours_in_office[0] + hours_in_office[1])
-                                    leave = 'half_day'
-                                if leave:
-                                    leave_for_date['date'] = date
-                                    leave_for_date['leave'] = leave
-                                    leave_for_date['reason'] = reason
-                                    leave_for_date['due_date'] = dueDate
-                                    leaves.append(leave_for_date)
+                                    if appliedleave.leave_type_id not in [11, 16]:
+                                        if appliedleave.days_count == '0.5':
+                                            tdelta = timedelta(hours=04, minutes=30, seconds=00)
+                                        if appliedleave.days_count == '1':
+                                            tdelta = timedelta(hours=9, minutes=00, seconds=00)
+                                        hours_in_office.append(tdelta)
+                                if len(hours_in_office) > 2:
+                                    if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
+                                        reason = "you had put {0} hours which is below 3 hours".format(
+                                            hours_in_office[0] + hours_in_office[1])
+                                        leave = 'full_day'
+                                    elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
+                                        reason = "you had put {0} hours which is below 6 hours".format(
+                                            hours_in_office[0] + hours_in_office[1])
+                                        leave = 'half_day'
+                                    if leave:
+                                        leave_for_date['date'] = date
+                                        leave_for_date['leave'] = leave
+                                        leave_for_date['reason'] = reason
+                                        leaves.append(leave_for_date)
                             else:
                                 if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
                                     reason = "you had put {0} hours which is below 3 hours".format(
@@ -122,7 +123,7 @@ def daily_leave_deduction(year, month, day):
                                     leave_for_date['date'] = date
                                     leave_for_date['leave'] = leave
                                     leave_for_date['reason'] = reason
-                                    leave_for_date['due_date'] = dueDate
+
                                     leaves.append(leave_for_date)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 11:
