@@ -208,6 +208,8 @@ def weekly_leave_deduction(year, month, day):
                                     employee_attendance.append(float(atttime))
                             elif appliedLeaveCheck[0].days_count == '0.5':
                                 employee_attendance.append(4.5)
+                            elif appliedLeaveCheck[0].days_count == '1':
+                                employee_attendance.append(9.0)
                         elif attendance:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
