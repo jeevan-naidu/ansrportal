@@ -119,6 +119,12 @@ def weekly_leave_deduction(year, month, day):
                                         atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                                     (timediff.seconds % 3600) // 60)
                                         employee_attendance.append(float(atttime))
+                                    if appliedleave.days_count == '1':
+                                        tdelta = timedelta(hours=9, minutes=00, seconds=00)
+                                        timediff = tdelta
+                                        atttime = u"{0}.{1}".format(timediff.seconds // 3600,
+                                                                    (timediff.seconds % 3600) // 60)
+                                        employee_attendance.append(float(atttime))
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
