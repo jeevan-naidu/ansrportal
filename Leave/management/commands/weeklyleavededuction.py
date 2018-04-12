@@ -268,14 +268,14 @@ def weekly_leave_deduction():
                 elif 30.5 < sum(employee_attendance) < 35:
                     leave_for_date['reason'] = "you had put " + str(sum(employee_attendance)) + " hours which is below 35 hours"
                     leave_for_date['user_id'] = user.id
-                    leave_for_date['leave'] = 'half_day'
+                    leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     leave_for_date = {}
                     leave_for_date['reason'] = "you had put " + str(
                         sum(employee_attendance)) + " hours which is below 35 hours"
                     leave_for_date['user_id'] = user.id
-                    leave_for_date['leave'] = 'full_day'
+                    leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
