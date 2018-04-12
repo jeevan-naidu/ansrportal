@@ -164,6 +164,8 @@ def daily_leave_check(year, month, day):
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 if appliedLeaveCheck[0].days_count == '0.5':
                                     app = timedelta(hours=04, minutes=30, seconds=00)
+                                if appliedLeaveCheck[0].days_count == '1':
+                                    app = timedelta(hours=9, minutes=00, seconds=00)
                                 timediff = tdelta + app
                                 atttime = u"{0}.{1}".format(timediff.seconds // 3600,
                                                             (timediff.seconds % 3600) // 60)
