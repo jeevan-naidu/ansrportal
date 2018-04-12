@@ -339,6 +339,8 @@ def applyLeave(user, leaves, year):
 
             except:
                 leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
+                if leavecheckonautoapplydate(leave, user_id):
+                    leavesubmit(leave, leave_type, user_id, applied_by)
         else:
             leave_type = LeaveSummary.objects.filter(user=user_id,
                                              leave_type__leave_type='loss_of_pay',
@@ -393,6 +395,8 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
             return leaveapp[0].leave_type
         elif short_leave_type['leave'] == 'full_day' and leaveapp and float(leaveapp[0].balance.encode('utf-8')) >= 0.5:
             leave_type_combined.append(leaveapp[0].leave_type)
+        elif short_leave_type['leave'] == 'half_day' and leaveapp and float(leaveapp[0].balance.encode('utf-8')) >= 0.5:
+            return leaveapp[0].leave_type
         elif leaveapp and leaveapp and float(leaveapp[0].balance.encode('utf-8')) > 0.5:
             return leaveapp[0].leave_type
     if short_leave_type['leave'] == 'full_day' and len(leave_type_combined) >= 1:
