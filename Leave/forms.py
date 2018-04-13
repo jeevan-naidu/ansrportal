@@ -117,7 +117,7 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
-        hours = forms.CharField(max_length=100, required=False, help_text = 'Hours format(hhmm), example:0430')
+        hours = forms.CharField(max_length=100, required=True, help_text = 'Hours format(hhmm), example:0430')
         # Add Bootstrap widgets
         hours.widget.attrs = {'class': 'form-control'}
 
@@ -169,7 +169,7 @@ def LeaveForm(leavetype, user, data=None):
         )
         toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
 
-        temp_id = forms.CharField(max_length=100, required=False)
+        temp_id = forms.CharField(max_length=100, required=True)
         # Add Bootstrap widgets
         temp_id.widget.attrs = {'class': 'form-control'}
 
