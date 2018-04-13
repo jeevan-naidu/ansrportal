@@ -303,7 +303,7 @@ def daily_leave_check():
                     logger.debug("missing records")
         if leaves:
             try:
-                send_mail(user, leaves, dates, reason, "open")
+                send_mail(user, leaves, dates, reason, "open", dueDate)
             except:
                 logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Daily leave check raised finished running"
@@ -321,7 +321,7 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def send_mail(user, leavetype, fordate, status_comments, status):
+def send_mail(user, leavetype, fordate, status_comments, status, dueDate):
     msg_html = render_to_string('email_templates/daily_leave_check_remainder.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leavetype,
