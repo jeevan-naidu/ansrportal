@@ -15,7 +15,7 @@ logger = logging.getLogger('MyANSRSource')
 
 def previous_week_range(date):
     start_date = date + timedelta(-date.weekday(), weeks=-2)
-    end_date = date + timedelta(-date.weekday() - 1)
+    end_date = date + timedelta(-date.weekday() - 10)
     return start_date, end_date
 
 def dates_to_check_leave(start_date,end_date):
@@ -47,7 +47,7 @@ def daily_leave_check():
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = end_date + timedelta(days=12)
+    dueDate = end_date + timedelta(days=14)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:

@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
 def previous_week_range(date):
     start_date = date + timedelta(-date.weekday(), weeks=-2)
-    end_date = date + timedelta(-date.weekday() - 1)
+    end_date = date + timedelta(-date.weekday() - 10)
     return start_date, end_date
 
 def dates_to_check_leave(start_date,end_date):
@@ -35,7 +35,7 @@ def dates_to_check_leave(start_date,end_date):
 def getTime(t):
     return [t[:2],t[2:]]
 
-def daily_leave_deduction(year, month, day):
+def daily_leave_deduction():
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')
     user_list = User.objects.filter(is_active=True)
