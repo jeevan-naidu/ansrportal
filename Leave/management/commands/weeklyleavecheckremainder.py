@@ -28,7 +28,7 @@ def getTime(t):
 
 def previous_week_range(date):
     start_date = date + timedelta(-date.weekday(), weeks=-2)
-    end_date = date + timedelta(-date.weekday() - 3)
+    end_date = date + timedelta(-date.weekday() - 10)
     return start_date, end_date
 
 def dates_to_check_leave(start_date,end_date):
