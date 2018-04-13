@@ -5,7 +5,7 @@ import datetime, os
 
 
 LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),
-                       ('short_leave', 'Short Leave'), ('loss_of_pay', 'Loss Of Pay'),
+                       ('loss_of_pay', 'Loss Of Pay'),
                        ('bereavement_leave', 'Bereavement Leave'),
                        ('maternity_leave', 'Maternity Leave'),
                        ('paternity_leave', 'Paternity Leave'),
@@ -15,7 +15,8 @@ LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Le
                        ('work_from_home', 'Work From Home'),
                        ('sabbatical', 'Sabbatical'),
                        ('ooo_dom', 'Domestic Travel'),
-                       ('ooo_int', 'International Travel'))
+                       ('ooo_int', 'International Travel'),
+                       ('temp_id', 'Temporary ID'))
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
@@ -99,6 +100,8 @@ class LeaveApplications(models.Model):
     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='manager') #- i
     applied_by = models.ForeignKey(User, verbose_name='Leaved applied by ', related_name='applied_by_user', blank=True, null=True)
     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
+    hours = models.CharField(max_length=10, verbose_name='Reason',blank=True, null=True,)
+    temp_id = models.CharField(max_length=10, verbose_name='Reason',blank=True, null=True,)
     status = models.CharField(max_length=100, choices=APPLICATION_STATUS, verbose_name='Status Of Leave')
     status_action_by = models.ForeignKey(User, verbose_name='Change By User', related_name='action_by')
     status_action_on = models.DateField(auto_now=True, verbose_name='Date of Change')

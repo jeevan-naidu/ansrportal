@@ -15,21 +15,25 @@
 
     <thead>
         <tr>
-            <td><b>Leave Type</b></td>
-            <td><b>For Date</b></td>
+            <td><b>Total Hours</b></td>
+            <td><b>From Date</b></td>
+            <td><b>To Date</b></td>
+            <td><b>Total leaves</b></td>
             <td><b>Reason</b></td>
             <td><b>Due Date</b></td>
         </tr>
     </thead>
     <tbody>
-        {% for leave in leaveType %}
+
         <tr>
-            <td>{{leave.leave}} </td>
-            <td>{{leave.date}}</td>
-            {% if reason %} <td>{{leave.reason}} </td> {% endif %}
-            <td>{{leave.due_date}}</td>
+            <td>{{total_hours}} </td>
+            <td>{{from_date}}</td>
+            <td>{{to_date}}</td>
+            <td>{{leaveType}}</td>
+            {% if reason %} <td>{{reason}} </td> {% endif %}
+            <td>{{dueDate}}</td>
         </tr>
-        {% endfor %}
+
     </tbody>
 </table>
 <p>Regards,<br>

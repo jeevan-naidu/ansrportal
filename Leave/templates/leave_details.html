@@ -35,6 +35,12 @@
          <td>Reason: </td>
          <td>{{leave.reason}}</td>
      </tr>
+    {% if leave.hours %}
+        <tr >
+             <td>Hours: </td>
+             <td>{{leave.hours}}</td>
+         </tr>
+    {% endif %}
      <tr >
          <td>Manager: </td>
          <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>
