@@ -28,7 +28,7 @@ def getTime(t):
 
 def previous_week_range(date):
     start_date = date + timedelta(-date.weekday(), weeks=-2)
-    end_date = date + timedelta(-date.weekday() - 1)
+    end_date = date + timedelta(-date.weekday() - 3)
     return start_date, end_date
 
 def dates_to_check_leave(start_date,end_date):
@@ -242,11 +242,11 @@ def daily_leave_check():
         if employee_attendance:
             try:
                 if 39.5 < sum(employee_attendance) < 44:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 44 hours"
+                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 45 hours"
                     leave = 'half_day'
                     send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 35 < sum(employee_attendance) < 39.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 39.5 hours"
+                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 40 hours"
                     leave = 'full_day'
                     send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 30.5 < sum(employee_attendance) < 35:

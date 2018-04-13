@@ -25,7 +25,7 @@ logger = logging.getLogger('MyANSRSource')
 
 def previous_week_range(date):
     start_date = date + timedelta(-date.weekday(), weeks=-2)
-    end_date = date + timedelta(-date.weekday() - 1)
+    end_date = date + timedelta(-date.weekday() - 3)
     return start_date, end_date
 
 def dates_to_check_leave(start_date,end_date):
