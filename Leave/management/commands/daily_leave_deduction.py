@@ -411,7 +411,10 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
     for val in leavesavaliableforapply:
         leaveapp = LeaveSummary.objects.filter(user=user_id, leave_type__leave_type=val, year=year)
         if short_leave_type['leave'] == 'full_day' and leaveapp and float(leaveapp[0].balance.encode('utf-8')) >= 1:
-            return leaveapp[0].leave_type
+            if leave_type_combined:
+                leave_type_combined.append(leaveapp[0].leave_type)
+            else:
+                return leaveapp[0].leave_type
         elif short_leave_type['leave'] == 'full_day' and leaveapp and float(leaveapp[0].balance.encode('utf-8')) > 0.5:
             return leaveapp[0].leave_type
         elif short_leave_type['leave'] == 'full_day' and leaveapp and float(leaveapp[0].balance.encode('utf-8')) >= 0.5:
