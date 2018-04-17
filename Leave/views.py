@@ -677,7 +677,6 @@ class ApplyLeaveView(View):
                 if context_data['errors']:
                     return render(request, 'leave_apply.html', context_data)
                 else:
-                    import ipdb; ipdb.set_trace()
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content
