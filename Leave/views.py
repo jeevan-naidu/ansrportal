@@ -630,14 +630,13 @@ class ApplyLeaveView(View):
                                                 'save')
                     elif leave_form.cleaned_data['leave'] in ['temp_id']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
-
                         if attachment:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id=temp_id,
+                                              temp_id='TEMP'+temp_id,
                                               ).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
@@ -656,7 +655,7 @@ class ApplyLeaveView(View):
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id=temp_id,).saveas(user_id,
+                                              temp_id='TEMP'+temp_id,).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
                             EmailSendTask.delay(request.user,
