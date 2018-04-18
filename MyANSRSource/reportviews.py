@@ -1946,8 +1946,9 @@ def ProjectReport(request):
         # portfolio_manager_id=1
         # pmDelegate_id=1
         # new_bu_head=1
-        if deliveryManager_id==1:
+        if deliveryManager_id == 1:
             project_details = data(user_id)
+            import ipdb;ipdb.set_trace()
             if project_details:
                 return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
                 #
