@@ -169,7 +169,7 @@ def LeaveForm(leavetype, user, data=None):
         )
         toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
 
-        temp_id = forms.CharField(max_length=100, required=True)
+        temp_id = forms.CharField(max_length=2, required=True)
         # Add Bootstrap widgets
         temp_id.widget.attrs = {'class': 'form-control'}
 

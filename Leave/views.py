@@ -184,8 +184,11 @@ def LeaveCancel(request):
     leave.update()
     # short_leave_against_cancellation(leave.from_date, leave.to_date, user_id)
     manager = managerCheck(user_id)
-    EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-     leave.to_session, leave.days_count, leave.reason, 'cancel')
+    try:
+        EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+         leave.to_session, leave.days_count, leave.reason, 'cancel')
+    except:
+        logger.exception('Sending task raised')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -491,16 +494,19 @@ class ApplyLeaveView(View):
                                            reason=reason,
                                            atachement=attachment).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user,
-                                             manager,
-                                             leave_selected,
-                                             fromdate,
-                                             todate,
-                                             fromsession,
-                                             tosession,
-                                             leavecount,
-                                             reason,
-                                             'save')
+                         try:
+                             EmailSendTask.delay(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
+                         except:
+                             logger.exception('Sending task raised')
                     else:
                          LeaveApplications(leave_type=leaveType,
                                            from_date=fromdate,
@@ -510,16 +516,19 @@ class ApplyLeaveView(View):
                                            days_count=leavecount,
                                            reason=reason).saveas(user_id, request.user.id)
                          leavesummry_temp.save()
-                         EmailSendTask.delay(request.user,
-                                             manager,
-                                             leave_selected,
-                                             fromdate,
-                                             todate,
-                                             fromsession,
-                                             tosession,
-                                             leavecount,
-                                             reason,
-                                             'save')
+                         try:
+                             EmailSendTask.delay(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
+                         except:
+                             logger.exception('Sending task raised')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -543,16 +552,19 @@ class ApplyLeaveView(View):
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user,
-                                                 manager,
-                                                 leave_selected,
-                                                 fromdate,
-                                                 todate,
-                                                 fromsession,
-                                                 tosession,
-                                                 leavecount,
-                                                 reason,
-                                                 'save')
+                             try:
+                                 EmailSendTask.delay(request.user,
+                                                     manager,
+                                                     leave_selected,
+                                                     fromdate,
+                                                     todate,
+                                                     fromsession,
+                                                     tosession,
+                                                     leavecount,
+                                                     reason,
+                                                     'save')
+                             except:
+                                 logger.exception('Sending task raised')
                         else:
                              LeaveApplications(leave_type=leaveType,
                                                from_date=fromdate,
@@ -564,16 +576,19 @@ class ApplyLeaveView(View):
                                                due_date=duedate).saveas(user_id,
                                                                         request.user.id)
                              leavesummry_temp.save()
-                             EmailSendTask.delay(request.user,
-                                                 manager,
-                                                 leave_selected,
-                                                 fromdate,
-                                                 todate,
-                                                 fromsession,
-                                                 tosession,
-                                                 leavecount,
-                                                 reason,
-                                                 'save')
+                             try:
+                                 EmailSendTask.delay(request.user,
+                                                     manager,
+                                                     leave_selected,
+                                                     fromdate,
+                                                     todate,
+                                                     fromsession,
+                                                     tosession,
+                                                     leavecount,
+                                                     reason,
+                                                     'save')
+                             except:
+                                 logger.exception('Sending task raised')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -594,17 +609,20 @@ class ApplyLeaveView(View):
                                               due_date=duedate).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
-                            EmailSendTask.delay(request.user,
-                                                manager,
-                                                leave_selected,
-                                                fromdate,
-                                                todate,
-                                                fromsession,
-                                                tosession,
-                                                leavecount,
-                                                reason,
-                                                hours,
-                                                'save')
+                            try:
+                                EmailSendTask.delay(request.user,
+                                                    manager,
+                                                    leave_selected,
+                                                    fromdate,
+                                                    todate,
+                                                    fromsession,
+                                                    tosession,
+                                                    leavecount,
+                                                    reason,
+                                                    hours,
+                                                    'save')
+                            except:
+                                logger.exception('Sending task raised')
                         else:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
@@ -617,57 +635,65 @@ class ApplyLeaveView(View):
                                               due_date=duedate).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
-                            EmailSendTask.delay(request.user,
-                                                manager,
-                                                leave_selected,
-                                                fromdate,
-                                                todate,
-                                                fromsession,
-                                                tosession,
-                                                leavecount,
-                                                reason,
-                                                hours,
-                                                'save')
+                            try:
+                                EmailSendTask.delay(request.user,
+                                                    manager,
+                                                    leave_selected,
+                                                    fromdate,
+                                                    todate,
+                                                    fromsession,
+                                                    tosession,
+                                                    leavecount,
+                                                    reason,
+                                                    hours,
+                                                    'save')
+                            except:
+                                logger.exception('Sending task raised')
                     elif leave_form.cleaned_data['leave'] in ['temp_id']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
-
                         if attachment:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id=temp_id,
+                                              temp_id='TEMP'+temp_id,
                                               ).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
-                            EmailSendTask.delay(request.user,
-                                                manager,
-                                                leave_selected,
-                                                fromdate,
-                                                todate,
-                                                leavecount,
-                                                reason,
-                                                temp_id,
-                                                'save')
+                            try:
+                                EmailSendTask.delay(request.user,
+                                                    manager,
+                                                    leave_selected,
+                                                    fromdate,
+                                                    todate,
+                                                    leavecount,
+                                                    reason,
+                                                    temp_id,
+                                                    'save')
+                            except:
+                                logger.exception('Sending task raised')
                         else:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id=temp_id,).saveas(user_id,
+                                              temp_id='TEMP'+temp_id,).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
-                            EmailSendTask.delay(request.user,
-                                                manager,
-                                                leave_selected,
-                                                fromdate,
-                                                todate,
-                                                leavecount,
-                                                reason,
-                                                temp_id,
-                                                'save')
+                            try:
+                                EmailSendTask.delay(request.user,
+                                                    manager,
+                                                    leave_selected,
+                                                    fromdate,
+                                                    todate,
+                                                    leavecount,
+                                                    reason,
+                                                    temp_id,
+                                                    'save')
+                            except:
+                                logger.exception('Sending task raised')
 
                         context_data['success'] = 'leave saved'
                         context_data['record_added'] = 'True'
@@ -678,7 +704,6 @@ class ApplyLeaveView(View):
                 if context_data['errors']:
                     return render(request, 'leave_apply.html', context_data)
                 else:
-                    import ipdb; ipdb.set_trace()
                     context_data['success_msg'] = "Your leave application has been submitted successfully."
                     template = render(request, 'leave_apply.html', context_data)
                     context_data['html_data'] = template.content
