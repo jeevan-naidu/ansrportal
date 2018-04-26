@@ -134,7 +134,7 @@ def daily_leave_check():
                                 wfh = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
                                                 minutes=int(getTime(appliedLeaveCheck[0].hours)[1]),
                                                 seconds=00)
-                                employee_attendance.append(wfh)
+                                employee_attendance.append(tdelta+wfh)
                             elif appliedLeaveCheck[0].leave_type_id != 11 and attendance:
                                 leave_for_date = {}
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
