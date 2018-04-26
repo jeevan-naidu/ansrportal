@@ -657,7 +657,7 @@ class ApplyLeaveView(View):
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id='TEMP'+temp_id,
+                                              temp_id='00TEMP'+temp_id,
                                               ).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
@@ -679,7 +679,7 @@ class ApplyLeaveView(View):
                                               to_date=todate,
                                               days_count=leavecount,
                                               reason=reason,
-                                              temp_id='TEMP'+temp_id,).saveas(user_id,
+                                              temp_id='00TEMP'+temp_id,).saveas(user_id,
                                                                        request.user.id)
                             leavesummry_temp.save()
                             try:
