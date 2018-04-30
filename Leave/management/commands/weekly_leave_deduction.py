@@ -105,12 +105,15 @@ def weekly_leave_deduction(year, month, day):
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         employee_attendance.append(wfh)
                                 if appliedleave.leave_type_id not in [11, 16]:
-                                    if appliedleave.days_count == '0.5':
-                                        tdelta = timedelta(hours=04, minutes=30, seconds=00)
-                                        employee_attendance.append(tdelta)
-                                    if appliedleave.days_count == '1':
-                                        tdelta = timedelta(hours=9, minutes=00, seconds=00)
-                                        employee_attendance.append(tdelta)
+                                    if appliedLeaveCheck[0].days_count == '0.5':
+                                        employee_attendance.append(timedelta(hours=4, minutes=30, seconds=01))
+                                    elif appliedLeaveCheck[0].days_count == '1':
+                                        employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                                    elif appliedLeaveCheck[0].days_count > '1':
+                                        leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                       to_date__gte=date)
+                                        if leave_check:
+                                            employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
@@ -151,9 +154,14 @@ def weekly_leave_deduction(year, month, day):
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 if appliedLeaveCheck[0].days_count == '0.5':
-                                    app = timedelta(hours=04, minutes=50, seconds=00)
-                                if appliedLeaveCheck[0].days_count == '1':
-                                    app = timedelta(hours=9, minutes=00, seconds=00)
+                                    app = (timedelta(hours=4, minutes=30, seconds=01))
+                                elif appliedLeaveCheck[0].days_count == '1':
+                                    app = (timedelta(hours=9, minutes=00, seconds=01))
+                                elif appliedLeaveCheck[0].days_count > '1':
+                                    leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                   to_date__gte=date)
+                                    if leave_check:
+                                        app = (timedelta(hours=9, minutes=00, seconds=01))
                                 timediff = tdelta + app
                                 employee_attendance.append(timediff)
                             else:
@@ -181,9 +189,14 @@ def weekly_leave_deduction(year, month, day):
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                     employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].days_count == '0.5':
-                                employee_attendance.append(timedelta(hours=4, minutes=30, seconds=00))
+                                employee_attendance.append(timedelta(hours=4, minutes=30, seconds=01))
                             elif appliedLeaveCheck[0].days_count == '1':
-                                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=00))
+                                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            elif appliedLeaveCheck[0].days_count > '1':
+                                leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                               to_date__gte=date)
+                                if leave_check:
+                                    employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                         elif attendance:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -212,6 +225,7 @@ def weekly_leave_deduction(year, month, day):
         total_sec = sum(employee_attendance,timedelta()).seconds + sum(employee_attendance,timedelta()).days * 24 * 3600
         total_time =  float(u"{0}.{1}".format(total_sec // 3600,
                                 (total_sec % 3600) // 60))
+        print total_time
         if employee_attendance:
             try:
                 if 39.5 < total_time < 44:
