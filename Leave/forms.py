@@ -120,7 +120,8 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
-        hours = forms.CharField(max_length=4, required=True, help_text = 'Hours format(hhmm), example:0430', widget=TextInput(attrs={'type':'number'}))
+        hours = forms.RegexField(max_length=4, required=True ,regex=r'^[0-9]{4}$', help_text='Hours format(hhmm), example:0430',
+                                widget=TextInput(attrs={'type': 'number', 'pattern': '^[0-9]{4}$'}))
         # Add Bootstrap widgets
         hours.widget.attrs = {'class': 'form-control'}
 
