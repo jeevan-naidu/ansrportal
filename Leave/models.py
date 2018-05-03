@@ -100,7 +100,7 @@ class LeaveApplications(models.Model):
     apply_to = models.ForeignKey(User, db_index=True, verbose_name='Manager', related_name='manager') #- i
     applied_by = models.ForeignKey(User, verbose_name='Leaved applied by ', related_name='applied_by_user', blank=True, null=True)
     reason = models.CharField(max_length=1000, verbose_name='Reason',blank=True, null=True,)
-    hours = models.CharField(max_length=10, verbose_name='Reason',blank=True, null=True,)
+    hours = models.CharField(max_length=4, verbose_name='Reason',blank=True, null=True,)
     temp_id = models.CharField(max_length=2, verbose_name='Reason',blank=True, null=True,)
     status = models.CharField(max_length=100, choices=APPLICATION_STATUS, verbose_name='Status Of Leave')
     status_action_by = models.ForeignKey(User, verbose_name='Change By User', related_name='action_by')

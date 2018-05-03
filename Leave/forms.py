@@ -1,6 +1,9 @@
+
+
 from models import LeaveApplications, LEAVE_TYPES_CHOICES
 from django import forms
 from bootstrap3_datetime.widgets import DateTimePicker
+from django.forms import TextInput
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
@@ -117,7 +120,7 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
-        hours = forms.CharField(max_length=100, required=True, help_text = 'Hours format(hhmm), example:0430')
+        hours = forms.CharField(max_length=4, required=True, help_text = 'Hours format(hhmm), example:0430', widget=TextInput(attrs={'type':'number'}))
         # Add Bootstrap widgets
         hours.widget.attrs = {'class': 'form-control'}
 
