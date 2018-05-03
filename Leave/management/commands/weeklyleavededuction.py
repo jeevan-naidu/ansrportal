@@ -383,7 +383,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 0 < total_time < 4.5:
+                elif 0 <= total_time < 4.5:
                     leave_for_date['reason'] = "you had put " + str(total_time) + " hours which is below 4.5 hours"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'

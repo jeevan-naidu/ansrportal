@@ -259,7 +259,7 @@ def daily_leave_check(year, month, day):
                     reason = "you had put " + str(total_time) + " hours which is below 9 hours"
                     leave = '4.5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 0 < total_time < 4.30:
+                elif 0 <= total_time < 4.30:
                     reason = "you had put " + str(total_time) + " hours which is below 4.30 hours"
                     leave = '5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
