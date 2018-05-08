@@ -9,7 +9,7 @@
 
 <p>Hi, {{registered_by}},</p>
 
-<p>Admin has raised leave notification. </p>
+<p>The system has issued a leave notification. Please see the details below, and take corrective action through myansrsource portal </p>
 
 <table border="1">
 
@@ -18,7 +18,7 @@
             <td><b>Total Hours</b></td>
             <td><b>From Date</b></td>
             <td><b>To Date</b></td>
-            <td><b>Total leaves</b></td>
+            <td><b>Total Leaves</b></td>
             <td><b>Reason</b></td>
             <td><b>Due Date</b></td>
         </tr>
@@ -29,7 +29,12 @@
             <td>{{total_hours}} </td>
             <td>{{from_date}}</td>
             <td>{{to_date}}</td>
-            <td>{{leaveType}}</td>
+            {% if leaveType == 'half_day'%}
+                <td>Half day</td>
+            {% endif %}
+            {% if leaveType == 'full_day'%}
+                <td>Full day</td>
+            {% endif %}
             {% if reason %} <td>{{reason}} </td> {% endif %}
             <td>{{dueDate}}</td>
         </tr>

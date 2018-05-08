@@ -98,11 +98,11 @@ def daily_leave_check(year, month, day):
                                         hours_in_office.append(tdelta)
                                 if len(hours_in_office) > 2:
                                     if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(
+                                        reason = "You had logged {0} hr that is below 3 hr".format(
                                             hours_in_office[0] + hours_in_office[1])
                                         leave = 'full_day'
                                     elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(
+                                        reason = "You had logged {0} hr that is below 6 hr".format(
                                             hours_in_office[0] + hours_in_office[1])
                                         leave = 'half_day'
                                     if leave:
@@ -113,11 +113,11 @@ def daily_leave_check(year, month, day):
                                         leaves.append(leave_for_date)
                                 else:
                                     if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(
+                                        reason = "You had logged {0} hr that is below 3 hr".format(
                                             hours_in_office[0] + hours_in_office[1])
                                         leave = 'full_day'
                                     elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(
+                                        reason = "You had logged {0} hr that is below 6 hr".format(
                                             hours_in_office[0] + hours_in_office[1])
                                         leave = 'half_day'
                                     if leave:
@@ -136,10 +136,10 @@ def daily_leave_check(year, month, day):
                                 wfh = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
                                                 minutes=int(getTime(appliedLeaveCheck[0].hours)[1]), seconds=00)
                                 if tdelta + wfh < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(tdelta + wfh)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(tdelta + wfh)
                                     leave = 'full_day'
                                 elif tdelta + wfh < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(tdelta + wfh)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(tdelta + wfh)
                                     leave = 'half_day'
 
                                 if leave:
@@ -158,10 +158,10 @@ def daily_leave_check(year, month, day):
                                 if appliedLeaveCheck[0].days_count == '0.5':
                                     app = timedelta(hours=04, minutes=30, seconds=00)
                                 if tdelta + app < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(tdelta + app)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(tdelta + app)
                                     leave = 'full_day'
                                 elif tdelta + app < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(tdelta + app)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(tdelta + app)
                                     leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -177,10 +177,10 @@ def daily_leave_check(year, month, day):
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                 if tdelta < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                     leave = 'full_day'
                                 elif tdelta < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                     leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -216,10 +216,10 @@ def daily_leave_check(year, month, day):
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                     if tdelta < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                        reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                         leave = 'full_day'
                                     elif tdelta < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                        reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                         leave = 'half_day'
                                     if leave:
                                         leave_for_date['date'] = date
@@ -244,7 +244,7 @@ def daily_leave_check(year, month, day):
                             tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                             stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                             if tdelta < halfDayOfficeStayTimeLimit:
-                                reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                 leave = 'full_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -253,7 +253,7 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
                             elif tdelta < fullDayOfficeStayTimeLimit:
-                                reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                 leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date

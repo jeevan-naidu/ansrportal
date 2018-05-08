@@ -221,43 +221,43 @@ def daily_leave_check():
         if employee_attendance:
             try:
                 if 39.30 < total_time < 44:
-                    reason = "you had put " + str(total_time) + " hours which is below 45 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave = 'half_day'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 35 < total_time < 39.30:
-                    reason = "you had put " + str(total_time) + " hours which is below 40 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave = 'full_day'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 30.30 < total_time < 35:
-                    reason = "you had put " + str(total_time) + " hours which is below 35 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave = '1.5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 26 < total_time < 30.30:
-                    reason = "you had put " + str(total_time) + " hours which is below 30.30 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 30.30 hr"
                     leave = '2'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 21.30 < total_time < 26:
-                    reason = "you had put " + str(total_time) + " hours which is below 26 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave = '2.5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 17 < total_time < 21.30:
-                    reason = "you had put " + str(total_time) + " hours which is below 21.30 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 21.30 hr"
                     leave = '3'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 12.30 < total_time < 17:
-                    reason = "you had put " + str(total_time) + " hours which is below 17 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 17 hr"
                     leave = '3.5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 9 < total_time < 12.30:
-                    reason = "you had put " + str(total_time) + " hours which is below 12.30 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 12.30 hr"
                     leave = '4'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 4.5 < total_time < 9:
-                    reason = "you had put " + str(total_time) + " hours which is below 9 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave = '4.5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
                 elif 0 <= total_time < 4.30:
-                    reason = "you had put " + str(total_time) + " hours which is below 4.30 hours"
+                    reason = "You had logged " + str(total_time) + " hr that is below 4.30 hr"
                     leave = '5'
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
             except:
