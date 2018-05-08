@@ -50,7 +50,7 @@ def daily_leave_check(year, month, day):
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = date.date() + timedelta(days=4)
+    dueDate = date.today() + timedelta(days=2)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
