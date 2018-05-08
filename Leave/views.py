@@ -646,6 +646,9 @@ class ApplyLeaveView(View):
                                                     'save')
                             except:
                                 logger.exception('Sending task raised')
+                        context_data['success'] = 'leave saved'
+                        context_data['record_added'] = 'True'
+
                     elif leave_form.cleaned_data['leave'] in ['temp_id']:
                         leavesummry_temp.applied = float(leavesummry_temp.applied) + leavecount
                         if attachment:
