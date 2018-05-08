@@ -173,7 +173,7 @@ def LeaveForm(leavetype, user, data=None):
         )
         toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
 
-        temp_id = forms.RegexField(max_length=2, required=True ,regex=r'^[0-9]{2}$',
+        temp_id = forms.RegexField(max_length=2, required=True ,regex=r'^[0-9]{2}$', help_text='Enter 2 digit temporary ID number',
                                 widget=TextInput(attrs={'type': 'number', 'pattern': '^[0-9]{2}$'}))
         # Add Bootstrap widgets
         temp_id.widget.attrs = {'class': 'form-control'}
