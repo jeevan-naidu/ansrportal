@@ -113,21 +113,21 @@ def daily_leave_check():
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
-                                else:
-                                    if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
-                                        reason = "You had logged {0} hr that is below 3 hr".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'full_day'
-                                    elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
-                                        reason = "You had logged {0} hr that is below 6 hr".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'half_day'
-                                    if leave:
-                                        leave_for_date['date'] = date
-                                        leave_for_date['leave'] = leave
-                                        leave_for_date['reason'] = reason
-                                        leave_for_date['due_date'] = dueDate
-                                        leaves.append(leave_for_date)
+                            else:
+                                if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 3 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'full_day'
+                                elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 6 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'half_day'
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
+                                    leave_for_date['due_date'] = dueDate
+                                    leaves.append(leave_for_date)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
