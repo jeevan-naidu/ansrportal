@@ -46,6 +46,7 @@ def timein(request):
             manager = Employee.objects.get(user_id=user)
             userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
             userid = [user.user_id for user in userlist]
+            userid.append(request.user.id)
             userlist = User.objects.filter(id__in=userid, is_active=True)
             context['weekreport'] = weekwisereport(month, userlist)
             current_week_no = int(request.GET.get('week'))
@@ -90,6 +91,7 @@ def timein(request):
                 manager = Employee.objects.get(user_id=user)
                 userlist = Employee.objects.filter(manager_id=manager.employee_assigned_id)
                 userid = [user.user_id for user in userlist]
+                userid.append(request.user.id)
                 userlist = User.objects.filter(id__in=userid, is_active=True)
                 context['weekreport'] = weekwisereport(month, userlist)
                 current_week_no = current_week()
