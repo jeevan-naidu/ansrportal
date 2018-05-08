@@ -32,11 +32,14 @@
             <td>{{to_date}}</td>
             {% if leaveType == 'half_day'%}
                 <td>Half day</td>
-            {% endif %}
-            {% if leaveType == 'full_day'%}
+            {% elif leaveType == 'full_day'%}
                 <td>Full day</td>
+            {% else %}
+                <td>{{leaveType}}</td>
             {% endif %}
-            {% if reason %} <td>{{reason}} </td> {% endif %}
+            {% if reason %}
+                <td>{{reason}} </td>
+            {% endif %}
             <td>{{dueDate}}</td>
         </tr>
 
