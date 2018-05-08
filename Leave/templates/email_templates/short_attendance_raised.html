@@ -24,10 +24,10 @@
     <tbody>
         {% for leave in leaveType %}
         <tr>
-            {% if leaveType == 'half_day'%}
+            {% if leave.leave == 'half_day'%}
                 <td>Half day</td>
             {% endif %}
-            {% if leaveType == 'full_day'%}
+            {% if leave.leave == 'full_day'%}
                 <td>Full day</td>
             {% endif %}
             <td>{{leave.date}}</td>
