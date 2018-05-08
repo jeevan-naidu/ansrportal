@@ -106,7 +106,7 @@ def weekly_leave_deduction(year, month, day):
                                         employee_attendance.append(wfh)
                                 if appliedleave.leave_type_id not in [11, 16]:
                                     if appliedLeaveCheck[0].days_count == '0.5':
-                                        employee_attendance.append(timedelta(hours=4, minutes=30, seconds=01))
+                                        employee_attendance.append(timedelta(hours=5, minutes=00, seconds=01))
                                     elif appliedLeaveCheck[0].days_count == '1':
                                         employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                                     elif appliedLeaveCheck[0].days_count > '1':
@@ -154,7 +154,7 @@ def weekly_leave_deduction(year, month, day):
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 if appliedLeaveCheck[0].days_count == '0.5':
-                                    app = (timedelta(hours=4, minutes=30, seconds=01))
+                                    app = (timedelta(hours=5, minutes=00, seconds=01))
                                 elif appliedLeaveCheck[0].days_count == '1':
                                     app = (timedelta(hours=9, minutes=00, seconds=01))
                                 elif appliedLeaveCheck[0].days_count > '1':
@@ -189,7 +189,7 @@ def weekly_leave_deduction(year, month, day):
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                     employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].days_count == '0.5':
-                                employee_attendance.append(timedelta(hours=4, minutes=30, seconds=01))
+                                employee_attendance.append(timedelta(hours=5, minutes=00, seconds=01))
                             elif appliedLeaveCheck[0].days_count == '1':
                                 employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                             elif appliedLeaveCheck[0].days_count > '1':
