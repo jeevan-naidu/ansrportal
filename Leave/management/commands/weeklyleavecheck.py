@@ -262,7 +262,7 @@ def daily_leave_check():
                     send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
             except:
                 logger.debug('email send issue user id' + user.id)
-    print str(datetime.now()) + " Daily leave check raised finished running"
+    print str(datetime.now()) + " Weekly leave check raised finished running"
 
 def getTimeFromTdelta(tdelta, fmt):
     f = Formatter()
