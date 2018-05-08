@@ -90,12 +90,17 @@ def daily_leave_deduction(year, month, day):
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         hours_in_office.append(wfh)
-                                    if appliedleave.leave_type_id not in [11, 16]:
-                                        if appliedleave.days_count == '0.5':
-                                            tdelta = timedelta(hours=04, minutes=30, seconds=00)
-                                        if appliedleave.days_count == '1':
-                                            tdelta = timedelta(hours=9, minutes=00, seconds=00)
-                                        hours_in_office.append(tdelta)
+                                if appliedleave.leave_type_id not in [11, 16]:
+                                    if appliedleave.days_count == '0.5':
+                                        tdelta = timedelta(hours=5, minutes=00, seconds=01)
+                                    elif appliedleave.days_count == '1':
+                                        tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                    elif appliedleave.days_count > '1':
+                                        leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                       to_date__gte=date)
+                                        if leave_check:
+                                            tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                    hours_in_office.append(tdelta)
                             if len(hours_in_office) > 2:
                                 if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
                                     reason = "You had logged {0} hr that is below 3 hr".format(

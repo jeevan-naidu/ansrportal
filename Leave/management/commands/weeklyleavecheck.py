@@ -97,11 +97,11 @@ def daily_leave_check():
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         employee_attendance.append(wfh)
                                 if appliedleave.leave_type_id not in [11, 16]:
-                                    if appliedLeaveCheck[0].days_count == '0.5':
+                                    if appliedleave.days_count == '0.5':
                                         employee_attendance.append(timedelta(hours=5, minutes=00, seconds=01))
-                                    elif appliedLeaveCheck[0].days_count == '1':
+                                    elif appliedleave.days_count == '1':
                                         employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
-                                    elif appliedLeaveCheck[0].days_count > '1':
+                                    elif appliedleave.days_count > '1':
                                         leave_check = LeaveApplications.objects.filter(from_date__lte=date,
                                                                                        to_date__gte=date)
                                         if leave_check:
