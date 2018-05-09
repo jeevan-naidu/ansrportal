@@ -131,7 +131,10 @@ def oneTimeLeaveValidation(leave_form, user, leave_applied_year):
     if leaveType_selected != 'temp_id':
         if leave_between_applied_date:
             result['errors'].append( "You have already applied for leave in this time period")
-
+    if leaveType_selected == 'temp_id':
+        leave_for_temp_id = LeaveApplications.objects.filter(from_date=fromDate, to_date=toDate, leave_type_id=16, user_id=user)
+        if leave_for_temp_id:
+            result['errors'].append( "You have already applied for temporary id in this time period")
     return result
 
 
