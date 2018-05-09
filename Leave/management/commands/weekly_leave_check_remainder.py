@@ -59,14 +59,14 @@ def daily_leave_check(year, month, day):
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
-    dueDate = end_date + timedelta(days=7)
+    dueDate = date.today() + timedelta(days=2)
     fullDayOfficeStayTimeLimit = timedelta(hours=6, minutes=00, seconds=00)
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
         employee_attendance = []
         for date in dates:
             if date in [datedata['date'] for datedata in holiday]:
-                employee_attendance.append(9)
+                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=00))
                 pass
             elif date.weekday() >= 5:
                 pass
@@ -80,7 +80,6 @@ def daily_leave_check(year, month, day):
                     if employee:
                         attendance = Attendance.objects.filter(attdate=date,
                                                                incoming_employee_id=employee[0].employee_assigned_id)
-                        # import ipdb; ipdb.set_trace()
                         if len(appliedLeaveCheck) >= 2:
                             for appliedleave in appliedLeaveCheck:
                                 if appliedleave.leave_type_id == 16:
@@ -94,32 +93,22 @@ def daily_leave_check(year, month, day):
                                         swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                         tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
                                                                                                           FMT)
-                                        timediff = tdelta
-                                        atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                    (timediff.seconds % 3600) // 60)
-                                        employee_attendance.append(float(atttime))
+                                        employee_attendance.append(tdelta)
                                 if appliedleave.leave_type_id != 16:
                                     if appliedleave.leave_type_id == 11:
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
-
-                                        timediff = wfh
-                                        atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                    (timediff.seconds % 3600) // 60)
-                                        employee_attendance.append(float(atttime))
+                                        employee_attendance.append(wfh)
                                 if appliedleave.leave_type_id not in [11, 16]:
                                     if appliedleave.days_count == '0.5':
-                                        tdelta = timedelta(hours=04, minutes=50, seconds=00)
-                                        timediff = tdelta
-                                        atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                    (timediff.seconds % 3600) // 60)
-                                        employee_attendance.append(float(atttime))
-                                    if appliedleave.days_count == '1':
-                                        tdelta = timedelta(hours=9, minutes=00, seconds=00)
-                                        timediff = tdelta
-                                        atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                    (timediff.seconds % 3600) // 60)
-                                        employee_attendance.append(float(atttime))
+                                        employee_attendance.append(timedelta(hours=5,minutes=00, seconds=01))
+                                    elif appliedleave.days_count == '1':
+                                        employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                                    elif appliedleave.days_count > '1':
+                                        leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                       to_date__gte=date)
+                                        if leave_check:
+                                            employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
@@ -132,10 +121,7 @@ def daily_leave_check(year, month, day):
                                     swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
                                                                                                       FMT)
-                                    timediff = tdelta
-                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                (timediff.seconds % 3600) // 60)
-                                    employee_attendance.append(float(atttime))
+                                    employee_attendance.append(tdelta)
                                 if attendance:
                                     swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                     swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -143,10 +129,7 @@ def daily_leave_check(year, month, day):
                                     swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                                    timediff = tdelta
-                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                (timediff.seconds % 3600) // 60)
-                                    employee_attendance.append(float(atttime))
+                                    employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -157,10 +140,7 @@ def daily_leave_check(year, month, day):
                                 wfh = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
                                                 minutes=int(getTime(appliedLeaveCheck[0].hours)[1]),
                                                 seconds=00)
-                                timediff = wfh
-                                atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                            (timediff.seconds % 3600) // 60)
-                                employee_attendance.append(float(atttime))
+                                employee_attendance.append(tdelta+wfh)
                             elif appliedLeaveCheck[0].leave_type_id != 11 and attendance:
                                 leave_for_date = {}
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
@@ -169,13 +149,16 @@ def daily_leave_check(year, month, day):
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 if appliedLeaveCheck[0].days_count == '0.5':
-                                    app = timedelta(hours=04, minutes=50, seconds=00)
-                                if appliedLeaveCheck[0].days_count == '1':
-                                    app = timedelta(hours=9, minutes=00, seconds=00)
+                                    app = (timedelta(hours=5,minutes=00, seconds=01))
+                                elif appliedLeaveCheck[0].days_count == '1':
+                                    app = (timedelta(hours=9, minutes=00, seconds=01))
+                                elif appliedLeaveCheck[0].days_count > '1':
+                                    leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                   to_date__gte=date)
+                                    if leave_check:
+                                        app = (timedelta(hours=9, minutes=00, seconds=01))
                                 timediff = tdelta + app
-                                atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                            (timediff.seconds % 3600) // 60)
-                                employee_attendance.append(float(atttime))
+                                employee_attendance.append(timediff)
                             else:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -183,18 +166,12 @@ def daily_leave_check(year, month, day):
                                 swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                                timediff = tdelta
-                                atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                            (timediff.seconds % 3600) // 60)
-                                employee_attendance.append(float(atttime))
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck:
                             if appliedLeaveCheck[0].leave_type_id == 11 and not attendance:
                                 tdelta = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
                                                    minutes=int(getTime(appliedLeaveCheck[0].hours)[1]), seconds=00)
-                                timediff = tdelta
-                                atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                            (timediff.seconds % 3600) // 60)
-                                employee_attendance.append(float(atttime))
+                                employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
                                 temp_attendance = Attendance.objects.filter(attdate=date,
@@ -205,14 +182,16 @@ def daily_leave_check(year, month, day):
                                     swipeInTime = swipeIn.strftime("%H:%M:%S")
                                     swipeOutTime = swipeOut.strftime("%H:%M:%S")
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
-                                    timediff = tdelta
-                                    atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                                (timediff.seconds % 3600) // 60)
-                                    employee_attendance.append(float(atttime))
+                                    employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].days_count == '0.5':
-                                employee_attendance.append(4.5)
+                                employee_attendance.append(timedelta(hours=5,minutes=00, seconds=01))
                             elif appliedLeaveCheck[0].days_count == '1':
-                                employee_attendance.append(9)
+                                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            elif appliedLeaveCheck[0].days_count > '1':
+                                leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                             to_date__gte=date)
+                                if leave_check:
+                                    employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                         elif attendance:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -220,12 +199,9 @@ def daily_leave_check(year, month, day):
                             swipeOutTime = swipeOut.strftime("%H:%M:%S")
                             tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                             stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
-                            timediff = tdelta
-                            atttime = u"{0}.{1}".format(timediff.seconds // 3600,
-                                                        (timediff.seconds % 3600) // 60)
-                            employee_attendance.append(float(atttime))
+                            employee_attendance.append(tdelta)
                         else:
-                            employee_attendance.append(0)
+                            employee_attendance.append(timedelta(hours=0, minutes=00, seconds=01))
                         if  len(appliedLeaveCheck)>1:
                             pass
                         elif len(appliedLeaveCheck)==1 and appliedLeaveCheck[0].from_date==date and appliedLeaveCheck[0].to_date==date and appliedLeaveCheck[0].from_session=='session_first' and appliedLeaveCheck[0].to_session== 'session_second':
@@ -241,51 +217,55 @@ def daily_leave_check(year, month, day):
                         print(user.first_name + user.last_name + " hr need to take care")
                 except:
                     logger.debug("missing records")
+        total_sec = sum(employee_attendance, timedelta()).seconds + sum(employee_attendance,
+                                                                        timedelta()).days * 24 * 3600
+        total_time = float(u"{0}.{1}".format(total_sec // 3600,
+                                             (total_sec % 3600) // 60))
         if employee_attendance:
             try:
-                if 39.5 < sum(employee_attendance) < 44:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 45 hours"
+                if 39.30 <= total_time < 44:
+                    reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave = 'half_day'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 35 < sum(employee_attendance) < 39.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 40 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 35 <= total_time < 39.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave = 'full_day'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 30.5 < sum(employee_attendance) < 35:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 35 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 30.30 <= total_time < 35:
+                    reason = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave = '1.5'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 26 < sum(employee_attendance) < 30.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 30.5 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 26 <= total_time < 30.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 30.30 hr"
                     leave = '2'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 21.5 < sum(employee_attendance) < 26:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 26 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 21.30 <= total_time < 26:
+                    reason = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave = '2.5'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 17 < sum(employee_attendance) < 21.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 21.5 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 17 <= total_time < 21.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 21.30 hr"
                     leave = '3'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 12.5 < sum(employee_attendance) < 17:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 17.5 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 12.30 <= total_time < 17:
+                    reason = "You had logged " + str(total_time) + " hr that is below 17 hr"
                     leave = '3.5'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 9 < sum(employee_attendance) < 12.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 12.5 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 9 <= total_time < 12.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 12.30 hr"
                     leave = '4'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 4.5 < sum(employee_attendance) < 9:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 9 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 4.5 <= total_time < 9:
+                    reason = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave = '4.5'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate, reason, "open")
-                elif 0 < sum(employee_attendance) < 4.5:
-                    reason = "you had put " + str(sum(employee_attendance)) + " hours which is below 4.5 hours"
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                elif 0 <= total_time < 4.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 4.30 hr"
                     leave = '5'
-                    send_mail(user, sum(employee_attendance), leave, dates[0], dates[-1], dueDate,  reason, "open")
+                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
             except:
                 logger.debug('email send issue user id' + user.id)
-    print str(datetime.now()) + " Daily leave check raised finished running"
+    print str(datetime.now()) + " Weekly leave check reminder raised finished running"
 
 def getTimeFromTdelta(tdelta, fmt):
     f = Formatter()

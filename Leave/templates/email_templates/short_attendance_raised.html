@@ -9,22 +9,27 @@
 
 <p>Hi, {{registered_by}},</p>
 
-<p>Admin has raised leave notification. </p>
+<p>The system has issued a leave notification. Please see the details below, and take corrective action through myansrsource portal </p>
 
 <table border="1">
 
     <thead>
         <tr>
-            <td><b>Leave Type</b></td>
-            <td><b>For Date</b></td>
-            <td><b>Reason</b></td>
-            <td><b>Due Date</b></td>
+            <td style="text-align:center"><b>Leave Type</b></td>
+            <td style="text-align:center"><b>For Date</b></td>
+            <td style="text-align:center"><b>Reason</b></td>
+            <td style="text-align:center"><b>Due Date</b></td>
         </tr>
     </thead>
     <tbody>
         {% for leave in leaveType %}
         <tr>
-            <td>{{leave.leave}} </td>
+            {% if leave.leave == 'half_day'%}
+                <td>Half day</td>
+            {% endif %}
+            {% if leave.leave == 'full_day'%}
+                <td>Full day</td>
+            {% endif %}
             <td>{{leave.date}}</td>
             {% if reason %} <td>{{leave.reason}} </td> {% endif %}
             <td>{{leave.due_date}}</td>
@@ -32,6 +37,7 @@
         {% endfor %}
     </tbody>
 </table>
+<p><b>NOTE</b>: This is a system-generated e-mail. Please do not reply.</p>
 <p>Regards,<br>
  HR Support<br>
 </body>
