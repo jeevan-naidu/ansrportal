@@ -1873,13 +1873,13 @@ def leavecheck(user, date):
                                                       from_date__lte=date,
                                                       to_date__gte=date,
                                                       status__in=['open', 'approved']).exclude(
-          leave_type__in=[11, 8, 14, 15])
+          leave_type__in=[11, 8, 14, 15, 16])
     except:
       leaveapplied = LeaveApplications.objects.filter(user=user,
                                                       from_date__lte=date,
                                                       to_date__gte=date,
                                                       status__in=['open', 'approved']).exclude(
-          leave_type__in=[11, 8, 14, 15])
+          leave_type__in=[11, 8, 14, 15, 16])
     holiday = Holiday.objects.all().values('date')
     if not leaveapplied:
         flag = 0
