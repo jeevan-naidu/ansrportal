@@ -335,7 +335,7 @@ def send_mail(user, leavetype, fordate, status_comments, status, dueDate):
                                  'status': status,
                                  })
 
-    mail_obj = EmailMessage('Daily Leave check remainder',
+    mail_obj = EmailMessage('Daily Check Reminder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[])
 

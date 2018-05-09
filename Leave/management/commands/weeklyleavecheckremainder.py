@@ -290,7 +290,7 @@ def send_mail(user, total_hours, leavetype, from_date, to_date, dueDate, status_
                                  'status': status,
                                  })
 
-    mail_obj = EmailMessage('Weekly check remainder',
+    mail_obj = EmailMessage('Weekly Check Reminder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[])
 
