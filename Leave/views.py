@@ -184,8 +184,11 @@ def LeaveCancel(request):
     leave.update()
     short_leave_against_cancellation(leave.from_date, leave.to_date, user_id)
     manager = managerCheck(user_id)
-    EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
-     leave.to_session, leave.days_count, leave.reason, 'cancel')
+    try:
+        EmailSendTask.delay(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+        leave.to_session, leave.days_count, leave.reason, 'cancel')
+    except:
+        logger.exception('Sending task raised')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -1077,8 +1080,11 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-        ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
-        leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        try:
+            ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+            leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        except:
+            logger.exception('Sending task raised')
         return True
     except Exception, e:
         logger.error(e)
@@ -2010,16 +2016,20 @@ def adminleavecancel(request):
     leave.status_comments = "Leave cancelled by admin"
     leave.update()
     candidate = User.objects.get(id=leave.user_id)
-    ApproveLeaveCancelEmailSendTask.delay(candidate,
-                                          leave.leave_type.leave_type,
-                                          leave.status,
-                                          leave.from_date,
-                                          leave.to_date,
-                                          leave.from_session,
-                                          leave.to_session,
-                                          leave.days_count,
-                                          leave.reason,
-                                          request.user)
+    try:
+        ApproveLeaveCancelEmailSendTask.delay(candidate,
+                                              leave.leave_type.leave_type,
+                                              leave.status,
+                                              leave.from_date,
+                                              leave.to_date,
+                                              leave.from_session,
+                                              leave.to_session,
+                                              leave.days_count,
+                                              leave.reason,
+                                              request.user)
+    except:
+        logger.exception('Sending task raised')
+
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
