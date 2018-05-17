@@ -109,6 +109,14 @@ def daily_leave_check(year, month, day):
                                                                                        to_date__gte=date)
                                         if leave_check:
                                             employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            if attendance:
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id

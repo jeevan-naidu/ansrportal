@@ -1018,6 +1018,7 @@ class LeaveListView(ListView):
 
 
 def update_leave_application(request, status):
+    logger.exception('Update leave function running')
     status_tmp = status.split('_')
     exception = False
     if request.POST.get('remark_'+status_tmp[1]):
@@ -1080,11 +1081,11 @@ def update_leave_application(request, status):
 
     try:
         leave_application.save()
-        try:
-            ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
-            leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
-        except:
-            logger.exception('Sending task raised')
+        # try:
+        #     ManagerEmailSendTask.delay(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+        #     leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        # except:
+        #     logger.exception('Sending task raised')
         return True
     except Exception, e:
         logger.error(e)
