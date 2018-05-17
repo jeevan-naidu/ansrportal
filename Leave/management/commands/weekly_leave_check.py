@@ -72,8 +72,7 @@ def daily_leave_check(year, month, day):
                 pass
             else:
                 try:
-                    if user.id == 818:
-                        import ipdb; ipdb.set_trace()
+                     
                     employee = Employee.objects.filter(user_id=user.id)
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
