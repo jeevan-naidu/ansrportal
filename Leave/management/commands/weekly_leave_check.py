@@ -72,6 +72,8 @@ def daily_leave_check(year, month, day):
                 pass
             else:
                 try:
+                    if user.id == 818:
+                        import ipdb; ipdb.set_trace()
                     employee = Employee.objects.filter(user_id=user.id)
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
@@ -109,6 +111,14 @@ def daily_leave_check(year, month, day):
                                                                                        to_date__gte=date)
                                         if leave_check:
                                             employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            if attendance:
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
@@ -221,6 +231,7 @@ def daily_leave_check(year, month, day):
                                                                         timedelta()).days * 24 * 3600
         total_time = float(u"{0}.{1}".format(total_sec // 3600,
                                              (total_sec % 3600) // 60))
+        print total_time, user
         if employee_attendance:
             try:
                 if 39.30 <= total_time < 44:
