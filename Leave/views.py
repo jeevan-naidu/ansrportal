@@ -1018,7 +1018,7 @@ class LeaveListView(ListView):
 
 
 def update_leave_application(request, status):
-    logger.exception('Update leave function running')
+    logger.debug('Update leave function running')
     status_tmp = status.split('_')
     exception = False
     if request.POST.get('remark_'+status_tmp[1]):
