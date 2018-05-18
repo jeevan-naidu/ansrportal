@@ -2217,6 +2217,14 @@ def getHours(request, wstart, wend, mem, project, label):
     return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
 
 
+def dates_to_check_leave(start_date, end_date):
+    dates = []
+    delta = end_date - start_date
+
+    for i in range(delta.days + 1):
+        dates.append(start_date + timedelta(days=i))
+    return dates
+
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
@@ -2471,16 +2479,29 @@ def Dashboard(request):
             if leave.leave_type_id not in [16,11]:
                 temp = {}
                 temp['date'] = leave.from_date.strftime('%Y-%m-%d')
-                if leave.from_session == leave.to_session:
-                    temp['half_day'] = 1
-                if leave.from_session == 'session_first' and leave.to_session == 'session_second':
-                    temp['full_day'] = 1
-                if leave.status == 'approved':
-                    temp['status'] = 1
-                if leave.status == 'open':
-                    temp['status'] = 0
-                temp['leave'] = 1
-                swipe_display.append(temp)
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 1
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 1
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    temp['leave'] = 1
+                    swipe_display.append(temp)
+                else:
+                    leave_dates = dates_to_check_leave(leave.from_date, leave.to_date)
+                    for leave_date in leave_dates:
+                        temp = {}
+                        temp['date'] = leave_date.strftime('%Y-%m-%d')
+                        temp['full_day'] = 1
+                        if leave.status == 'approved':
+                            temp['status'] = 1
+                        if leave.status == 'open':
+                            temp['status'] = 0
+                        temp['leave'] = 1
+                        swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
