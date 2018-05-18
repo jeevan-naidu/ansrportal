@@ -270,8 +270,6 @@ def timecheck(user, date):
    if not userattendance:
        att_day = 0
    for att in userattendance:
-       # print type(att.swipe_out)
-       # print type(att.swipe_in)
        if att.swipe_out and att.swipe_in is not None:
            att_day = att.swipe_out - att.swipe_in
            delta = att_day
@@ -279,9 +277,7 @@ def timecheck(user, date):
            hours = sec // 3600
            minutes = (sec // 60) - (hours * 60)
            att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
-           # print(att_day)
            att_day = float(att_day)
-           # print(att_day)
        return att_day
 
 def weekwisedata(request):
