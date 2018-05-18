@@ -14,6 +14,11 @@ from Leave.tasks import leaveTypeDictionary
 
 logger = logging.getLogger('MyANSRSource')
 
+currentTime = datetime.now().date().strftime('%Y-%m-%d %H:%M:%S')
+fileName = " Daily Leave Deduction " + str(currentTime) + ".csv"
+print(fileName)
+writeFile = open(fileName, "w+")
+
 # def previous_week_range(date):
 #     week_dates = []
 #     for week_no in [2]:
@@ -586,6 +591,10 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                   leave['date'],
                   leave['date'],
                   leavecount)
+        writeFile.write(
+            "'{0}','{1}','{2}','{3}','{4}'".format(str(User.objects.get(id=user_id)), str(manager_d),
+                                                   str(leave['leave']), str(leave['reason']), str(leave['date'])))
+        writeFile.write("\n")
 
     except:
         print "please check manager for user id {0}".format(user_id)
