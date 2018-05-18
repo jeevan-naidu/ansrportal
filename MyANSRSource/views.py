@@ -35,7 +35,7 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
     ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField
-
+from Leave.models import LeaveApplications
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
@@ -2438,6 +2438,49 @@ def Dashboard(request):
         temp['swipe_in'] = val['swipe_in']
         temp['swipe_out'] = val['swipe_out']
         swipe_display.append(temp)
+    LeaveDetail = LeaveApplications.objects.filter(from_date__lte=eddte, user_id=request.user.id)
+    for leave in LeaveDetail:
+        if leave.status == 'open' or leave.status == 'approved':
+            if leave.temp_id:
+                attendenceDetail = employee.models.Attendance.objects.filter(
+                    attdate=leave.from_date,
+                    incoming_employee_id=leave.temp_id).values('swipe_in', 'swipe_out', 'attdate').filter(
+                    Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(
+                        attdate__isnull=False))  # .exclude(swipe_in="", swipe_out="", attdate="")
+                for val in attendenceDetail:
+                    temp = {}
+                    temp['date'] = val['attdate'].strftime('%Y-%m-%d')
+                    temp['swipe_in'] = val['swipe_in']
+                    temp['swipe_out'] = val['swipe_out']
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    temp['temp'] = 1
+                    swipe_display.append(temp)
+            if leave.hours:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['hours'] = leave.hours + ' hours'
+                if leave.status == 'approved':
+                    temp['status'] = 1
+                if leave.status == 'open':
+                    temp['status'] = 0
+                temp['wfh'] = 1
+                swipe_display.append(temp)
+            if leave.leave_type_id not in [16,11]:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                if leave.from_session == leave.to_session:
+                    temp['half_day'] = 1
+                if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                    temp['full_day'] = 1
+                if leave.status == 'approved':
+                    temp['status'] = 1
+                if leave.status == 'open':
+                    temp['status'] = 0
+                temp['leave'] = 1
+                swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)

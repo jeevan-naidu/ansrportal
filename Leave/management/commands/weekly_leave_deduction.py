@@ -233,7 +233,7 @@ def weekly_leave_deduction(year, month, day):
         total_sec = sum(employee_attendance,timedelta()).seconds + sum(employee_attendance,timedelta()).days * 24 * 3600
         total_time =  float(u"{0}.{1}".format(total_sec // 3600,
                                 (total_sec % 3600) // 60))
-        print total_time
+        print total_time, user
         if employee_attendance:
             try:
                 if 39.5 <= total_time < 44:
@@ -436,6 +436,8 @@ def applyLeave(user, leaves, year):
         reason = "applied by system"
         applied_by = User.objects.get(id=35).id
         avaliable_leave = avaliableLeaveCheck(user_id, leave, year)
+        # import ipdb;
+        # ipdb.set_trace()
         if avaliable_leave != 0:
             try:
                 if len(avaliable_leave) >= 2:

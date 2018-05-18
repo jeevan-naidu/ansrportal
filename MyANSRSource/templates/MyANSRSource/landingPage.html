@@ -50,6 +50,16 @@
                                 <label for="Hr_activity" class="label label-default hrAct">
                                 <!-- <i class="fa fa-users fa-lg"></i> --> HR Activity</span>
                                 </label>
+
+                                <input type="checkbox" id="applied_leave" checked="">
+                                <label style="background-color:#F39C12; color:#17202A " for="applied_leave" class="label label-default applied_leave ">
+                                    <!-- <i class="fa fa-smile-o fa-lg"></i> --> Applied Leave
+                                </label>
+
+                                <input type="checkbox" id="approved_leave" checked="">
+                                <label style="background-color:#2ECC71; color:#17202A " for="approved_leave" class="label label-default approved_leave ">
+                                    <!-- <i class="fa fa-smile-o fa-lg"></i> --> Approved Leave
+                                </label>
                             </div>
 
 
@@ -194,14 +204,77 @@ $(window).load(function(){
         eventLimit: true,
         events: [
                     {% for eachSwipe in swipe_display %}
-                        {
-                            id : '1',
-                            start : '{{eachSwipe.date}}',
-                            title : 'In{{eachSwipe.swipe_in|date:"H:i"}} Out{{eachSwipe.swipe_out|date:"H:i"}} ',
-                            color : '#ffffff',
-                            textColor: '#000000',
-                            borderColor: '#ffffff'
-                        },
+
+                        {% if eachSwipe.temp == 1 %}
+                            {
+                                id : '1',
+                                start : '{{eachSwipe.date}}',
+                                title : 'In{{eachSwipe.swipe_in|date:"H:i"}} Out{{eachSwipe.swipe_out|date:"H:i"}} ',
+                                {% if eachSwipe.status == 0 %}
+                                    color : '#F39C12 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% elif eachSwipe.status == 1 %}
+                                    color : '#2ECC71 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% endif %}
+                            },
+                        {% elif eachSwipe.wfh == 1 %}
+                            {
+                                id : '1',
+                                start : '{{eachSwipe.date}}',
+                                title : '{{eachSwipe.hours}} ',
+                                {% if eachSwipe.status == 0 %}
+                                    color : '#F39C12 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% elif eachSwipe.status == 1 %}
+                                    color : '#2ECC71 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% endif %}
+                            },
+                        {% elif eachSwipe.half_day == 1 %}
+                            {
+                                id : '1',
+                                start : '{{eachSwipe.date}}',
+                                title : 'Half Day ',
+                                {% if eachSwipe.status == 0 %}
+                                    color : '#F39C12 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% elif eachSwipe.status == 1 %}
+                                    color : '#2ECC71 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% endif %}
+                            },
+                        {% elif eachSwipe.full_day == 1 %}
+                            {
+                                id : '1',
+                                start : '{{eachSwipe.date}}',
+                                title : 'Full Day ',
+                                {% if eachSwipe.status == 0 %}
+                                    color : '#F39C12 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% elif eachSwipe.status == 1 %}
+                                    color : '#2ECC71 !important',
+                                    textColor: '#17202A !important',
+                                    borderColor: '#ffffff'
+                                {% endif %}
+                            },
+                        {% else %}
+                            {
+                                id : '1',
+                                start : '{{eachSwipe.date}}',
+                                title : 'In{{eachSwipe.swipe_in|date:"H:i"}} Out{{eachSwipe.swipe_out|date:"H:i"}} ',
+                                color : '#ffffff',
+                                textColor: '#000000',
+                                borderColor: '#ffffff'
+                            },
+                        {% endif %}
                     {% endfor %}
 
                 ],
