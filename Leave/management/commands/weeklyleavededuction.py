@@ -79,6 +79,14 @@ def weekly_leave_deduction():
                                                                          to_date__gte=date,
                                                                          user=user.id,
                                                                          status__in=['open', 'approved'])
+                    for leave in appliedLeaveCheck:
+                        if leave.from_date == leave.to_date and leave.leave_type_id not in [16,11]:
+                            dates_av.remove(date)
+                        else:
+                            leave_dates = dates_to_check_leave(leave.from_date,leave.to_date)
+                            for leave_date in leave_dates:
+                                if leave_date in dates_av:
+                                    dates_av.remove(leave_date)
                     if employee:
                         attendance = Attendance.objects.filter(attdate=date,
                                                                incoming_employee_id=employee[0].employee_assigned_id)
@@ -230,6 +238,7 @@ def weekly_leave_deduction():
         total_sec = sum(employee_attendance,timedelta()).seconds + sum(employee_attendance,timedelta()).days * 24 * 3600
         total_time =  float(u"{0}.{1}".format(total_sec // 3600,
                                 (total_sec % 3600) // 60))
+        print total_time, user
         if employee_attendance:
             try:
                 if 39.5 <= total_time < 44:
@@ -479,8 +488,8 @@ def applyLeave(user, leaves, year):
                 leavesubmit(leave, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
-    leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
-                                             to_date__gte=leave['date'],
+    leave_check = LeaveApplications.objects.filter(from_date__gte=leave['date'],
+                                             to_date__lte=leave['date'],
                                              user=user)
     if leave_check:
         if leave_check[0].hours:

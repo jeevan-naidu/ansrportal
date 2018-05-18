@@ -226,6 +226,7 @@ def daily_leave_check():
                                                                         timedelta()).days * 24 * 3600
         total_time = float(u"{0}.{1}".format(total_sec // 3600,
                                              (total_sec % 3600) // 60))
+        print total_time, user
         if employee_attendance:
             try:
                 if 39.30 <= total_time < 44:
