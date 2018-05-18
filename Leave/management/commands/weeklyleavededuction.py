@@ -15,7 +15,7 @@ from Leave.tasks import leaveTypeDictionary
 logger = logging.getLogger('MyANSRSource')
 
 currentTime = datetime.now().date().strftime('%Y-%m-%d %H:%M:%S')
-fileName = " DailyLeaveDeduction " + str(currentTime) + ".csv"
+fileName = " DailyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
 
