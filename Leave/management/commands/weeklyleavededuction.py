@@ -86,8 +86,9 @@ def weekly_leave_deduction():
                                                                          status__in=['open', 'approved'])
                     for leave in appliedLeaveCheck:
                         if leave.from_date == leave.to_date and leave.leave_type_id not in [16,11]:
-                            dates_av.remove(date)
-                        else:
+                            if dates_av:
+                                dates_av.remove(date)
+                        if leave.from_date != leave.to_date:
                             leave_dates = dates_to_check_leave(leave.from_date,leave.to_date)
                             for leave_date in leave_dates:
                                 if leave_date in dates_av:
