@@ -14,6 +14,11 @@ from Leave.tasks import leaveTypeDictionary
 
 logger = logging.getLogger('MyANSRSource')
 
+currentTime = datetime.now().date().strftime('%Y-%m-%d %H:%M:%S')
+fileName = " WeeklyLeaveDeduction" + str(currentTime) + ".csv"
+print(fileName)
+writeFile = open(fileName, "w+")
+
 # def previous_week_range(date):
 #     week_dates = []
 #     for week_no in [2]:
@@ -52,11 +57,11 @@ def getTime(t):
 
 def weekly_leave_deduction(year, month, day):
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime(year, month, day)
     start_date = date.date()
     end_date = start_date + timedelta(days=4)
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     holiday = Holiday.objects.all().values('date')
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
@@ -82,6 +87,14 @@ def weekly_leave_deduction(year, month, day):
                                                                          to_date__gte=date,
                                                                          user=user.id,
                                                                          status__in=['open', 'approved'])
+                    for leave in appliedLeaveCheck:
+                        if leave.from_date == leave.to_date and leave.leave_type_id not in [16,11]:
+                            dates_av.remove(date)
+                        else:
+                            leave_dates = dates_to_check_leave(leave.from_date,leave.to_date)
+                            for leave_date in leave_dates:
+                                if leave_date in dates_av:
+                                    dates_av.remove(leave_date)
                     if employee:
                         attendance = Attendance.objects.filter(attdate=date,
                                                                incoming_employee_id=employee[0].employee_assigned_id)
@@ -114,6 +127,14 @@ def weekly_leave_deduction(year, month, day):
                                                                                        to_date__gte=date)
                                         if leave_check:
                                             employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            if attendance:
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
@@ -225,7 +246,7 @@ def weekly_leave_deduction(year, month, day):
         total_sec = sum(employee_attendance,timedelta()).seconds + sum(employee_attendance,timedelta()).days * 24 * 3600
         total_time =  float(u"{0}.{1}".format(total_sec // 3600,
                                 (total_sec % 3600) // 60))
-        print total_time
+        print total_time, user
         if employee_attendance:
             try:
                 if 39.5 <= total_time < 44:
@@ -475,8 +496,8 @@ def applyLeave(user, leaves, year):
                 leavesubmit(leave, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
-    leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
-                                             to_date__gte=leave['date'],
+    leave_check = LeaveApplications.objects.filter(from_date__gte=leave['date'],
+                                             to_date__lte=leave['date'],
                                              user=user)
     if leave_check:
         if leave_check[0].hours:
@@ -565,11 +586,18 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           apply_to=manager_d,
                           ).save()
         leave_type.save()
-        send_mail(User.objects.get(id=user_id),
-                  leave_type.leave_type.leave_type,
-                  leave['date'],
-                  leave['date'],
-                  leavecount)
+        writeFile.write(
+            "'{0}','{1}','{2}','{3}','{4}'".format(User.objects.get(id=user_id), manager_d,
+                                                   leave['leave'], leave['reason'], leave['date']))
+        writeFile.write("\n")
+        try:
+            send_mail(User.objects.get(id=user_id),
+                      leave_type.leave_type.leave_type,
+                      leave['date'],
+                      leave['date'],
+                      leavecount)
+        except:
+            print "HR need for user id {0}".format(user_id)
 
     except:
         print "please check manager for user id {0}".format(user_id)

@@ -12,7 +12,7 @@ from django.http import JsonResponse
 import json
 from calendar import monthrange
 from Leave.views import current_week, weekdetail, current_month_week_details, month_in_english, next_week_detail, previous_week_detail
-
+import numpy as np
 
 def weekdetail_year(week, month, year):
     currentmontdetail = monthrange(year, month)
@@ -215,42 +215,70 @@ def userweeklytimereport(user, week, month, year):
         timelist.append(time_detail)
     return timelist
 
-def weeklyavg(user, week, month, year):
-    total_avg = []
-    total = userweeklytimereport(user, week, month, year)
-    for time in total:
-        if time == 0:
-            pass
-        elif time is not None:
-            total_avg.append(time)
-    if sum(total_avg) == 0:
-        avg = 0
-    else:
-        avg = sum(total_avg)/len(total_avg)
 
-    return round(avg, 2)
+def get_hour_aggregate(hour):
+   # This function is applicable whe time in format like '5.23' or '{0}.{1}'.
+   # This function accept array input.
+   # *This program is assuming that #.p and #.P0 means P0 minutes and #.0P means P minutes, where p is a whole number
+
+   total_hour = [int(x) for x in hour]
+   total_min = np.array(hour) * 100 - np.array(total_hour) * 100
+   # Total time
+   hour_from_min = (sum(total_min) / 60)
+   hour_h_m = sum(total_hour) + int(hour_from_min)
+   min_from_min = round(((sum(total_min) % 60)) / 100, 2)
+   sum_of_time = hour_h_m + min_from_min
+   sum_of_time = '{0:.2f}'.format(float(sum_of_time))  # To get sum of time
+
+   # Average time
+   seconds_hour = (sum(total_hour)) * 60 * 60
+   seconds_min = (sum(total_min)) * 60
+   seconds_h_m = seconds_hour + seconds_min
+   avg_seconds = seconds_h_m / len(hour)
+   avg_of_hr = int(avg_seconds / 3600)
+   avg_of_min = round((((avg_seconds % 3600) / 60) / 100), 2)
+   avg_of_time = avg_of_hr + avg_of_min
+   avg_of_time = '{0:.2f}'.format(float(avg_of_time))  # To get average of time
+   # return sum_of_time # Addition time
+   return avg_of_time  # Average time
+
+
+def weeklyavg(user, week, month, year):
+   total_avg = []
+   total = userweeklytimereport(user, week, month, year)
+   for time in total:
+       if time == 0:
+           pass
+       elif time is not None:
+           total_avg.append(time)
+   if sum(total_avg) == 0:
+       avg = 0
+   else:
+
+       avg = get_hour_aggregate(total_avg)
+       # print(total_avg)
+       # print(avg)
+   return '{0:.2f}'.format(float(avg))
 
 def daterange(start_date, end_date):
-    for n in range(int((end_date - start_date).days)):
-        yield start_date + timedelta(n)
+   for n in range(int((end_date - start_date).days)):
+       yield start_date + timedelta(n)
 
 def timecheck(user, date):
-    att_day = 0
-    userattendance = Attendance.objects.filter(employee_id=user.employee.employee_assigned_id, attdate=date)
-    if not userattendance:
-        att_day = 0
-    for att in userattendance:
-        # print type(att.swipe_out)
-        # print type(att.swipe_in)
-        if att.swipe_out and att.swipe_in is not None:
-            att_day = att.swipe_out - att.swipe_in
-            delta = att_day
-            sec = delta.seconds
-            hours = sec // 3600
-            minutes = (sec // 60) - (hours * 60)
-            att_day = ('{0}.{1}'.format(hours, minutes))
-            att_day = float(att_day)
-        return round(att_day, 2)
+   att_day = 0
+   userattendance = Attendance.objects.filter(employee_id=user.employee.employee_assigned_id, attdate=date)
+   if not userattendance:
+       att_day = 0
+   for att in userattendance:
+       if att.swipe_out and att.swipe_in is not None:
+           att_day = att.swipe_out - att.swipe_in
+           delta = att_day
+           sec = delta.seconds
+           hours = sec // 3600
+           minutes = (sec // 60) - (hours * 60)
+           att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+           att_day = float(att_day)
+       return att_day
 
 def weekwisedata(request):
     if request.user.groups.filter(name__in=['myansrsourcePM']).exists():

@@ -42,11 +42,11 @@ def getTime(t):
 
 def daily_leave_check(year, month, day):
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime(year, month, day)
     start_date = date.date()
     end_date = start_date + timedelta(days=4)
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
@@ -311,9 +311,9 @@ def daily_leave_check(year, month, day):
                     logger.debug("missing records")
         if leaves:
             try:
-                send_mail(user, leaves, dates, reason, dueDate, "open")
+                send_mail(user, leaves, dates, reason, "open")
             except:
-                logger.debug('email send issue user id' + user.id)
+                print "HR need take care for {0}".format(user)
     print str(datetime.now()) + " Daily leave check raised finished running"
 
 def getTimeFromTdelta(tdelta, fmt):
