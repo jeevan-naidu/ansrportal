@@ -57,11 +57,11 @@ def getTime(t):
 
 def weekly_leave_deduction(year, month, day):
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime(year, month, day)
     start_date = date.date()
     end_date = start_date + timedelta(days=4)
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     holiday = Holiday.objects.all().values('date')
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
@@ -586,15 +586,18 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           apply_to=manager_d,
                           ).save()
         leave_type.save()
-        send_mail(User.objects.get(id=user_id),
-                  leave_type.leave_type.leave_type,
-                  leave['date'],
-                  leave['date'],
-                  leavecount)
         writeFile.write(
-            "'{0}','{1}','{2}','{3}','{4}'".format(str(User.objects.get(id=user_id)), str(manager_d),
-                                                   str(leave['leave']), str(leave['reason']), str(leave['date'])))
+            "'{0}','{1}','{2}','{3}','{4}'".format(User.objects.get(id=user_id), manager_d,
+                                                   leave['leave'], leave['reason'], leave['date']))
         writeFile.write("\n")
+        try:
+            send_mail(User.objects.get(id=user_id),
+                      leave_type.leave_type.leave_type,
+                      leave['date'],
+                      leave['date'],
+                      leavecount)
+        except:
+            print "HR need for user id {0}".format(user_id)
 
     except:
         print "please check manager for user id {0}".format(user_id)

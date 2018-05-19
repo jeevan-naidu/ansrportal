@@ -46,13 +46,13 @@ def getTime(t):
 
 def daily_leave_check():
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime.now().date()
     year = date.year
     week_dates = previous_week_range(date)
     start_date = week_dates[0]
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
@@ -232,43 +232,73 @@ def daily_leave_check():
                 if 39.30 <= total_time < 44:
                     reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave = 'half_day'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 35 <= total_time < 39.30:
                     reason = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave = 'full_day'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 30.30 <= total_time < 35:
                     reason = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave = '1.5'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 26 <= total_time < 30.30:
                     reason = "You had logged " + str(total_time) + " hr that is below 30.30 hr"
                     leave = '2'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 21.30 <= total_time < 26:
                     reason = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave = '2.5'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 17 <= total_time < 21.30:
                     reason = "You had logged " + str(total_time) + " hr that is below 21.30 hr"
                     leave = '3'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 12.30 <= total_time < 17:
                     reason = "You had logged " + str(total_time) + " hr that is below 17 hr"
                     leave = '3.5'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 9 <= total_time < 12.30:
                     reason = "You had logged " + str(total_time) + " hr that is below 12.30 hr"
                     leave = '4'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 4.5 <= total_time < 9:
                     reason = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave = '4.5'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
                 elif 0 <= total_time < 4.30:
                     reason = "You had logged " + str(total_time) + " hr that is below 4.30 hr"
                     leave = '5'
-                    send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    try:
+                        send_mail(user, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
             except:
                 logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Weekly leave check raised finished running"

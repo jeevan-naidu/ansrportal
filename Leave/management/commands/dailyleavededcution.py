@@ -43,13 +43,13 @@ def getTime(t):
 def daily_leave_deduction():
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime.now().date()
     year = date.year
     week_dates = previous_week_range(date)
     start_date = week_dates[0]
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     # dueDate = end_date + timedelta(days=7)
@@ -476,11 +476,14 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           apply_to=manager_d,
                           ).save()
         leave_type.save()
-        send_mail(User.objects.get(id=user_id),
-                  leave_type.leave_type.leave_type,
-                  leave['date'],
-                  leave['date'],
-                  leavecount)
+        try:
+            send_mail(User.objects.get(id=user_id),
+                      leave_type.leave_type.leave_type,
+                      leave['date'],
+                      leave['date'],
+                      leavecount)
+        except:
+            print "HR need for user id {0}".format(user_id)
         writeFile.write(
             "'{0}','{1}','{2}','{3}','{4}'".format(str(User.objects.get(id=user_id)), str(manager_d),
                                                    str(leave['leave']), str(leave['reason']), str(leave['date'])))
