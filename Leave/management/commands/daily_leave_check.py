@@ -314,6 +314,8 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                    else:
+                        print(user.first_name + user.last_name + " hr need to take care")
                 except:
                     logger.debug("missing records")
 

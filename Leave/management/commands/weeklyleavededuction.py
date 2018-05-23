@@ -86,7 +86,7 @@ def weekly_leave_deduction():
                                                                          status__in=['open', 'approved'])
                     for leave in appliedLeaveCheck:
                         if leave.from_date == leave.to_date and leave.leave_type_id not in [16,11]:
-                            if dates_av:
+                            if date in dates_av:
                                 dates_av.remove(date)
                         if leave.from_date != leave.to_date:
                             leave_dates = dates_to_check_leave(leave.from_date,leave.to_date)
@@ -247,21 +247,21 @@ def weekly_leave_deduction():
         print total_time, user
         if employee_attendance:
             try:
-                if 39.5 <= total_time < 44:
+                if 39.30 <= total_time < 44:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 35 <= total_time < 39.5:
+                elif 35 <= total_time < 39.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 30.5 <= total_time < 35:
+                elif 30.30 <= total_time < 35:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -274,7 +274,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 26 <= total_time < 30.5:
+                elif 26 <= total_time < 30.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 30.5 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -287,7 +287,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 21.5 <= total_time < 26:
+                elif 21.30 <= total_time < 26:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -306,7 +306,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 17 <= total_time < 21.5:
+                elif 17 <= total_time < 21.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 21.5 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -325,7 +325,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 12.5 <= total_time < 17:
+                elif 12.30 <= total_time < 17:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 17.5 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -350,7 +350,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 9 <= total_time < 12.5:
+                elif 9 <= total_time < 12.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 12.5 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -375,7 +375,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 4.5 <= total_time < 9:
+                elif 4.30 <= total_time < 9:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
@@ -406,7 +406,7 @@ def weekly_leave_deduction():
                     leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
                     applyLeave(user, leaves, year)
-                elif 0 <= total_time < 4.5:
+                elif 0 <= total_time < 4.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 4.5 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'

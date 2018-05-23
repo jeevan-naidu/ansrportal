@@ -311,7 +311,7 @@ def daily_leave_check(year, month, day):
                     logger.debug("missing records")
         if leaves:
             try:
-                send_mail(user, leaves, dates, reason, "open")
+                send_mail(user, leaves, dates, reason, dueDate, "open")
             except:
                 print "HR need take care for {0}".format(user)
     print str(datetime.now()) + " Daily leave check raised finished running"
