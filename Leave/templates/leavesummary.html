@@ -46,10 +46,10 @@
                <td align="center" contenteditable="false">{{ user.balance }}</td>
                <td align="center">{{ user.leave_type_id__leave_type }}</td>
                <td align="center">
-                   <input  id="modal-252334" href="#modal-container-252304{{ user.leave_id }}" type="button"  data-toggle="modal" value="Leave Edit" name="btnedit" class="pull-right btn btn-sm btn-danger btn-ansr-orange"/>
+                   <input  id="modal-252334" href="#modal-container-252304{{ user.id }}" type="button"  data-toggle="modal" value="Leave Edit" name="btnedit" class="pull-right btn btn-sm btn-danger btn-ansr-orange"/>
 
              <!--  Edit Leave popup-->
-                 <div class="modal fade" id="modal-container-252304{{ user.leave_id }}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                 <div class="modal fade" id="modal-container-252304{{ user.id }}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-lg">
                    <div class="modal-content">
                        <div class="modal-header vd_bg-blue vd_white">
@@ -72,7 +72,7 @@
                                    <tr height="50"><td>Leave Type:</td><td>{{ user.leave_type_id__leave_type }}</td></tr>
                                </table>
                               <div class="margin-0-auto text-right">
-                                <button id="update" class="btn vd_btn vd_bg-green submit" id="submit_button">Update</button>
+                                <button id="update{{user.id}}" class="btn vd_btn vd_bg-green submit update" id="submit_button">Update</button>
                                 <button class="btn vd_btn vd_bg-green" data-dismiss="modal">Close</button>
                               </div>
                         </div>
@@ -135,7 +135,7 @@
 
 
                $(document).ready(function(){
-                   $("#update").click(function(){
+                   $(".update").on('click', function(){
                         var applied = document.getElementById("applied");
                         var applied_value = applied.value;
                         var approved = document.getElementById("approved");
