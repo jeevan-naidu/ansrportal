@@ -1,0 +1,158 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load static from staticfiles %}
+{% load humanize %}
+{% load static from staticfiles %}
+{% block pageTitle %}Leave Summary Dashboard {% endblock %}
+
+{% block content  %}
+
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/css/leave_style.css" rel="stylesheet">
+<link href="/static/autocomplete_light/vendor/select2/dist/css/select2.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/autocomplete_light/select2.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/autocomplete_light/jquery.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/autocomplete.init.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/vendor/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript" src="/static/autocomplete_light/select2.js"></script>
+
+<div class="col-md-12" style="overflow: auto">
+
+
+       <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
+           <thead>
+           <tr>
+                   <!--<th width="40" align="center">Leave Id</th>-->
+                   <!--<th width="40" align="center">Emp Id</th>-->
+                   <th width="100" align="center">Username</th>
+                   <th width="40" align="center">Year</th>
+                   <th width="40" align="center">Applied</th>
+                   <th width="40" align="center">Approved</th>
+                   <th width="40" align="center">Balance</th>
+                   <th width="100" align="center">Leave Type</th>
+                   <th width="100" align="center">Action</th>
+             </tr>
+           </thead>
+           <tbody>
+           {% for user in all_LeaveDashboardView %}
+             <tr>
+                <!--<td align="center" id="leave_id">{{ user.leave_id }}</td>-->
+               <!--<td align="center">{{ user.user_id }}</td>-->
+               <td align="center">{{ user.user_id__first_name }} {{ user.user_id__last_name }}</td>
+               <td align="center">{{ user.year }}</td>
+               <td align="center" contenteditable="false">{{ user.applied }}</td>
+               <td align="center" contenteditable="false">{{ user.approved }}</td>
+               <td align="center" contenteditable="false">{{ user.balance }}</td>
+               <td align="center">{{ user.leave_type_id__leave_type }}</td>
+               <td align="center">
+                   <input  id="modal-252334" href="#modal-container-252304{{ user.leave_id }}" type="button"  data-toggle="modal" value="Leave Edit" name="btnedit" class="pull-right btn btn-sm btn-danger btn-ansr-orange"/>
+
+             <!--  Edit Leave popup-->
+                 <div class="modal fade" id="modal-container-252304{{ user.leave_id }}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                   <div class="modal-content">
+                       <div class="modal-header vd_bg-blue vd_white">
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                x
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                Please Update Leave Details or Cancel
+                            </h4>
+                       </div>
+                           <div class="modal-body min-height-400" id="modal_body">
+                           <form id="updateForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
+                               <table>
+                                   <tr height="50"><td>Name:</td><td>{{ user.user_id__first_name }} {{ user.user_id__last_name }} </td></tr>
+                                   <tr height="50"><td>Applied:</td><td><input type="text" value="{{ user.applied }}" name="applied" required="required" placeholder="leave applied"></td></tr>
+                                   <tr height="50"><td>Approved:</td><td><input type="text" value="{{ user.approved }}" name="approved" required="required" placeholder="leave approved"></td></tr>
+                                   <tr height="50"><td>Balance:</td><td><input type="text" value="{{ user.balance }}" name="balance" required="required" placeholder="leave balance"></td></tr>
+                                   <tr height="50"><td>Leave Type:</td><td>{{ user.leave_type_id__leave_type }}</td></tr>
+                               </table>
+                              <div class="margin-0-auto text-right">
+                                <button type="submit" class="btn vd_btn vd_bg-green submit" id="submit_button">Update</button>
+                                <button type="submit" class="btn vd_btn vd_bg-green" data-dismiss="modal">Close</button>
+                              </div>
+                           </form>
+                        </div>
+                       <div class="modal-footer">
+                         <p class="text-left manager-name">Employee Name : {{ user1.first_name }} {{ user.last_name }}</p>
+
+                       </div>
+                   </div>
+
+               </div>
+
+           </div>
+           <!--  End Edit leave pop-->
+               </td>
+             </tr>
+           {% endfor %}
+
+           </tbody>
+           <tfoot>
+               <tr>
+                   <!--<th width="40" align="center">Leave Id</th>-->
+                   <!--<th width="40" align="center">Emp Id</th>-->
+                   <th width="100" align="center">Username</th>
+                   <th width="40" align="center">Year</th>
+                   <th width="40" align="center">Applied</th>
+                   <th width="40" align="center">Approved</th>
+                   <th width="40" align="center">Balance</th>
+                   <th width="100" align="center">Leave Type</th>
+                   <th width="100" align="center">Action</th>
+               </tr>
+       </tfoot>
+
+       </table>
+   <div class="Lv-ApprLvSubmit">
+                       <div class="margin-0-auto text-right">
+                           <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange submit" id="row_update_button">Submit</button>
+   </div>
+
+   </div>
+</div>
+   <script>
+               $(document).ready(function() {
+                   $('#example').DataTable( {
+                       dom: 'Bfrtip',
+                       lengthMenu: [
+                           [ 10, 25, 50, -1 ],
+                           [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                       ],
+                       buttons: ['pageLength',
+                           'copy', 'excel', 'pdf',
+                       ]
+                   } );
+
+               });
+
+
+   </script>
+   <script>
+
+
+
+               $(document).ready(function(){
+                   $("form").submit(function(){
+                        swal({
+                         title: "Are you sure?",
+                         text: "You will not be able to recover old data!",
+                         icon: "warning",
+                         buttons: true,
+                         dangerMode: true,
+                       })
+                       .then((willDelete) => {
+                         if (willDelete) {
+                           swal("You will not be able to recover old data!", {
+                             icon: "success",
+                           });
+                         } else {
+                           swal("Cool! Your data is remain unchanged!");
+                         }
+                       });
+                   });
+               });
+   </script>
+
+   {% endblock%}

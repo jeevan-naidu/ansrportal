@@ -35,6 +35,7 @@ urlpatterns = [
                        url(r'^monthwisedata/$', login_required(monthwisedata), name=u'month_wise_data'),
                        url(r'^weekwisedata/$', login_required(weekwisedata), name=u'week_wise_data'),
                        url(r'^admincancel/$', login_required(adminleavecancel), name=u'admin_leave_cancel'),
+                       url(r'^leavesummary/$', login_required(leavesummary), name=u'leave_summary'),
                        url(r'^balance_based_on_year/$',
                            login_required(balance_based_on_year),
                            name=u'balanced_based_on_year')

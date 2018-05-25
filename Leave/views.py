@@ -2044,6 +2044,14 @@ def balance_based_on_year(request):
     json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")
 
+def leavesummary(request):
+    context = {}
+    context['all_LeaveDashboardView'] = LeaveSummary.objects.filter(year='2018').values('applied', 'approved',
+                                                                                        'balance', 'year',
+                                                                                        'leave_type_id__leave_type',
+                                                                                        'user_id__first_name',
+                                                                                        'user_id__last_name')
+    return render(request, 'leavesummary.html', context)
 
 def short_leave_against_cancellation(from_date, to_date, user):
     '''
