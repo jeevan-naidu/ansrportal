@@ -61,19 +61,20 @@
                             </h4>
                        </div>
                            <div class="modal-body min-height-400" id="modal_body">
-                           <form id="updateForm"  action="" method="POST" enctype="multipart/form-data" class="noPrint">
                                <table>
+                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.user_id }}" id="user_id" required="required"></td></tr>
+                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.id }}" id="leave_id" required="required"></td></tr>
                                    <tr height="50"><td>Name:</td><td>{{ user.user_id__first_name }} {{ user.user_id__last_name }} </td></tr>
-                                   <tr height="50"><td>Applied:</td><td><input type="text" value="{{ user.applied }}" name="applied" required="required" placeholder="leave applied"></td></tr>
-                                   <tr height="50"><td>Approved:</td><td><input type="text" value="{{ user.approved }}" name="approved" required="required" placeholder="leave approved"></td></tr>
-                                   <tr height="50"><td>Balance:</td><td><input type="text" value="{{ user.balance }}" name="balance" required="required" placeholder="leave balance"></td></tr>
+                                   <tr height="50"><td>Applied:</td><td><input type="text" value="{{ user.applied }}" id="applied" required="required" placeholder="leave applied"></td></tr>
+                                   <tr height="50"><td>Approved:</td><td><input type="text" value="{{ user.approved }}" id="approved" required="required" placeholder="leave approved"></td></tr>
+                                   <tr height="50"><td>Balance:</td><td><input type="text" value="{{ user.balance }}" id="balance" required="required" placeholder="leave balance"></td></tr>
+                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.leave_type_id }}" id="leave_type_id" required="required"></td></tr>
                                    <tr height="50"><td>Leave Type:</td><td>{{ user.leave_type_id__leave_type }}</td></tr>
                                </table>
                               <div class="margin-0-auto text-right">
-                                <button type="submit" class="btn vd_btn vd_bg-green submit" id="submit_button">Update</button>
-                                <button type="submit" class="btn vd_btn vd_bg-green" data-dismiss="modal">Close</button>
+                                <button id="update" class="btn vd_btn vd_bg-green submit" id="submit_button">Update</button>
+                                <button class="btn vd_btn vd_bg-green" data-dismiss="modal">Close</button>
                               </div>
-                           </form>
                         </div>
                        <div class="modal-footer">
                          <p class="text-left manager-name">Employee Name : {{ user1.first_name }} {{ user.last_name }}</p>
@@ -134,23 +135,35 @@
 
 
                $(document).ready(function(){
-                   $("form").submit(function(){
-                        swal({
-                         title: "Are you sure?",
-                         text: "You will not be able to recover old data!",
-                         icon: "warning",
-                         buttons: true,
-                         dangerMode: true,
-                       })
-                       .then((willDelete) => {
-                         if (willDelete) {
-                           swal("You will not be able to recover old data!", {
-                             icon: "success",
-                           });
-                         } else {
-                           swal("Cool! Your data is remain unchanged!");
-                         }
-                       });
+                   $("#update").click(function(){
+                        var applied = document.getElementById("applied");
+                        var applied_value = applied.value;
+                        var approved = document.getElementById("approved");
+                        var approved_value = approved.value;
+                        var balance = document.getElementById("balance");
+                        var balance_value = balance.value;
+                        var leave_id = document.getElementById("leave_id");
+                        var leave_id_value = leave_id.value;
+                        var leave_type_id = document.getElementById("leave_type_id");
+                        var leave_type_id_value = leave_type_id.value;
+                        var user_id = document.getElementById("user_id");
+                        var user_id_value = user_id.value;
+                        var details = {"leave_id":leave_id_value,"applied":applied_value,"approved":approved_value,"balance":balance_value,"leave_type_id":leave_type_id_value, "user_id":user_id_value};
+                        $.ajax({
+                        contentType: "application/json",
+                        url:'/leave/leavesummary/',
+                        data: JSON.stringify({'details':details}),
+                        type: "POST",
+                        success: function(json){
+                          swal({
+                                title: "",
+                                text: "Leave Updated Successfully!",
+                                type: "success"
+                            }, function() {
+                                window.location = "/leave/leavesummary/";
+                            });
+                        },
+                        });
                    });
                });
    </script>

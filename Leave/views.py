@@ -2045,13 +2045,31 @@ def balance_based_on_year(request):
     return HttpResponse(json_data, content_type="application/json")
 
 def leavesummary(request):
-    context = {}
-    context['all_LeaveDashboardView'] = LeaveSummary.objects.filter(year='2018').values('applied', 'approved',
-                                                                                        'balance', 'year',
-                                                                                        'leave_type_id__leave_type',
-                                                                                        'user_id__first_name',
-                                                                                        'user_id__last_name')
-    return render(request, 'leavesummary.html', context)
+    if request.method == 'GET':
+        context = {}
+        context['all_LeaveDashboardView'] = LeaveSummary.objects.filter(year='2018').values('applied', 'approved',
+                                                                                            'balance', 'year',
+                                                                                            'leave_type_id__leave_type',
+                                                                                            'user_id__first_name',
+                                                                                            'user_id__last_name', 'id',
+                                                                                            'leave_type_id', 'user_id')
+        return render(request, 'leavesummary.html', context)
+    if request.method == 'POST':
+        context = {}
+        leave_details = json.loads(request.body)
+        leave_obj = LeaveSummary.objects.filter(id=leave_details['details']['leave_id'], user_id=leave_details['details']['user_id'])
+        if leave_obj:
+            leave_obj[0].applied = leave_details['details']['applied']
+            leave_obj[0].approved = leave_details['details']['approved']
+            leave_obj[0].balance = leave_details['details']['balance']
+            leave_obj[0].save()
+        context['all_LeaveDashboardView'] = LeaveSummary.objects.filter(year='2018').values('applied', 'approved',
+                                                                                            'balance', 'year',
+                                                                                            'leave_type_id__leave_type',
+                                                                                            'user_id__first_name',
+                                                                                            'user_id__last_name', 'id',
+                                                                                            'leave_type_id', 'user_id')
+        return render(request, 'leavesummary.html', context)
 
 def short_leave_against_cancellation(from_date, to_date, user):
     '''
