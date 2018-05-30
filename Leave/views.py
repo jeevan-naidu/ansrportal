@@ -428,7 +428,6 @@ class ApplyLeaveView(View):
                 tosession = 'session_second'
                 if leave_selected in ['comp_off_earned', 'pay_off']:
                     duedate = validate['due_date']
-
             elif leave_selected in work_from_home:
                 validate = leaveValidation(leave_form, user_id, leave_applied_year, attachment)
                 fromdate = leave_form.cleaned_data['fromDate']
@@ -439,7 +438,7 @@ class ApplyLeaveView(View):
             elif leave_selected in temp_id:
                 validate = oneTimeLeaveValidation(leave_form, user_id, leave_applied_year)
                 fromdate = leave_form.cleaned_data['fromDate']
-                todate = leave_form.cleaned_data['toDate']
+                todate = validate['todate']
                 temp_id = leave_form.cleaned_data['temp_id']
                 fromsession = 'session_first'
                 tosession = 'session_second'

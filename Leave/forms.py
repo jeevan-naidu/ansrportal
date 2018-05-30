@@ -162,16 +162,10 @@ def LeaveForm(leavetype, user, data=None):
         Reason.widget.attrs = {'class': 'form-control'}
 
         fromDate = forms.DateField(
-            label="From",
+            label="Date",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
-
-        toDate = forms.DateField(
-            label="To",
-            widget=DateTimePicker(options=dateTimeOption),
-        )
-        toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true'}
 
         temp_id = forms.RegexField(max_length=2, required=True ,regex=r'^[0-9]{2}$', help_text='Enter 2 digit temporary ID number',
                                 widget=TextInput(attrs={'type': 'number', 'pattern': '^[0-9]{2}$'}))
@@ -183,7 +177,7 @@ def LeaveForm(leavetype, user, data=None):
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'toDate', 'Reason', 'temp_id', 'name']
+            fields = ['leave', 'fromDate', 'Reason', 'temp_id', 'name']
             widgets = {
               'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
             }
