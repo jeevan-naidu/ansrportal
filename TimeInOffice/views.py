@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.shortcuts import render
 from django.utils import timezone
 from employee.models import Employee, Attendance
+from Leave.models import LeaveApplications
 from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
@@ -13,6 +14,7 @@ import json
 from calendar import monthrange
 from Leave.views import current_week, weekdetail, current_month_week_details, month_in_english, next_week_detail, previous_week_detail
 import numpy as np
+from django.db.models import Q, Sum
 
 def weekdetail_year(week, month, year):
     currentmontdetail = monthrange(year, month)
@@ -267,6 +269,39 @@ def daterange(start_date, end_date):
 def timecheck(user, date):
    att_day = 0
    userattendance = Attendance.objects.filter(employee_id=user.employee.employee_assigned_id, attdate=date)
+   leave_check = LeaveApplications.objects.filter(user_id=user.id, from_date__lte=date, to_date__gte=date, status__in=['open', 'approved'])
+   if leave_check:
+       for leave in leave_check:
+           if leave.leave_type_id == 16:
+               attendenceDetail = Attendance.objects.filter(
+                   attdate=date,
+                   incoming_employee_id=leave.temp_id).values('swipe_in', 'swipe_out', 'attdate').filter(
+                   Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(
+                       attdate__isnull=False))  # .exclude(swipe_in="", swipe_out="", attdate="")
+               att_day = attendenceDetail[0]['swipe_out'] - attendenceDetail[0]['swipe_in']
+               delta = att_day
+               sec = delta.seconds
+               hours = sec // 3600
+               minutes = (sec // 60) - (hours * 60)
+               att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+               att_day = float(att_day)
+               return att_day
+           if leave.leave_type_id == 11:
+               att_day = float(leave.hours[:2] + '.' + leave.hours[2:])
+               return att_day
+           if leave.leave_type_id not in [16, 11]:
+               if leave.from_date == leave.to_date and leave.from_session != leave.to_session:
+                   att_day = float(9.0)
+                   return att_day
+               if leave.from_date == leave.to_date and leave.from_session == leave.to_session:
+                   att_day = float(4.5)
+                   return att_day
+               if leave.from_date != leave.to_date and leave.from_session != leave.to_session:
+                   att_day = float(9.0)
+                   return att_day
+               if leave.from_date != leave.to_date and leave.from_session != leave.to_session:
+                   att_day = float(4.5)
+                   return att_day
    if not userattendance:
        att_day = 0
    for att in userattendance:
