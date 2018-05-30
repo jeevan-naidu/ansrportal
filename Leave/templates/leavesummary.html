@@ -20,6 +20,31 @@
 <div class="col-md-12" style="overflow: auto">
 
 
+    <div class="modal fade" id="modal-container-process" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+
        <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
            <thead>
            <tr>
@@ -39,54 +64,14 @@
              <tr>
                 <!--<td align="center" id="leave_id">{{ user.leave_id }}</td>-->
                <!--<td align="center">{{ user.user_id }}</td>-->
-               <td align="center">{{ user.user_id__first_name }} {{ user.user_id__last_name }}</td>
-               <td align="center">{{ user.year }}</td>
-               <td align="center" contenteditable="false">{{ user.applied }}</td>
-               <td align="center" contenteditable="false">{{ user.approved }}</td>
-               <td align="center" contenteditable="false">{{ user.balance }}</td>
-               <td align="center">{{ user.leave_type_id__leave_type }}</td>
-               <td align="center">
-                   <input  id="modal-252334" href="#modal-container-252304{{ user.id }}" type="button"  data-toggle="modal" value="Leave Edit" name="btnedit" class="pull-right btn btn-sm btn-danger btn-ansr-orange"/>
+               <td align="left">{{ user.user_id__first_name }} {{ user.user_id__last_name }}</td>
+               <td align="left">{{ user.year }}</td>
+               <td align="left" contenteditable="false">{{ user.applied }}</td>
+               <td align="left" contenteditable="false">{{ user.approved }}</td>
+               <td align="left" contenteditable="false">{{ user.balance }}</td>
+               <td align="left">{{ user.leave_type_id__leave_type }}</td>
+               <td align="left"><a href="#modal-container-process"><span class="glyphicon glyphicon-pencil"></span></a></td>
 
-             <!--  Edit Leave popup-->
-                 <div class="modal fade" id="modal-container-252304{{ user.id }}" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-lg">
-                   <div class="modal-content">
-                       <div class="modal-header vd_bg-blue vd_white">
-                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                x
-                            </button>
-                            <h4 class="modal-title" id="myModalLabel">
-                                Please Update Leave Details or Cancel
-                            </h4>
-                       </div>
-                           <div class="modal-body min-height-400" id="modal_body">
-                               <table>
-                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.user_id }}" id="user_id" required="required"></td></tr>
-                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.id }}" id="leave_id" required="required"></td></tr>
-                                   <tr height="50"><td>Name:</td><td>{{ user.user_id__first_name }} {{ user.user_id__last_name }} </td></tr>
-                                   <tr height="50"><td>Applied:</td><td><input type="text" value="{{ user.applied }}" id="applied" required="required" placeholder="leave applied"></td></tr>
-                                   <tr height="50"><td>Approved:</td><td><input type="text" value="{{ user.approved }}" id="approved" required="required" placeholder="leave approved"></td></tr>
-                                   <tr height="50"><td>Balance:</td><td><input type="text" value="{{ user.balance }}" id="balance" required="required" placeholder="leave balance"></td></tr>
-                                   <tr height="50"><td class="hidden"></td><td class="hidden"><input type="text" value="{{ user.leave_type_id }}" id="leave_type_id" required="required"></td></tr>
-                                   <tr height="50"><td>Leave Type:</td><td>{{ user.leave_type_id__leave_type }}</td></tr>
-                               </table>
-                              <div class="margin-0-auto text-right">
-                                <button id="update{{user.id}}" class="btn vd_btn vd_bg-green submit update" id="submit_button">Update</button>
-                                <button class="btn vd_btn vd_bg-green" data-dismiss="modal">Close</button>
-                              </div>
-                        </div>
-                       <div class="modal-footer">
-                         <p class="text-left manager-name">Employee Name : {{ user1.first_name }} {{ user.last_name }}</p>
-
-                       </div>
-                   </div>
-
-               </div>
-
-           </div>
-           <!--  End Edit leave pop-->
-               </td>
              </tr>
            {% endfor %}
 
@@ -113,6 +98,7 @@
 
    </div>
 </div>
+
    <script>
                $(document).ready(function() {
                    $('#example').DataTable( {
@@ -132,6 +118,28 @@
    </script>
    <script>
 
+
+
+               $("#modal-container-Detail").on('shown.bs.modal', function(e) {
+
+                      $.ajax({
+                     type: "GET",
+                        url: '/leave/leavsummary/update' ,
+                        data: {"action":button_details[2]},
+                        success : function (data) {
+                          $("#modal_body_detail").html(data);
+                      },
+                      error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#modal_body_detail").html("<p style='color:red'>Oops! Something went wrong on the server. " +
+                            "The details are below: " + "<br>Status : "+ textStatus + "<br>Exception : "
+                            + errorThrown +
+                            "<br><br> Please take a screenshot of this message and send it to " +
+                            "<a href='mailto:myansrsourceHelpDesk@ansrsource.com'> MyAnsrSource Help Desk</a></p>");
+                      }
+                  });
+
+
+              });
 
 
                $(document).ready(function(){

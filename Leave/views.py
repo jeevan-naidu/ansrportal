@@ -2044,6 +2044,11 @@ def balance_based_on_year(request):
     json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")
 
+def leavesummary_update(request):
+    import ipdb; ipdb.set_trace()
+    context = {}
+    return render(request, 'leavesummary_update.html', context)
+
 def leavesummary(request):
     if request.method == 'GET':
         context = {}
