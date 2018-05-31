@@ -54,6 +54,7 @@ def daily_leave_check():
         leaves = []
         for date in dates:
             hours_in_office = []
+            manager = user.employee.manager
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 pass
@@ -308,7 +309,7 @@ def daily_leave_check():
                     logger.debug("missing records")
         if leaves:
             try:
-                send_mail(user, leaves, dates, reason, "open")
+                send_mail(user, manager, leaves, dates, reason, "open")
             except:
                 print "HR need take care for {0}".format(user)
     print str(datetime.now()) + " Daily leave check raised finished running"
@@ -326,7 +327,7 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def send_mail(user, leavetype, fordate, status_comments, status, dueDate):
+def send_mail(user, manager, leavetype, fordate, status_comments, status, dueDate):
     msg_html = render_to_string('email_templates/daily_leave_check_remainder.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leavetype,
@@ -337,7 +338,7 @@ def send_mail(user, leavetype, fordate, status_comments, status, dueDate):
 
     mail_obj = EmailMessage('Daily Check Reminder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
-                            cc=[])
+                            cc=[manager.user.email])
 
     mail_obj.content_subtype = 'html'
     email_status = mail_obj.send()
