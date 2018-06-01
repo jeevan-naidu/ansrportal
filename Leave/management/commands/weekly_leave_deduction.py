@@ -71,7 +71,6 @@ def weekly_leave_deduction(year, month, day):
     for user in user_list:
         leaves = []
         dates_av = []
-        manager = user.employee.manager
         leave_for_date = {}
         employee_attendance = []
         for date in dates:
@@ -84,6 +83,10 @@ def weekly_leave_deduction(year, month, day):
                 try:
                     dates_av.append(date)
                     employee = Employee.objects.filter(user_id=user.id)
+                    if employee:
+                        manager = user.employee.manager
+                    else:
+                        manager = ''
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
                                                                          user=user.id,

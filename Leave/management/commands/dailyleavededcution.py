@@ -59,7 +59,6 @@ def daily_leave_deduction():
         leaves = []
         for date in dates:
             hours_in_office = []
-            manager = user.employee.manager
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 pass
@@ -67,6 +66,10 @@ def daily_leave_deduction():
                 try:
                     leave = ""
                     employee = Employee.objects.filter(user_id=user.id)
+                    if employee:
+                        manager = user.employee.manager
+                    else:
+                        manager = ''
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
                                                                          user=user.id,

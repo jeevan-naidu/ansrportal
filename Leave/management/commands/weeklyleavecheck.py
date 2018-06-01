@@ -61,7 +61,6 @@ def daily_leave_check():
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
         employee_attendance = []
-        manager = user.employee.manager
         for date in dates:
             if date in [datedata['date'] for datedata in holiday]:
                 employee_attendance.append(timedelta(hours=9, minutes=00, seconds=00))
@@ -71,6 +70,10 @@ def daily_leave_check():
             else:
                 try:
                     employee = Employee.objects.filter(user_id=user.id)
+                    if employee:
+                        manager = user.employee.manager
+                    else:
+                        manager = ''
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
                                                                          user=user.id,
