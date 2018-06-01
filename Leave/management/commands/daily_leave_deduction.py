@@ -62,6 +62,7 @@ def daily_leave_deduction(year, month, day):
         leaves = []
         for date in dates:
             hours_in_office = []
+            manager = user.employee.manager
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
                 pass
@@ -313,7 +314,7 @@ def daily_leave_deduction(year, month, day):
                     logger.debug("missing records")
         if leaves:
             try:
-                applyLeave(user, leaves, year)
+                applyLeave(user, manager,  leaves, year)
             except:
                 logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Daily leave check raised finished running"
@@ -333,7 +334,7 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def applyLeave(user, leaves, year):
+def applyLeave(user, manager, leaves, year):
     for leave in leaves:
         user_id = user.id
         reason = "applied by system"
@@ -348,7 +349,7 @@ def applyLeave(user, leaves, year):
                         leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                         if leavecheckonautoapplydate(leave, user_id):
                             leave['leave'] = 'half_day'
-                            leavesubmit(leave, leave_type, user_id, applied_by)
+                            leavesubmit(leave, manager, leave_type, user_id, applied_by)
                 if len(avaliable_leave) == 1:
                     avaliable_leave.append(0)
                     for leave_ty in avaliable_leave:
@@ -356,7 +357,7 @@ def applyLeave(user, leaves, year):
                             leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
                         else:
                             leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
                                                                                      leave_type=LeaveType.objects.get(
@@ -366,12 +367,12 @@ def applyLeave(user, leaves, year):
                                                                                      year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
             except:
                 leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
                 if leavecheckonautoapplydate(leave, user_id):
-                    leavesubmit(leave, leave_type, user_id, applied_by)
+                    leavesubmit(leave, manager, leave_type, user_id, applied_by)
         else:
             leave_type = LeaveSummary.objects.filter(user=user_id,
                                              leave_type__leave_type='loss_of_pay',
@@ -385,7 +386,7 @@ def applyLeave(user, leaves, year):
                                             balance=0,
                                             year=year)
             if leavecheckonautoapplydate(leave, user_id):
-                leavesubmit(leave, leave_type, user_id, applied_by)
+                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
@@ -438,7 +439,7 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
     return 0
 
 
-def leavesubmit(leave, leave_type,  user_id, applied_by):
+def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
     try:
         leaveapp = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                                  to_date__gte=leave['date'],
@@ -482,7 +483,7 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         leave_type.save()
         try:
             send_mail(User.objects.get(id=user_id),
-                      leave_type.leave_type.leave_type,
+                      leave_type.leave_type.leave_type, user_manager,
                       leave['date'],
                       leave['date'],
                       leavecount)
@@ -496,7 +497,7 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         print "please check manager for user id {0}".format(user_id)
         # logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
 
-def send_mail(user, leavetype, fromdate, todate, count):
+def send_mail(user, leavetype, user_manager, fromdate, todate, count):
     msg_html = render_to_string('email_templates/short_leave_auto_apply.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leaveTypeDictionary[leavetype],
@@ -507,7 +508,7 @@ def send_mail(user, leavetype, fromdate, todate, count):
 
     mail_obj = EmailMessage('Leave Deduction',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
-                            cc=[])
+                            cc=[user_manager.user.email])
 
     mail_obj.content_subtype = 'html'
     email_status = mail_obj.send()
