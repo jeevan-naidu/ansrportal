@@ -214,7 +214,8 @@ def userweeklytimereport(user, week, month, year):
     enddate = startdate + timedelta(5)
     for single_date in daterange(startdate, enddate):
         time_detail = timecheck(user, single_date)
-        timelist.append(time_detail)
+        if time_detail != 'Leave':
+            timelist.append(time_detail)
     return timelist
 
 
@@ -269,6 +270,29 @@ def daterange(start_date, end_date):
 def timecheck(user, date):
    att_day = 0
    userattendance = Attendance.objects.filter(employee_id=user.employee.employee_assigned_id, attdate=date)
+   leave_check = LeaveApplications.objects.filter(from_date__lte=date, to_date__gte=date, user=user.id,
+                                                  status__in=['open', 'approved'])
+   for leave in leave_check:
+       if leave.temp_id:
+           userattendance = Attendance.objects.filter(incoming_employee_id=leave.temp_id, attdate=date)
+           for att in userattendance:
+               if att.swipe_out and att.swipe_in is not None:
+                   att_day = att.swipe_out - att.swipe_in
+                   delta = att_day
+                   sec = delta.seconds
+                   hours = sec // 3600
+                   minutes = (sec // 60) - (hours * 60)
+                   att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+                   att_day = float(att_day)
+               return att_day
+       if leave.hours and leave.from_date == leave.to_date:
+           att_day = float(leave.hours[:2] + '.' + leave.hours[2:])
+           return att_day
+       if leave.hours and leave.from_date != leave.to_date:
+          days_count = float(leave.days_count)
+          total_hours = float(leave.hours[:2] + '.' + leave.hours[2:])
+          att_day = float(total_hours / days_count)
+          return att_day
    if not userattendance:
        att_day = 0
    for att in userattendance:
