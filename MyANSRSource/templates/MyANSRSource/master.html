@@ -699,6 +699,13 @@
                                                                 </a>
                                                             </li>
                                                         {% endif %}
+                                                        {% if request.user|has_group:"myansrsourceHR" %}
+                                                            <li>
+                                                                <a href="{% url 'leave_summary' %}">
+                                                                    <span class="menu-text">Leave Summary</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
                                                     </ul>
                                                 </div>
                                             </li>

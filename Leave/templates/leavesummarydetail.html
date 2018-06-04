@@ -1,0 +1,32 @@
+
+
+<table id="table" class=" table table-hover view_details">
+    <thead>
+        <tr>
+            <th class="hidden">User ID</th>
+            <th>User Name</th>
+            <th>Employee ID</th>
+            <th>Leave Type</th>
+            <th>Applied</th>
+            <th>Approved</th>
+            <th>Balance</th>
+            <th>Year</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leave_details %}
+            <tr id="leave_type{{forloop.counter}}"><td class="hidden">{{leave.id}}</td>
+                <td>{{leave.username}}</td>
+                <td>{{leave.employee_id}}</td>
+                <td>{{leave.leave_type}}</td>
+                <td width="30"><input type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" placeholder="leave applied"></td>
+                <td width="30"><input type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" placeholder="leave approved"></td>
+                <td width="30"><input type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required" placeholder="leave balance"></td>
+                <td>{{leave.year}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+<button id="update{{user.id}}" class="btn btn-sm vd_bg-green vd_white pull-right submit update" id="submit_button">Update</button>

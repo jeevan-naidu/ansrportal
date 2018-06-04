@@ -2043,6 +2043,28 @@ def balance_based_on_year(request):
     json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")
 
+def leavesummarydetail(request):
+    today = date.today()
+    user_id = request.GET.get('id')
+    leave_summary_detail = LeaveSummary.objects.filter(user_id=user_id, year=today.year)
+    leave_details = []
+    for leave in leave_summary_detail:
+        leave_detail = {}
+        leave_detail['id'] = leave.user_id
+        leave_detail['username'] = leave.user.first_name + ' ' + leave.user.last_name
+        leave_detail['employee_id'] = leave.user.employee.employee_assigned_id
+        leave_detail['leave_type'] = leave.leave_type.leave_type
+        leave_detail['applied'] = leave.applied
+        leave_detail['approved'] = leave.approved
+        leave_detail['balance'] = leave.balance
+        leave_detail['year'] = leave.year
+        leave_details.append(leave_detail)
+    return render(request, 'leavesummarydetail.html', {'leave_details':leave_details})
+
+def leavesummary(request):
+    context = {}
+    context['user_name'] = User.objects.filter(is_active='1').values('id', 'first_name', 'last_name', 'employee__employee_assigned_id')
+    return render(request, 'leavesummary.html', context)
 
 def short_leave_against_cancellation(from_date, to_date, user):
     '''
