@@ -2043,6 +2043,29 @@ def balance_based_on_year(request):
     json_data = json.dumps(leaveSummary.balance)
     return HttpResponse(json_data, content_type="application/json")
 
+def leavesummaryupdate(request):
+    if request.method == 'GET':
+        context = {}
+        context['user_name'] = User.objects.filter(is_active='1').values('id', 'first_name', 'last_name',
+                                                                         'employee__employee_assigned_id')
+        return render(request, 'leavesummary.html', context)
+    if request.method == 'POST':
+        context = {}
+        details = json.loads(request.body)
+        for leave_summary_detail in details['details']:
+            leave_obj = LeaveSummary.objects.filter(user_id=leave_summary_detail['user_id'],
+                                                    id=leave_summary_detail['id'],
+                                                    leave_type_id=leave_summary_detail['leave_type_id'],
+                                                    year=leave_summary_detail['year'])
+            if leave_obj:
+                leave_obj[0].applied = leave_summary_detail['applied']
+                leave_obj[0].approved = leave_summary_detail['approved']
+                leave_obj[0].balance = leave_summary_detail['balance']
+                leave_obj[0].save()
+        context['user_name'] = User.objects.filter(is_active='1').values('id', 'first_name', 'last_name',
+                                                                         'employee__employee_assigned_id')
+        return render(request, 'leavesummary.html', context)
+
 def leavesummarydetail(request):
     today = date.today()
     user_id = request.GET.get('id')
@@ -2050,10 +2073,12 @@ def leavesummarydetail(request):
     leave_details = []
     for leave in leave_summary_detail:
         leave_detail = {}
-        leave_detail['id'] = leave.user_id
+        leave_detail['id'] = leave.id
+        leave_detail['user_id'] = leave.user_id
         leave_detail['username'] = leave.user.first_name + ' ' + leave.user.last_name
         leave_detail['employee_id'] = leave.user.employee.employee_assigned_id
         leave_detail['leave_type'] = leave.leave_type.leave_type
+        leave_detail['leave_type_id'] = leave.leave_type_id
         leave_detail['applied'] = leave.applied
         leave_detail['approved'] = leave.approved
         leave_detail['balance'] = leave.balance
