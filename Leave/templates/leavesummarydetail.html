@@ -23,9 +23,9 @@
                 <td>{{leave.username}}</td>
                 <td>{{leave.employee_id}}</td>
                 <td>{{leave.leave_type}}</td>
-                <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" placeholder="leave applied"></td>
-                <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" placeholder="leave approved"></td>
-                <td width="30"><input class='balance' type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required" placeholder="leave balance"></td>
+                <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" ></td>
+                <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
+                <td width="30"><input class='balance' type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required"></td>
                 <td id="year{{forloop.counter}}">{{leave.year}}</td>
             </tr>
         {% endfor %}
@@ -33,10 +33,36 @@
 
 </table>
 
-<button id="update" class="btn btn-sm vd_bg-green vd_white pull-right" id="submit_button">Update</button>
+<button id="update" class="btn btn-sm vd_bg-green vd_white pull-right">Update</button>
 
 
 <script type="text/javascript">
+
+
+    $(document).ready(function() {
+        //columnCheck();
+        $(".applied,.approved,.balance").on('keyup', function(){
+            var _getVal = columnCheck()
+            if(_getVal > 0){
+                $("button[id='update']").hide();
+            }else{
+                $("button[id='update']").show();
+            }
+        });
+
+        function columnCheck(){
+            var __count = 0;
+
+            $('.UserDetail input[type=text]').each(function () {
+                if($(this).val() ==""){
+                    __count++;
+                }
+            });
+            return __count;
+        }
+
+
+    });
 
 
     $("#update").on('click', function(){
@@ -52,7 +78,6 @@
                 details = {"user_id":user_id,"id":id,"leave_type_id":leave_type_id,"applied":applied,"approved":approved, "balance":balance, "year":year};
                 obj.push(details);
             }
-
             $.ajax({
                 contentType: "application/json",
                 url:'/leave/leave_summary_update/',
