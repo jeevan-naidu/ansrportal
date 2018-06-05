@@ -23,9 +23,9 @@
                 <td>{{leave.username}}</td>
                 <td>{{leave.employee_id}}</td>
                 <td>{{leave.leave_type}}</td>
-                <td width="30"><input class='applied' type="text" pattern="[0-9.]{1,10}" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" ></td>
-                <td width="30"><input class='approved' type="text" pattern="[0-9.]{1,10}" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
-                <td width="30"><input class='balance' type="text" pattern="[0-9.]{1,10}" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required"></td>
+                <td width="30"><input class='applied' type="number" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" ></td>
+                <td width="30"><input class='approved' type="number" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
+                <td width="30"><input class='balance' type="number" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required"></td>
                 <td id="year{{forloop.counter}}">{{leave.year}}</td>
             </tr>
         {% endfor %}
