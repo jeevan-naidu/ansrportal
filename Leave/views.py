@@ -2058,10 +2058,9 @@ def leavesummaryupdate(request):
                                                     leave_type_id=leave_summary_detail['leave_type_id'],
                                                     year=leave_summary_detail['year'])
             if leave_obj:
-                approve_diff = leave_obj[0].approved - leave_summary_detail['approved']
                 leave_obj[0].applied = leave_summary_detail['applied']
                 leave_obj[0].approved = leave_summary_detail['approved']
-                leave_obj[0].balance = leave_summary_detail['balance'] + approve_diff
+                leave_obj[0].balance = leave_summary_detail['balance']  
                 leave_obj[0].save()
         context['user_name'] = User.objects.filter(is_active='1').values('id', 'first_name', 'last_name',
                                                                          'employee__employee_assigned_id')
