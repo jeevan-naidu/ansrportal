@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from MyANSRSource.forms import TeamMemberPerfomanceReportForm, \
     ProjectPerfomanceReportForm, UtilizationReportForm, BTGForm, \
     BTGReportForm, InvoiceForm,RevenueReportForm, InvoiceReportForm
-from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo,BTGUpdate,\
+from MyANSRSource.models import TimeSheetEntry, ProjectChangeInfo,\
     ProjectMilestone, ProjectTeamMember, ProjectManager, Project, \
-    BTGReport, ProjectDetail
+    BTGReport, BTG_Update, ProjectDetail
 from CompanyMaster.models import BusinessUnit
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render,redirect
@@ -18,7 +18,7 @@ from employee.models import Employee
 from wsgiref.util import FileWrapper
 from dateutil import relativedelta as rdelta
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from calendar import monthrange
 import mimetypes
 import numpy
@@ -1933,58 +1933,42 @@ def RevenueRecogniation(request):
                             val_data['bu'] = val.bu.name
                             values.append(val_data)
 
-            return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
+        return render(request, 'MyANSRSource/revenuerecognition.html', {'form': reportData, 'fresh': 1, 'report': values})
 
     else:
         return render(request, 'MyANSRSource/revenuerecognition.html', {'form': form, 'month': currReportMonth, 'year': reportYear, 'report':None})
 
-@login_required
-def ProjectReport(request):
-    if request.method == 'GET':
-        user_id = request.user.id
-        deliveryManager_id=1
-        # portfolio_manager_id=1
-        # pmDelegate_id=1
-        # new_bu_head=1
-        if deliveryManager_id == 1:
-            project_details = data(user_id)
-            import ipdb;ipdb.set_trace()
-            if project_details:
-                return render(request, 'MyANSRSource/project_report.html', {'project_Details': project_details})
-                #
-                # if request.method == 'POST':
-                #     btg_data = json.loads(request.POST.get('project_id'))
-                #     for k, v in btg_data.iteritems():
-                #         print k, v
-                #         btg_update = BTGUpdate(project_id=k, BTG_Hours=v, user_id=request.user.id,is_appproved=False)
-                #         btg_update.save()
-                #         redirect('/')
-
 
 def data(user_id):
-        project_details = ProjectDetail.objects.filter(Q(deliveryManager_id=user_id) | Q(portfolio_manager_id=user_id)
-                                                       | Q(pmDelegate_id=user_id)).values(
-            'project_id',
-            'project_id__name',
-            'project_id__totalValue',
-            'project_id__plannedEffort',
-            'project_id__projectId',
-            'project_id__startDate',
-            'project_id__endDate',
-            'deliveryManager_id__first_name',
-            'deliveryManager_id__last_name',
-            'project_id__bu_id__new_bu_head__first_name',
-            'project_id__bu_id__new_bu_head__last_name',
-            'portfolio_manager_id__first_name',
-            'portfolio_manager_id__last_name'
+        project_details = ProjectDetail.objects.filter(Q(pmDelegate_id=user_id)|Q(deliveryManager_id=user_id)|
+                   Q(portfolio_manager_id=user_id)|Q(project_id__bu_id__new_bu_head=user_id)).values(
+                                                                        'project_id',
+                                                                        'project_id__name',
+                                                                        'project_id__totalValue',
+                                                                        'project_id__plannedEffort',
+                                                                        'project_id__projectId',
+                                                                        'project_id__startDate',
+                                                                        'project_id__endDate',
+                                                                        'deliveryManager_id__first_name',
+                                                                        'deliveryManager_id__last_name',
+                                                                        'project_id__bu_id__new_bu_head__first_name',
+                                                                        'project_id__bu_id__new_bu_head__last_name',
+                                                                        'portfolio_manager_id__first_name',
+                                                                        'portfolio_manager_id__last_name',
+                                                                        'deliveryManager_id',
+                                                                        'portfolio_manager_id',
+                                                                        'project_id__bu_id__new_bu_head')
 
-        )
+
+
         for project in project_details:
             total = []
-            timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH'
-                                                                                                       , 'approved',
+            timesheet_details = TimeSheetEntry.objects.filter(project_id=project['project_id']).values('totalH',
+                                                                                                       'approved',
                                                                                                        'hold',
                                                                                                        'project_id')
+
+
             if timesheet_details:
                 for timesheet in timesheet_details:
                     if (timesheet['approved'] == True and timesheet['hold'] == True) or (
@@ -2002,13 +1986,118 @@ def data(user_id):
             else:
                 project['extra_efforts'] = 0
 
-            btg_details = BTGUpdate.objects.filter(project_id=project['project_id']).values('BTG_Hours',
-                                                                                            'project_id',
-                                                                                            'is_appproved')
+            btg_details = BTG_Update.objects.filter(project_id=project['project_id']).values('id','BTG_Hours','project_id'
+                                                                                            ,'is_approved', 'updatedOn')
+
             if btg_details:
                 for btg in btg_details:
                     project['btgs'] = btg['BTG_Hours']
-                    project['approved'] = btg['is_appproved']
+                    project['approved'] = btg['is_approved']
+                    project['updatedon'] = btg['updatedOn']
+                    project['ids'] = btg['id']
         return project_details
 
+@login_required
+def ProjectReport(request):
+    if request.method == 'GET':
+        user_id = request.user.id
+        context = {}
+        context['project_details'] = data(user_id)
 
+        portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager_id=request.user)
+        delivery_manager_list = ProjectDetail.objects.filter(deliveryManager_id=request.user)
+        bu_manager_list = ProjectDetail.objects.filter(project_id__bu_id__new_bu_head=request.user)
+
+
+        Deliverym_ids = ProjectDetail.objects.values('deliveryManager_id')
+        dmid = []
+        for ii in Deliverym_ids:
+           dmid.extend(ii.values())
+
+        Portfoliom_ids = ProjectDetail.objects.values('portfolio_manager_id')
+        pmid = []
+        for ii in Portfoliom_ids:
+            pmid.extend(ii.values())
+
+        bu_manager_ids = ProjectDetail.objects.values('project_id__bu_id__new_bu_head')
+        buid = []
+        for ii in bu_manager_ids:
+            buid.extend(ii.values())
+
+        dmid = list(set(dmid))
+        pmid = list(set(pmid))
+        buid = list(set(buid))
+
+        dmcontain = user_id in dmid
+        pmcontain = user_id in pmid
+        bucontain = user_id in buid
+
+
+        context['prtm_queryset'] = pmcontain
+        context['drm_queryset'] = dmcontain
+        context['bu_queryset'] = bucontain
+        context['user_id'] = user_id
+        # context['ids'] = 1010101
+
+        prtm_project_list = []
+        for val in portfolio_manager_list:
+            prtm_project_list.append(val.project_id)
+        pm_projects_list = Project.objects.filter(id__in=prtm_project_list)
+
+        dm_project_list=[]
+        for val in delivery_manager_list:
+            dm_project_list.append(val.project_id)
+        dm_projects_list = Project.objects.filter(id__in=dm_project_list)
+
+        bum_project_list = []
+        for val in bu_manager_list:
+            bum_project_list.append(val.project_id)
+        bum_projects_list = Project.objects.filter(id__in=bum_project_list)
+
+        return render(request, 'MyANSRSource/project_report.html', context)
+
+    if request.method == 'POST':
+        approve = request.POST.getlist('approve[]')
+        reject = request.POST.getlist('reject[]')
+        if approve:
+            for app in approve:
+                app_list = app.split('_')
+                BTG_Update.objects.filter(Q(is_approved='0') | Q(is_approved='2'), project_id=app_list[0],id=app_list[1])\
+                    .update(is_approved=1, user_id=request.user.id)
+                BTG_hrs = BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).values('BTG_Hours')
+                project_hrs=Project.objects.filter(id=app_list[0]).values('plannedEffort')
+                total=BTG_hrs[0]['BTG_Hours']+project_hrs[0]['plannedEffort']
+                Project.objects.filter(id=app_list[0]).update(plannedEffort=total)
+                BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).update(BTG_Hours=0)
+
+        if reject:
+            for rej in reject:
+                rej_list = rej.split('_')
+                BTG_Update.objects.filter(project_id=rej_list[0], id=rej_list[1]).update(is_approved=2,
+                                                                                         user_id=request.user.id)
+        else:
+            try:
+                btg_data = json.loads(request.POST.get('project_id'))
+                for k, v in btg_data.iteritems():
+                    # print k, v
+                    # btg_update_prev_data = BTG_Update.objects.filter(project_id=k).values('BTG_Hours')
+                    # print btg_update_prev_data
+                    btg_update = BTG_Update(project_id=k, BTG_Hours=v, user_id=request.user.id, is_approved=0)
+                    btg_update.save()
+
+            except:
+                pass
+
+
+        return render(request, 'MyANSRSource/project_report.html', {})
+
+
+# def btg_detail(request):
+#     project_id = request.GET.get('id')
+#     try:
+#         # project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
+#         btg_details = BTG_Update.objects.get(project_id=project_id)
+#         import ipdb;ipdb.set_trace()
+#         return render(request, 'btg_detail.html', {'btg_detail': btg_details})
+#     except Exception as e:
+#         return render(request, 'btg_detail.html', {'btg_detail': 'Nothing'})
