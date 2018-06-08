@@ -111,6 +111,8 @@ class LeaveApplications(models.Model):
     atachement = models.FileField(upload_to=content_file_name, blank=True, null=True, verbose_name='Attachment')
     applied_on = models.DateField(auto_now_add=True, verbose_name='Leave Applied Date')
     modified_on = models.DateField(auto_now=True, verbose_name='Modified Date')
+    daily_deduction = models.CharField(max_length=10, verbose_name='Daily Deduction',blank=True, null=True)
+    weekly_deduction = models.CharField(max_length=10, verbose_name='Weekly Deduction', blank=True, null=True)
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     def __unicode__(self):
