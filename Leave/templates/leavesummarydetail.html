@@ -5,8 +5,8 @@
         <tr>
             <th class="hidden">User ID</th>
             <th class="hidden">ID</th>
-            <th>User Name</th>
-            <th>Employee ID</th>
+            <th class="hidden">User Name</th>
+            <th class="hidden">Employee ID</th>
             <th>Leave Type</th>
             <th>Applied</th>
             <th>Approved</th>
@@ -20,8 +20,8 @@
                 <td class="hidden" id="user_id{{forloop.counter}}">{{leave.user_id}}</td>
                 <td class="hidden" id="id{{forloop.counter}}">{{leave.id}}</td>
                 <td class="hidden" id="leave_type{{forloop.counter}}">{{leave.leave_type_id}}</td>
-                <td>{{leave.username}}</td>
-                <td>{{leave.employee_id}}</td>
+                <td class="hidden">{{leave.username}}</td>
+                <td class="hidden">{{leave.employee_id}}</td>
                 <td>{{leave.leave_type}}</td>
                 <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" readonly></td>
                 <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
@@ -67,7 +67,7 @@
 
     $("#update").on('click', function(){
         var obj = [];
-            for(i=1; i<17; i++){
+            for(i=1; i<16; i++){
                 user_id = document.getElementById('user_id'+i).innerHTML;
                 id = document.getElementById('id'+i).innerHTML;
                 leave_type_id = document.getElementById('leave_type'+i).innerHTML;
