@@ -2478,7 +2478,39 @@ def Dashboard(request):
                     temp['status'] = 0
                 temp['wfh'] = 1
                 swipe_display.append(temp)
-            if leave.leave_type_id not in [16,11]:
+            if leave.daily_deduction:
+                temp ={}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 2
+                        temp['daily_deduction'] = 11
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 2
+                        temp['daily_deduction'] = 12
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    swipe_display.append(temp)
+            if leave.weekly_deduction:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 2
+                        temp['weekly_deduction'] = 21
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 2
+                        temp['weekly_deduction'] = 22
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    swipe_display.append(temp)
+            if leave.leave_type_id not in [16,11] and not leave.weekly_deduction and not leave.daily_deduction:
                 temp = {}
                 temp['date'] = leave.from_date.strftime('%Y-%m-%d')
                 temp['leave_type'] = leave.leave_type
