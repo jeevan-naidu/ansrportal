@@ -2070,7 +2070,7 @@ def leavesummaryupdate(request):
 def leavesummarydetail(request):
     today = date.today()
     user_id = request.GET.get('id')
-    leave_summary_detail = LeaveSummary.objects.exclude(leave_type_id__in=[13]).filter(user_id=user_id, year=today.year)
+    leave_summary_detail = LeaveSummary.objects.exclude(leave_type_id__in=[23]).filter(user_id=user_id, year=today.year)
     leave_details = []
     for leave in leave_summary_detail:
         leave_detail = {}
