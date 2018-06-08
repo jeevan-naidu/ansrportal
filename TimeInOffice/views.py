@@ -310,7 +310,20 @@ def timecheck(user, date):
                            att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
                            att_day = float(att_day)
                        return att_day
-               if leave.hours and leave.from_date == leave.to_date:
+               if leave.hours and leave.from_date == leave.to_date and userattendance:
+                   if userattendance:
+                       for att in userattendance:
+                           if att.swipe_out and att.swipe_in is not None:
+                               att_day = att.swipe_out - att.swipe_in
+                               delta = att_day
+                               sec = delta.seconds
+                               hours = sec // 3600
+                               minutes = (sec // 60) - (hours * 60)
+                               att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+                               att_day = float(att_day)
+                   time_in_day = float(leave.hours[:2] + '.' + leave.hours[2:]) + att_day
+                   return time_in_day
+               elif leave.hours and leave.from_date == leave.to_date:
                    att_day = float(leave.hours[:2] + '.' + leave.hours[2:])
                    return att_day
                if leave.hours and leave.from_date != leave.to_date:

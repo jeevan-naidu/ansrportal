@@ -22,7 +22,11 @@
                 <td class="hidden" id="leave_type{{forloop.counter}}">{{leave.leave_type_id}}</td>
                 <td class="hidden">{{leave.username}}</td>
                 <td class="hidden">{{leave.employee_id}}</td>
+<<<<<<< HEAD
                 <td >{{leave.leave_type}}</td>
+=======
+                <td>{{leave.leave_type}}</td>
+>>>>>>> b2b6aa4bcd518c443175046df7398d5c5c70ffc4
                 <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" readonly></td>
                 <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
                 <td width="30"><input class='balance' type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required" readonly></td>
@@ -67,7 +71,7 @@
 
     $("#update").on('click', function(){
         var obj = [];
-            for(i=1; i<17; i++){
+            for(i=1; i<16; i++){
                 user_id = document.getElementById('user_id'+i).innerHTML;
                 id = document.getElementById('id'+i).innerHTML;
                 leave_type_id = document.getElementById('leave_type'+i).innerHTML;
