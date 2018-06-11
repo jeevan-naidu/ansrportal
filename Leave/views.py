@@ -353,7 +353,13 @@ class ApplyLeaveView(View):
                                   'ooo_int']
             work_from_home = ['work_from_home']
             temp_id = ['temp_id']
-            form = LeaveForm(leavetype, user_id)
+            try:
+                leave_type_leave = request.COOKIES['leave_type_leave']
+                print(leave_type_leave)
+            except:
+                leave_type_leave = 0
+                pass
+            form = LeaveForm(leavetype, user_id, leave_type_leave)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(leave_type__leave_type=leavetype,
                                                       user_id=user_id,
