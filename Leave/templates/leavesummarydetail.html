@@ -11,7 +11,7 @@
             <th>Applied</th>
             <th>Approved</th>
             <th>Balance</th>
-            <th class="hidden">Year</th>
+            <th>Year</th>
         </tr>
     </thead>
     <tbody>
@@ -27,7 +27,7 @@
                 <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" readonly></td>
                 <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
                 <td width="30"><input class='balance' type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required" readonly></td>
-                <td class="hidden" id="year{{forloop.counter}}">{{leave.year}}</td>
+                <td id="year{{forloop.counter}}">{{leave.year}}</td>
             </tr>
         {% endfor %}
     </tbody>
