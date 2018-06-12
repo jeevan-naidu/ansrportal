@@ -2037,6 +2037,7 @@ def ProjectReport(request):
         context['drm_queryset'] = dmcontain
         context['bu_queryset'] = bucontain
         context['user_id'] = user_id
+        context['project_all'] = BTG_Update.objects.all()
         # context['ids'] = 1010101
 
         prtm_project_list = []
@@ -2068,7 +2069,7 @@ def ProjectReport(request):
                 project_hrs=Project.objects.filter(id=app_list[0]).values('plannedEffort')
                 total=BTG_hrs[0]['BTG_Hours']+project_hrs[0]['plannedEffort']
                 Project.objects.filter(id=app_list[0]).update(plannedEffort=total)
-                BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).update(BTG_Hours=0)
+                # BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).update(BTG_Hours=0)
 
         if reject:
             for rej in reject:
@@ -2078,12 +2079,25 @@ def ProjectReport(request):
         else:
             try:
                 btg_data = json.loads(request.POST.get('project_id'))
+                # projects_list = btg_data.split('_')
+                # btg_data = projects_list[0]
+                btg_update_prev_data =[{'BTG_Hours':12345678}]
                 for k, v in btg_data.iteritems():
-                    # print k, v
-                    # btg_update_prev_data = BTG_Update.objects.filter(project_id=k).values('BTG_Hours')
-                    # print btg_update_prev_data
-                    btg_update = BTG_Update(project_id=k, BTG_Hours=v, user_id=request.user.id, is_approved=0)
-                    btg_update.save()
+                    projects_list = k.split('_')
+                    k = projects_list[0]
+                    index_id = projects_list[1]
+
+                    if index_id != '':
+                        btg_update_prev_data = BTG_Update.objects.filter(project_id=k, id=index_id).values('BTG_Hours')
+                        print btg_update_prev_data
+
+                    if float(v) != float(btg_update_prev_data[0]['BTG_Hours']):
+                        btg_update = BTG_Update(project_id=k, BTG_Hours=v, user_id=request.user.id, is_approved=0)
+                        btg_update.save()
+                        print type(v), type(btg_update_prev_data[0]['BTG_Hours'])
+
+                    # print(btg_update_prev_data[0]['BTG_Hours'])
+
 
             except:
                 pass

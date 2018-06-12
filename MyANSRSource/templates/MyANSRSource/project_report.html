@@ -106,9 +106,36 @@
                                             </tr>
 
                                         </table>
+                                         <table>
+                                             <tr>
+                                                 <th>BTG Hours: </th>
+                                                 <th>Updated On: </th>
+                                                 <th> Status :</th>
+
+                                             </tr>
+                                             {% for xyz in project_all %}
+                                             {% if xyz.project_id == obj.project_id%}
+                                             <tr>
+                                                 <td>{{xyz.BTG_Hours }}</td>
+                                                 <td>{{xyz.updatedOn}}</td>
+                                                 <td>
+                                                 {% if xyz.is_approved == '1' %}
+                                                    <label for="approved" class="ansr-orange-mod">Approved </label>
+                                                    {% elif xyz.is_approved == '2' %}
+                                                    <label for="rejected" class="ansr-orange-mod">Rejected</label>
+                                                    {% elif xyz.is_approved == null %}
+                                                    <label for="rejected" class="ansr-orange-mod"></label>
+                                                    {% else %}
+                                                    <label for="rejected" class="ansr-orange-mod">Open</label>
+                                                    {% endif %}
+                                                 </td>
+                                             </tr>
+                                             {% endif %}
+                                             {% endfor %}
+                                         </table>
                                     </div>
                                     <div class="modal-footer background-login">
-                                        <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close
+                                        <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal"> Close
                                         </button>
                                     </div>
                                 </div><!-- ./modal-footer -->
@@ -131,8 +158,13 @@
                     <td class="ws-mw">{{obj.avaliable_efforts}}</td>
                     <td class="ws-mw">{{obj.extra_efforts}}</td>
 
+
                     {% if obj.btgs %}
-                    <td aria-readonly="true">{{obj.btgs}}</td>
+                    <td aria-readonly="true"> {{obj.btgs}}
+                                                <div class="form-group">
+                                                    <input class="btg" id="btg_{{forloop.counter}}" type="text" pattern="[0-9]{10}" hidden>
+                                                </div>
+                    </td>
                     {% else %}
                     <td width="10px" height="10px">
                         <div class="form-group">
@@ -140,8 +172,9 @@
                         </div>
                     </td>
                     {% endif %}
+
                     <td class="ws-mw">{{obj.updatedon}}</td>
-                    <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}</td>
+                    <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
 
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -206,6 +239,159 @@
                     <td class="id_ids hidden" id="ids_{{forloop.counter}}">{{obj.ids}}</td>
 
                 </tr>
+                {% elif  prtm_queryset and drm_queryset and bu_queryset%}
+                <tr>
+                    <td class="ws-mw">
+                        <a id="{{obj.id}}"
+                           href="#modal-container-detail{{obj.project_id__projectId}}" data-toggle="modal"
+                           title="Action"
+                           class="pull-left detail">
+                            {{obj.project_id__projectId}}
+                        </a>
+                        <!--Record pop up-->
+                        <div class="modal fade" id="modal-container-detail{{obj.project_id__projectId}}" role="dialog"
+                             aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header vd_bg-blue vd_white">
+
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            x
+                                        </button>
+
+                                        <h4 class="modal-title" id="myModalLabel">
+                                            DETAIL
+                                        </h4>
+                                    </div>
+
+                                    <div class="modal-body min-height-400" id="modal_body">
+                                        <table>
+                                            <tr>
+                                                <td>Project ID:
+                                                </td>
+                                                <td> {{obj.project_id__projectId}}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Project Name:
+                                                </td>
+                                                <td>{{obj.project_id__name}}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>BTG Required Hours:
+                                                </td>
+                                                <td>{{obj.btgs}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Updated On:
+                                                </td>
+                                                <td>{{obj.updatedon}}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Status
+                                                </td>
+                                                <td class="ws-mw">
+                                                    {% if obj.approved == '1' %}
+                                                    <label for="approved" class="ansr-orange-mod">Approved </label>
+                                                    {% elif obj.approved == '2' %}
+                                                    <label for="rejected" class="ansr-orange-mod">Rejected</label>
+                                                    {% elif obj.approved == null %}
+                                                    <label for="rejected" class="ansr-orange-mod"></label>
+                                                    {% else %}
+                                                    <label for="rejected" class="ansr-orange-mod">Open</label>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                         <table>
+                                             <tr>
+                                                 <th>BTG Hours: </th>
+                                                 <th>Updated On: </th>
+                                                 <th> Status :</th>
+
+                                             </tr>
+                                             {% for xyz in project_all %}
+                                             {% if xyz.project_id == obj.project_id%}
+                                             <tr>
+                                                 <td>{{xyz.BTG_Hours }}</td>
+                                                 <td>{{xyz.updatedOn}}</td>
+                                                 <td>
+                                                 {% if xyz.is_approved == '1' %}
+                                                    <label for="approved" class="ansr-orange-mod">Approved </label>
+                                                    {% elif xyz.is_approved == '2' %}
+                                                    <label for="rejected" class="ansr-orange-mod">Rejected</label>
+                                                    {% elif xyz.is_approved == null %}
+                                                    <label for="rejected" class="ansr-orange-mod"></label>
+                                                    {% else %}
+                                                    <label for="rejected" class="ansr-orange-mod">Open</label>
+                                                    {% endif %}
+                                                 </td>
+                                             </tr>
+                                             {% endif %}
+                                             {% endfor %}
+                                         </table>
+                                    </div>
+                                    <div class="modal-footer background-login">
+                                        <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close
+                                        </button>
+                                    </div>
+                                </div><!-- ./modal-footer -->
+                            </div>
+                        </div>
+                    </td>
+                    <!--<td>{{obj.project_id__projectId}}</td>-->
+                    <td>{{obj.project_id__name}}</td>
+                    <td>{{obj.project_id__totalValue}}</td>
+                    <td>{{obj.project_id__startDate}}</td>
+                    <td>{{obj.project_id__endDate}}</td>
+                    <td>{{obj.deliveryManager_id__first_name}} {{obj.deliveryManager_id__last_name}}</td>
+                    <td>{{obj.portfolio_manager_id__first_name}} {{obj.portfolio_manager_id__last_name}}</td>
+                    <td>{{obj.project_id__bu_id__new_bu_head__first_name}}
+                        {{obj.project_id__bu_id__new_bu_head__last_name}}
+                    </td>
+                    <td>{{obj.project_id__plannedEffort}}</td>
+                    <td>{{obj.total_efforts}}</td>
+                    <td>{{obj.avaliable_efforts}}</td>
+                    <td>{{obj.extra_efforts}}</td>
+                    {% if obj.btgs %}
+                    <td contenteditable="true">
+                        <input class="btg" id="btg_{{forloop.counter}}" type="text" pattern="[0-9]{10}"
+                               contenteditable="true" value="{{obj.btgs}}">
+                    </td>
+                    {% else %}
+                    <td width="10px" height="10px">
+                        <div class="form-group">
+                            <input class="btg" id="btg_{{forloop.counter}}" type="text" pattern="[0-9]{10}"
+                                   contenteditable="true">
+                        </div>
+                    </td>
+                    {% endif %}
+                    <td>{{obj.updatedon}}</td>
+                    <!--<td></td>-->
+                    <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
+
+                    <td class="ws-mw">
+                        {% if obj.approved == '1' %}
+                        <label for="approved" class="ansr-orange-mod">Approved </label>
+                        {% elif obj.approved == '2' %}
+                        <label for="rejected" class="ansr-orange-mod">Rejected</label>
+                        {% elif obj.approved == null %}
+                        <label for="rejected" class="ansr-orange-mod"></label>
+                        {% else %}
+                        {% endif %}
+                    </td>
+                    <td class="id_ids hidden" id="ids_{{forloop.counter}}">{{obj.ids}}</td>
+    </tr>
+
+
+
                 {% else %}
                 <tr>
                     <td class="ws-mw">
@@ -277,6 +463,33 @@
                                             </tr>
 
                                         </table>
+                                         <table>
+                                             <tr>
+                                                 <th>BTG Hours: </th>
+                                                 <th>Updated On: </th>
+                                                 <th> Status :</th>
+
+                                             </tr>
+                                             {% for xyz in project_all %}
+                                             {% if xyz.project_id == obj.project_id%}
+                                             <tr>
+                                                 <td>{{xyz.BTG_Hours }}</td>
+                                                 <td>{{xyz.updatedOn}}</td>
+                                                 <td>
+                                                 {% if xyz.is_approved == '1' %}
+                                                    <label for="approved" class="ansr-orange-mod">Approved </label>
+                                                    {% elif xyz.is_approved == '2' %}
+                                                    <label for="rejected" class="ansr-orange-mod">Rejected</label>
+                                                    {% elif xyz.is_approved == null %}
+                                                    <label for="rejected" class="ansr-orange-mod"></label>
+                                                    {% else %}
+                                                    <label for="rejected" class="ansr-orange-mod">Open</label>
+                                                    {% endif %}
+                                                 </td>
+                                             </tr>
+                                             {% endif %}
+                                             {% endfor %}
+                                         </table>
                                     </div>
                                     <div class="modal-footer background-login">
                                         <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close
@@ -315,7 +528,7 @@
                     {% endif %}
                     <td>{{obj.updatedon}}</td>
                     <!--<td></td>-->
-                    <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}</td>
+                    <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
 
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -330,7 +543,6 @@
                     <td class="id_ids hidden" id="ids_{{forloop.counter}}">{{obj.ids}}</td>
     </tr>
     {% endif %}
-
     {% endfor %}
     </tbody>
     </table>
