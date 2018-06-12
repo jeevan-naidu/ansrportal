@@ -2097,6 +2097,7 @@ def leavesummarydetail(request):
         leave_detail['approved'] = leave.approved
         leave_detail['balance'] = leave.balance
         leave_detail['year'] = leave.year
+        leave_detail['leave_type_choice'] = dict(LEAVE_TYPES_CHOICES)[leave.leave_type.leave_type]
         leave_details.append(leave_detail)
     return render(request, 'leavesummarydetail.html', {'leave_details':leave_details})
 
