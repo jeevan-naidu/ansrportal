@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from CompanyMaster.models import Holiday
 import logging
 import pytz
+import os
 from string import Formatter
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -18,6 +19,7 @@ currentTime = datetime.now().date().strftime('%Y_%m_%d_%H_%M_%S')
 fileName = "DailyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
+writeFile.write("Employee, Employee ID, Manage, Manager Id, Leave, Reason, Date \n")
 
 class Command(BaseCommand):
     help = 'Upload Leave summary for new joinee.'
@@ -44,6 +46,7 @@ def daily_leave_deduction():
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')
     date = datetime.now().date()
+    month = date.month
     year = date.year
     week_dates = previous_week_range(date)
     start_date = week_dates[0]
@@ -319,6 +322,20 @@ def daily_leave_deduction():
                 applyLeave(user, manager, leaves, year)
             except:
                 logger.debug('email send issue user id' + user.id)
+    writeFile.close()
+    new_filename = "DailyLeaveDeduction_" + str(year) + "_" + str(month) + "_" + str(day) + ".csv"
+    os.rename(fileName, new_filename)
+    print "File " + fileName + " renamed to " + new_filename
+    print "Sending deduction report... "
+    email_report_send = EmailMessage(
+        'Leave Deduction File: ' + str(year) + "_" + str(month) + "_" + str(day),
+        'Hi, All, \nPlease find attached leave deduction file.\nThanks!\nMyAnsrSource\n\n',
+        settings.EMAIL_HOST_USER,
+        ['ramesh.kumar@ansrsource.com'],
+        cc=['janaki.BS@ansrsource.com', 'ravindra.jawari@ansrsource.com']
+    )
+    email_report_send.attach_file(new_filename)
+    email_report_send.send()
     print str(datetime.now()) + " Daily leave check raised finished running"
         # applyLeave(attendance, attendance.for_date.year)
         # print "leave saved for {0}".format(attendance.user)
