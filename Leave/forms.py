@@ -7,13 +7,16 @@ from django.forms import TextInput
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
-from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, LEAVE_TYPES_CHOICES_LEAVES, LEAVE_TYPES_CHOICES_NON_LEAVES, SESSION_STATUS, LeaveSummary
 from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date, time
 from dal import autocomplete
 
+
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
+LEAVE_TYPES_CHOICES_LEAVES = (('', '---------'),) + LEAVE_TYPES_CHOICES_LEAVES
+LEAVE_TYPES_CHOICES_NON_LEAVES = (('', '---------'),) + LEAVE_TYPES_CHOICES_NON_LEAVES
 
 SESSION_STATUS_CHOICES = (('', 'SELECT SESSION'),) + SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -30,7 +33,17 @@ class UserListViewForm(forms.ModelForm):
         model = User
         fields = ['user']
 
-def LeaveForm(leavetype, user, data=None):
+def LeaveForm(leavetype, user, leave_type_leave, data=None):
+    if leave_type_leave == "1":
+        print leave_type_leave, 101010
+        LEAVE_TYPES_CHOICES = LEAVE_TYPES_CHOICES_LEAVES
+    elif leave_type_leave == "2":
+        print leave_type_leave, 202020
+        LEAVE_TYPES_CHOICES = LEAVE_TYPES_CHOICES_NON_LEAVES
+    else:
+        print leave_type_leave, 303030
+
+
     class ApplyLeaveForm(forms.ModelForm):
         leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}

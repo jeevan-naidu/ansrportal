@@ -466,6 +466,8 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
         manager_id = Employee.objects.filter(user_id=user_id).values('manager_id')
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
+        manager_employee_id = Employee.objects.get(user_id=manager[0]['user_id'])
+        user_employee_id = Employee.objects.get(user_id=user_id)
         applied_by = User.objects.get(id=applied_by)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave_type.leave_type,
@@ -478,6 +480,7 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
                           status_action_by=applied_by,
                           applied_by=applied_by,
                           apply_to=manager_d,
+                          daily_deduction=1,
                           ).save()
         leave_type.save()
         try:
@@ -489,8 +492,12 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
         except:
             print "HR need for user id {0}".format(user_id)
         writeFile.write(
-            "'{0}','{1}','{2}','{3}','{4}'".format(str(User.objects.get(id=user_id)), str(manager_d),
-                                                   str(leave['leave']), str(leave['reason']), str(leave['date'])))
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
+                                                               str(user_employee_id.employee_assigned_id),
+                                                               str(manager_d),
+                                                               str(manager_employee_id.employee_assigned_id),
+                                                               str(leave['leave']), str(leave['reason']),
+                                                               str(leave['date'])))
         writeFile.write("\n")
 
     except:

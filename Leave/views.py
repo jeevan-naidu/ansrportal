@@ -329,6 +329,12 @@ class ApplyLeaveView(View):
     ''' add or edit leave '''
 
     def get(self, request):
+        try:
+            leave_type_leave = request.COOKIES['leave_type_leave']
+            print(leave_type_leave)
+        except:
+            leave_type_leave = 0
+            pass
         context_data = {'add': True,
                         'record_added': False,
                         'form': None,
@@ -353,7 +359,8 @@ class ApplyLeaveView(View):
                                   'ooo_int']
             work_from_home = ['work_from_home']
             temp_id = ['temp_id']
-            form = LeaveForm(leavetype, user_id)
+
+            form = LeaveForm(leavetype, user_id, leave_type_leave)
             context_data['form'] = form
             leave_count = LeaveSummary.objects.filter(leave_type__leave_type=leavetype,
                                                       user_id=user_id,
@@ -370,15 +377,21 @@ class ApplyLeaveView(View):
                 context_data['leave_count'] = leave_count[0].balance
             return render(request, 'leave_apply.html', context_data)
         except:
-            form = LeaveForm('None', request.user.id)
+            form = LeaveForm('None', request.user.id, leave_type_leave)
             context_data['form'] = form
             return render(request, 'leave_apply.html', context_data)
 
     def post(self, request):
+        try:
+            leave_type_leave = request.COOKIES['leave_type_leave']
+            print(leave_type_leave)
+        except:
+            leave_type_leave = 0
+            pass
         user_id = request.POST['name']
         if not user_id:
             user_id = request.user.id
-        leave_form=LeaveForm(request.POST['leave'], user_id, request.POST)
+        leave_form=LeaveForm(request.POST['leave'], user_id, leave_type_leave, request.POST)
         context_data = {'add': True,
                         'record_added': False,
                         'form' : None, 'success_msg': None,

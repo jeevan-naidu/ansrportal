@@ -17,6 +17,22 @@ LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Le
                        ('ooo_dom', 'Domestic Travel'),
                        ('ooo_int', 'International Travel'),
                        ('temp_id', 'Temporary ID'))
+
+LEAVE_TYPES_CHOICES_LEAVES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),
+                              ('loss_of_pay', 'Loss Of Pay'),
+                              ('bereavement_leave', 'Bereavement Leave'),
+                              ('maternity_leave', 'Maternity Leave'),
+                              ('paternity_leave', 'Paternity Leave'),
+                              ('comp_off_avail', 'Comp Off Avail'),
+                              ('sabbatical', 'Sabbatical'))
+LEAVE_TYPES_CHOICES_NON_LEAVES = (('comp_off_earned', 'Comp Off Earned'),
+                                  ('pay_off', 'Pay Off'),
+                                  ('work_from_home', 'Work From Home'),
+                                  ('ooo_dom', 'Domestic Travel'),
+                                  ('ooo_int', 'International Travel'),
+                                  ('temp_id', 'Temporary ID'))
+
+
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
