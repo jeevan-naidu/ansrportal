@@ -19,7 +19,7 @@ currentTime = datetime.now().date().strftime('%Y_%m_%d_%H_%M_%S')
 fileName = "DailyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
-writeFile.write("Employee, Employee ID, Manage, Manager Id, Leave, Reason, Date \n")
+writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
 
 class Command(BaseCommand):
     help = 'Upload Leave summary for new joinee.'

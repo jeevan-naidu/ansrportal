@@ -19,7 +19,7 @@ currentTime = datetime.now().date().strftime('%Y_%m_%d_%H_%M_%S')
 fileName = "WeeklyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
-writeFile.write("Employee, Employee ID, Manage, Manager Id, Leave, Reason, Date \n")
+writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
 
 # def previous_week_range(date):
 #     week_dates = []
