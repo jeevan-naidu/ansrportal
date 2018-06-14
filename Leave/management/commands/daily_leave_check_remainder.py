@@ -55,10 +55,14 @@ def daily_leave_check(year, month, day):
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
         leaves = []
+        employee_attendance = []
         for date in dates:
             hours_in_office = []
             leave_for_date = {}
-            if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
+            if date in [datedata['date'] for datedata in holiday]:
+                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=00))
+                pass
+            elif date.weekday() >= 5:
                 pass
             else:
                 try:
@@ -89,21 +93,26 @@ def daily_leave_check(year, month, day):
                                         tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
                                                                                                           FMT)
                                         hours_in_office.append(tdelta)
+                                        employee_attendance.append(tdelta)
                                 if appliedleave.leave_type_id != 16:
                                     if appliedleave.leave_type_id == 11:
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         hours_in_office.append(wfh)
+                                        employee_attendance.append(wfh)
                                 if appliedleave.leave_type_id not in [11, 16]:
                                     if appliedleave.days_count == '0.5':
                                         tdelta = timedelta(hours=5, minutes=00, seconds=01)
+                                        employee_attendance.append(timedelta(hours=5, minutes=00, seconds=01))
                                     elif appliedleave.days_count == '1':
                                         tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                        employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                                     elif appliedleave.days_count > '1':
                                         leave_check = LeaveApplications.objects.filter(from_date__lte=date,
                                                                                        to_date__gte=date)
                                         if leave_check:
                                             tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                            employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                                     hours_in_office.append(tdelta)
                             if len(hours_in_office) > 2:
                                 if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
@@ -135,7 +144,35 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                            if attendance:
+                                swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck and attendance:
+                            if appliedLeaveCheck[0].leave_type_id == 16:
+                                temp_id = appliedLeaveCheck[0].temp_id
+                                temp_attendance = Attendance.objects.filter(attdate=date,
+                                                                            incoming_employee_id=temp_id)
+                                if temp_attendance:
+                                    swipeIn = temp_attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = temp_attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime,
+                                                                                                      FMT)
+                                    employee_attendance.append(tdelta)
+                                if attendance:
+                                    swipeIn = attendance[0].swipe_in.astimezone(tzone)
+                                    swipeOut = attendance[0].swipe_out.astimezone(tzone)
+                                    swipeInTime = swipeIn.strftime("%H:%M:%S")
+                                    swipeOutTime = swipeOut.strftime("%H:%M:%S")
+                                    tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
+                                    stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
+                                    employee_attendance.append(tdelta)
                             if appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -157,6 +194,7 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                                employee_attendance.append(tdelta + wfh)
                             elif appliedLeaveCheck[0].leave_type_id != 11 and attendance:
                                 leave_for_date = {}
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
@@ -178,6 +216,8 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                                timediff = tdelta + app
+                                employee_attendance.append(timediff)
                             else:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
                                 swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -197,6 +237,7 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                                employee_attendance.append(tdelta)
                         elif appliedLeaveCheck:
                             if appliedLeaveCheck[0].leave_type_id == 11 and not attendance:
                                 tdelta = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
@@ -213,6 +254,7 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                                employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].leave_type_id == 16:
                                 temp_id = appliedLeaveCheck[0].temp_id
                                 temp_attendance = Attendance.objects.filter(attdate=date,
@@ -236,6 +278,7 @@ def daily_leave_check(year, month, day):
                                         leave_for_date['reason'] = reason
                                         leave_for_date['due_date'] = dueDate
                                         leaves.append(leave_for_date)
+                                    employee_attendance.append(tdelta)
                             elif appliedLeaveCheck[0].days_count == '0.5':
                                 reason = "you had applied for only half day leave"
                                 leave = 'half_day'
@@ -245,6 +288,14 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                                employee_attendance.append(timedelta(hours=5,minutes=00, seconds=01))
+                            elif appliedLeaveCheck[0].days_count == '1':
+                                employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
+                            elif appliedLeaveCheck[0].days_count > '1':
+                                leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                             to_date__gte=date)
+                                if leave_check:
+                                    employee_attendance.append(timedelta(hours=9, minutes=00, seconds=01))
                         elif attendance:
                             swipeIn = attendance[0].swipe_in.astimezone(tzone)
                             swipeOut = attendance[0].swipe_out.astimezone(tzone)
@@ -270,7 +321,9 @@ def daily_leave_check(year, month, day):
                                     leave_for_date['reason'] = reason
                                     leave_for_date['due_date'] = dueDate
                                     leaves.append(leave_for_date)
+                            employee_attendance.append(tdelta)
                         else:
+                            employee_attendance.append(timedelta(hours=0, minutes=00, seconds=01))
                             swipeIn = datetime.now(pytz.timezone("Asia/Kolkata")) \
                                 .replace(hour=0, minute=0, second=0, microsecond=0) \
                                 .astimezone(pytz.utc)
@@ -313,11 +366,107 @@ def daily_leave_check(year, month, day):
                         print(user.first_name + user.last_name + " hr need to take care")
                 except:
                     logger.debug("missing records")
-        if leaves:
+
+        total_sec = sum(employee_attendance, timedelta()).seconds + sum(employee_attendance,
+                                                                        timedelta()).days * 24 * 3600
+        total_time = float(u"{0}.{1}".format(total_sec // 3600,
+                                             (total_sec % 3600) // 60))
+        print total_time, user
+
+        if employee_attendance:
             try:
-                send_mail(user, manager, leaves, dates, reason, dueDate, "open")
+                if 39.30 <= total_time < 44:
+                    reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
+                    leave = 'half_day'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 35 <= total_time < 39.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 40 hr"
+                    leave = 'full_day'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 30.30 <= total_time < 35:
+                    reason = "You had logged " + str(total_time) + " hr that is below 35 hr"
+                    leave = '1.5'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 26 <= total_time < 30.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 30.30 hr"
+                    leave = '2'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 21.30 <= total_time < 26:
+                    reason = "You had logged " + str(total_time) + " hr that is below 26 hr"
+                    leave = '2.5'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 17 <= total_time < 21.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 21.30 hr"
+                    leave = '3'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 12.30 <= total_time < 17:
+                    reason = "You had logged " + str(total_time) + " hr that is below 17 hr"
+                    leave = '3.5'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 9 <= total_time < 12.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 12.30 hr"
+                    leave = '4'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 4.5 <= total_time < 9:
+                    reason = "You had logged " + str(total_time) + " hr that is below 9 hr"
+                    leave = '4.5'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 0 <= total_time < 4.30:
+                    reason = "You had logged " + str(total_time) + " hr that is below 4.30 hr"
+                    leave = '5'
+                    try:
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
             except:
-                print "HR need take care for {0}".format(user)
+                logger.debug('email send issue user id' + user.id)
     print str(datetime.now()) + " Daily leave check raised finished running"
 
 def getTimeFromTdelta(tdelta, fmt):
@@ -333,17 +482,21 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def send_mail(user, manager, leavetype, fordate, status_comments,dueDate, status):
+def send_mail(user, manager, leaves, dates, total_hours, leavetype, from_date, to_date, dueDate, status_comments, status):
     msg_html = render_to_string('email_templates/daily_leave_check_remainder.html',
                                 {'registered_by': user.first_name,
+                                 'total_hours': total_hours,
                                  'leaveType': leavetype,
-                                 'fordate': fordate,
-                                 'duedate': dueDate,
+                                 'leaves':leaves,
+                                 'dates':dates,
+                                 'from_date': from_date,
+                                 'to_date': to_date,
+                                 'dueDate': dueDate,
                                  'reason': status_comments,
                                  'status': status,
                                  })
 
-    mail_obj = EmailMessage('Daily Check Reminder',
+    mail_obj = EmailMessage('Daily Check and Weekly Check reminder',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
                             cc=[manager.user.email])
 
