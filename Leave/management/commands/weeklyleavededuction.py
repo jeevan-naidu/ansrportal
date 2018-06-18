@@ -455,8 +455,8 @@ def weekly_leave_deduction():
         'Leave Deduction File: ' + str(year) + "_" + str(month) + "_" + str(day),
         'Hi, All, \nPlease find attached leave deduction file.\nThanks!\nMyAnsrSource\n\n',
         settings.EMAIL_HOST_USER,
-        ['ramesh.kumar@ansrsource.com'],
-        cc=['janaki.BS@ansrsource.com', 'ravindra.jawari@ansrsource.com']
+        ['ravindra.jawari@ansrsource.com'],
+        cc=['janaki.BS@ansrsource.com', 'ramesh.kumar@ansrsource.com', 'shalini.bhagat@ansrsource.com']
     )
     email_report_send.attach_file(new_filename)
     email_report_send.send()
