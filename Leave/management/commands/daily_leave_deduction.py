@@ -494,6 +494,7 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           status_action_by=applied_by,
                           applied_by=applied_by,
                           apply_to=manager_d,
+                          daily_deduction=1,
                           ).save()
         leave_type.save()
         try:
