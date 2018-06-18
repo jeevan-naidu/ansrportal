@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta, time
 from django.core.management.base import BaseCommand
 from CompanyMaster.models import Holiday
 import logging
+import os
 import pytz
 from string import Formatter
 from django.conf import settings
@@ -504,7 +505,12 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         except:
             print "HR need take care for {0}".format(User.objects.get(id=user_id))
         writeFile.write(
-            "'{0}','{1}','{2}','{3}','{4}'".format(str(User.objects.get(id=user_id)), str(manager_d), str(leave['leave']), str(leave['reason']), str(leave['date'])))
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
+                                                               str(user_employee_id.employee_assigned_id),
+                                                               str(manager_d),
+                                                               str(manager_employee_id.employee_assigned_id),
+                                                               str(leave['leave']), str(leave['reason']),
+                                                               str(leave['date'])))
         writeFile.write("\n")
 
     except:
