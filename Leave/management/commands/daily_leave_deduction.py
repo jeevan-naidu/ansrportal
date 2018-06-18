@@ -483,6 +483,8 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
         applied_by = User.objects.get(id=applied_by)
+        manager_employee_id = Employee.objects.get(user_id=manager[0]['user_id'])
+        user_employee_id = Employee.objects.get(user_id=user_id)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave_type.leave_type,
                           from_date=leave['date'],
