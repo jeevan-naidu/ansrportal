@@ -45,7 +45,7 @@ def LeaveForm(leavetype, user, leave_type_leave, data=None):
 
 
     class ApplyLeaveForm(forms.ModelForm):
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............')
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............', label='Select')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
         name = forms.CharField(initial = user, widget=forms.HiddenInput())
         class Meta:
@@ -58,7 +58,7 @@ def LeaveForm(leavetype, user, leave_type_leave, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -86,7 +86,7 @@ def LeaveForm(leavetype, user, leave_type_leave, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -126,7 +126,7 @@ def LeaveForm(leavetype, user, leave_type_leave, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -167,7 +167,7 @@ def LeaveForm(leavetype, user, leave_type_leave, data=None):
 
     class ApplyLeaveForm4(forms.ModelForm):
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
