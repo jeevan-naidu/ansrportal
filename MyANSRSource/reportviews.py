@@ -1940,10 +1940,11 @@ def RevenueRecogniation(request):
 
 
 def data(user_id):
-        project_details = ProjectDetail.objects.filter(Q(pmDelegate_id=user_id)|Q(deliveryManager_id=user_id)|
+        project_details = ProjectDetail.objects.filter(Q(deliveryManager_id=user_id)|
                    Q(portfolio_manager_id=user_id)|Q(project_id__bu_id__new_bu_head=user_id)).values(
                                                                         'project_id',
                                                                         'project_id__name',
+                                                                        'project_id__closed',
                                                                         'project_id__totalValue',
                                                                         'project_id__plannedEffort',
                                                                         'project_id__projectId',
@@ -1986,6 +1987,20 @@ def data(user_id):
             else:
                 project['extra_efforts'] = 0
 
+            if project['project_id__bu_id__new_bu_head'] == project['deliveryManager_id'] == \
+                    project['portfolio_manager_id'] == user_id:
+                project['dm1'] = 1
+            elif project['deliveryManager_id'] == project['portfolio_manager_id'] == user_id:
+                project['dm2'] = 2
+            elif project['deliveryManager_id'] == project['project_id__bu_id__new_bu_head'] == user_id:
+                project['dm3'] = 3
+            elif project['project_id__bu_id__new_bu_head'] == user_id:
+                project['dm4'] = 4
+            elif project['portfolio_manager_id']== user_id:
+                project['dm5'] = 5
+            elif project['deliveryManager_id'] == user_id:
+                project['dm6'] = 6
+            # import ipdb;ipdb.set_trace()
             btg_details = BTG_Update.objects.filter(project_id=project['project_id']).values('id','BTG_Hours','project_id'
                                                                                             ,'is_approved', 'updatedOn')
 
@@ -1995,6 +2010,7 @@ def data(user_id):
                     project['approved'] = btg['is_approved']
                     project['updatedon'] = btg['updatedOn']
                     project['ids'] = btg['id']
+
         return project_details
 
 @login_required
@@ -2007,6 +2023,9 @@ def ProjectReport(request):
         portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager_id=request.user)
         delivery_manager_list = ProjectDetail.objects.filter(deliveryManager_id=request.user)
         bu_manager_list = ProjectDetail.objects.filter(project_id__bu_id__new_bu_head=request.user)
+
+
+
 
 
         Deliverym_ids = ProjectDetail.objects.values('deliveryManager_id')
@@ -2032,13 +2051,20 @@ def ProjectReport(request):
         pmcontain = user_id in pmid
         bucontain = user_id in buid
 
+        #
+        # if dmcontain == pmcontain:
+        #     context['pmgroups'] = 1
+        # if dmcontain == bucontain:
+        #     context['pmgroups'] = 2
+
+
 
         context['prtm_queryset'] = pmcontain
         context['drm_queryset'] = dmcontain
         context['bu_queryset'] = bucontain
         context['user_id'] = user_id
         context['project_all'] = BTG_Update.objects.all()
-        # context['ids'] = 1010101
+
 
         prtm_project_list = []
         for val in portfolio_manager_list:
@@ -2069,7 +2095,7 @@ def ProjectReport(request):
                 project_hrs=Project.objects.filter(id=app_list[0]).values('plannedEffort')
                 total=BTG_hrs[0]['BTG_Hours']+project_hrs[0]['plannedEffort']
                 Project.objects.filter(id=app_list[0]).update(plannedEffort=total)
-                # BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).update(BTG_Hours=0)
+
 
         if reject:
             for rej in reject:
@@ -2079,8 +2105,6 @@ def ProjectReport(request):
         else:
             try:
                 btg_data = json.loads(request.POST.get('project_id'))
-                # projects_list = btg_data.split('_')
-                # btg_data = projects_list[0]
                 btg_update_prev_data =[{'BTG_Hours':12345678}]
                 for k, v in btg_data.iteritems():
                     projects_list = k.split('_')
@@ -2096,22 +2120,9 @@ def ProjectReport(request):
                         btg_update.save()
                         print type(v), type(btg_update_prev_data[0]['BTG_Hours'])
 
-                    # print(btg_update_prev_data[0]['BTG_Hours'])
-
-
             except:
                 pass
 
 
         return render(request, 'MyANSRSource/project_report.html', {})
 
-
-# def btg_detail(request):
-#     project_id = request.GET.get('id')
-#     try:
-#         # project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
-#         btg_details = BTG_Update.objects.get(project_id=project_id)
-#         import ipdb;ipdb.set_trace()
-#         return render(request, 'btg_detail.html', {'btg_detail': btg_details})
-#     except Exception as e:
-#         return render(request, 'btg_detail.html', {'btg_detail': 'Nothing'})
