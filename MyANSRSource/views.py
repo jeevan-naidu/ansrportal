@@ -2527,52 +2527,56 @@ def Dashboard(request):
                     swipe_display.append(temp)
                 else:
                     leave_dates = dates_to_check_leave(leave.from_date, leave.to_date)
+                    holiday = Holiday.objects.all().values('date')
                     for leave_date in leave_dates:
-                        temp = {}
-                        if leave.from_date == leave_date:
-                            temp['date'] = leave_date.strftime('%Y-%m-%d')
-                            temp['leave_type'] = leave.leave_type
-                            if leave.from_session == 'session_second':
-                                temp['half_day'] = 1
-                            if leave.to_session == 'session_first':
-                                temp['half_day'] = 1
-                            if leave.from_session == 'session_first':
+                        if leave_date in [datedata['date'] for datedata in holiday]:
+                            pass
+                        elif leave_date.weekday() < 5:
+                            temp = {}
+                            if leave.from_date == leave_date:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
+                                if leave.from_session == 'session_second':
+                                    temp['half_day'] = 1
+                                if leave.to_session == 'session_first':
+                                    temp['half_day'] = 1
+                                if leave.from_session == 'session_first':
+                                    temp['full_day'] = 1
+                                if leave.to_session == 'session_second':
+                                    temp['full_day'] = 1
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
+                            elif leave.to_date == leave_date:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
+                                if leave.from_session == 'session_second' and leave.to_session == 'session_second':
+                                    temp['half_day'] = 1
+                                elif leave.to_session == 'session_first' and leave.from_session == 'session_first':
+                                    temp['half_day'] = 1
+                                elif leave.from_session == 'session_first':
+                                    temp['full_day'] = 1
+                                elif leave.to_session == 'session_second':
+                                    temp['full_day'] = 1
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
+                            else:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
                                 temp['full_day'] = 1
-                            if leave.to_session == 'session_second':
-                                temp['full_day'] = 1
-                            if leave.status == 'approved':
-                                temp['status'] = 1
-                            if leave.status == 'open':
-                                temp['status'] = 0
-                            temp['leave'] = 1
-                            swipe_display.append(temp)
-                        elif leave.to_date == leave_date:
-                            temp['date'] = leave_date.strftime('%Y-%m-%d')
-                            temp['leave_type'] = leave.leave_type
-                            if leave.from_session == 'session_second' and leave.to_session == 'session_second':
-                                temp['half_day'] = 1
-                            elif leave.to_session == 'session_first' and leave.from_session == 'session_first':
-                                temp['half_day'] = 1
-                            elif leave.from_session == 'session_first':
-                                temp['full_day'] = 1
-                            elif leave.to_session == 'session_second':
-                                temp['full_day'] = 1
-                            if leave.status == 'approved':
-                                temp['status'] = 1
-                            if leave.status == 'open':
-                                temp['status'] = 0
-                            temp['leave'] = 1
-                            swipe_display.append(temp)
-                        else:
-                            temp['date'] = leave_date.strftime('%Y-%m-%d')
-                            temp['leave_type'] = leave.leave_type
-                            temp['full_day'] = 1
-                            if leave.status == 'approved':
-                                temp['status'] = 1
-                            if leave.status == 'open':
-                                temp['status'] = 0
-                            temp['leave'] = 1
-                            swipe_display.append(temp)
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)
