@@ -21,6 +21,9 @@ print(fileName)
 writeFile = open(fileName, "w+")
 writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
 
+writeFileemail = open("dailydeduction.csv", "w+")
+writeFileemail.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date, Leave Type, Employee Email, Manager Email, Deduction Type\n")
+
 class Command(BaseCommand):
     help = 'Upload Leave summary for new joinee.'
 
@@ -323,6 +326,7 @@ def daily_leave_deduction():
             except:
                 logger.debug('email send issue user id' + user.id)
     writeFile.close()
+    writeFileemail.close()
     new_filename = "DailyLeaveDeduction_" + str(year) + "_" + str(month) + "_" + str(day) + ".csv"
     os.rename(fileName, new_filename)
     print "File " + fileName + " renamed to " + new_filename
@@ -359,6 +363,8 @@ def applyLeave(user, manager, leaves, year):
         reason = "applied by system"
         applied_by = User.objects.get(id=35).id
         avaliable_leave = avaliableLeaveCheck(user_id, leave, year)
+        # import ipdb;
+        # ipdb.set_trace()
         if avaliable_leave != 0:
             try:
                 if len(avaliable_leave) >= 2:
@@ -463,11 +469,12 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
                                                  user=user_id,
                                                     status__in=['open', 'approved'])
         if leaveapp and leave['leave'] == 'full_day' and leaveapp[0].leave_type_id not in [16, 11]:
-            leavecount = .5
             if leaveapp[0].from_session == 'session_first':
+                leavecount = .5
                 fromsession = 'session_second'
                 tosession = 'session_second'
             else:
+                leavecount = .5
                 fromsession = 'session_first'
                 tosession = 'session_first'
         elif leave['leave'] == 'full_day':
@@ -483,9 +490,9 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
         manager_id = Employee.objects.filter(user_id=user_id).values('manager_id')
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
+        applied_by = User.objects.get(id=applied_by)
         manager_employee_id = Employee.objects.get(user_id=manager[0]['user_id'])
         user_employee_id = Employee.objects.get(user_id=user_id)
-        applied_by = User.objects.get(id=applied_by)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave_type.leave_type,
                           from_date=leave['date'],
@@ -502,12 +509,12 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
         leave_type.save()
         try:
             send_mail(User.objects.get(id=user_id),
-                      leave_type.leave_type.leave_type, user_manager,
+                      leave_type.leave_type.leave_type,user_manager,
                       leave['date'],
                       leave['date'],
                       leavecount)
         except:
-            print "HR need for user id {0}".format(user_id)
+            print "HR need take care for {0}".format(User.objects.get(id=user_id))
         writeFile.write(
             "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
                                                                str(user_employee_id.employee_assigned_id),
@@ -516,6 +523,19 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
                                                                str(leave['leave']), str(leave['reason']),
                                                                str(leave['date'])))
         writeFile.write("\n")
+        writeFileemail.write(
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}', '{10}'".format(
+                str(User.objects.get(id=user_id).first_name),
+                str(user_employee_id.employee_assigned_id),
+                str(manager_d),
+                str(manager_employee_id.employee_assigned_id),
+                str(leave['leave']),
+                str(leave['reason']),
+                str(leave['date']),
+                str(leaveTypeDictionary[leave_type.leave_type.leave_type]),
+                str(User.objects.get(id=user_id).email),
+                str(user_manager.user.email),"Daily"))
+        writeFileemail.write("\n")
 
     except:
         print "please check manager for user id {0}".format(user_id)
@@ -535,7 +555,8 @@ def send_mail(user, leavetype, user_manager, fromdate, todate, count):
                             cc=[user_manager.user.email])
 
     mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
+    email_status = 1
+    # email_status = mail_obj.send()
     if email_status == 0:
         logger.error(
             "Unable To send Mail To The Authorities For"

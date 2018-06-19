@@ -5,8 +5,9 @@ from datetime import date, datetime, timedelta, time
 from django.core.management.base import BaseCommand
 from CompanyMaster.models import Holiday
 import logging
-import pytz
 import os
+import pytz
+import pandas as pd
 from string import Formatter
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -20,6 +21,9 @@ fileName = "WeeklyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
 writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
+
+writeFileemail = open("weeklydeduction.csv", "w+")
+writeFileemail.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date, Leave Type, Employee Email, Manager Email, Deduction Type\n")
 
 # def previous_week_range(date):
 #     week_dates = []
@@ -445,8 +449,9 @@ def weekly_leave_deduction():
                     leaves.append(leave_for_date)
                     applyLeave(user, manager, leaves, year)
             except:
-                logger.debug('email send issue user id' + user.id)
+                logger.debug('email send issue user id' + str(user.id))
     writeFile.close()
+    writeFileemail.close()
     new_filename = "WeeklyLeaveDeduction_" + str(year) + "_" + str(month) + "_" + str(day) + ".csv"
     os.rename(fileName, new_filename)
     print "File " + fileName + " renamed to " + new_filename
@@ -461,6 +466,69 @@ def weekly_leave_deduction():
     email_report_send.attach_file(new_filename)
     email_report_send.send()
     print str(datetime.now()) + " Weekly leave deduction finished running"
+
+    print "Sending Emails to Employee..."
+
+    daily_leave_file = "dailydeduction.csv"
+    weekly_leave_file = "weeklydeduction.csv"
+    daily_leave = pd.read_csv(daily_leave_file)
+    weekly_leave = pd.read_csv(weekly_leave_file)
+    merged_df = daily_leave.append(weekly_leave)
+    merged_df.columns = [c.replace(' ', '') for c in merged_df.columns]
+    merged_df = merged_df.replace({"'": ''}, regex=True)
+
+    merged_df = merged_df.sort_values(by=['EmployeeID'])
+    EmployeeID_list = list(set(merged_df['EmployeeID']))
+
+    # print(merged_df)
+    print "***Number of Daily Leave entries:", len(daily_leave), "\n**Number of Weekly Leave entries:", len(
+        weekly_leave), "\n***Total Number of Leave entries:", len(merged_df)
+    print "***Number of Employees in files:  " + str(len(EmployeeID_list))
+    # print EmployeeID_list
+    merged_leave = pd.DataFrame(columns=["EmployeeID", "Details", "EmployeeEmail", "ManagerEmail"])
+    print "Email Sending started..."
+    leave_count_dict = {'half_day': 0.5, 'full_day': 1}
+    for id in EmployeeID_list:
+        # print id
+        summary = "<table border = 1 style = 'border-collapse: collapse;'><tr><td align='center'><b>Date</b></td> <td align='center'><b>&nbsp;Leave Count&nbsp;</b></td> <td align='center'><b>&nbsp;Leave Type&nbsp;</b></td> <td align='center'><b>&nbsp;Description&nbsp;</b></td><td align='center'><b>&nbsp;Deduction Type&nbsp;</b></td> </tr>"
+        count = 1
+        for index, row in merged_df.iterrows():
+            if id == row['EmployeeID']:
+                summary = summary + "<tr> <td>&nbsp;" + row['Date'] + "&nbsp;</td>  <td>&nbsp;" + str(
+                    leave_count_dict[row['Leave']]) + "&nbsp;</td>  <td>&nbsp;" + row[
+                              'LeaveType'] + "&nbsp;</td>  <td>&nbsp;" + row['Reason'] + "&nbsp;</td> <td>&nbsp;"+ row['DeductionType'] +"</td></tr>"
+                EmployeeEmail = row['EmployeeEmail']
+                ManagerEmail = row['ManagerEmail']
+                EmployeeName = row['Employee']
+                count = count + 1
+
+        summary = summary + "</table>"
+        # print summary
+        merged_leave = merged_leave.append(
+            {'EmployeeID': id, 'Details': summary, 'EmployeeEmail': EmployeeEmail, 'ManagerEmail': ManagerEmail},
+            ignore_index=True)
+        print EmployeeName
+        try:
+            email_leave_send = EmailMessage(
+                'Leave Deduction',
+                'Hi, ' + EmployeeName + ',<br><p>Admin has raised leave notification. '
+                                        '</p><p>System has applied a leave in the ansrsource portal on your behalf.</p>'
+                + summary +
+                '<p> Reason : You have not taken any action before due date </p>' +
+                '<p><b>NOTE</b>: This is a system-generated e-mail. Please do not reply.</p><p>Regards,<br> HR Support<br>',
+                settings.EMAIL_HOST_USER,
+                [EmployeeEmail],
+                cc=[ManagerEmail]
+            )
+            email_leave_send.content_subtype = 'html'
+
+            email_leave_send.send()
+        except:
+            print("Email sending failed for" + EmployeeName)
+            pass
+            # print merged_leave
+    print("Email sending finished!")
+
 
 def applyLeave(user, manager, leaves, year):
     for leave in leaves:
@@ -608,14 +676,6 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
                           weekly_deduction=2,
                           ).save()
         leave_type.save()
-        try:
-            send_mail(User.objects.get(id=user_id),
-                      leave_type.leave_type.leave_type, user_manager,
-                      leave['date'],
-                      leave['date'],
-                      leavecount)
-        except:
-            print "HR need for user id {0}".format(user_id)
         writeFile.write(
             "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
                                                                str(user_employee_id.employee_assigned_id),
@@ -624,6 +684,27 @@ def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
                                                                str(leave['leave']), str(leave['reason']),
                                                                str(leave['date'])))
         writeFile.write("\n")
+        writeFileemail.write(
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}'".format(
+                str(User.objects.get(id=user_id).first_name),
+                str(user_employee_id.employee_assigned_id),
+                str(manager_d),
+                str(manager_employee_id.employee_assigned_id),
+                str(leave['leave']),
+                str(leave['reason']),
+                str(leave['date']),
+                str(leaveTypeDictionary[leave_type.leave_type.leave_type]),
+                str(User.objects.get(id=user_id).email),
+                str(user_manager.user.email),"Weekly"))
+        writeFileemail.write("\n")
+        try:
+            send_mail(User.objects.get(id=user_id),
+                      leave_type.leave_type.leave_type, user_manager,
+                      leave['date'],
+                      leave['date'],
+                      leavecount)
+        except:
+            print "HR need for user id {0}".format(user_id)
 
     except:
         print "please check manager for user id {0}".format(user_id)
@@ -656,7 +737,8 @@ def send_mail(user, leavetype, user_manager, fromdate, todate, count):
                             cc=[user_manager.user.email])
 
     mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
+    email_status = 1
+    # email_status = mail_obj.send()
     if email_status == 0:
         logger.error(
             "Unable To send Mail To The Authorities For"
