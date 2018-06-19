@@ -389,7 +389,15 @@ def daily_leave_check():
         print total_time, user
         if employee_attendance:
             try:
-                if 39.30 <= total_time < 44:
+                if total_time > 44 and leaves:
+                    try:
+                        leave = ''
+                        if leaves and employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
+                    except:
+                        print "HR need take care for {0}".format(user)
+                elif 39.30 <= total_time < 44:
                     reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave = 'half_day'
                     try:
