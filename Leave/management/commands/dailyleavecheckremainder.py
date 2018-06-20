@@ -375,15 +375,16 @@ def daily_leave_check():
                 if total_time > 44 and leaves:
                     try:
                         leave = ''
-                        if leaves and employee_attendance:
-                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate, reason, "open")
+                        if leaves or employee_attendance:
+                            send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
+                                      reason, "open")
                     except:
                         print "HR need take care for {0}".format(user)
                 elif 39.30 <= total_time < 44:
                     reason = "You had logged " + str(total_time) + " hr that is below 45 hr"
                     leave = 'half_day'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -392,7 +393,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave = 'full_day'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -401,7 +402,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave = '1.5'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -410,7 +411,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 30.30 hr"
                     leave = '2'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -419,7 +420,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave = '2.5'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -428,7 +429,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 21.30 hr"
                     leave = '3'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -437,7 +438,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 17 hr"
                     leave = '3.5'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -446,7 +447,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 12.30 hr"
                     leave = '4'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -455,7 +456,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave = '4.5'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
@@ -464,7 +465,7 @@ def daily_leave_check():
                     reason = "You had logged " + str(total_time) + " hr that is below 4.30 hr"
                     leave = '5'
                     try:
-                        if leaves and employee_attendance:
+                        if leaves or employee_attendance:
                             send_mail(user, manager, leaves, dates, total_time, leave, dates[0], dates[-1], dueDate,
                                       reason, "open")
                     except:
