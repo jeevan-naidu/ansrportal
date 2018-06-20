@@ -765,3 +765,13 @@ class SendEmail(models.Model):
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",
                                      auto_now=True)
+
+class BTG_Update(models.Model):
+    brId = models.CharField(default=None, blank=True, null=True,
+                            max_length=100, verbose_name="Change Request ID")
+    is_approved = models.CharField(verbose_name="Approved", choices=APRROVECHOICES, default=0, max_length=1)
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
+    BTG_Hours = models.IntegerField(default=0, verbose_name="BTG Hour")
+    createdOn = models.DateTimeField(verbose_name="created Date", default=timezone.now)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date", default=timezone.now)

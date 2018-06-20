@@ -17,6 +17,22 @@ LEAVE_TYPES_CHOICES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Le
                        ('ooo_dom', 'Domestic Travel'),
                        ('ooo_int', 'International Travel'),
                        ('temp_id', 'Temporary ID'))
+
+LEAVE_TYPES_CHOICES_LEAVES = (('earned_leave', 'Earned Leave'), ('sick_leave', 'Sick Leave'), ('casual_leave', 'Casual Leave'),
+                              ('loss_of_pay', 'Loss Of Pay'),
+                              ('bereavement_leave', 'Bereavement Leave'),
+                              ('maternity_leave', 'Maternity Leave'),
+                              ('paternity_leave', 'Paternity Leave'),
+                              ('comp_off_avail', 'Comp Off Avail'),
+                              ('sabbatical', 'Sabbatical'))
+LEAVE_TYPES_CHOICES_NON_LEAVES = (('comp_off_earned', 'Comp Off Earned'),
+                                  ('pay_off', 'Pay Off'),
+                                  ('work_from_home', 'Work From Home'),
+                                  ('ooo_dom', 'Domestic Travel'),
+                                  ('ooo_int', 'International Travel'),
+                                  ('temp_id', 'Temporary ID'))
+
+
 OCCURRENCE_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 CARRY_FORWARD_CHOICES = (('monthly', 'Monthly'), ('yearly', 'Yearly'), ('none', 'None'))
 APPLICATION_STATUS = (('open', 'Open'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled'))
@@ -111,6 +127,8 @@ class LeaveApplications(models.Model):
     atachement = models.FileField(upload_to=content_file_name, blank=True, null=True, verbose_name='Attachment')
     applied_on = models.DateField(auto_now_add=True, verbose_name='Leave Applied Date')
     modified_on = models.DateField(auto_now=True, verbose_name='Modified Date')
+    daily_deduction = models.CharField(max_length=10, verbose_name='Daily Deduction',blank=True, null=True)
+    weekly_deduction = models.CharField(max_length=10, verbose_name='Weekly Deduction', blank=True, null=True)
     active = models.BooleanField(blank=False, default=True, verbose_name="Is Active?")
 
     def __unicode__(self):

@@ -595,6 +595,14 @@
                                                                     </a>
                                                                 </li>
                                                                 {% endif %}
+                                                                {% if request.user|has_group:'Finance' or request.user|has_group:'DeliveryManager' or request.user|has_group:"myansrsourcebuhead" %}
+                                                                <li>
+                                                                    <a href="{% url 'ProjectReport'%}">
+                                                                        <span class="menu-text">Project Report</span>
+                                                                    </a>
+                                                                </li>
+                                                                {% endif %}
+
 
 
                                                             </ul>
@@ -696,6 +704,13 @@
                                                             <li>
                                                                 <a href="{% url 'leave_report' %}">
                                                                     <span class="menu-text">Leave Report</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if request.user|has_group:"myansrsourceHR" %}
+                                                            <li>
+                                                                <a href="{% url 'leave_summary' %}">
+                                                                    <span class="menu-text">Leave Summary</span>
                                                                 </a>
                                                             </li>
                                                         {% endif %}

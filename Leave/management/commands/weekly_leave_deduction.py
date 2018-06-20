@@ -5,7 +5,9 @@ from datetime import date, datetime, timedelta, time
 from django.core.management.base import BaseCommand
 from CompanyMaster.models import Holiday
 import logging
+import os
 import pytz
+import pandas as pd
 from string import Formatter
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -18,6 +20,10 @@ currentTime = datetime.now().date().strftime('%Y_%m_%d_%H_%M_%S')
 fileName = "WeeklyLeaveDeduction" + str(currentTime) + ".csv"
 print(fileName)
 writeFile = open(fileName, "w+")
+writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
+
+writeFileemail = open("weeklydeduction.csv", "w+")
+writeFileemail.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date, Leave Type, Employee Email, Manager Email, Deduction Type\n")
 
 # def previous_week_range(date):
 #     week_dates = []
@@ -83,6 +89,10 @@ def weekly_leave_deduction(year, month, day):
                 try:
                     dates_av.append(date)
                     employee = Employee.objects.filter(user_id=user.id)
+                    if employee:
+                        manager = user.employee.manager
+                    else:
+                        manager = ''
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
                                                                          user=user.id,
@@ -247,7 +257,6 @@ def weekly_leave_deduction(year, month, day):
         total_sec = sum(employee_attendance,timedelta()).seconds + sum(employee_attendance,timedelta()).days * 24 * 3600
         total_time =  float(u"{0}.{1}".format(total_sec // 3600,
                                 (total_sec % 3600) // 60))
-        print employee_attendance
         print total_time, user
         if employee_attendance:
             try:
@@ -257,14 +266,14 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 35 <= total_time < 39.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 40 hr"
                     leave_for_date['user_id'] = user.id
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[0]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 30.30 <= total_time < 35:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 35 hr"
                     leave_for_date['user_id'] = user.id
@@ -277,7 +286,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 26 <= total_time < 30.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 30.5 hr"
                     leave_for_date['user_id'] = user.id
@@ -290,7 +299,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[1]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 21.30 <= total_time < 26:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 26 hr"
                     leave_for_date['user_id'] = user.id
@@ -309,7 +318,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 17 <= total_time < 21.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 21.5 hr"
                     leave_for_date['user_id'] = user.id
@@ -328,7 +337,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[2]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 12.30 <= total_time < 17:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 17.5 hr"
                     leave_for_date['user_id'] = user.id
@@ -353,7 +362,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 9 <= total_time < 12.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 12.5 hr"
                     leave_for_date['user_id'] = user.id
@@ -378,7 +387,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[3]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 4.30 <= total_time < 9:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 9 hr"
                     leave_for_date['user_id'] = user.id
@@ -409,7 +418,7 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'half_day'
                     leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
                 elif 0 <= total_time < 4.30:
                     leave_for_date['reason'] = "You had logged " + str(total_time) + " hr that is below 4.5 hr"
                     leave_for_date['user_id'] = user.id
@@ -440,12 +449,90 @@ def weekly_leave_deduction(year, month, day):
                     leave_for_date['leave'] = 'full_day'
                     leave_for_date['date'] = dates_av[4]
                     leaves.append(leave_for_date)
-                    applyLeave(user, leaves, year)
+                    applyLeave(user, manager, leaves, year)
             except:
-                logger.debug('email send issue user id' + user.id)
+                logger.debug('email send issue user id' + str(user.id))
+    writeFile.close()
+    writeFileemail.close()
+    new_filename = "WeeklyLeaveDeduction_" + str(year) + "_" + str(month) + "_" + str(day) + ".csv"
+    os.rename(fileName, new_filename)
+    print "File " + fileName + " renamed to " + new_filename
+    print "Sending deduction report... "
+    email_report_send = EmailMessage(
+        'Leave Deduction File: ' + str(year) + "_" + str(month) + "_" + str(day),
+        'Hi, All, \nPlease find attached leave deduction file.\nThanks!\nMyAnsrSource\n\n',
+        settings.EMAIL_HOST_USER,
+        ['ravindra.jawari@ansrsource.com'],
+        cc=['janaki.BS@ansrsource.com', 'ramesh.kumar@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+    )
+    email_report_send.attach_file(new_filename)
+    email_report_send.send()
     print str(datetime.now()) + " Weekly leave deduction finished running"
 
-def applyLeave(user, leaves, year):
+    print "Sending Emails to Employee..."
+
+    daily_leave_file = "dailydeduction.csv"
+    weekly_leave_file = "weeklydeduction.csv"
+    daily_leave = pd.read_csv(daily_leave_file)
+    weekly_leave = pd.read_csv(weekly_leave_file)
+    merged_df = daily_leave.append(weekly_leave)
+    merged_df.columns = [c.replace(' ', '') for c in merged_df.columns]
+    merged_df = merged_df.replace({"'": ''}, regex=True)
+
+    merged_df = merged_df.sort_values(by=['EmployeeID'])
+    EmployeeID_list = list(set(merged_df['EmployeeID']))
+
+    # print(merged_df)
+    print "***Number of Daily Leave entries:", len(daily_leave), "\n**Number of Weekly Leave entries:", len(
+        weekly_leave), "\n***Total Number of Leave entries:", len(merged_df)
+    print "***Number of Employees in files:  " + str(len(EmployeeID_list))
+    # print EmployeeID_list
+    merged_leave = pd.DataFrame(columns=["EmployeeID", "Details", "EmployeeEmail", "ManagerEmail"])
+    print "Email Sending started..."
+    leave_count_dict = {'half_day': 0.5, 'full_day': 1}
+    for id in EmployeeID_list:
+        # print id
+        summary = "<table border = 1 style = 'border-collapse: collapse;'><tr><td align='center'><b>Date</b></td> <td align='center'><b>&nbsp;Leave Count&nbsp;</b></td> <td align='center'><b>&nbsp;Leave Type&nbsp;</b></td> <td align='center'><b>&nbsp;Description&nbsp;</b></td><td align='center'><b>&nbsp;Deduction Type&nbsp;</b></td> </tr>"
+        count = 1
+        for index, row in merged_df.iterrows():
+            if id == row['EmployeeID']:
+                summary = summary + "<tr> <td>&nbsp;" + row['Date'] + "&nbsp;</td>  <td>&nbsp;" + str(
+                    leave_count_dict[row['Leave']]) + "&nbsp;</td>  <td>&nbsp;" + row[
+                              'LeaveType'] + "&nbsp;</td>  <td>&nbsp;" + row['Reason'] + "&nbsp;</td> <td>&nbsp;"+ row['DeductionType'] +"</td></tr>"
+                EmployeeEmail = row['EmployeeEmail']
+                ManagerEmail = row['ManagerEmail']
+                EmployeeName = row['Employee']
+                count = count + 1
+
+        summary = summary + "</table>"
+        # print summary
+        merged_leave = merged_leave.append(
+            {'EmployeeID': id, 'Details': summary, 'EmployeeEmail': EmployeeEmail, 'ManagerEmail': ManagerEmail},
+            ignore_index=True)
+        print EmployeeName
+        try:
+            email_leave_send = EmailMessage(
+                'Leave Deduction',
+                'Hi, ' + EmployeeName + ',<br><p>Admin has raised leave notification. '
+                                        '</p><p>System has applied a leave in the ansrsource portal on your behalf.</p>'
+                + summary +
+                '<p> Reason : You have not taken any action before due date </p>' +
+                '<p><b>NOTE</b>: This is a system-generated e-mail. Please do not reply.</p><p>Regards,<br> HR Support<br>',
+                settings.EMAIL_HOST_USER,
+                [EmployeeEmail],
+                cc=[ManagerEmail]
+            )
+            email_leave_send.content_subtype = 'html'
+
+            email_leave_send.send()
+        except:
+            print("Email sending failed for" + EmployeeName)
+            pass
+            # print merged_leave
+    print("Email sending finished!")
+
+
+def applyLeave(user, manager, leaves, year):
     for leave in leaves:
         user_id = user.id
         reason = "applied by system"
@@ -458,7 +545,7 @@ def applyLeave(user, leaves, year):
                         leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                         if leavecheckonautoapplydate(leave, user_id):
                             leave['leave'] = 'half_day'
-                            leavesubmit(leave, leave_type, user_id, applied_by)
+                            leavesubmit(leave, manager, leave_type, user_id, applied_by)
                 if len(avaliable_leave) == 1:
                     avaliable_leave.append(0)
                     for leave_ty in avaliable_leave:
@@ -466,7 +553,7 @@ def applyLeave(user, leaves, year):
                             leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
                         else:
                             leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
                                                                                      leave_type=LeaveType.objects.get(
@@ -476,12 +563,12 @@ def applyLeave(user, leaves, year):
                                                                                      year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
             except:
                 leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
                 if leavecheckonautoapplydate(leave, user_id):
-                    leavesubmit(leave, leave_type, user_id, applied_by)
+                    leavesubmit(leave, manager, leave_type, user_id, applied_by)
         else:
             leave_type = LeaveSummary.objects.filter(user=user_id,
                                              leave_type__leave_type='loss_of_pay',
@@ -495,7 +582,7 @@ def applyLeave(user, leaves, year):
                                             balance=0,
                                             year=year)
             if leavecheckonautoapplydate(leave, user_id):
-                leavesubmit(leave, leave_type, user_id, applied_by)
+                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__gte=leave['date'],
@@ -547,7 +634,7 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
         return leave_type_combined
     return 0
 
-def leavesubmit(leave, leave_type,  user_id, applied_by):
+def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
     try:
         leaveapp = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                                  to_date__gte=leave['date'],
@@ -575,6 +662,8 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
         applied_by = User.objects.get(id=applied_by)
+        manager_employee_id = Employee.objects.get(user_id=manager[0]['user_id'])
+        user_employee_id = Employee.objects.get(user_id=user_id)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave_type.leave_type,
                           from_date=leave['date'],
@@ -586,15 +675,33 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           status_action_by=applied_by,
                           applied_by=applied_by,
                           apply_to=manager_d,
+                          weekly_deduction=2,
                           ).save()
         leave_type.save()
         writeFile.write(
-            "'{0}','{1}','{2}','{3}','{4}'".format(User.objects.get(id=user_id), manager_d,
-                                                   leave['leave'], leave['reason'], leave['date']))
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
+                                                               str(user_employee_id.employee_assigned_id),
+                                                               str(manager_d),
+                                                               str(manager_employee_id.employee_assigned_id),
+                                                               str(leave['leave']), str(leave['reason']),
+                                                               str(leave['date'])))
         writeFile.write("\n")
+        writeFileemail.write(
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}'".format(
+                str(User.objects.get(id=user_id).first_name),
+                str(user_employee_id.employee_assigned_id),
+                str(manager_d),
+                str(manager_employee_id.employee_assigned_id),
+                str(leave['leave']),
+                str(leave['reason']),
+                str(leave['date']),
+                str(leaveTypeDictionary[leave_type.leave_type.leave_type]),
+                str(User.objects.get(id=user_id).email),
+                str(user_manager.user.email),"Weekly"))
+        writeFileemail.write("\n")
         try:
             send_mail(User.objects.get(id=user_id),
-                      leave_type.leave_type.leave_type,
+                      leave_type.leave_type.leave_type, user_manager,
                       leave['date'],
                       leave['date'],
                       leavecount)
@@ -618,7 +725,7 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def send_mail(user, leavetype, fromdate, todate, count):
+def send_mail(user, leavetype, user_manager, fromdate, todate, count):
     msg_html = render_to_string('email_templates/weekly-leave_deduction.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leavetype,
@@ -629,10 +736,11 @@ def send_mail(user, leavetype, fromdate, todate, count):
 
     mail_obj = EmailMessage('Leave Deduction',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
-                            cc=[])
+                            cc=[user_manager.user.email])
 
     mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
+    email_status = 1
+    # email_status = mail_obj.send()
     if email_status == 0:
         logger.error(
             "Unable To send Mail To The Authorities For"

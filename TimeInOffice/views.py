@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.shortcuts import render
 from django.utils import timezone
 from employee.models import Employee, Attendance
+from Leave.models import LeaveApplications
 from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
@@ -13,6 +14,7 @@ import json
 from calendar import monthrange
 from Leave.views import current_week, weekdetail, current_month_week_details, month_in_english, next_week_detail, previous_week_detail
 import numpy as np
+from django.db.models import Q, Sum
 
 def weekdetail_year(week, month, year):
     currentmontdetail = monthrange(year, month)
@@ -212,61 +214,123 @@ def userweeklytimereport(user, week, month, year):
     enddate = startdate + timedelta(5)
     for single_date in daterange(startdate, enddate):
         time_detail = timecheck(user, single_date)
-        timelist.append(time_detail)
+        if time_detail != 'Leave':
+            timelist.append(time_detail)
     return timelist
 
 
 def get_hour_aggregate(hour):
-   # This function is applicable whe time in format like '5.23' or '{0}.{1}'.
-   # This function accept array input.
-   # *This program is assuming that #.p and #.P0 means P0 minutes and #.0P means P minutes, where p is a whole number
+    # This function is applicable whe time in format like '5.23' or '{0}.{1}'.
+    # This function accept array input.
+    # *This program is assuming that #.p and #.P0 means P0 minutes and #.0P means P minutes, where p is a whole number
 
-   total_hour = [int(x) for x in hour]
-   total_min = np.array(hour) * 100 - np.array(total_hour) * 100
-   # Total time
-   hour_from_min = (sum(total_min) / 60)
-   hour_h_m = sum(total_hour) + int(hour_from_min)
-   min_from_min = round(((sum(total_min) % 60)) / 100, 2)
-   sum_of_time = hour_h_m + min_from_min
-   sum_of_time = '{0:.2f}'.format(float(sum_of_time))  # To get sum of time
+    total_hour = [int(x) for x in hour]
+    total_min = np.array(hour) * 100 - np.array(total_hour) * 100
+    # Total time
+    hour_from_min = (sum(total_min) / 60)
+    hour_h_m = sum(total_hour) + int(hour_from_min)
+    min_from_min = round(((sum(total_min) % 60)) / 100, 2)
+    sum_of_time = hour_h_m + min_from_min
+    sum_of_time = '{0:.2f}'.format(float(sum_of_time))  # To get sum of time
 
-   # Average time
-   seconds_hour = (sum(total_hour)) * 60 * 60
-   seconds_min = (sum(total_min)) * 60
-   seconds_h_m = seconds_hour + seconds_min
-   avg_seconds = seconds_h_m / len(hour)
-   avg_of_hr = int(avg_seconds / 3600)
-   avg_of_min = round((((avg_seconds % 3600) / 60) / 100), 2)
-   avg_of_time = avg_of_hr + avg_of_min
-   avg_of_time = '{0:.2f}'.format(float(avg_of_time))  # To get average of time
-   # return sum_of_time # Addition time
-   return avg_of_time  # Average time
+    # Average time
+    seconds_hour = (sum(total_hour)) * 60 * 60
+    seconds_min = (sum(total_min)) * 60
+    seconds_h_m = seconds_hour + seconds_min
+    avg_seconds = seconds_h_m / len(hour)
+    avg_of_hr = int(avg_seconds / 3600)
+    avg_of_min = round((((avg_seconds % 3600) / 60) / 100), 2)
+    avg_of_time = avg_of_hr + avg_of_min
+    avg_of_time = '{0:.2f}'.format(float(avg_of_time))  # To get average of time
+    # return sum_of_time # Addition time
+    return avg_of_time  # Average time
 
 
 def weeklyavg(user, week, month, year):
-   total_avg = []
-   total = userweeklytimereport(user, week, month, year)
-   for time in total:
-       if time == 0:
-           pass
-       elif time is not None:
-           total_avg.append(time)
-   if sum(total_avg) == 0:
-       avg = 0
-   else:
-
-       avg = get_hour_aggregate(total_avg)
-       # print(total_avg)
-       # print(avg)
-   return '{0:.2f}'.format(float(avg))
+    total_avg = []
+    total = userweeklytimereport(user, week, month, year)
+    for time in total:
+        if time == 0:
+            pass
+        elif time is not None:
+            total_avg.append(time)
+    if sum(total_avg) == 0:
+        avg = 0
+    else:
+        avg = get_hour_aggregate(total_avg)
+        # print(total_avg)
+        # print(avg)
+    return '{0:.2f}'.format(float(avg))
 
 def daterange(start_date, end_date):
-   for n in range(int((end_date - start_date).days)):
+    for n in range(int((end_date - start_date).days)):
        yield start_date + timedelta(n)
 
 def timecheck(user, date):
    att_day = 0
    userattendance = Attendance.objects.filter(employee_id=user.employee.employee_assigned_id, attdate=date)
+   leave_check = LeaveApplications.objects.filter(from_date__lte=date, to_date__gte=date, user=user.id,
+                                                  status__in=['open', 'approved'])
+   if leave_check:
+       if len(leave_check) > 1:
+           leave_total = []
+           for leave in leave_check:
+               if leave.temp_id:
+                   userattendance = Attendance.objects.filter(incoming_employee_id=leave.temp_id, attdate=date)
+                   for att in userattendance:
+                       if att.swipe_out and att.swipe_in is not None:
+                           att_day = att.swipe_out - att.swipe_in
+                           delta = att_day
+                           sec = delta.seconds
+                           hours = sec // 3600
+                           minutes = (sec // 60) - (hours * 60)
+                           att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+                           att_day = float(att_day)
+                           leave_total.append(att_day)
+               if leave.hours and leave.from_date == leave.to_date:
+                   att_day = float(leave.hours[:2] + '.' + leave.hours[2:])
+                   leave_total.append(att_day)
+               if leave.hours and leave.from_date != leave.to_date:
+                   days_count = float(leave.days_count)
+                   total_hours = float(leave.hours[:2] + '.' + leave.hours[2:])
+                   att_day = float(total_hours / days_count)
+                   leave_total.append(att_day)
+           return float(sum(leave_total))
+       else:
+           for leave in leave_check:
+               if leave.temp_id:
+                   userattendance = Attendance.objects.filter(incoming_employee_id=leave.temp_id, attdate=date)
+                   for att in userattendance:
+                       if att.swipe_out and att.swipe_in is not None:
+                           att_day = att.swipe_out - att.swipe_in
+                           delta = att_day
+                           sec = delta.seconds
+                           hours = sec // 3600
+                           minutes = (sec // 60) - (hours * 60)
+                           att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+                           att_day = float(att_day)
+                       return att_day
+               if leave.hours and leave.from_date == leave.to_date and userattendance:
+                   if userattendance:
+                       for att in userattendance:
+                           if att.swipe_out and att.swipe_in is not None:
+                               att_day = att.swipe_out - att.swipe_in
+                               delta = att_day
+                               sec = delta.seconds
+                               hours = sec // 3600
+                               minutes = (sec // 60) - (hours * 60)
+                               att_day = ('{0}.{1:02.0f}'.format(hours, minutes))
+                               att_day = float(att_day)
+                   time_in_day = float(leave.hours[:2] + '.' + leave.hours[2:]) + att_day
+                   return time_in_day
+               elif leave.hours and leave.from_date == leave.to_date:
+                   att_day = float(leave.hours[:2] + '.' + leave.hours[2:])
+                   return att_day
+               if leave.hours and leave.from_date != leave.to_date:
+                  days_count = float(leave.days_count)
+                  total_hours = float(leave.hours[:2] + '.' + leave.hours[2:])
+                  att_day = float(total_hours / days_count)
+                  return att_day
    if not userattendance:
        att_day = 0
    for att in userattendance:
