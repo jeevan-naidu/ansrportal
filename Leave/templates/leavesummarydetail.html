@@ -1,0 +1,99 @@
+
+
+<table id="table" class=" table table-hover view_details">
+    <thead>
+        <tr>
+            <th class="hidden">User ID</th>
+            <th class="hidden">ID</th>
+            <th class="hidden">User Name</th>
+            <th class="hidden">Employee ID</th>
+            <th>Leave Type</th>
+            <th>Applied</th>
+            <th>Approved</th>
+            <th>Balance</th>
+            <th>Year</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leave_details %}
+            <tr id="leave{{forloop.counter}}">
+                <td class="hidden" id="user_id{{forloop.counter}}">{{leave.user_id}}</td>
+                <td class="hidden" id="id{{forloop.counter}}">{{leave.id}}</td>
+                <td class="hidden" id="leave_type{{forloop.counter}}">{{leave.leave_type_id}}</td>
+                <td class="hidden">{{leave.username}}</td>
+                <td class="hidden">{{leave.employee_id}}</td>
+                <td>{{ leave.leave_type_choice }}</td>
+                <td width="30"><input class='applied' type="text" value="{{ leave.applied }}" id="applied{{forloop.counter}}" required="required" readonly></td>
+                <td width="30"><input class='approved' type="text" value="{{ leave.approved }}" id="approved{{forloop.counter}}" required="required" ></td>
+                <td width="30"><input class='balance' type="text" value="{{ leave.balance }}" id="balance{{forloop.counter}}" required="required" readonly></td>
+                <td id="year{{forloop.counter}}">{{leave.year}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+<button id="update" class="btn btn-sm vd_bg-green vd_white pull-right">Update</button>
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+        //columnCheck();
+        $(".applied,.approved,.balance").on('keyup', function(){
+            var _getVal = columnCheck()
+            if(_getVal > 0){
+                $("button[id='update']").hide();
+            }else{
+                $("button[id='update']").show();
+            }
+        });
+
+        function columnCheck(){
+            var __count = 0;
+
+            $('.UserDetail input[type=text]').each(function () {
+                if($(this).val() ==""){
+                    __count++;
+                }
+            });
+            return __count;
+        }
+
+
+    });
+
+
+    $("#update").on('click', function(){
+        var obj = [];
+            for(i=1; i<16; i++){
+                user_id = document.getElementById('user_id'+i).innerHTML;
+                id = document.getElementById('id'+i).innerHTML;
+                leave_type_id = document.getElementById('leave_type'+i).innerHTML;
+                applied = document.getElementById('applied'+i).value;
+                approved = document.getElementById('approved'+i).value;
+                balance = document.getElementById('balance'+i).value;
+                year = document.getElementById('year'+i).innerHTML;
+                details = {"user_id":user_id,"id":id,"leave_type_id":leave_type_id,"applied":applied,"approved":approved, "balance":balance, "year":year};
+                obj.push(details);
+            }
+            $.ajax({
+                contentType: "application/json",
+                url:'/leave/leave_summary_update/',
+                data: JSON.stringify({'details':obj}),
+                type: "POST",
+                success: function(json){
+                  swal({
+                        title: "",
+                        text: "Leave Updated Successfully!",
+                        type: "success"
+                    }, function() {
+                        window.location = "/leave/leavesummary/";
+                    });
+                    }
+            });
+
+    });
+
+</script>

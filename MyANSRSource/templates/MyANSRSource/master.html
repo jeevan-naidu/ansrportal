@@ -398,14 +398,12 @@
                                                         </a>
                                                  </li>
                                             {% endif %}
-                                            {% if user|IsManager or request.user|has_group:'myansrsourceHR' or request.user|has_group:'IT-support' or request.user|has_group:'Finance' or request.user|has_group:'BookingRoomAdmin' or request.user|has_group:'LibraryAdmin'%}
 
                                             <li>
                                                     <a href="/timein/">
                                                         <span class="menu-text">Time in Office</span>
                                                     </a>
                                                 </li>
-                                            {% endif %}
                                             {% if request.user|has_group:"myansrsourceHR"  or request.user|has_group:"myansrsourcePM" or request.user.is_superuser %}
                                             <li>
                                                     <a href="/myansrsource/timesheet/pm_view">
@@ -706,6 +704,13 @@
                                                             <li>
                                                                 <a href="{% url 'leave_report' %}">
                                                                     <span class="menu-text">Leave Report</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% if request.user|has_group:"myansrsourceHR" %}
+                                                            <li>
+                                                                <a href="{% url 'leave_summary' %}">
+                                                                    <span class="menu-text">Leave Summary</span>
                                                                 </a>
                                                             </li>
                                                         {% endif %}

@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from CompanyMaster.models import Holiday
 import logging
 import pytz
+import os
 from string import Formatter
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -13,6 +14,15 @@ from django.core.mail import EmailMessage
 from Leave.tasks import leaveTypeDictionary
 
 logger = logging.getLogger('MyANSRSource')
+
+currentTime = datetime.now().date().strftime('%Y_%m_%d_%H_%M_%S')
+fileName = "DailyLeaveDeduction" + str(currentTime) + ".csv"
+print(fileName)
+writeFile = open(fileName, "w+")
+writeFile.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date \n")
+
+writeFileemail = open("dailydeduction.csv", "w+")
+writeFileemail.write("Employee, Employee ID, Manager, Manager Id, Leave, Reason, Date, Leave Type, Employee Email, Manager Email, Deduction Type\n")
 
 class Command(BaseCommand):
     help = 'Upload Leave summary for new joinee.'
@@ -38,13 +48,14 @@ def getTime(t):
 def daily_leave_deduction():
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')
-    user_list = User.objects.filter(is_active=True)
     date = datetime.now().date()
+    month = date.month
     year = date.year
     week_dates = previous_week_range(date)
     start_date = week_dates[0]
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     # dueDate = end_date + timedelta(days=7)
@@ -61,6 +72,10 @@ def daily_leave_deduction():
                 try:
                     leave = ""
                     employee = Employee.objects.filter(user_id=user.id)
+                    if employee:
+                        manager = user.employee.manager
+                    else:
+                        manager = ''
                     appliedLeaveCheck = LeaveApplications.objects.filter(from_date__lte=date,
                                                                          to_date__gte=date,
                                                                          user=user.id,
@@ -87,42 +102,47 @@ def daily_leave_deduction():
                                         wfh = timedelta(hours=int(getTime(appliedleave.hours)[0]),
                                                         minutes=int(getTime(appliedleave.hours)[1]), seconds=00)
                                         hours_in_office.append(wfh)
-                                    if appliedleave.leave_type_id not in [11, 16]:
-                                        if appliedleave.days_count == '0.5':
-                                            tdelta = timedelta(hours=04, minutes=30, seconds=00)
-                                        if appliedleave.days_count == '1':
-                                            tdelta = timedelta(hours=9, minutes=00, seconds=00)
-                                        hours_in_office.append(tdelta)
-                                if len(hours_in_office) > 2:
-                                    if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'full_day'
-                                    elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'half_day'
-                                    if leave:
-                                        leave_for_date['date'] = date
-                                        leave_for_date['leave'] = leave
-                                        leave_for_date['reason'] = reason
+                                if appliedleave.leave_type_id not in [11, 16]:
+                                    if appliedleave.days_count == '0.5':
+                                        tdelta = timedelta(hours=5, minutes=00, seconds=01)
+                                    elif appliedleave.days_count == '1':
+                                        tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                    elif appliedleave.days_count > '1':
+                                        leave_check = LeaveApplications.objects.filter(from_date__lte=date,
+                                                                                       to_date__gte=date)
+                                        if leave_check:
+                                            tdelta = timedelta(hours=9, minutes=00, seconds=01)
+                                    hours_in_office.append(tdelta)
+                            if len(hours_in_office) > 2:
+                                if (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < halfDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 3 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'full_day'
+                                elif (hours_in_office[0] + hours_in_office[1] + hours_in_office[2]) < fullDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 6 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'half_day'
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
 
-                                        leaves.append(leave_for_date)
-                                else:
-                                    if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'full_day'
-                                    elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(
-                                            hours_in_office[0] + hours_in_office[1])
-                                        leave = 'half_day'
-                                    if leave:
-                                        leave_for_date['date'] = date
-                                        leave_for_date['leave'] = leave
-                                        leave_for_date['reason'] = reason
+                                    leaves.append(leave_for_date)
+                            else:
+                                if (hours_in_office[0] + hours_in_office[1]) < halfDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 3 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'full_day'
+                                elif (hours_in_office[0] + hours_in_office[1]) < fullDayOfficeStayTimeLimit:
+                                    reason = "You had logged {0} hr that is below 6 hr".format(
+                                        hours_in_office[0] + hours_in_office[1])
+                                    leave = 'half_day'
+                                if leave:
+                                    leave_for_date['date'] = date
+                                    leave_for_date['leave'] = leave
+                                    leave_for_date['reason'] = reason
 
-                                        leaves.append(leave_for_date)
+                                    leaves.append(leave_for_date)
                         elif appliedLeaveCheck and attendance:
                             if appliedLeaveCheck[0].leave_type_id == 11:
                                 swipeIn = attendance[0].swipe_in.astimezone(tzone)
@@ -133,10 +153,10 @@ def daily_leave_deduction():
                                 wfh = timedelta(hours=int(getTime(appliedLeaveCheck[0].hours)[0]),
                                                 minutes=int(getTime(appliedLeaveCheck[0].hours)[1]), seconds=00)
                                 if tdelta + wfh < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(tdelta + wfh)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(tdelta + wfh)
                                     leave = 'full_day'
                                 elif tdelta + wfh < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(tdelta + wfh)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(tdelta + wfh)
                                     leave = 'half_day'
 
                                 if leave:
@@ -155,10 +175,10 @@ def daily_leave_deduction():
                                 if appliedLeaveCheck[0].days_count == '0.5':
                                     app = timedelta(hours=04, minutes=30, seconds=00)
                                 if tdelta + app < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(tdelta + app)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(tdelta + app)
                                     leave = 'full_day'
                                 elif tdelta + app < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(tdelta + app)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(tdelta + app)
                                     leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -173,10 +193,10 @@ def daily_leave_deduction():
                                 tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                 stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                 if tdelta < halfDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                    reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                     leave = 'full_day'
                                 elif tdelta < fullDayOfficeStayTimeLimit:
-                                    reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                    reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                     leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -212,10 +232,10 @@ def daily_leave_deduction():
                                     tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                                     stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                                     if tdelta < halfDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                        reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                         leave = 'full_day'
                                     elif tdelta < fullDayOfficeStayTimeLimit:
-                                        reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                        reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                         leave = 'half_day'
                                     if leave:
                                         leave_for_date['date'] = date
@@ -240,7 +260,7 @@ def daily_leave_deduction():
                             tdelta = datetime.strptime(swipeOutTime, FMT) - datetime.strptime(swipeInTime, FMT)
                             stayInTime = getTimeFromTdelta(tdelta, "{H:02}:{M:02}:{S:02}")
                             if tdelta < halfDayOfficeStayTimeLimit:
-                                reason = "you had put {0} hours which is below 3 hours".format(stayInTime)
+                                reason = "You had logged {0} hr that is below 3 hr".format(stayInTime)
                                 leave = 'full_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -249,7 +269,7 @@ def daily_leave_deduction():
 
                                     leaves.append(leave_for_date)
                             elif tdelta < fullDayOfficeStayTimeLimit:
-                                reason = "you had put {0} hours which is below 6 hours".format(stayInTime)
+                                reason = "You had logged {0} hr that is below 6 hr".format(stayInTime)
                                 leave = 'half_day'
                                 if leave:
                                     leave_for_date['date'] = date
@@ -302,9 +322,24 @@ def daily_leave_deduction():
                     logger.debug("missing records")
         if leaves:
             try:
-                applyLeave(user, leaves, year)
+                applyLeave(user, manager, leaves, year)
             except:
                 logger.debug('email send issue user id' + user.id)
+    writeFile.close()
+    writeFileemail.close()
+    new_filename = "DailyLeaveDeduction_" + str(year) + "_" + str(month) + "_" + str(day) + ".csv"
+    os.rename(fileName, new_filename)
+    print "File " + fileName + " renamed to " + new_filename
+    print "Sending deduction report... "
+    email_report_send = EmailMessage(
+        'Leave Deduction File: ' + str(year) + "_" + str(month) + "_" + str(day),
+        'Hi, All, \nPlease find attached leave deduction file.\nThanks!\nMyAnsrSource\n\n',
+        settings.EMAIL_HOST_USER,
+        ['ravindra.jawari@ansrsource.com'],
+        cc=['janaki.BS@ansrsource.com', 'ramesh.kumar@ansrsource.com', 'shalini.bhagat@ansrsource.com']
+    )
+    email_report_send.attach_file(new_filename)
+    email_report_send.send()
     print str(datetime.now()) + " Daily leave check raised finished running"
         # applyLeave(attendance, attendance.for_date.year)
         # print "leave saved for {0}".format(attendance.user)
@@ -322,12 +357,14 @@ def getTimeFromTdelta(tdelta, fmt):
 
     return f.format(fmt, **d)
 
-def applyLeave(user, leaves, year):
+def applyLeave(user, manager, leaves, year):
     for leave in leaves:
         user_id = user.id
         reason = "applied by system"
         applied_by = User.objects.get(id=35).id
         avaliable_leave = avaliableLeaveCheck(user_id, leave, year)
+        # import ipdb;
+        # ipdb.set_trace()
         if avaliable_leave != 0:
             try:
                 if len(avaliable_leave) >= 2:
@@ -335,7 +372,7 @@ def applyLeave(user, leaves, year):
                         leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                         if leavecheckonautoapplydate(leave, user_id):
                             leave['leave'] = 'half_day'
-                            leavesubmit(leave, leave_type, user_id, applied_by)
+                            leavesubmit(leave, manager, leave_type, user_id, applied_by)
                 if len(avaliable_leave) == 1:
                     avaliable_leave.append(0)
                     for leave_ty in avaliable_leave:
@@ -343,7 +380,7 @@ def applyLeave(user, leaves, year):
                             leave_type = LeaveSummary.objects.get(user=user_id, leave_type=leave_ty, year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
                         else:
                             leave_type, created = LeaveSummary.objects.get_or_create(user=User.objects.get(id=user_id),
                                                                                      leave_type=LeaveType.objects.get(
@@ -353,12 +390,12 @@ def applyLeave(user, leaves, year):
                                                                                      year=year)
                             if leavecheckonautoapplydate(leave, user_id):
                                 leave['leave'] = 'half_day'
-                                leavesubmit(leave, leave_type, user_id, applied_by)
+                                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
             except:
                 leave_type = LeaveSummary.objects.get(user=user_id,leave_type=avaliable_leave,year=year)
                 if leavecheckonautoapplydate(leave, user_id):
-                    leavesubmit(leave, leave_type, user_id, applied_by)
+                    leavesubmit(leave, manager, leave_type, user_id, applied_by)
         else:
             leave_type = LeaveSummary.objects.filter(user=user_id,
                                              leave_type__leave_type='loss_of_pay',
@@ -372,7 +409,7 @@ def applyLeave(user, leaves, year):
                                             balance=0,
                                             year=year)
             if leavecheckonautoapplydate(leave, user_id):
-                leavesubmit(leave, leave_type, user_id, applied_by)
+                leavesubmit(leave, manager, leave_type, user_id, applied_by)
 
 def leavecheckonautoapplydate(leave, user):
     leave_check = LeaveApplications.objects.filter(from_date__lte=leave['date'],
@@ -425,18 +462,19 @@ def avaliableLeaveCheck(user_id, short_leave_type, year):
     return 0
 
 
-def leavesubmit(leave, leave_type,  user_id, applied_by):
+def leavesubmit(leave, user_manager, leave_type,  user_id, applied_by):
     try:
         leaveapp = LeaveApplications.objects.filter(from_date__lte=leave['date'],
                                                  to_date__gte=leave['date'],
                                                  user=user_id,
                                                     status__in=['open', 'approved'])
         if leaveapp and leave['leave'] == 'full_day' and leaveapp[0].leave_type_id not in [16, 11]:
-            leavecount = .5
             if leaveapp[0].from_session == 'session_first':
+                leavecount = .5
                 fromsession = 'session_second'
                 tosession = 'session_second'
             else:
+                leavecount = .5
                 fromsession = 'session_first'
                 tosession = 'session_first'
         elif leave['leave'] == 'full_day':
@@ -453,6 +491,8 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
         manager = Employee.objects.filter(employee_assigned_id=manager_id).values('user_id')
         manager_d = User.objects.get(id=manager[0]['user_id'])
         applied_by = User.objects.get(id=applied_by)
+        manager_employee_id = Employee.objects.get(user_id=manager[0]['user_id'])
+        user_employee_id = Employee.objects.get(user_id=user_id)
         LeaveApplications(user=User.objects.get(id=user_id),
                           leave_type=leave_type.leave_type,
                           from_date=leave['date'],
@@ -464,19 +504,44 @@ def leavesubmit(leave, leave_type,  user_id, applied_by):
                           status_action_by=applied_by,
                           applied_by=applied_by,
                           apply_to=manager_d,
+                          daily_deduction=1,
                           ).save()
         leave_type.save()
-        send_mail(User.objects.get(id=user_id),
-                  leave_type.leave_type.leave_type,
-                  leave['date'],
-                  leave['date'],
-                  leavecount)
+        try:
+            send_mail(User.objects.get(id=user_id),
+                      leave_type.leave_type.leave_type,user_manager,
+                      leave['date'],
+                      leave['date'],
+                      leavecount)
+        except:
+            print "HR need take care for {0}".format(User.objects.get(id=user_id))
+        writeFile.write(
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}'".format(str(User.objects.get(id=user_id)),
+                                                               str(user_employee_id.employee_assigned_id),
+                                                               str(manager_d),
+                                                               str(manager_employee_id.employee_assigned_id),
+                                                               str(leave['leave']), str(leave['reason']),
+                                                               str(leave['date'])))
+        writeFile.write("\n")
+        writeFileemail.write(
+            "'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}', '{10}'".format(
+                str(User.objects.get(id=user_id).first_name),
+                str(user_employee_id.employee_assigned_id),
+                str(manager_d),
+                str(manager_employee_id.employee_assigned_id),
+                str(leave['leave']),
+                str(leave['reason']),
+                str(leave['date']),
+                str(leaveTypeDictionary[leave_type.leave_type.leave_type]),
+                str(User.objects.get(id=user_id).email),
+                str(user_manager.user.email),"Daily"))
+        writeFileemail.write("\n")
 
     except:
         print "please check manager for user id {0}".format(user_id)
         # logger.error("error happen for {0} while putting forced leave manager is not there".format(user_id))
 
-def send_mail(user, leavetype, fromdate, todate, count):
+def send_mail(user, leavetype, user_manager, fromdate, todate, count):
     msg_html = render_to_string('email_templates/short_leave_auto_apply.html',
                                 {'registered_by': user.first_name,
                                  'leaveType': leaveTypeDictionary[leavetype],
@@ -487,10 +552,11 @@ def send_mail(user, leavetype, fromdate, todate, count):
 
     mail_obj = EmailMessage('Leave Deduction',
                             msg_html, settings.EMAIL_HOST_USER, [user.email],
-                            cc=[])
+                            cc=[user_manager.user.email])
 
     mail_obj.content_subtype = 'html'
-    email_status = mail_obj.send()
+    email_status = 1
+    # email_status = mail_obj.send()
     if email_status == 0:
         logger.error(
             "Unable To send Mail To The Authorities For"

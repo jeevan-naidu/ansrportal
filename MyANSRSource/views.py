@@ -35,7 +35,7 @@ from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
     ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField
-
+from Leave.models import LeaveApplications
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
@@ -2217,6 +2217,14 @@ def getHours(request, wstart, wend, mem, project, label):
     return sum([eachRec[eachDay] for eachDay in days for eachRec in ts])
 
 
+def dates_to_check_leave(start_date, end_date):
+    dates = []
+    delta = end_date - start_date
+
+    for i in range(delta.days + 1):
+        dates.append(start_date + timedelta(days=i))
+    return dates
+
 @login_required
 def Dashboard(request):
     todays_date = datetime.now().date()
@@ -2438,6 +2446,137 @@ def Dashboard(request):
         temp['swipe_in'] = val['swipe_in']
         temp['swipe_out'] = val['swipe_out']
         swipe_display.append(temp)
+    LeaveDetail = LeaveApplications.objects.filter(from_date__lte=eddte, user_id=request.user.id)
+    for leave in LeaveDetail:
+        if leave.status == 'open' or leave.status == 'approved':
+            if leave.temp_id:
+                attendenceDetail = employee.models.Attendance.objects.filter(
+                    attdate=leave.from_date,
+                    incoming_employee_id=leave.temp_id).values('swipe_in', 'swipe_out', 'attdate').filter(
+                    Q(swipe_in__isnull=False) & Q(swipe_out__isnull=False) & Q(
+                        attdate__isnull=False))  # .exclude(swipe_in="", swipe_out="", attdate="")
+                for val in attendenceDetail:
+                    temp = {}
+                    temp['date'] = val['attdate'].strftime('%Y-%m-%d')
+                    temp['leave_type'] = leave.leave_type
+                    temp['swipe_in'] = val['swipe_in']
+                    temp['swipe_out'] = val['swipe_out']
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    temp['temp'] = 1
+                    swipe_display.append(temp)
+            if leave.hours:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                temp['hours'] = leave.hours + ' hours'
+                if leave.status == 'approved':
+                    temp['status'] = 1
+                if leave.status == 'open':
+                    temp['status'] = 0
+                temp['wfh'] = 1
+                swipe_display.append(temp)
+            if leave.daily_deduction:
+                temp ={}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 2
+                        temp['daily_deduction'] = 11
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 2
+                        temp['daily_deduction'] = 12
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    swipe_display.append(temp)
+            if leave.weekly_deduction:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 2
+                        temp['weekly_deduction'] = 21
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 2
+                        temp['weekly_deduction'] = 22
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    swipe_display.append(temp)
+            if leave.leave_type_id not in [16,11] and not leave.weekly_deduction and not leave.daily_deduction:
+                temp = {}
+                temp['date'] = leave.from_date.strftime('%Y-%m-%d')
+                temp['leave_type'] = leave.leave_type
+                if leave.from_date == leave.to_date:
+                    if leave.from_session == leave.to_session:
+                        temp['half_day'] = 1
+                    if leave.from_session == 'session_first' and leave.to_session == 'session_second':
+                        temp['full_day'] = 1
+                    if leave.status == 'approved':
+                        temp['status'] = 1
+                    if leave.status == 'open':
+                        temp['status'] = 0
+                    temp['leave'] = 1
+                    swipe_display.append(temp)
+                else:
+                    leave_dates = dates_to_check_leave(leave.from_date, leave.to_date)
+                    holiday = Holiday.objects.all().values('date')
+                    for leave_date in leave_dates:
+                        if leave_date in [datedata['date'] for datedata in holiday]:
+                            pass
+                        elif leave_date.weekday() < 5:
+                            temp = {}
+                            if leave.from_date == leave_date:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
+                                if leave.from_session == 'session_second':
+                                    temp['half_day'] = 1
+                                if leave.to_session == 'session_first':
+                                    temp['half_day'] = 1
+                                if leave.from_session == 'session_first':
+                                    temp['full_day'] = 1
+                                if leave.to_session == 'session_second':
+                                    temp['full_day'] = 1
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
+                            elif leave.to_date == leave_date:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
+                                if leave.from_session == 'session_second' and leave.to_session == 'session_second':
+                                    temp['half_day'] = 1
+                                elif leave.to_session == 'session_first' and leave.from_session == 'session_first':
+                                    temp['half_day'] = 1
+                                elif leave.from_session == 'session_first':
+                                    temp['full_day'] = 1
+                                elif leave.to_session == 'session_second':
+                                    temp['full_day'] = 1
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
+                            else:
+                                temp['date'] = leave_date.strftime('%Y-%m-%d')
+                                temp['leave_type'] = leave.leave_type
+                                temp['full_day'] = 1
+                                if leave.status == 'approved':
+                                    temp['status'] = 1
+                                if leave.status == 'open':
+                                    temp['status'] = 0
+                                temp['leave'] = 1
+                                swipe_display.append(temp)
     eachProjectHours = 0
     if len(cp):
         eachProjectHours = workingHours / len(cp)

@@ -1,16 +1,22 @@
+
+
 from models import LeaveApplications, LEAVE_TYPES_CHOICES
 from django import forms
 from bootstrap3_datetime.widgets import DateTimePicker
+from django.forms import TextInput
 from django.utils.safestring import mark_safe
 from django import forms
 from django.contrib.auth.models import User
-from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, SESSION_STATUS, LeaveSummary
+from Leave.models import LeaveApplications, ShortAttendance, LEAVE_TYPES_CHOICES, LEAVE_TYPES_CHOICES_LEAVES, LEAVE_TYPES_CHOICES_NON_LEAVES, SESSION_STATUS, LeaveSummary
 from employee.models import Employee
 from django.contrib.auth.models import User
 from datetime import date, time
 from dal import autocomplete
 
+
 LEAVE_TYPES_CHOICES = (('', '---------'),) + LEAVE_TYPES_CHOICES
+LEAVE_TYPES_CHOICES_LEAVES = (('', '---------'),) + LEAVE_TYPES_CHOICES_LEAVES
+LEAVE_TYPES_CHOICES_NON_LEAVES = (('', '---------'),) + LEAVE_TYPES_CHOICES_NON_LEAVES
 
 SESSION_STATUS_CHOICES = (('', 'SELECT SESSION'),) + SESSION_STATUS
 dateTimeOption = {"format": "YYYY-MM-DD", "pickTime": False}
@@ -27,9 +33,19 @@ class UserListViewForm(forms.ModelForm):
         model = User
         fields = ['user']
 
-def LeaveForm(leavetype, user, data=None):
+def LeaveForm(leavetype, user, leave_type_leave, data=None):
+    if leave_type_leave == "1":
+        print leave_type_leave, 101010
+        LEAVE_TYPES_CHOICES = LEAVE_TYPES_CHOICES_LEAVES
+    elif leave_type_leave == "2":
+        print leave_type_leave, 202020
+        LEAVE_TYPES_CHOICES = LEAVE_TYPES_CHOICES_NON_LEAVES
+    else:
+        print leave_type_leave, 303030
+
+
     class ApplyLeaveForm(forms.ModelForm):
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............')
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= '............', label='Select')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
         name = forms.CharField(initial = user, widget=forms.HiddenInput())
         class Meta:
@@ -42,7 +58,7 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -70,7 +86,7 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -110,14 +126,15 @@ def LeaveForm(leavetype, user, data=None):
         # Add Bootstrap widgets
         leave_attachment.widget.attrs = {'class':'filestyle', 'data-buttonBefore':'true', 'data-iconName':'glyphicon glyphicon-paperclip'}
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
         # Add Bootstrap widgets
         Reason.widget.attrs = {'class': 'form-control'}
 
-        hours = forms.CharField(max_length=100, required=True, help_text = 'Hours format(hhmm), example:0430')
+        hours = forms.RegexField(max_length=4, required=True ,regex=r'^[0-9]{4}$', help_text='Hours format(hhmm), example:0430',
+                                widget=TextInput(attrs={'type': 'number', 'pattern': '^[0-9]{4}$'}))
         # Add Bootstrap widgets
         hours.widget.attrs = {'class': 'form-control'}
 
@@ -150,7 +167,7 @@ def LeaveForm(leavetype, user, data=None):
 
     class ApplyLeaveForm4(forms.ModelForm):
 
-        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype)
+        leave= forms.ChoiceField(choices=LEAVE_TYPES_CHOICES, initial= leavetype, label='Selected')
         leave.widget.attrs = {'class': 'form-control', 'required':'true'}
 
         Reason = forms.CharField(max_length=100, required=False)
@@ -158,18 +175,13 @@ def LeaveForm(leavetype, user, data=None):
         Reason.widget.attrs = {'class': 'form-control'}
 
         fromDate = forms.DateField(
-            label="From",
+            label="Date",
             widget=DateTimePicker(options=dateTimeOption),
         )
-        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required':'true'}
+        fromDate.widget.attrs = {'class': 'form-control filter_class', 'required': 'true'}
 
-        toDate = forms.DateField(
-            label="To",
-            widget=DateTimePicker(options=dateTimeOption),
-        )
-        toDate.widget.attrs = {'class': 'form-control filter_class', 'required':'false'}
-
-        temp_id = forms.CharField(max_length=2, required=True)
+        temp_id = forms.RegexField(max_length=2, required=True ,regex=r'^[0-9]{2}$', help_text='Enter 2 digit temporary ID number',
+                                widget=TextInput(attrs={'type': 'number', 'pattern': '^[0-9]{2}$'}))
         # Add Bootstrap widgets
         temp_id.widget.attrs = {'class': 'form-control'}
 
@@ -178,7 +190,7 @@ def LeaveForm(leavetype, user, data=None):
         class Meta:
             model = LeaveApplications
 
-            fields = ['leave', 'fromDate', 'toDate', 'Reason', 'temp_id', 'name']
+            fields = ['leave', 'fromDate', 'Reason', 'temp_id', 'name']
             widgets = {
               'Reason': forms.Textarea(attrs={'rows': 8, 'cols': 70}),
             }

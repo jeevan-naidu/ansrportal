@@ -9,29 +9,77 @@
 
 <p>Hi, {{registered_by}},</p>
 
-<p>Admin has raised leave notification. </p>
+{% if leaves %}
+
+<p>The system has issued a daily leave notification. Please see the details below, and take corrective action through myansrsource portal.</p>
+
+    <table border="1">
+
+        <thead>
+            <tr>
+                <td style="text-align:center"><b>Leave Type</b></td>
+                <td style="text-align:center"><b>For Date</b></td>
+                <td style="text-align:center"><b>Reason</b></td>
+                <td style="text-align:center"><b>Due Date</b></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+            <tr>
+                {% if leave.leave == 'half_day'%}
+                    <td>Half day</td>
+                {% endif %}
+                {% if leave.leave == 'full_day'%}
+                    <td>Full day</td>
+                {% endif %}
+                <td>{{leave.date}}</td>
+                {% if reason %} <td>{{leave.reason}} </td> {% endif %}
+                <td>{{leave.due_date}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% if leaveType %}
+
+<p>The system has issued a weekly leave notification. Please see the details below, and take corrective action through myansrsource portal.</p>
 
 <table border="1">
 
     <thead>
         <tr>
-            <td><b>Leave Type</b></td>
-            <td><b>For Date</b></td>
-            <td><b>Reason</b></td>
-            <td><b>Due Date</b></td>
+            <td style="text-align:center"><b>Total Hours</b></td>
+            <td style="text-align:center"><b>From Date</b></td>
+            <td style="text-align:center"><b>To Date</b></td>
+            <td style="text-align:center"><b>Total Leaves</b></td>
+            <td style="text-align:center"><b>Reason</b></td>
+            <td style="text-align:center"><b>Due Date</b></td>
         </tr>
     </thead>
     <tbody>
-        {% for leave in leaveType %}
+
         <tr>
-            <td>{{leave.leave}} </td>
-            <td>{{leave.date}}</td>
-            {% if reason %} <td>{{leave.reason}} </td> {% endif %}
-            <td>{{leave.due_date}}</td>
+            <td>{{total_hours}} </td>
+            <td>{{from_date}}</td>
+            <td>{{to_date}}</td>
+            {% if leaveType == 'half_day'%}
+                <td>Half day</td>
+            {% elif leaveType == 'full_day'%}
+                <td>Full day</td>
+            {% else %}
+                <td>{{leaveType}}</td>
+            {% endif %}
+            {% if reason %}
+                <td>{{reason}} </td>
+            {% endif %}
+            <td>{{dueDate}}</td>
         </tr>
-        {% endfor %}
+
     </tbody>
 </table>
+{% endif %}
+<p><b>NOTE</b>: This is a system-generated e-mail. Please do not reply.</p>
 <p>Regards,<br>
  HR Support<br>
 </body>

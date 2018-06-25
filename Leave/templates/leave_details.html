@@ -41,6 +41,12 @@
              <td>{{leave.hours}}</td>
          </tr>
     {% endif %}
+    {% if leave.temp_id %}
+        <tr >
+             <td>Hours: </td>
+             <td>{{leave.temp_id}}</td>
+         </tr>
+    {% endif %}
      <tr >
          <td>Manager: </td>
          <td>{{leave.apply_to.first_name}} {{leave.apply_to.last_name}}</td>

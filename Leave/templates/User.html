@@ -52,7 +52,7 @@
 							</button>
 
                             <h4 class="modal-title" id="myModalLabel">
-								Please Enter Your Leave
+								Please Enter Your Details
 							</h4>
                         </div>
                         <div class="modal-body min-height-400" id="modal_body">
@@ -119,14 +119,16 @@
 
                           <!-- <a href="#" class="pull-right btn btn-sm btn-danger">Export</a> -->
                           {% if  LeaveAdmin or userCheck%}
-                          <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange">
+                          <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Non Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange" onclick="document.cookie='leave_type_leave=2'">
+                            Report Attendance
+                          </a>
+                            <a id="modal-252334" href="#modal-container-252304" role="button" data-toggle="modal" title="Apply Leave"  class="pull-right btn btn-sm btn-danger btn-ansr-orange" onclick="document.cookie='leave_type_leave=1'">
                             Apply Leave
                           </a>
 
                           {% endif %}
 
                         </div>
-
                     </div>
                 </div><!-- Lv-ApLvHeader -->
 
