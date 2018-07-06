@@ -108,7 +108,7 @@
                  <tr class="gradeX">
                           <td>{{ person.0 }}</td>
                             {% for val1 in  person.1%}
-                        <td>{{ val1 }}</td>
+                        <td>{% if val1 > 0 %} {{ val1|floatformat:2 }} {% else %} {{ val1 }} {% endif %}</td>
                     {% endfor %}
                         <td>{{ person.2 }}</td>
 
