@@ -51,6 +51,7 @@ def daily_leave_deduction():
     date = datetime.now().date()
     month = date.month
     year = date.year
+    day = date.day
     week_dates = previous_week_range(date)
     start_date = week_dates[0]
     end_date = week_dates[1]
