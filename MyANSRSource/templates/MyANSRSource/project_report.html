@@ -377,8 +377,16 @@
             <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button">Submit</button>
             <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button1">Save
             </button>
-            {% elif drm_queryset%}
+            {% elif prtm_queryset %}
+            <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button">Submit</button>
             <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button1">Save
+            </button>
+            {% elif bu_queryset %}
+            <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button">Submit</button>
+            <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button1">Save
+            </button>
+            {% elif drm_queryset%}
+            <button type="button" class="btn btn-success pull-right pull-right-space" id="submit_button1">Save</button>
             {% endif %}
 
         </div>
@@ -436,50 +444,45 @@
     //         });
     //     });
 
-    $("input:checkbox").click(function () {
-        window.onbeforeunload = null;
-        var checkbox_id = this.id;
-        var checkbox_detail = checkbox_id.split("_");
-        var flag = {"approve": "reject", "reject": "approve"};
-        var next_flag = flag[checkbox_detail[0]] + "_" + checkbox_detail[1];
-        if ($(this).attr("checked")) {
+        $("input:checkbox").click(function () {
+            window.onbeforeunload = null;
+            var checkbox_id = this.id;
+            var checkbox_detail = checkbox_id.split("_");
+            var flag = {"approve": "reject", "reject": "approve"};
+            var next_flag = flag[checkbox_detail[0]] + "_" + checkbox_detail[1];
+            if ($(this).attr("checked")) {
 
-            $(this).attr("checked", false);
-            $("#" + next_flag + "").attr("checked", false);
-        }
-        else {
-
-            $(this).attr("checked", true);
-            $("#" + next_flag + "").attr("checked", false);
-        }
-    });
-    $("#submit_button").on("click", function () {
-        var idSelect = function () {
-            return this.id;
-        };
-        var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
-        var approve_list = [];
-        var reject_list = [];
-
-        var feedbackval = [];
-        for (var i = 0; i < checkedBoxId.length; i++) {
-            var checkbox_detail = checkedBoxId[i].split("_")
-                console.log(checkbox_detail)
-
-                if (checkbox_detail[0] == "approve") {
-                    feedbackval.push($('#feedback_' + checkbox_detail[1]).val() + '_' + checkbox_detail[1] + '_' + checkbox_detail[2])
-                    approve_list.push(checkbox_detail[1] + '_' + checkbox_detail[2]);
-
-                } else {
-                    feedbackval.push($('#feedback_' + checkbox_detail[1]).val() + '_' + checkbox_detail[1] + '_' + checkbox_detail[2])
-                    reject_list.push(checkbox_detail[1] + '_'+ checkbox_detail[2])
-
-
-
+                $(this).attr("checked", false);
+                $("#" + next_flag + "").attr("checked", false);
             }
-        }
-        console.log(reject_list)
+            else {
 
+                $(this).attr("checked", true);
+                $("#" + next_flag + "").attr("checked", false);
+            }
+        });
+        $("#submit_button").on("click", function () {
+            var idSelect = function () {
+                return this.id;
+            };
+            var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
+            var approve_list = [];
+            var reject_list = [];
+            var feedbackval = [];
+            for (var i = 0; i < checkedBoxId.length; i++) {
+                var checkbox_detail = checkedBoxId[i].split("_")
+                    if (checkbox_detail[0] == "approve") {
+                        feedbackval.push($('#feedback_' + checkbox_detail[1]).val() + '_' + checkbox_detail[1] + '_' + checkbox_detail[2])
+                        approve_list.push(checkbox_detail[1] + '_' + checkbox_detail[2]);
+
+                    } else {
+                        feedbackval.push($('#feedback_' + checkbox_detail[1]).val() + '_' + checkbox_detail[1] + '_' + checkbox_detail[2])
+                        reject_list.push(checkbox_detail[1] + '_'+ checkbox_detail[2])
+
+
+
+                }
+            }
         swal({
                 title: "Are you sure?",
                 text: "Do you want to submit your approval?",
@@ -519,4 +522,3 @@
 
 </script>
 {% endblock %}
-

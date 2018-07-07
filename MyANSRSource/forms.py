@@ -491,6 +491,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         super(ProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['projectType'].widget.attrs['class'] = \
             "form-control"
+        self.fields['projectType'].label = "Service Type"
         self.fields['projectType'].queryset = \
             projectType.objects.filter(active=True).order_by('description')
         self.fields['bu'].queryset = \
