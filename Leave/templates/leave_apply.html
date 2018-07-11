@@ -59,15 +59,17 @@
 {% if leave %}
  <div class="form-group">
 	 <div class="col-sm-offset-2 col-sm-6">
-		 <button type="submit" class="btn btn-success">Apply Leave</button>
+		 <button type="submit" class="btn btn-success">Submit</button>
 	 </div>
 {% else %}
 {% endif %}
+	{% if request.COOKIES.leave_type_leave == '1' %}
 	 <div class="col-sm-4 remaining-leave-indicator text-right">
 		 {% if leave_count %}
 		 Remaining Leaves : {{leave_count}}
 		 {% endif %}
 	 </div>
+	 {% endif %}
  </div>
  {% if errors %}
  <div class="form-group">
@@ -177,7 +179,7 @@
 						 form_element = $(this);
 						ajax_loader_element = $('#ajax_loader_apply_leave');
 						 swal({   title: "Are you sure?",
-							text: "Do you want to submit your leave application?",
+							text: "Do you want to submit your application?",
 							type: "warning",
 							showCancelButton: true,
 							confirmButtonColor: "#DD6B55",
