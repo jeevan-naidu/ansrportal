@@ -1,0 +1,103 @@
+
+<h4 class="panel-subtitle"> Leave Data </h4>
+<table id="example" class="table  table-striped leave-report-table" id="data-tables30">
+    <thead>
+        <tr>
+            <th class="text-center">Leave Type</th>
+            <th class="text-center">Prev-Year-Balance</th>
+            <th class="text-center">Credit Current Year</th>
+            <th class="text-center">Applied</th>
+            <th class="text-center">Approved</th>
+            <th class="text-center">Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in final_merged_frame %}
+            <tr>
+                <td>{{ leave.leave_type_type }}</td>
+                <td class="text-center">{% if leave.balance_carry > 0 %} {{ leave.balance_carry|floatformat:1 }} {% else %} - {% endif %}</td>
+                <td class="text-center">{% if leave.credit_leave > 0 %} {{ leave.credit_leave|floatformat:1 }} {% else %} - {% endif %}</td>
+                <td class="text-center">{% if leave.applied > 0 %} {{ leave.applied|floatformat:1 }} {% else %} - {% endif %}</td>
+                <td class="text-center">{% if leave.approved > 0 %} {{ leave.approved|floatformat:1 }} {% else %} - {% endif %}</td>
+                <td class="text-center">{% if leave.balance > 0 %} {{ leave.balance|floatformat:1 }} {% else %} - {% endif %}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+<br><br>
+
+<h4 class="panel-subtitle"> Leave Applications </h4>
+<table  id="example2" class="table  table-striped leave-report-table" id="data-tables2">
+    <thead>
+        <tr>
+            <th class="text-center">Applied By</th>
+            <th class="text-center">Leave Type</th>
+            <th class="text-center">Days Count</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">From Date</th>
+            <th class="text-center">To Date</th>
+            <th class="text-center">Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leave_applications %}
+            <tr>
+                <td>{{leave.first_name}}</td>
+                <td>{{leave.leave_type_choice}}</td>
+                <td>{{leave.days_count}}</td>
+                <td>{{leave.status}}</td>
+                <td>{{ leave.from_date }}</td>
+                <td>{{ leave.to_date }}</td>
+                <td>{{ leave.reason }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+
+		<script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+        <script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+		<script>
+			$(document).ready(function(){
+
+				// Data Tables Init
+
+		    $('#data-tables').dataTable();
+				$("#data-tables").on('click', '.opp_num',function(){
+					var details = $(this).next().html();
+					$("#modal-body").html(details);
+					});
+
+      $('#data-tables2').dataTable();
+      $("#data-tables2").on('click', '.opp_num',function(){
+        var details = $(this).next().html();
+        $("#modal-body").html(details);
+        });
+        $('#example').DataTable( {
+                       dom: 'Bfrtip',
+                       lengthMenu: [
+                           [ 10, 25, 50, -1 ],
+                           [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                       ],
+                       buttons: ['pageLength',
+                           'copy', 'excel', 'pdf',
+                       ]
+                   } );
+         $('#example2').DataTable( {
+                        dom: 'Bfrtip',
+                        lengthMenu: [
+                            [ 10, 25, 50, -1 ],
+                            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                        ],
+                        buttons: ['pageLength',
+                            'copy', 'excel', 'pdf',
+                        ]
+                    } );
+
+				});
+		</script>
