@@ -36,6 +36,8 @@ urlpatterns = [
                        url(r'^leavesummary/$', login_required(leavesummary), name=u'leave_summary'),
                        url(r'^leave_summary_detail/$', login_required(leavesummarydetail), name=u'leave_summary_detail'),
                        url(r'^leave_summary_update/$', login_required(leavesummaryupdate), name=u'leave_summary_update'),
+                       url(r'^leavehistory/$', login_required(leavehistory), name=u'leave_history'),
+                       url(r'^leave_history_detail/$', login_required(leavehistorydetail), name=u'leave_history_detail'),
                        url(r'^weekwisedata/$', login_required(weekwisedata), name=u'week_wise_data'),
                        url(r'^admincancel/$', login_required(adminleavecancel), name=u'admin_leave_cancel'),
                        url(r'^balance_based_on_year/$',

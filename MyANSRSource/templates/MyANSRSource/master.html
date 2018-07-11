@@ -714,6 +714,13 @@
                                                                 </a>
                                                             </li>
                                                         {% endif %}
+                                                        {% if request.user|has_group:"myansrsourceHR" %}
+                                                            <li>
+                                                                <a href="{% url 'leave_history' %}">
+                                                                    <span class="menu-text">Leave Applications History</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
                                                     </ul>
                                                 </div>
                                             </li>
