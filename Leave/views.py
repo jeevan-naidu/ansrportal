@@ -30,6 +30,7 @@ import calendar
 from CompanyMaster.models import Holiday
 from django.db.models import Func
 from django.db.models import Sum
+import pandas as pd
 
 logger = logging.getLogger('MyANSRSource')
 
@@ -2119,3 +2120,98 @@ def short_leave_against_cancellation(from_date, to_date, user):
     for leave in short_leaves:
         leave.active = True
         leave.save()
+
+
+def leavehistory(request):
+    context = {}
+    context['user_name'] = User.objects.values('id', 'first_name', 'last_name', 'employee__employee_assigned_id')
+    return render(request, 'leavehistory.html', context)
+
+def leavehistorydetail(request):
+    today = date.today()
+    jan1current_year = datetime.datetime(year=today.year, month=1, day=1)
+    user_id = request.GET.get('id')
+    leave_summary_detail = LeaveSummary.objects.exclude(leave_type_id__in=[5,6,7,11,12,13,14,15,16]).filter(user_id=user_id, year=today.year)
+
+    # Leave Summary
+    leave_details = []
+    leave_summary_df = pd.DataFrame()
+    for leave in leave_summary_detail:
+        leave_detail = {}
+        leave_detail['id'] = leave.id
+        leave_detail['user_id'] = leave.user_id
+        leave_detail['username'] = leave.user.first_name + ' ' + leave.user.last_name
+        leave_detail['employee_id'] = leave.user.employee.employee_assigned_id
+        leave_detail['leave_type'] = leave.leave_type.leave_type
+        leave_detail['leave_type_id'] = leave.leave_type_id
+        leave_detail['applied'] = leave.applied
+        leave_detail['approved'] = leave.approved
+        leave_detail['balance'] = leave.balance
+        leave_detail['year'] = leave.year
+        leave_detail['leave_type_choice'] = dict(LEAVE_TYPES_CHOICES)[leave.leave_type.leave_type]
+        leave_details.append(leave_detail)
+        leave_summary_df = leave_summary_df.append({'leave_type':leave.leave_type_id, 'applied': leave.applied,'approved':leave.approved,'balance':leave.balance,'leave_type_type':dict(LEAVE_TYPES_CHOICES)[leave.leave_type.leave_type]}, ignore_index=True)
+
+    # Leave Applications
+    leave_applications = LeaveApplications.objects.exclude(leave_type_id__in=[13]).filter(user_id=user_id, from_date__gte=jan1current_year)
+    leave_applications_details = []
+    for leave in leave_applications:
+        this_users = User.objects.filter(id = leave.applied_by_id)
+        leave_applications_detail = {}
+        leave_applications_detail['user_id'] = leave.user_id
+        leave_applications_detail['first_name'] = this_users[0].first_name
+        leave_applications_detail['applied_by_id'] = leave.applied_by_id
+        leave_applications_detail['days_count'] = leave.days_count
+        leave_applications_detail['leave_type_id'] = leave.leave_type_id
+        leave_applications_detail['status'] = leave.status
+        leave_applications_detail['from_date'] = leave.from_date
+        leave_applications_detail['to_date'] = leave.to_date
+        leave_applications_detail['reason'] = leave.reason
+        leave_applications_detail['leave_type_choice'] = dict(LEAVE_TYPES_CHOICES)[leave.leave_type.leave_type]
+        leave_applications_detail['from_session'] = leave.from_session
+        leave_applications_detail['to_session'] = leave.to_session
+        leave_applications_detail['status_action_on'] = leave.status_action_on
+        leave_applications_detail['status_comments'] = leave.status_comments
+        leave_applications_details.append(leave_applications_detail)
+
+    # Leave CreditEntry
+    leave_credits = CreditEntry.objects.exclude(leave_type_id__in=[4,5,6,7,8,10,11,12,13,14,15,16]).filter(user_id=user_id, year = today.year)
+    leave_credits_details = []
+    for myleave in leave_credits:
+        leave_credits_detail = {}
+        leave_credits_detail['leave_type'] = myleave.leave_type_id
+        leave_credits_detail['days'] = myleave.days
+        leave_credits_details.append(leave_credits_detail)
+    leave_credit_df = pd.DataFrame(leave_credits_details)
+    leave_id_list = list(set(leave_credit_df['leave_type']))
+    leave_credit_agg = pd.DataFrame()
+    for id in leave_id_list:
+        daysSum = 0.0
+        for index, row in leave_credit_df.iterrows():
+            if id == row['leave_type']:
+                daysSum = daysSum + float(row['days'])
+        leave_credit_agg = leave_credit_agg.append({'leave_type':int(id), 'credit_leave': daysSum}, ignore_index=True)
+    # print "Leave Credit Current Year\n", leave_credit_agg   ######################
+
+    # Leave carry forward
+    leave_carry_forward = LeaveSummary.objects.exclude(leave_type_id__in=[2,3,4,5,6,7,8,9,10,11,12,13,14,15]).filter(user_id=user_id, year=today.year-1)
+    leave_carrys = []
+    for leave in leave_carry_forward:
+        leave_carry = {}
+        leave_carry['leave_type'] = leave.leave_type_id
+        leave_carry['balance_carry'] = leave.balance
+        leave_carrys.append(leave_carry)
+    leave_carry_df = pd.DataFrame(leave_carrys)
+    # print 'Leave Carry forward \n', leave_carry_df #######################
+
+    balance_carry_merge = pd.merge(leave_credit_agg, leave_carry_df, how='outer', on=['leave_type'])
+    balance_carry_summary_merge = pd.merge(balance_carry_merge, leave_summary_df, how='outer', on=['leave_type'])
+    # print(balance_carry_summary_merge) ############################
+
+    final_merged_frame = balance_carry_summary_merge.to_dict('records')
+    # print final_merged_frame
+
+    return render(request, 'leavehistorydetail.html',
+                    {'final_merged_frame':final_merged_frame,
+                    'leave_applications':leave_applications_details,
+                     })
