@@ -2000,7 +2000,6 @@ def data(user_id):
                 project['dm5'] = 5
             elif project['deliveryManager_id'] == user_id:
                 project['dm6'] = 6
-            # import ipdb;ipdb.set_trace()
             btg_details = BTG_Update.objects.filter(project_id=project['project_id']).values('id','BTG_Hours','project_id'
                                                                                             ,'is_approved', 'updatedOn')
 
@@ -2011,15 +2010,33 @@ def data(user_id):
                     project['updatedon'] = btg['updatedOn']
                     project['ids'] = btg['id']
 
-        return project_details
+        btg_extra = BTG_Update.objects.filter(is_approved = 1)
+        project_id_new = []
+        for my_hours in btg_extra:
+            project_id_new.append(my_hours.project_id)
+        project_id_new = list(set(project_id_new))
+
+        extra_hour_projects = []
+        for new_id in project_id_new:
+            extra_hour_project = {}
+            total = 0
+            for my_hours in btg_extra:
+                if new_id == my_hours.project_id:
+                    total = total + my_hours.BTG_Hours
+            extra_hour_project['project_id'] = new_id
+            extra_hour_project['extra_hours'] = total
+            extra_hour_projects.append(extra_hour_project)
+
+        return project_details, extra_hour_projects
 
 @login_required
 def ProjectReport(request):
     if request.method == 'GET':
         user_id = request.user.id
         context = {}
-        context['project_details'] = data(user_id)
-
+        context['project_details'] = data(user_id)[0]
+        context['extra_hours'] = data(user_id)[1]
+        # print data(user_id)[1]
         portfolio_manager_list = ProjectDetail.objects.filter(portfolio_manager_id=request.user)
         delivery_manager_list = ProjectDetail.objects.filter(deliveryManager_id=request.user)
         bu_manager_list = ProjectDetail.objects.filter(project_id__bu_id__new_bu_head=request.user)
@@ -2092,6 +2109,7 @@ def ProjectReport(request):
                 BTG_Update.objects.filter(Q(is_approved='0') | Q(is_approved='2'), project_id=app_list[0],id=app_list[1])\
                     .update(is_approved=1, user_id=request.user.id)
                 BTG_hrs = BTG_Update.objects.filter(project_id=app_list[0],id=app_list[1]).values('BTG_Hours')
+
                 project_hrs=Project.objects.filter(id=app_list[0]).values('plannedEffort')
                 total=BTG_hrs[0]['BTG_Hours']+project_hrs[0]['plannedEffort']
                 Project.objects.filter(id=app_list[0]).update(plannedEffort=total)
@@ -2123,6 +2141,4 @@ def ProjectReport(request):
             except:
                 pass
 
-
         return render(request, 'MyANSRSource/project_report.html', {})
-
