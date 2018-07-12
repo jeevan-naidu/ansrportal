@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load humanize %}
-{% block pageTitle %}BTG Hours Summary {% endblock %}
+{% block pageTitle %}Project Hours Summary {% endblock %}
 {%block childcontent %}
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
@@ -76,7 +76,7 @@
                                             <tr>
                                                 <td>{{obj.project_id__projectId}}<td>
                                                 <td>{{obj.project_id__name}}</td>
-                                                <td>{{xyz.BTG_Hours }}</td>
+                                                <td>{{xyz.BTG_Hours }} </td>
                                                 <td>{{xyz.updatedOn}}</td>
                                                 <td>
                                                     {% if xyz.is_approved == '1' %}
@@ -116,7 +116,14 @@
                     <td class="ws-mw">{{obj.project_id__plannedEffort}}</td>
                     <td class="ws-mw">{{obj.total_efforts}}</td>
                     <td class="ws-mw">{{obj.avaliable_efforts}}</td>
-                    <td class="ws-mw">{{obj.extra_efforts}}</td>
+                    <td class="ws-mw">  
+                      {% for ext_hour in extra_hours %}
+                        {% if ext_hour.project_id == obj.project_id %}
+                          {{ ext_hour.extra_hours }}
+                        {% endif %}
+                      {% endfor %}
+
+                    </td>
 
                     {% if obj.dm1 == 1%}
                     {% if obj.btgs %}
@@ -404,7 +411,16 @@
             searching: true,
             scrollCollapse: true,
             destroy: true,
+            dom: 'Bfrtip',
+            lengthMenu: [
+                [ 10, 25, 50, -1 ],
+                [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+            ],
+            buttons: ['pageLength',
+                'copy', 'excel', 'pdf',
+            ]
         });
+
     });
 
     $(document).ready(function () {
