@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load fontawesome %}
 {% load humanize %}
-{% block pageTitle %}BTG Hours Summary {% endblock %}
+{% block pageTitle %}Project Hours Summary {% endblock %}
 {%block childcontent %}
 
 <link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
@@ -11,24 +11,25 @@
     <div class="panel pb-15">
 
         <div class="panel-body">
-
+          <!-- <table id="example"  width=100% class="table  table-striped leave-report-table" id="active_projects"> -->
             <table class="table table-striped myansr-table" id="active_projects">
                 <thead>
                 <tr>
                     <th> Project ID</th>
-                    <th> Project Name</th>
-                    <th> Project Value</th>
-                    <th> Start Date</th>
-                    <th> End Date</th>
+                    <th> Project <br> Name</th>
+                    <th class="hidden"> Project Value</th>
+                    <th class="hidden"> Start Date</th>
+                    <th class="hidden"> End Date</th>
                     <th> Delivery Manager</th>
                     <th> Portfolio Manager</th>
                     <th> BU Head</th>
-                    <th> Planned Hrs</th>
-                    <th> Hrs Consumed</th>
-                    <th> Available Hrs</th>
-                    <th> Extra Hours</th>
+                    <th> Planned Hours</th>
+                    <th> Hours Consumed</th>
+                    <th> Timesheet Extra Hrs</th>
+                    <th> Approved Extra Hrs</th>
+                    <th> Total <nobr>Extra Hrs</nobr> </th>
                     <th> Required Hours</th>
-                    <th> Last Updated</th>
+                    <th class="hidden"> Last Updated</th>
                     <th class="hidden">Project_id</th>
                     <th> Action</th>
                     {% if prtm_queryset or bu_queryset %}
@@ -60,14 +61,14 @@
                                             DETAIL
                                         </h4>
                                     </div>
-                                    <div class="modal-body min-height-400" id="modal_body">
+                                    <div class="modal-body min-height-200" id="modal_body">
 
                                         <table>
                                             <tr>
-                                                <th> Project ID</th>
+
+                                                <th> Project ID </th>
                                                 <th></th>
-                                                <th> Project Name</th>
-                                                <th> BTG Hours</th>
+                                                <th> Required Hours</th>
                                                 <th> Updated On</th>
                                                 <th> Status</th>
                                             </tr>
@@ -75,8 +76,7 @@
                                             {% if xyz.project_id == obj.project_id%}
                                             <tr>
                                                 <td>{{obj.project_id__projectId}}<td>
-                                                <td>{{obj.project_id__name}}</td>
-                                                <td>{{xyz.BTG_Hours }}</td>
+                                                <td>{{xyz.BTG_Hours }} </td>
                                                 <td>{{xyz.updatedOn}}</td>
                                                 <td>
                                                     {% if xyz.is_approved == '1' %}
@@ -104,9 +104,9 @@
                     </td>
                     <!--<td>{{obj.project_id__projectId}}</td>-->
                     <td class="ws-mw">{{obj.project_id__name}}</td>
-                    <td class="ws-mw">{{obj.project_id__totalValue}}</td>
-                    <td class="ws-mw">{{obj.project_id__startDate}}</td>
-                    <td class="ws-mw">{{obj.project_id__endDate}}</td>
+                    <td class="project_value hidden">{{obj.project_id__totalValue}}</td>
+                    <td class="project_SD hidden">{{obj.project_id__startDate}}</td>
+                    <td class="project_ED hidden">{{obj.project_id__endDate}}</td>
                     <td class="ws-mw">{{obj.deliveryManager_id__first_name}} {{obj.deliveryManager_id__last_name}}</td>
                     <td class="ws-mw">{{obj.portfolio_manager_id__first_name}} {{obj.portfolio_manager_id__last_name}}
                     </td>
@@ -115,8 +115,22 @@
                     </td>
                     <td class="ws-mw">{{obj.project_id__plannedEffort}}</td>
                     <td class="ws-mw">{{obj.total_efforts}}</td>
-                    <td class="ws-mw">{{obj.avaliable_efforts}}</td>
                     <td class="ws-mw">{{obj.extra_efforts}}</td>
+                    <td class="ws-mw">
+                      {% for ext_hour in extra_hours %}
+                        {% if ext_hour.project_id == obj.project_id %}
+                          {{ ext_hour.extra_hours }}
+                        {% endif %}
+                      {% endfor %}
+
+                    </td>
+                    <td>
+                      {% for ext_hour in extra_hours %}
+                        {% if ext_hour.project_id == obj.project_id %}
+                          {{ ext_hour.extra_hours|add:obj.extra_efforts }}
+                        {% endif %}
+                      {% endfor %}
+                    </td>
 
                     {% if obj.dm1 == 1%}
                     {% if obj.btgs %}
@@ -132,7 +146,9 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <!-- <td>{{obj.updatedon}}</td> -->
+                    <!-- <td>010101</td> -->
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -168,7 +184,7 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -204,7 +220,7 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -240,7 +256,7 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -276,7 +292,7 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -312,7 +328,7 @@
                         </div>
                     </td>
                     {% endif %}
-                    <td class="ws-mw">{{obj.updatedon}}</td>
+                    <td class="last_updated hidden">{{obj.updatedon}}</td>
                     <td class="project_ids hidden" id="project_{{forloop.counter}}">{{obj.project_id}}_{{obj.ids}}</td>
                     <td class="ws-mw">
                         {% if obj.approved == '1' %}
@@ -400,11 +416,21 @@
 
     $(document).ready(function () {
         "use strict";
+
         $('#active_projects').dataTable({
             searching: true,
             scrollCollapse: true,
             destroy: true,
+            dom: 'Bfrtip',
+            lengthMenu: [
+                [ 10, 25, 50, -1 ],
+                [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+            ],
+            buttons: ['pageLength',
+                'copy', 'excel', 'pdf',
+            ]
         });
+
     });
 
     $(document).ready(function () {
