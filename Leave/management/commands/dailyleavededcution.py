@@ -45,6 +45,32 @@ def dates_to_check_leave(start_date,end_date):
 def getTime(t):
     return [t[:2],t[2:]]
 
+# categorise_employee function start
+# This function will return separate user_id list of ansr_employee, ansr_contract, vendor_employee
+def categorise_users():
+    users_all = User.objects.filter(is_active=True)
+    ansr_employee = []
+    ansr_contract = []
+    vendor_employee = []
+    for user_list in users_all:
+        employee = Employee.objects.filter(user_id = user_list.id)
+        if employee.count()<1:
+            emp_assigned_id = ''
+        else:
+            emp_assigned_id = employee[0].employee_assigned_id
+        # print user_list.id, emp_assigned_id
+        if emp_assigned_id == "":
+            vendor_employee.append(user_list.id)
+        elif emp_assigned_id.isdigit() == False:
+            if emp_assigned_id.find("CNT")>-1 or emp_assigned_id.find("CONT")>-1:
+                ansr_contract.append(user_list.id)
+            else:
+                vendor_employee.append(user_list.id)
+        else:
+            ansr_employee.append(user_list.id)
+    return ansr_employee, ansr_contract, vendor_employee
+# categorise_employee function end
+
 def daily_leave_deduction():
     print str(datetime.now()) + " daily leave auto apply started running"
     tzone = pytz.timezone('Asia/Kolkata')
@@ -56,7 +82,8 @@ def daily_leave_deduction():
     start_date = week_dates[0]
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
-    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4])
+    user_id_to_exclude = categorise_users()[2]
+    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4]).exclude(id__in=user_id_to_exclude)
     FMT = '%H:%M:%S'
     holiday = Holiday.objects.all().values('date')
     # dueDate = end_date + timedelta(days=7)
