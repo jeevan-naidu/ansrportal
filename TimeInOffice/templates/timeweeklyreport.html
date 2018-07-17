@@ -88,6 +88,7 @@
                           <th>Thu</th>
                           <th>Fri</th>
                           <th>Average</th>
+                          <th>Total</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -101,6 +102,7 @@
 {% endfor %}
 
                         <td>{{ person.2 }}</td>
+                        <td>{{ person.3 }}</td>
                         </tr>
                         {% endfor %}
 
@@ -119,7 +121,7 @@
 <script>
 
 $("#value").on('change', function() {
-  
+
   yearchange(1,1,this.value)
 });
 

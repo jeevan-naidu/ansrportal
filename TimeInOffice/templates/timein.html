@@ -98,6 +98,7 @@
                           <th>Thu</th>
                           <th>Fri</th>
                           <th>Average</th>
+                          <th>Total</th>
                         </tr>
                       </thead>
 
@@ -111,7 +112,7 @@
                         <td>{% if val1 > 0 %} {{ val1|floatformat:2 }} {% else %} {{ val1 }} {% endif %}</td>
                     {% endfor %}
                         <td>{{ person.2 }}</td>
-
+                        <td>{{ person.3 }} </td>
                         </tr>
                         {% endfor %}
                       </tbody>

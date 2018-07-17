@@ -56,7 +56,7 @@ def timein(request):
             for user in userlist:
                 weekly_avg.append(user.first_name + " " + user.last_name)
                 for val in xrange(1, no_of_week + 1):
-                    weekly_avg.append(weeklyavg(user, val, month, year))
+                    weekly_avg.append(weeklyavg(user, val, month, year)[1])
                 weekly_avg_user_list.append(weekly_avg)
                 weekly_avg = []
             context['weekly_average'] = weekly_avg_user_list
@@ -77,7 +77,7 @@ def timein(request):
             else:
                 previous_month_detail = weekwisereport(month - 1, userlist)
             context['previous_week'] = previous_week_detail(len(previous_month_detail), current_week_no, month)
-            print context
+            # print context
             return render(request, 'timein_pre_year.html', context)
         else:
             year = 2017
@@ -92,7 +92,7 @@ def timein(request):
             for user in userlist:
                 weekly_avg.append(user.first_name + " " + user.last_name)
                 for val in xrange(1, no_of_week + 1):
-                    weekly_avg.append(weeklyavg(user, val, month, year))
+                    weekly_avg.append(weeklyavg(user, val, month, year)[1])
                 weekly_avg_user_list.append(weekly_avg)
                 weekly_avg = []
             context['weekly_average'] = weekly_avg_user_list
@@ -113,7 +113,7 @@ def timein(request):
             else:
                 previous_month_detail = weekwisereport(month - 1, userlist)
             context['previous_week'] = previous_week_detail(len(previous_month_detail), current_week_no, month)
-            print context
+            # print context
             return render(request, 'timein_pre_year.html', context)
     else:
         if request.method == 'GET':
@@ -135,7 +135,7 @@ def timein(request):
                 for user in userlist:
                     weekly_avg.append(user.first_name + " " + user.last_name)
                     for val in xrange(1, no_of_week + 1):
-                        weekly_avg.append(weeklyavg(user, val, month, year))
+                        weekly_avg.append(weeklyavg(user, val, month, year)[1])
                     weekly_avg_user_list.append(weekly_avg)
                     weekly_avg = []
                 context['weekly_average'] = weekly_avg_user_list
@@ -171,8 +171,9 @@ def timein(request):
                 for user in userlist:
                     weekly_avg.append(user.first_name + " " + user.last_name)
                     for val in xrange(1, no_of_week + 1):
-                        weekly_avg.append(weeklyavg(user, val, month, year))
+                        weekly_avg.append(weeklyavg(user, val, month, year)[1])
                     weekly_avg_user_list.append(weekly_avg)
+                    # weekly_avg_user_list.append(weeklyavg(user, val, month, year)[1])
                     weekly_avg = []
                 context['weekly_average'] = weekly_avg_user_list
                 context['timereport'] = timereportweeklybasedonuser(month, userlist, current_week_no, year)
@@ -197,14 +198,20 @@ def timein(request):
 
 def timereportweeklybasedonuser(month, userlist, week, year):
     weekreport = []
+    weekreport_sum = []
     userdata = []
+    userdata_sum = []
     for user in userlist:
         userdata.append(user.first_name + " " + user.last_name)
         userdata.append(userweeklytimereport(user, week, month, year))
-        week_avg = weeklyavg(user, week, month, year)
+        week_avg = weeklyavg(user, week, month, year)[0]
+        week_sum = weeklyavg(user, week, month, year)[1]
         userdata.append(week_avg)
+        userdata.append(week_sum)
         weekreport.append(userdata)
+
         userdata = []
+        userdata_sum = []
     return weekreport
 
 # returns hours for each day for a user for a week
@@ -243,7 +250,7 @@ def get_hour_aggregate(hour):
     avg_of_time = avg_of_hr + avg_of_min
     avg_of_time = '{0:.2f}'.format(float(avg_of_time))  # To get average of time
     # return sum_of_time # Addition time
-    return avg_of_time  # Average time
+    return avg_of_time, sum_of_time  # Average time
 
 
 def weeklyavg(user, week, month, year):
@@ -256,11 +263,13 @@ def weeklyavg(user, week, month, year):
             total_avg.append(time)
     if sum(total_avg) == 0:
         avg = 0
+        sum_week = 0
     else:
-        avg = get_hour_aggregate(total_avg)
+        avg = get_hour_aggregate(total_avg)[0]
+        sum_week = get_hour_aggregate(total_avg)[1]
         # print(total_avg)
         # print(avg)
-    return '{0:.2f}'.format(float(avg))
+    return '{0:.2f}'.format(float(avg)), '{0:.2f}'.format(float(sum_week))
 
 def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
@@ -420,7 +429,7 @@ def monthwisedata(request):
         for user in userlist:
             weekly_avg.append(user.first_name + " " + user.last_name)
             for val in xrange(1, no_of_week + 1):
-                weekly_avg.append(weeklyavg(user, val, month, year))
+                weekly_avg.append(weeklyavg(user, val, month, year)[1])
             weekly_avg_user_list.append(weekly_avg)
             weekly_avg = []
         context['weekly_average'] = weekly_avg_user_list
@@ -443,7 +452,7 @@ def monthwisedata(request):
         for user in userlist:
             weekly_avg.append(user.first_name + " " + user.last_name)
             for val in xrange(1, no_of_week + 1):
-                weekly_avg.append(weeklyavg(user, val, month, year))
+                weekly_avg.append(weeklyavg(user, val, month, year)[1])
             weekly_avg_user_list.append(weekly_avg)
             weekly_avg = []
         context['weekly_average'] = weekly_avg_user_list
