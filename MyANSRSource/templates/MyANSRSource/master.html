@@ -423,7 +423,9 @@
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
 
+
                                         <div class="child-menu" data-action="click-target">
+
                                             <ul>
                                             {% if request.user|has_group:'PortfolioManager' or request.user|has_group:'myansrsourcebuhead'%}
                                             <li>
@@ -436,31 +438,36 @@
 
                                                     {% if request.user|has_group:'PortfolioManager' or request.user|has_group:'myansrsourcebuhead'%}
                                                     <li>
-                                                        <a href="/myansrsource/project/add">
+                                                        <a href="/myansrsource/program/create">
                                                             <span class="menu-text">Create Program</span>
                                                         </a>
-                                                    </li><li>
-                                                        <a href="{% url 'new_created_project_approval' %}">
+                                                    </li>
+                                                        {% if request.user|has_group:'myansrsourcebuhead'%}
+                                                        <li>
+                                                        <a href="{% url 'approveprogram' %}">
                                                             <span class="menu-text">Approve Program</span>
                                                         </a>
-                                                    </li><li>
-                                                        <a href="/myansrsource/project/add">
+                                                        </li>
+                                                        {% endif %}
+                                                        <li>
+                                                        <a href="/myansrsource/program/change_request">
                                                             <span class="menu-text">Create Program Change request</span>
                                                         </a>
-                                                    </li><li>
-                                                        <a href="{% url 'new_created_project_approval' %}">
+                                                    </li>
+                                                        {% if request.user|has_group:'myansrsourcebuhead'%}
+                                                        <li>
+                                                        <a href="{% url 'approveprogramchangerequest' %}">
                                                             <span class="menu-text">Approve Program Change request</span>
                                                         </a>
-                                                    </li>
+                                                        </li>
+                                                        {% endif %}
                                                     {% endif %}
                                                     </ul>
                                                 </div>
                                             </li>
                                             {% endif %}
                                             </ul>
-                                        </div>
 
-                                        <div class="child-menu" data-action="click-target">
                                             <ul>
                                             {% if user|manage_project %}
                                                     <li>

@@ -3703,6 +3703,26 @@ def notify(request):
 
 
 @login_required
+def CreateProgram(request):
+    context = {}
+    return render(request, 'createprogram.html', context)
+
+@login_required
+def ApproveProgram(request):
+    context = {}
+    return render(request, 'approveprogram.html', context)
+
+@login_required
+def ProgramChangeRequest(request):
+    context = {}
+    return render(request, 'programchangerequest.html', context)
+
+@login_required
+def ApproveProgramChangeRequest(request):
+    context = {}
+    return render(request, 'approveprogramchangerequest.html', context)
+
+@login_required
 def deleteProject(request):
     ProjectBasicInfoForm()
     return HttpResponseRedirect('add')
