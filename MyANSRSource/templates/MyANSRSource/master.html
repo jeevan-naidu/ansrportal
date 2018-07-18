@@ -419,9 +419,47 @@
                                     <li>
                                         <a href="javascript:void(0);" data-action="click-trigger">
                                             <span class="menu-icon"><i class="icon-palette"> </i></span>
-                                            <span class="menu-text">myProjects</span>
+                                            <span class="menu-text">myPrograms</span>
                                             <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
                                         </a>
+
+                                        <div class="child-menu" data-action="click-target">
+                                            <ul>
+                                            {% if request.user|has_group:'PortfolioManager' or request.user|has_group:'myansrsourcebuhead'%}
+                                            <li>
+                                                <a href="javascript:" data-action="click-trigger" class="open">
+                                                    <span class="menu-text">Programs</span>
+                                                    <span class="menu-badge"><span class="badge vd_bg-black-30"><i class="fa fa-angle-down"></i></span></span>
+                                                </a>
+                                                <div class="child-menu" data-action="click-target">
+                                                    <ul class="clearfix">
+
+                                                    {% if request.user|has_group:'PortfolioManager' or request.user|has_group:'myansrsourcebuhead'%}
+                                                    <li>
+                                                        <a href="/myansrsource/project/add">
+                                                            <span class="menu-text">Create Program</span>
+                                                        </a>
+                                                    </li><li>
+                                                        <a href="{% url 'new_created_project_approval' %}">
+                                                            <span class="menu-text">Approve Program</span>
+                                                        </a>
+                                                    </li><li>
+                                                        <a href="/myansrsource/project/add">
+                                                            <span class="menu-text">Create Program Change request</span>
+                                                        </a>
+                                                    </li><li>
+                                                        <a href="{% url 'new_created_project_approval' %}">
+                                                            <span class="menu-text">Approve Program Change request</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            {% endif %}
+                                            </ul>
+                                        </div>
+
                                         <div class="child-menu" data-action="click-target">
                                             <ul>
                                             {% if user|manage_project %}
