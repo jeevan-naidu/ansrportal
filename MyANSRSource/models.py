@@ -286,6 +286,29 @@ class ProjectAsset(models.Model):
     class Meta:
         verbose_name = "Project Asset Table"
 
+class Program(models.Model):
+    program = models.CharField(max_length=50,verbose_name="Program Name",unique=True)
+    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit,verbose_name="Business Unit")
+    portfolio_manager = models.ForeignKey(User, verbose_name='Portfolio Manager',
+                                          related_name='program_portfolio_manager', default=35, null=True, blank=True)
+    active = models.BooleanField(verbose_name="Is Active", default=False)
+    rejected = models.BooleanField(verbose_name="Rejected or not", default=False)
+    createdOn = models.DateTimeField(verbose_name="created Date",auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",auto_now=True)
+    totalValue = models.DecimalField(default=0.0,
+                                     max_digits=12,
+                                     decimal_places=2,
+                                     verbose_name="Project Value",
+                                     validators=[MinValueValidator(0.0)])
+    plannedEffort = models.IntegerField(default=0,
+                                        verbose_name=" Total Planned Effort",
+                                        validators=[MinValueValidator(8)])
+
+    def __unicode__(self):
+        return self.program
+
+    class Meta:
+        verbose_name = "Program"
 
 class Project(models.Model):
     projectType = models.ForeignKey(
@@ -306,6 +329,7 @@ class Project(models.Model):
         CompanyMaster.models.BusinessUnit,
         verbose_name="Business Unit"
     )
+    program = models.ForeignKey(Program, verbose_name="Program", related_name="Program",)
     customer = models.ForeignKey(
         CompanyMaster.models.Customer,
         verbose_name="Customer",
@@ -395,29 +419,7 @@ class Project(models.Model):
             )
 
 
-class Program(models.Model):
-    program = models.CharField(max_length=50,verbose_name="Program Name",unique=True)
-    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit,verbose_name="Business Unit")
-    portfolio_manager = models.ForeignKey(User, verbose_name='Portfolio Manager',
-                                          related_name='program_portfolio_manager', default=35, null=True, blank=True)
-    active = models.BooleanField(verbose_name="Is Active", default=False)
-    rejected = models.BooleanField(verbose_name="Rejected or not", default=False)
-    createdOn = models.DateTimeField(verbose_name="created Date",auto_now_add=True)
-    updatedOn = models.DateTimeField(verbose_name="Updated Date",auto_now=True)
-    totalValue = models.DecimalField(default=0.0,
-                                     max_digits=12,
-                                     decimal_places=2,
-                                     verbose_name="Project Value",
-                                     validators=[MinValueValidator(0.0)])
-    plannedEffort = models.IntegerField(default=0,
-                                        verbose_name=" Total Planned Effort",
-                                        validators=[MinValueValidator(8)])
 
-    def __unicode__(self):
-        return self.program
-
-    class Meta:
-        verbose_name = "Program"
 
 
 class ProjectDetail(models.Model):
