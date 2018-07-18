@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField, Program
 from Leave.models import LeaveApplications
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -3704,8 +3704,19 @@ def notify(request):
 
 @login_required
 def CreateProgram(request):
-    context = {}
-    return render(request, 'createprogram.html', context)
+    if request.method == 'GET':
+        context = {}
+        context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
+        context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
+                                                                               'employee__employee_assigned_id')
+        return render(request, 'createprogram.html', context)
+    if request.method == 'POST':
+        context = {}
+        Program(program=request.POST.get('program'), bu=request.POST.get('bu'),
+                portfolio_manager=request.POST.get('portfolio_manager'),
+                planned_effort=request.POST.get('planned_effort'), program_value=request.POST.get('program_value'),
+                active=1, rejected=0, createdOn=datetime.now(), updatedOn=datetime.now()).save()
+        return render(request, 'createprogram.html', context)
 
 @login_required
 def ApproveProgram(request):

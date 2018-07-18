@@ -1,1 +1,127 @@
-                                                     CREATE PROGRAM
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Create Program{% endblock %}
+{% block pageTitle %}Create Program{% endblock %}
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head>
+{% block content  %}
+
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<style type="text/css">
+    #data-tables_filter{ display:none; }
+</style>
+
+<div class="panel pb-15"><div class="panel-body">
+
+<form id="program_form" enctype="multipart/form-data" class="form-horizontal col-sm-7" enctype="multipart/form-data" data-toggle="validator">
+    {% csrf_token %}
+    {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+            </div>
+
+            {% endfor %}
+
+    {% endif %}
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Program Name<span class="mandatory-field"> *</span></label>
+        <div class="col-sm-7 controls">
+            <input type="text" class="form-control" id="program_name">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Business Unit<span class="mandatory-field"> *</span></label>
+        <div class="col-sm-7 controls">
+            <select id="bu" class="js-example-basic-single">
+              <option value="------------"> ------------</option>
+              {% for element in bu%}
+                <option value={{element}}> {{element.name}}</option>
+              {% endfor %}
+            </select>
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Portfolio Manager<span class="mandatory-field"> *</span></label>
+        <div class="col-sm-7 controls">
+            <select id="portfolio_manager" class="js-example-basic-single">
+              <option value="------------"> ------------</option>
+              {% for element in portfolio_manager%}
+                <option value={{element.id}}> {{element.first_name}} {{element.last_name}} | {{element.employee__employee_assigned_id}}</option>
+              {% endfor %}
+            </select>
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Total Planned Effort<span class="mandatory-field"> *</span></label>
+        <div class="col-sm-7 controls">
+            <input type="text" class="form-control" id="planned_effort">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Total Program Value<span class="mandatory-field"> *</span></label>
+        <div class="col-sm-7 controls">
+            <input type="text" class="form-control" id="program_value">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h3 class="col-sm-20 text-right"><input type="submit" id="submit" class="btn vd_bg-green vd_white width-10" value="Submit"/></h3>
+    </div>
+
+</form>
+
+</div></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".js-example-basic-single").select2();
+});
+
+$("#submit").on('click', function(e) {
+  e.preventDefault();
+  var program = document.getElementById("program_name").value;
+  var bu = document.getElementById("bu").value;
+  var portfolio_manager = document.getElementById("portfolio_manager").value;
+  var planned_effort = document.getElementById("planned_effort").value;
+  var program_value = document.getElementById("program_value").value;
+
+  $.ajax({
+    url:'/myansrsource/program/create',
+    data: {"program": program,"bu":bu,"portfolio_manager":portfolio_manager,"planned_effort":planned_effort,"program_value":program_value},
+    type: "POST",
+    success: function(data){
+        sweetAlert("sorry...", "Cannot add with a empty skill!");
+    },
+   });
+
+
+});
+
+</script>
+
+{% endblock %}
+
