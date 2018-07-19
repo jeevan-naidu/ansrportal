@@ -23,7 +23,7 @@
 
 <div class="panel pb-15"><div class="panel-body">
 
-<form id="program_form" enctype="multipart/form-data" class="form-horizontal col-sm-7" enctype="multipart/form-data" data-toggle="validator">
+<form id="program_form" enctype="multipart/form-data" class="form-horizontal col-sm-9" enctype="multipart/form-data" data-toggle="validator">
     {% csrf_token %}
     {% if messages %}
 
@@ -52,7 +52,7 @@
             <select id="bu" class="js-example-basic-single">
               <option value="------------"> ------------</option>
               {% for element in bu%}
-                <option value={{element}}> {{element.name}}</option>
+                <option value={{element.id}}> {{element.name}}</option>
               {% endfor %}
             </select>
             <div class="help-block with-errors"></div>
@@ -75,7 +75,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Total Planned Effort<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <input type="text" class="form-control" id="planned_effort">
+            <input type="number" class="form-control" id="planned_effort">
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -83,7 +83,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Total Program Value<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <input type="text" class="form-control" id="program_value">
+            <input type="number" class="form-control" id="program_value">
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -93,6 +93,52 @@
     </div>
 
 </form>
+
+</div></div>
+
+
+<div class="panel pb-15"><div class="panel-body">
+
+<table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Program Name</th>
+                <th>Business Unit</th>
+                <th>Portfolio Manager</th>
+                <th>Program Total Value</th>
+                <th>Program Planned Effort</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <script>
+                $(document).ready(function() {
+                    $('#example').DataTable( {
+                        dom: 'Bfrtip',
+                        lengthMenu: [
+                            [ 10, 25, 50, -1 ],
+                            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                        ],
+                        buttons: ['pageLength',
+                            'copy', 'excel', 'pdf',
+                        ]
+                    } );
+                } );
+            </script>
+            {% for val in programs %}
+            <tr>
+            <td>{{val.program}}</td>
+            <td>{{val.bu_id__name}}</td>
+            <td>{{val.portfolio_manager_id__first_name}} {{portfolio_manager_id__last_name}}</td>
+            <td>$ {{val.totalValue}}</td>
+            <td>{{val.plannedEffort}}</td>
+            {% if val.active == 1 %}
+                <td>Open</td>
+            {% elif val.active == 0 %}
+                <td>Closed</td>
+            {% endif %}
+        </tr>
+            {% endfor %}
+        </table>
 
 </div></div>
 

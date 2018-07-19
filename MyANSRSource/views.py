@@ -3709,12 +3709,23 @@ def CreateProgram(request):
         context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
         context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
                                                                                'employee__employee_assigned_id')
+        try:
+            context['programs'] = Program.objects.filter(portfolio_manager=request.user).values('program', 'active',
+                                                                                                'totalValue',
+                                                                                                'plannedEffort',
+                                                                                                'bu_id__name',
+                                                                                                'portfolio_manager_id__first_name',
+                                                                                                'portfolio_manager_id__last_name')
+        except:
+            context['programs'] = []
         return render(request, 'createprogram.html', context)
     if request.method == 'POST':
         context = {}
-        Program(program=request.POST.get('program'), bu=request.POST.get('bu'),
-                portfolio_manager=request.POST.get('portfolio_manager'),
-                planned_effort=request.POST.get('planned_effort'), program_value=request.POST.get('program_value'),
+        portfolio_manager = User.objects.get(id=request.POST.get('portfolio_manager'))
+        bu = CompanyMaster.models.BusinessUnit.objects.get(id=request.POST.get('bu'))
+        Program(program=request.POST.get('program'), bu=bu,
+                portfolio_manager=portfolio_manager,
+                plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
                 active=1, rejected=0, createdOn=datetime.now(), updatedOn=datetime.now()).save()
         return render(request, 'createprogram.html', context)
 
