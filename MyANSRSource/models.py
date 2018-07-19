@@ -18,6 +18,12 @@ TASKTYPEFLAG = (
     ('I', 'Idle'),
     ('N', 'Non-Revenue'),
 )
+
+PROGRAM_TYPE = (
+    ('INT', 'Internal'),
+    ('EXT', 'External'),
+)
+
 FREQUENCY = (
     ('M', 'Monthly'),
     ('W', 'Weekly'),
@@ -293,6 +299,7 @@ class Program(models.Model):
                                           related_name='program_portfolio_manager', default=35, null=True, blank=True)
     active = models.BooleanField(verbose_name="Is Active", default=False)
     rejected = models.BooleanField(verbose_name="Rejected or not", default=False)
+    closed = models.BooleanField(verbose_name="Closed or not", default=False)
     createdOn = models.DateTimeField(verbose_name="created Date",auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",auto_now=True)
     totalValue = models.DecimalField(default=0.0,
@@ -303,6 +310,10 @@ class Program(models.Model):
     plannedEffort = models.IntegerField(default=0,
                                         verbose_name=" Total Planned Effort",
                                         validators=[MinValueValidator(8)])
+    remark = models.CharField(verbose_name="Project Rejection message", null=True, blank=True, default='Nothing',
+                              max_length=100)
+    internal = models.CharField(verbose_name='Program Type', choices=PROGRAM_TYPE, max_length=20,
+                                      blank=True, null=True)
 
     def __unicode__(self):
         return self.program

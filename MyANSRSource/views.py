@@ -3710,12 +3710,12 @@ def CreateProgram(request):
         context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
                                                                                'employee__employee_assigned_id')
         try:
-            context['programs'] = Program.objects.filter(portfolio_manager=request.user).values('program', 'active',
+            context['programs'] = Program.objects.filter(portfolio_manager=request.user, active=1).values('program', 'active',
                                                                                                 'totalValue',
                                                                                                 'plannedEffort',
                                                                                                 'bu_id__name',
                                                                                                 'portfolio_manager_id__first_name',
-                                                                                                'portfolio_manager_id__last_name')
+                                                                                                'portfolio_manager_id__last_name', 'internal')
         except:
             context['programs'] = []
         return render(request, 'createprogram.html', context)
@@ -3723,16 +3723,45 @@ def CreateProgram(request):
         context = {}
         portfolio_manager = User.objects.get(id=request.POST.get('portfolio_manager'))
         bu = CompanyMaster.models.BusinessUnit.objects.get(id=request.POST.get('bu'))
+        if request.POST.get('program_type') == 'int':
+            internal = 1
+        if request.POST.get('program_type') == 'ext':
+            internal = 0
         Program(program=request.POST.get('program'), bu=bu,
                 portfolio_manager=portfolio_manager,
                 plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
-                active=1, rejected=0, createdOn=datetime.now(), updatedOn=datetime.now()).save()
+                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), internal=internal).save()
         return render(request, 'createprogram.html', context)
 
 @login_required
 def ApproveProgram(request):
-    context = {}
-    return render(request, 'approveprogram.html', context)
+    if request.method == 'GET':
+        context = {}
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        context['programs'] = Program.objects.filter(active=False, closed=False, rejected=False, bu__in=business_unit_list).values('program', 'id',
+                                                                        'active',
+                                                                        'totalValue',
+                                                                        'plannedEffort',
+                                                                        'bu_id__name',
+                                                                        'portfolio_manager_id__first_name',
+                                                                        'portfolio_manager_id__last_name',
+                                                                        'internal')
+        return render(request, 'approveprogram.html', context)
+    if request.method == 'POST':
+        context = {}
+        feedback_ist = []
+        approve = request.POST.getlist('approve[]')
+        reject = request.POST.getlist('reject[]')
+        feedback = request.POST.getlist('feedback[]')
+        for val in feedback:
+            feedback_ist.append(val.split('_'))
+            Program.objects.filter(id=feedback_ist[0][1]).update(remark=feedback_ist[0][0])
+            feedback_ist = []
+        approve = approve if approve else []
+        reject = reject if reject else []
+        Program.objects.filter(id__in=approve).update(active=True)
+        Program.objects.filter(id__in=reject).update(rejected=True)
+        return render(request, 'approveprogram.html', context)
 
 @login_required
 def ProgramChangeRequest(request):
