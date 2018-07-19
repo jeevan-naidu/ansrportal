@@ -8,6 +8,8 @@ from django.shortcuts import render
 from decimal import *
 from django.views.generic.list import ListView
 from django.http import HttpResponseRedirect, HttpResponse
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 from django.contrib import messages
 from Leave.models import LeaveApplications, ShortAttendance, APPLICATION_STATUS, LEAVE_TYPES_CHOICES, SESSION_STATUS,\
     BUTTON_NAME, LeaveSummary, SHORT_ATTENDANCE_TYPE
@@ -155,6 +157,91 @@ def LeaveTransaction(request):
     return HttpResponse(json_data, content_type="application/json")
 
 
+######################### Email Sending Tasks(New) using direct thread + SMTP ########################
+import threading
+class EmailThread(threading.Thread):
+    def __init__(self, subject, html_content, recipient_list, sender, manager_email):
+        self.subject = subject
+        self.recipient_list = recipient_list
+        self.html_content = html_content
+        self.sender = sender
+        self.manager_email = manager_email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        if type(self.manager_email) is list:
+            email_cc_list = self.manager_email
+        else:
+            email_cc_list = [self.manager_email]
+
+        msg = EmailMessage(self.subject, self.html_content, self.sender, [self.recipient_list], cc= email_cc_list)
+        msg.content_subtype = 'html'
+        msg.send()
+
+def send_html_mail(subject, html_content, recipient_list, sender, manager_email):
+    EmailThread(subject, html_content, recipient_list, sender, manager_email).start()
+##############
+def mangerdetail(user):
+    useremployeedetail = Employee.objects.get(user_id=user.id)
+    mangeremployeedetail = Employee.objects.get(employee_assigned_id=useremployeedetail.manager_id)
+    user = User.objects.get(id=mangeremployeedetail.user_id)
+    return user
+
+def EmailSendTaskNew(user, manager, leave_selected, fromdate, todate, fromsession, tosession, count, reason, flag):
+    fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromsession]
+    todate = str(todate)+' Session: '+leaveSessionDictionary[tosession]
+    if flag == 'save':
+        msg_html = render_to_string('email_templates/apply_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
+         'fromdate':fromdate, 'todate':todate, 'count':count, 'reason':reason})
+        send_html_mail('New Leave applied - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+    elif flag == 'cancel':
+        msg_html = render_to_string('email_templates/cancel_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
+        'fromdate':fromdate, 'todate':todate, 'count':count, 'reason':reason})
+        send_html_mail('Leave canceled - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+
+###########
+def ManagerEmailSendTaskNew(user, leavetype, status, from_date, to_date, count, status_comments, manager):
+        msg_html = render_to_string('email_templates/leave_status.html',
+                                    {'registered_by': user.first_name,
+                                     'leaveType': leaveTypeDictionary[leavetype],
+                                     'status': status,
+                                     'from_date': from_date,
+                                     'to_date': to_date,
+                                     'count':count,
+                                     'reason': status_comments,
+                                     'action_taken_by': manager.first_name})
+        send_html_mail('Leave Application Status', msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+
+##########
+def ApproveLeaveCancelEmailSendTaskNew(user, leavetype, status, from_date, to_date, from_session, to_session, count, status_comments, admin):
+        manager = mangerdetail(user)
+        fromdate = str(from_date) + ' Session: ' + leaveSessionDictionary[from_session]
+        todate = str(to_date) + ' Session: ' + leaveSessionDictionary[to_session]
+        msg_html = render_to_string('email_templates/admin_leave_cancel.html',
+                                    {'registered_by': user.first_name,
+                                     'leaveType': leaveTypeDictionary[leavetype],
+                                     'status': status,
+                                     'from_date': from_date,
+                                     'to_date': to_date,
+                                     'count': count,
+                                     'reason': status_comments,
+                                     })
+        send_html_mail('Leave Application Status', msg_html, user.email, settings.EMAIL_HOST_USER, [manager.email,admin.email])
+
+##############
+def WFHApplyTask(user, manager, leave_selected, fromdate, todate, fromsession, tosession, count, reason, hour_total, flag):
+    fromdate = str(fromdate)+' Session: '+leaveSessionDictionary[fromsession]
+    todate = str(todate)+' Session: '+leaveSessionDictionary[tosession]
+    msg_html = "Hi, " + str(user.first_name) + "<p>You have applied for work from home on the ansrsource portal.</p>"+"<p>Attendance Type: Work From Home</p><p>From Date: "+ fromdate + "</p><p>To Date: " + todate +"</p><p>Hours: " + str(hour_total) + "</p><p>Your manager has been notified of the request.</p>"+"<p>Regards,</p> <p>HR Support</p>"
+    send_html_mail('New attendance reported - Attendance Type - ' + leaveTypeDictionary[leave_selected], msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+
+################
+def TempIdTask(user, manager, leave_selected, fromdate, temp_id,reason, flag):
+    fromdate = str(fromdate)
+    msg_html = "Hi, " + str(user.first_name) + "<p>You have applied for temporary ID on the ansrsource portal.</p>"+"<p>Attendance Type: Temporary ID </p><p>From Date: "+ fromdate +"</p><p>Temporary ID: " + str(temp_id) + "</p><p>Your manager has been notified of the request.</p>"+"<p>Regards,</p> <p>HR Support</p>"
+    send_html_mail('New attendance reported - Attendance Type - ' + leaveTypeDictionary[leave_selected], msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+
+######################### Email Sending Tasks(New) using direct Thread + SMTP END ########################
 
 def LeaveCancel(request):
     user_id = request.user.id
@@ -190,6 +277,11 @@ def LeaveCancel(request):
     #     leave.to_session, leave.days_count, leave.reason, 'cancel')
     # except:
     #     logger.exception('Sending task raised')
+    try:
+        EmailSendTaskNew(request.user, manager, leave.leave_type.leave_type, leave.from_date, leave.to_date, leave.from_session,
+        leave.to_session, leave.days_count, leave.reason, 'cancel')
+    except:
+        logger.exception('Sending task raised')
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
@@ -520,6 +612,19 @@ class ApplyLeaveView(View):
                          #                         'save')
                          # except:
                          #     logger.exception('Sending task raised')
+                         try:
+                             EmailSendTaskNew(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            todate,
+                                            fromsession,
+                                            tosession,
+                                            leavecount,
+                                            reason,
+                                            'save')
+                         except:
+                             logger.exception('Sending task raised')
                     else:
                          LeaveApplications(leave_type=leaveType,
                                            from_date=fromdate,
@@ -542,6 +647,19 @@ class ApplyLeaveView(View):
                          #                         'save')
                          # except:
                          #     logger.exception('Sending task raised')
+                         try:
+                             EmailSendTaskNew(request.user,
+                                             manager,
+                                             leave_selected,
+                                             fromdate,
+                                             todate,
+                                             fromsession,
+                                             tosession,
+                                             leavecount,
+                                             reason,
+                                             'save')
+                         except:
+                             logger.exception('Sending task raised')
 
                     context_data['success']= 'leave saved'
                     context_data['record_added'] = 'True'
@@ -578,6 +696,20 @@ class ApplyLeaveView(View):
                              #                         'save')
                              # except:
                              #     logger.exception('Sending task raised')
+                             try:
+                                 EmailSendTaskNew(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
+                             except:
+                                 logger.exception('Sending task raised')
+
                         else:
                              LeaveApplications(leave_type=leaveType,
                                                from_date=fromdate,
@@ -602,6 +734,19 @@ class ApplyLeaveView(View):
                              #                         'save')
                              # except:
                              #     logger.exception('Sending task raised')
+                             try:
+                                 EmailSendTaskNew(request.user,
+                                                 manager,
+                                                 leave_selected,
+                                                 fromdate,
+                                                 todate,
+                                                 fromsession,
+                                                 tosession,
+                                                 leavecount,
+                                                 reason,
+                                                 'save')
+                             except:
+                                 logger.exception('Sending task raised')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -636,6 +781,20 @@ class ApplyLeaveView(View):
                             #                         'save')
                             # except:
                             #     logger.exception('Sending task raised')
+                            try:
+                                WFHApplyTask(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            todate,
+                                            fromsession,
+                                            tosession,
+                                            leavecount,
+                                            reason,
+                                            hours,
+                                            'save')
+                            except:
+                                logger.exception('Sending task raised')
                         else:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
@@ -662,6 +821,21 @@ class ApplyLeaveView(View):
                             #                         'save')
                             # except:
                             #     logger.exception('Sending task raised')
+                            try:
+                                WFHApplyTask(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            todate,
+                                            fromsession,
+                                            tosession,
+                                            leavecount,
+                                            reason,
+                                            hours,
+                                            'save')
+                            except:
+                                logger.exception('Sending task raised')
+
                         context_data['success'] = 'leave saved'
                         context_data['record_added'] = 'True'
 
@@ -689,6 +863,16 @@ class ApplyLeaveView(View):
                             #                         'save')
                             # except:
                             #     logger.exception('Sending task raised')
+                            try:
+                                TempIdTask(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            temp_id,
+                                            reason,
+                                            'save')
+                            except:
+                                logger.exception('Sending task raised')
                         else:
                             LeaveApplications(leave_type=leaveType,
                                               from_date=fromdate,
@@ -710,6 +894,16 @@ class ApplyLeaveView(View):
                             #                         'save')
                             # except:
                             #     logger.exception('Sending task raised')
+                            try:
+                                TempIdTask(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            temp_id,
+                                            reason,
+                                            'save')
+                            except:
+                                logger.exception('Sending task raised')
 
                         context_data['success'] = 'leave saved'
                         context_data['record_added'] = 'True'
@@ -1098,6 +1292,11 @@ def update_leave_application(request, status):
         #     leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
         # except:
         #     logger.exception('Sending task raised')
+        try:
+            ManagerEmailSendTaskNew(leave_application.user, is_com_off.leave_type, leave_application.status, leave_application.from_date,
+            leave_application.to_date, leave_application.days_count, leave_application.status_comments, request.user)
+        except:
+            logger.exception('Sending task raised')
         return True
     except Exception, e:
         logger.error(e)
@@ -1573,6 +1772,10 @@ class ApplyShortLeaveView(View):
                                       reason=reason).saveas(user_id, request.user.id)
                     leavesummry_temp.save()
                     # EmailSendTask.delay(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                    try:
+                        EmailSendTaskNew(request.user, manager, leave_selected, fromdate, todate, fromsession, tosession, leavecount, reason, 'save')
+                    except:
+                        logger.exception('Sending task raised')
 
                     context_data['success'] = 'leave saved'
                     context_data['record_added'] = 'True'
@@ -1603,6 +1806,20 @@ class ApplyShortLeaveView(View):
                         #                     leavecount,
                         #                     reason,
                         #                     'save')
+
+                        try:
+                            EmailSendTaskNew(request.user,
+                                            manager,
+                                            leave_selected,
+                                            fromdate,
+                                            todate,
+                                            fromsession,
+                                            tosession,
+                                            leavecount,
+                                            reason,
+                                            'save')
+                        except:
+                            logger.exception('Sending task raised')
 
                         context_data['success']= 'leave saved'
                         context_data['record_added'] = 'True'
@@ -2042,6 +2259,19 @@ def adminleavecancel(request):
     #                                           request.user)
     # except:
     #     logger.exception('Sending task raised')
+    try:
+        ApproveLeaveCancelEmailSendTaskNew(candidate,
+                                              leave.leave_type.leave_type,
+                                              leave.status,
+                                              leave.from_date,
+                                              leave.to_date,
+                                              leave.from_session,
+                                              leave.to_session,
+                                              leave.days_count,
+                                              leave.reason,
+                                              request.user)
+    except:
+        logger.exception('Sending task raised')
 
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
