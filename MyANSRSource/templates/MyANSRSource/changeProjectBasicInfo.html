@@ -61,6 +61,17 @@ $(document).ready(function() {
                         <td>{{ hField }}</td>
                     {% endfor %}
                 </tr>
+                <tr>
+                    <td>
+                         <label class="col-sm-15 control-label">Program</label>
+                    </td>
+                    <td>
+                        <div class="program">
+                            {{form.program}}
+                        </div>
+
+                    </td>
+                </tr>
                     <td>
                          <label class="col-sm-15 control-label">Revised Project Start date</label>
                     </td>
@@ -244,6 +255,7 @@ $(document).ready(function(){
         var enddate_val = $('.endDate').val();
         var effort_val = $('.Effort').val();
         var amount_val = $('.Total').val();
+        var program_val = $('.program').val();
         var salesforce_val = $('.salesforcenumber').val();
         var customercontact_val = $('.customerContact').val();
 

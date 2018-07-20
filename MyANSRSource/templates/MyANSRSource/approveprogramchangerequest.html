@@ -1,1 +1,223 @@
-approveprogramchangerequest
+
+{% extends 'master.html' %}
+{% block siteTitle %}Manage {{ app_name }}{% endblock %}
+
+{% load static from staticfiles %}
+{% load process_tags %}
+{% load rest_framework %}
+
+{% block pageTitle %}Program Change Request Approval{% endblock %}
+
+{% block content  %}
+
+
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+
+     <div class="panel pb-15">
+    <div class="panel-body">
+
+                    <br/>
+                    <div class="tab-content mgbt-xs-20">
+
+                        <table class="table table-striped reimburse-table myansr-table" id="data-tables">
+                          <thead>
+                            <tr>
+                                <th><b>Program Name</b></th>
+                                <th><b>Program Type</b></th>
+                                <th><b>Business Unit</b></th>
+                                <th><b>Portfolio Manager</b></th>
+                                <th><b>Program Total Value</b></th>
+                                <th><b>Program Planned Effort</b></th>
+                                <th><b>Action</b></th>
+                                <th><b>Remarks</b></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                        {% for program in programs %}
+                             <tr>
+                                 <td class="ws-mw">
+                                 <a id="{{program.id}}"
+                                 href="#modal-container-detail" data-toggle="modal" title="Action"
+                                class="pull-left detail">
+                                                    {{program.program}}
+                                                  </a></td>
+                                    {% if program.internal == '1' %}
+                                        <td>Internal</td>
+                                    {% elif program.internal == '0' %}
+                                        <td>External</td>
+                                    {% endif %}
+                                 <td class="ws-mw">{{program.bu_id__name}}</td>
+                                 <td class="ws-mw">{{program.portfolio_manager_id__first_name}} {{program.portfolio_manager_id__last_name}}</td>
+                                 <td class="ws-mw">$ {{program.totalValue}}</td>
+                                 <td class="ws-mw">{{program.plannedEffort}}</td>
+                                 <td class="ws-mw">
+                                     <div class="checkbox checkbox-success radio-mod btn-xs">
+                                <input id="approve_{{program.id}}" type="checkbox" name="approve" class="approve" value="approved">
+                                <label for="approve_{{program.id}}" class="ansr-orange-mod">
+                                Approve
+                                </label>
+                            </div>
+                            <div class="checkbox checkbox-danger radio-mod btn-xs">
+                                <input id="reject_{{program.id}}" type="checkbox" name="reject"
+                                       class="reject" value="rejected_1">
+                                <label for="reject_{{program.id}}">
+                                Reject
+                                </label>
+                            </div>
+                                 </td>
+                                 <td><button type="button" id="Modal_{{program.id}}" class="btn btn-default feedback_{{program.id}}" data-toggle="modal" data-target="#myModal_{{program.id}}"><span class="glyphicon glyphicon-comment"></span></button>
+                                 <div class="modal fade" id="myModal_{{program.id}}" tabindex="-1" role="dialog" aria-labelledby="myModal_{{program.id}}" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white" >
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times"></i></button>
+                          <h4 class="modal-title" id="myModal_{{program.id}}" >Reason</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-sm-12">
+                              <div class="form-group">
+                                <label class="col-sm-4 control-label">Enter Your Reason</label>
+                                <div class="col-sm-7 controls">
+                                  <input class="input-border-btm" id="feedback_{{program.id}}" name="feedback_{{program.id}}" type="text"></input>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                          <!--<button type="button" class="btn vd_btn vd_bg-green">Save changes</button>-->
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div></td>
+                        </tr>
+ {% endfor %}
+
+                        </table>
+{%if programs%}
+                    <div class="Lv-ApprLvSubmit">
+                        <div class="margin-0-auto text-right">
+                            <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange submit">Submit</button>
+
+                        </div>
+
+                    </div>{% endif %}
+                    </div>
+</div>
+     </div>
+<div class="modal fade" id="modal-container-detail" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header vd_bg-blue vd_white">
+
+                            <button  type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								x
+							</button>
+
+                            <h4 class="modal-title" id="myModalLabel">
+								DETAIL
+							</h4>
+                        </div>
+                        <div class="modal-body min-height-400" id="modal_body">
+                          <img src="/static/images/ajax-loader.gif">
+                        </div>
+                    <div class="modal-footer background-login">
+                          <button type="button" class="btn vd_btn vd_bg-grey" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- ./modal-footer -->
+
+                </div>
+
+            </div>
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+
+<script type="text/javascript">
+
+$('document').ready(function(){
+  $('#data-tables').dataTable();
+  $('#data-tables_1').dataTable();
+});
+
+</script>
+<script>
+
+      $(".detail").click(function(){
+        var project_id = this.id
+        $.ajax({
+            url:"{% url 'projectdetail' %}",
+            data: {"id": project_id},
+            type: "get",
+            success: function(data){
+            $("#modal_body").html(data);
+            },
+        });
+    });
+
+    $("input:checkbox").click(function(){
+    var checkbox_id = this.id;
+    var checkbox_detail = checkbox_id.split("_");
+    var flag = {"approve":"reject", "reject":"approve"};
+    var next_flag = flag[checkbox_detail[0]] + "_" + checkbox_detail[1];
+    if($(this).attr("checked")){
+
+        $(this).attr("checked", false);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+    else{
+
+    $(this).attr("checked", true);
+        $("#" + next_flag + "").attr("checked", false);
+    }
+});
+$(".submit").on("click", function(){
+                            var idSelect = function(){ return this.id;};
+                            var checkedBoxId = $(":checkbox:checked").map(idSelect).get();
+                            var approve_list = [];
+                            var reject_list = [];
+                            var feedbackval =[]
+                            for(var i=0; i<checkedBoxId.length; i++){
+                             var checkbox_detail = checkedBoxId[i].split("_")
+                             if(checkbox_detail[0] == "approve"){
+                                feedbackval.push($('#feedback_'+checkbox_detail[1]).val()+'_'+checkbox_detail[1])
+                                approve_list.push(checkbox_detail[1]);
+                             }else{
+                             feedbackval.push($('#feedback_'+checkbox_detail[1]).val()+'_'+checkbox_detail[1])
+                             reject_list.push(checkbox_detail[1])
+                             }
+                            }
+                            swal({   title: "Are you sure?",
+							text: "Do you want to submit your approval?",
+							type: "warning",
+							showCancelButton: true,
+							confirmButtonColor: "#DD6B55",
+							confirmButtonText: "Yes, Submit it!",
+							cancelButtonText: "No, cancel it.",
+							closeOnConfirm: true,
+							closeOnCancel: true
+							},
+							function(isConfirm){
+								if (isConfirm) {
+                                            $.ajax({
+                                                url:"{% url 'approveprogram' %}",
+                                                data:{"approve": approve_list, "reject": reject_list, "feedback":feedbackval},
+                                                type:"post",
+                                                success: function(data){
+                                                    window.location=window.location;
+                                                },
+
+                                            });
+                                            }
+							   });
+						 return false;
+					 });
+
+
+
+</script>
+{% endblock %}

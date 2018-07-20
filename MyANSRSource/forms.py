@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING, CRReason, CRReasonField
+    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING, CRReason, CRReasonField, Program
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, DataPoint
 from employee.models import Remainder
@@ -459,6 +459,7 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
     class Meta:
         model = Project
         fields = (
+            'program',
             'projectType',
             'projectFinType',
             'customer',
@@ -496,6 +497,8 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
             projectType.objects.filter(active=True).order_by('description')
         self.fields['bu'].queryset = \
             BusinessUnit.objects.filter(is_active=True).order_by('name')
+        self.fields['program'].queryset = \
+            Program.objects.filter(active=True).order_by('program')
         self.fields['customer'].queryset = \
             Customer.objects.filter(active=True).order_by('name')
         self.fields['projectFinType'].widget.attrs['class'] = \
@@ -505,6 +508,8 @@ class ProjectBasicInfoForm(changeProjectLeaderForm, forms.ModelForm):
         self.fields['projectManager'].queryset = \
             User.objects.filter(is_active=True)
         self.fields['bu'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['program'].widget.attrs['class'] = \
             "form-control"
         self.fields['customer'].widget.attrs['class'] = \
             "form-control"
@@ -750,7 +755,7 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
         required=False, )
     class Meta:
         model = ProjectChangeInfo
-        fields = (
+        fields = ('program',
             'reason', 'remark', 'startDate', 'startdate_dropdown', 'enddate_dropdown', 'effort_dropdown',
             'amount_dropdown', 'close_dropdown','endDate', 'revisedEffort', 'salesForceNumber', 'customerContact',
             'revisedTotal', 'closed', 'signed', 'Sowdocument', 'estimationDocument',
@@ -763,6 +768,10 @@ class ChangeProjectBasicInfoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ChangeProjectBasicInfoForm, self).__init__(*args, **kwargs)
         self.fields['id'].widget.attrs['value'] = 0
+        self.fields['program'].queryset = \
+            Program.objects.filter(active=True).order_by('program')
+        self.fields['program'].widget.attrs['class'] = \
+            "form-control"
         self.fields['reason'].widget.attrs['class'] = "form-control reason"
         self.fields['remark'].widget.attrs['class'] = "form-control remark controls"
         self.fields['startdate_dropdown'].widget.attrs['class'] = "form-control startdate_dropdown"

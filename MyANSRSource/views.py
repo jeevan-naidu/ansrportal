@@ -34,7 +34,7 @@ from reportviews import *
 from MyANSRSource.models import Project, TimeSheetEntry, \
     ProjectMilestone, Milestone,  ProjectTeamMember, Book, ProjectChangeInfo, \
     Chapter, projectType, Task, ProjectManager, SendEmail, BTGReport, \
-    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField, Program
+    ProjectDetail, qualitysop, ProjectScope, ProjectAsset, Milestone, change_file_path,ProjectSopTemplate, CRReason, CRReasonField, Program, ProgramChangeInfo
 from Leave.models import LeaveApplications
 from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
@@ -979,6 +979,8 @@ class ChangeProjectWizard(SessionWizardView):
                 currentProject = Project.objects.filter(
                     pk=projectId).values(
                     'id',
+                    'program',
+                    'program_id',
                     'signed',
                     'endDate',
                     'plannedEffort',
@@ -3044,6 +3046,7 @@ def UpdateProjectInfo(request, newInfo):
         pci.revisedTotal = newInfo[1]['revisedTotal']
         pci.closed = newInfo[1]['closed']
         pci.startDate = newInfo[1]['startDate']
+        pci.program = newInfo[1]['program']
         pci.estimationDocument = request.session['revisedsow']
         pci.Sowdocument = request.session['revisedestimation']
         pci.bu = pru.bu
@@ -3731,6 +3734,13 @@ def CreateProgram(request):
                 portfolio_manager=portfolio_manager,
                 plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
                 active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), internal=internal).save()
+        # pci = ProgramChangeInfo()
+        # pci.program = request.POST.get('program')
+        # pci.crId = u"BL-{0}".format(program.id)
+        # pci.reason = 'Base Line data'
+        # pci.revisedEffort = int(request.POST.get('plannedEffort'))
+        # pci.revisedTotal = float(request.POST.get('totalValue'))
+        # pci.save()
         return render(request, 'createprogram.html', context)
 
 @login_required
@@ -3765,8 +3775,23 @@ def ApproveProgram(request):
 
 @login_required
 def ProgramChangeRequest(request):
-    context = {}
-    return render(request, 'programchangerequest.html', context)
+    if request.GET.get('id'):
+        context = {}
+        id = request.GET.get('id')
+        context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
+        context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
+                                                                               'employee__employee_assigned_id')
+        context['programs'] = Program.objects.filter(id=id).values('program', 'id', 'active', 'totalValue',
+                                                                   'plannedEffort',
+                                                                   'bu_id__name', 'portfolio_manager_id__first_name',
+                                                                   'portfolio_manager_id__last_name', 'internal')
+        context['program_detail'] = 1
+        return render(request, 'programchangerequest.html', context)
+    else:
+        context = {}
+        context['programs'] = Program.objects.filter(active=True, portfolio_manager = request.user).values('program', 'id')
+        context['select_program'] = 1
+        return render(request, 'programchangerequest.html', context)
 
 @login_required
 def ApproveProgramChangeRequest(request):

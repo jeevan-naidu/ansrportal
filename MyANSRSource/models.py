@@ -683,8 +683,38 @@ class ProjectTeamMember(models.Model):
         return unicode(self.member)
 
 
+class ProgramChangeInfo(models.Model):
+    # project change Request Fields
+    program = models.ForeignKey(Program, verbose_name="Program Name")
+    crId = models.CharField(default=None, blank=True, null=True,
+                            max_length=100, verbose_name="Change Request ID")
+    reason = models.CharField(max_length=100, default=0, blank=True,
+                              null=True,
+                              verbose_name="Reason for change")
+    revisedEffort = models.IntegerField(default=0,
+                                        validators=[MinValueValidator(0)],
+                                        verbose_name="Revised Effort")
+    revisedTotal = models.DecimalField(default=0.0,
+                                       max_digits=12,
+                                       validators=[MinValueValidator(0)],
+                                       decimal_places=2,
+                                       verbose_name="Revised amount")
+    closed = models.BooleanField(default=False,
+                                 verbose_name="Close the Project")
+    closedOn = models.DateTimeField(default=None, blank=True, null=True)
+    bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
+    createdOn = models.DateTimeField(verbose_name="created Date",
+                                     auto_now_add=True)
+    updatedOn = models.DateTimeField(verbose_name="Updated Date",
+                                     auto_now=True)
+    approved = models.CharField(verbose_name="Approved", choices=APRROVECHOICES, default=0, max_length=1)
+
+    def __unicode__(self):
+        return self.crId
+
 class ProjectChangeInfo(models.Model):
     # project change Request Fields
+    program = models.ForeignKey(Program, verbose_name="Program Name")
     project = models.ForeignKey(Project, verbose_name="Project Name")
     crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
