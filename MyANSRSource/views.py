@@ -3713,12 +3713,15 @@ def CreateProgram(request):
         context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
                                                                                'employee__employee_assigned_id')
         try:
-            context['programs'] = Program.objects.filter(portfolio_manager=request.user, active=1).values('program', 'active',
-                                                                                                'totalValue',
-                                                                                                'plannedEffort',
-                                                                                                'bu_id__name',
-                                                                                                'portfolio_manager_id__first_name',
-                                                                                                'portfolio_manager_id__last_name', 'internal')
+            context['programs'] = Program.objects.filter(portfolio_manager=request.user, active=1).values('program',
+                                                                                                          'active',
+                                                                                                          'totalValue',
+                                                                                                          'plannedEffort',
+                                                                                                          'bu_id__name',
+                                                                                                          'programId',
+                                                                                                          'portfolio_manager_id__first_name',
+                                                                                                          'portfolio_manager_id__last_name',
+                                                                                                          'internal')
         except:
             context['programs'] = []
         return render(request, 'createprogram.html', context)
@@ -3730,10 +3733,14 @@ def CreateProgram(request):
             internal = 1
         if request.POST.get('program_type') == 'ext':
             internal = 0
-        Program(program=request.POST.get('program'), bu=bu,
+        program_details = Program(program=request.POST.get('program'), bu=bu,
                 portfolio_manager=portfolio_manager,
                 plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
-                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), internal=internal).save()
+                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), internal=internal)
+        program_details.save()
+        program = Program.objects.get(id=program_details.id)
+        program.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
+        program.save()
         # pci = ProgramChangeInfo()
         # pci.program = request.POST.get('program')
         # pci.crId = u"BL-{0}".format(program.id)

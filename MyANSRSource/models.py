@@ -294,6 +294,11 @@ class ProjectAsset(models.Model):
 
 class Program(models.Model):
     program = models.CharField(max_length=50,verbose_name="Program Name",unique=True)
+    programId = models.CharField(
+        max_length=60,
+        null=False,
+        unique=True,
+        verbose_name='Program Code')
     bu = models.ForeignKey(CompanyMaster.models.BusinessUnit,verbose_name="Business Unit")
     portfolio_manager = models.ForeignKey(User, verbose_name='Portfolio Manager',
                                           related_name='program_portfolio_manager', default=35, null=True, blank=True)

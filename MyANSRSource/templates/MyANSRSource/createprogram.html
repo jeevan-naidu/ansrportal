@@ -114,6 +114,7 @@
 <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
             <thead>
             <tr>
+                <th>Program ID</th>
                 <th>Program Name</th>
                 <th>Program Type</th>
                 <th>Business Unit</th>
@@ -139,6 +140,7 @@
             </script>
             {% for val in programs %}
             <tr>
+                <td>{{val.programId}}</td>
             <td>{{val.program}}</td>
             {% if val.internal == '1' %}
                 <td>Internal</td>
