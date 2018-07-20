@@ -180,7 +180,6 @@ class EmailThread(threading.Thread):
 
 def send_html_mail(subject, html_content, recipient_list, sender, manager_email):
     email_thread = EmailThread(subject, html_content, recipient_list, sender, manager_email)
-    email_thread.setDaemon(True)
     email_thread.start()
     
 ##############
