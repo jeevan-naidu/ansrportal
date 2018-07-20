@@ -179,7 +179,10 @@ class EmailThread(threading.Thread):
         msg.send()
 
 def send_html_mail(subject, html_content, recipient_list, sender, manager_email):
-    EmailThread(subject, html_content, recipient_list, sender, manager_email).start()
+    email_thread = EmailThread(subject, html_content, recipient_list, sender, manager_email)
+    email_thread.setDaemon(True)
+    email_thread.start()
+    
 ##############
 def mangerdetail(user):
     useremployeedetail = Employee.objects.get(user_id=user.id)
