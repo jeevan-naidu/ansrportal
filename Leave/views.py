@@ -179,8 +179,12 @@ class EmailThread(threading.Thread):
         msg.send()
 
 def send_html_mail(subject, html_content, recipient_list, sender, manager_email):
+    now = datetime.datetime.now()
+    import time
+    now_sub = now.strftime("%H_%M_%S_%f").rstrip('0')
+    email_thread = "email_thread" + now_sub
     email_thread = EmailThread(subject, html_content, recipient_list, sender, manager_email).start()
-    email_thread.terminate()
+    time.sleep(0.1)
 
 ##############
 def mangerdetail(user):
@@ -196,6 +200,7 @@ def EmailSendTaskNew(user, manager, leave_selected, fromdate, todate, fromsessio
         msg_html = render_to_string('email_templates/apply_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
          'fromdate':fromdate, 'todate':todate, 'count':count, 'reason':reason})
         send_html_mail('New Leave applied - Leave Type - ' + leaveTypeDictionary[leave_selected], msg_html, user.email, settings.EMAIL_HOST_USER, manager.email)
+
     elif flag == 'cancel':
         msg_html = render_to_string('email_templates/cancel_leave.html', {'registered_by': user.first_name, 'leaveType':leaveTypeDictionary[leave_selected],
         'fromdate':fromdate, 'todate':todate, 'count':count, 'reason':reason})
@@ -284,6 +289,7 @@ def LeaveCancel(request):
         leave.to_session, leave.days_count, leave.reason, 'cancel')
     except:
         logger.exception('Sending task raised')
+
     data1 = "leave cancelled"
     json_data = json.dumps(data1)
     return HttpResponse(json_data, content_type="application/json")
