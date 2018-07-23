@@ -3790,32 +3790,57 @@ def ApproveProgram(request):
 
 @login_required
 def ProgramChangeRequest(request):
-    if request.GET.get('id'):
-        context = {}
-        id = request.GET.get('id')
-        context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
-        context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
-                                                                               'employee__employee_assigned_id')
-        context['programs'] = ProgramChangeInfo.objects.filter(id=id).values('program', 'program__programId', 'id', 'approved', 'revisedTotal',
-                                                                   'revisedEffort', 'reason', 'crId', 'bu',
-                                                                   'closed', 'portfolio_manager_id__first_name',
-                                                                   'portfolio_manager_id__last_name', 'program_type')
-        current_program = Program.objects.filter(id=id).values('program_type', 'id', 'totalValue', 'plannedEffort',
-                                                               'portfolio_manager', 'bu')[0]
-        current_program['revisedTotal'] = current_program['totalValue']
-        current_program['revisedEffort'] = current_program['plannedEffort']
-        context['form'] = ChangeProgramBasicInfoForm(
-            initial={'program_type': current_program['program_type'], 'bu': current_program['bu'],
-                     'portfolio_manager': current_program['portfolio_manager'], 'id': current_program['id'],
-                     'revisedTotal': current_program['revisedTotal'], 'revisedEffort':current_program['revisedEffort']})
+    if request.method == 'GET':
+        if request.GET.get('id'):
+            context = {}
+            id = request.GET.get('id')
+            context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
+            context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
+                                                                                   'employee__employee_assigned_id')
+            context['programs'] = ProgramChangeInfo.objects.filter(id=id).values('program', 'program__programId', 'id', 'approved', 'revisedTotal',
+                                                                       'revisedEffort', 'reason', 'crId', 'bu',
+                                                                       'closed', 'portfolio_manager_id__first_name',
+                                                                       'portfolio_manager_id__last_name', 'program_type')
+            current_program = Program.objects.filter(id=id).values('program_type', 'id', 'totalValue', 'plannedEffort',
+                                                                   'portfolio_manager', 'bu')[0]
+            current_program['revisedTotal'] = current_program['totalValue']
+            current_program['revisedEffort'] = current_program['plannedEffort']
+            context['form'] = ChangeProgramBasicInfoForm(
+                initial={'program_type': current_program['program_type'], 'bu': current_program['bu'],
+                         'portfolio_manager': current_program['portfolio_manager'], 'id': current_program['id'],
+                         'revisedTotal': current_program['revisedTotal'], 'revisedEffort':current_program['revisedEffort']})
 
-        context['program_detail'] = 1
-        return render(request, 'programchangerequest.html', context)
-    else:
+            context['program_detail'] = 1
+            return render(request, 'programchangerequest.html', context)
+        else:
+            context = {}
+            context['programs'] = Program.objects.filter(active=True, portfolio_manager = request.user).values('program', 'id')
+            context['select_program'] = 1
+            return render(request, 'programchangerequest.html', context)
+    if request.method == 'POST':
         context = {}
-        context['programs'] = Program.objects.filter(active=True, portfolio_manager = request.user).values('program', 'id')
-        context['select_program'] = 1
+        form = ChangeProgramBasicInfoForm(request.POST)
+        form.is_valid()
+        # {'portfolio_manager': < User: ChristinaFlorence >, 'revisedTotal': Decimal(
+            # '12312.00'), 'bu': < BusinessUnit: MHE >, 'reason': u'dsadsad', 'revisedEffort': 100, 'closed': True}
+        pci = ProgramChangeInfo()
+        pci.crId = u"CR-{0}".format(pci.id)
+        pci.portfolio_manager = form.cleaned_data['portfolio_manager']
+        pci.revisedTotal = form.cleaned_data['revisedTotal']
+        pci.bu = form.cleaned_data['bu']
+        pci.reason = form.cleaned_data['reason']
+        pci.revisedEffort = form.cleaned_data['revisedEffort']
+        pci.closed = form.cleaned_data['closed']
+        pci.program_id = form.cleaned_data['id']
+        if pci.closed == True:
+            pci.closed = '1'
+        program = Program.objects.filter(id=pci.program_id).values('program_type')[0]
+        pci.program_type = program['program_type']
+        pci.save()
+        pci.crId = u"CR-{0}".format(pci.id)
+        pci.save()
         return render(request, 'programchangerequest.html', context)
+
 
 @login_required
 def ApproveProgramChangeRequest(request):

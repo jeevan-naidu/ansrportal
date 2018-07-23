@@ -733,7 +733,7 @@ class ChangeProgramBasicInfoForm(forms.ModelForm):
 
     class Meta:
         model = ProgramChangeInfo
-        fields = ('program', 'program_type',
+        fields = ('program',
                   'reason', 'revisedEffort',
                   'revisedTotal', 'closed', 'bu', 'portfolio_manager'
                   )
@@ -743,8 +743,6 @@ class ChangeProgramBasicInfoForm(forms.ModelForm):
         self.fields['id'].widget.attrs['value'] = 0
         self.fields['program'].queryset = \
             Program.objects.filter(active=True).order_by('program')
-        self.fields['program_type'].widget.attrs['class'] = \
-            "form-control"
         self.fields['reason'].widget.attrs['class'] = "form-control reason"
         self.fields['revisedEffort'].widget.attrs['class'] = "form-control Effort"
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control Total"
