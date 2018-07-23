@@ -180,11 +180,10 @@ class EmailThread(threading.Thread):
 
 def send_html_mail(subject, html_content, recipient_list, sender, manager_email):
     now = datetime.datetime.now()
-    import time
     now_sub = now.strftime("%H_%M_%S_%f").rstrip('0')
     email_thread = "email_thread" + now_sub
-    email_thread = EmailThread(subject, html_content, recipient_list, sender, manager_email).start()
-    time.sleep(0.1)
+    email_thread = EmailThread(subject, html_content, recipient_list, sender, manager_email)
+    email_thread.start()
 
 ##############
 def mangerdetail(user):
