@@ -3514,6 +3514,10 @@ def saveProject(request):
                 pr.startDate = startDate
                 pr.endDate = endDate
                 pr.po = request.POST.get('po')
+                program = Program.objects.get(
+                    program=(request.POST.get('program'))
+                )
+                pr.program_id = int(program.id)
                 pr.totalValue = float(request.POST.get('totalValue'))
                 pr.plannedEffort = int(request.POST.get('plannedEffort'))
                 pr.salesForceNumber = int(request.POST.get('salesForceNumber'))
@@ -3549,6 +3553,10 @@ def saveProject(request):
                 pci.reason = 'Base Line data'
                 pci.endDate = endDate
                 pci.startDate = startDate
+                program = Program.objects.get(
+                    program=(request.POST.get('program'))
+                )
+                pci.program_id = int(program.id)
                 pci.revisedEffort = int(request.POST.get('plannedEffort'))
                 pci.revisedTotal = float(request.POST.get('totalValue'))
                 pci.salesForceNumber = int(request.POST.get('salesForceNumber'))
@@ -3736,7 +3744,7 @@ def CreateProgram(request):
         program_details = Program(program=request.POST.get('program'), bu=bu,
                 portfolio_manager=portfolio_manager,
                 plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
-                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), internal=internal)
+                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), program_type=internal)
         program_details.save()
         program = Program.objects.get(id=program_details.id)
         program.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
@@ -4106,7 +4114,9 @@ def project_detail(request):
     project_id = request.GET.get('id')
     try:
         project_details = ProjectDetail.objects.select_related('project').get(project_id=project_id)
-        return render(request, 'project_detail.html', {'project_detail': project_details})
+        details = Project.objects.filter(id=project_id).values('program_id')[0]
+        program = Program.objects.filter(id=details['program_id']).values('program')[0]
+        return render(request, 'project_detail.html', {'project_detail': project_details, 'program':program['program']})
     except Exception as e:
         return render(request, 'project_detail.html', {'project_detail': 'Nothing'})
 

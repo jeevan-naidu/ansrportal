@@ -42,9 +42,9 @@
                                 class="pull-left detail">
                                                     {{program.program}}
                                                   </a></td>
-                                    {% if program.internal == '1' %}
+                                    {% if program.program_type == '1' %}
                                         <td>Internal</td>
-                                    {% elif program.internal == '0' %}
+                                    {% elif program.program_type == '0' %}
                                         <td>External</td>
                                     {% endif %}
                                  <td class="ws-mw">{{program.bu_id__name}}</td>
