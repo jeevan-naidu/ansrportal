@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from MyANSRSource.models import Book, Project, ProjectTeamMember, \
     ProjectMilestone, Chapter, ProjectChangeInfo, Activity, Task, \
     projectType, ProjectManager, TimeSheetEntry, BTGReport, qualitysop, ProjectDetail, ProjectAsset, ProjectScope,\
-    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING, CRReason, CRReasonField, Program
+    Milestone, ProjectSopTemplate,Role, PROJECT_FUNDING, CRReason, CRReasonField, Program, ProgramChangeInfo
 from bootstrap3_datetime.widgets import DateTimePicker
 from CompanyMaster.models import OfficeLocation, BusinessUnit, Customer, Practice, DataPoint
 from employee.models import Remainder
@@ -726,6 +726,38 @@ class ChangeProjectForm(forms.ModelForm):
         super(ChangeProjectForm, self).__init__(*args, **kwargs)
         self.fields['project'].empty_label = None
 
+
+class ChangeProgramBasicInfoForm(forms.ModelForm):
+
+    id = forms.IntegerField(label="BasicInfoId", widget=forms.HiddenInput())
+
+    class Meta:
+        model = ProgramChangeInfo
+        fields = ('program', 'program_type',
+                  'reason', 'revisedEffort',
+                  'revisedTotal', 'closed', 'bu', 'portfolio_manager'
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(ChangeProgramBasicInfoForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs['value'] = 0
+        self.fields['program'].queryset = \
+            Program.objects.filter(active=True).order_by('program')
+        self.fields['program_type'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['reason'].widget.attrs['class'] = "form-control reason"
+        self.fields['revisedEffort'].widget.attrs['class'] = "form-control Effort"
+        self.fields['revisedTotal'].widget.attrs['class'] = "form-control Total"
+        self.fields['closed'].widget.attrs['class'] = "form-control Closed"
+        self.fields['closed'].widget.attrs['id'] = "closed"
+        self.fields['bu'].queryset = \
+            BusinessUnit.objects.filter(is_active=True).order_by('name')
+        self.fields['bu'].widget.attrs['class'] = \
+            "form-control"
+        self.fields['portfolio_manager'].queryset = \
+            User.objects.filter(is_active=True).order_by('id')
+        self.fields['portfolio_manager'].widget.attrs['class'] = \
+            "form-control"
 
 class ChangeProjectBasicInfoForm(forms.ModelForm):
 

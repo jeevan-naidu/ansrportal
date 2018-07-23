@@ -50,7 +50,7 @@
 <div class="program_details">
 <div class="panel pb-15"><div class="panel-body">
 
-<form id="program_form" enctype="multipart/form-data" class="form-horizontal col-sm-9" enctype="multipart/form-data" data-toggle="validator">
+<form id="program_change_request_form" enctype="multipart/form-data" class="form-horizontal col-sm-9" enctype="multipart/form-data" data-toggle="validator">
     {% csrf_token %}
     {% if messages %}
 
@@ -66,55 +66,49 @@
     {% endif %}
 
     <div class="form-group">
-    <label class="col-sm-5 control-label">Program Type<span class="mandatory-field"> *</span></label>
+    <label class="col-sm-5 control-label">Reason</label>
         <div class="col-sm-7 controls">
-            <select id="program_type" class="js-example-basic-single">
-                <option value="------------"> ------------</option>
-                <option value='int'> Internal</option>
-                <option value='ext'> External</option>
-            </select>
+            {{form.reason}}
             <div class="help-block with-errors"></div>
         </div>
     </div>
 
     <div class="form-group">
-    <label class="col-sm-5 control-label">Business Unit<span class="mandatory-field"> *</span></label>
+    <label class="col-sm-5 control-label">Business Unit</label>
         <div class="col-sm-7 controls">
-            <select id="bu" class="js-example-basic-single">
-              <option value="------------"> ------------</option>
-              {% for element in bu%}
-                <option value={{element.id}}> {{element.name}}</option>
-              {% endfor %}
-            </select>
+            {{form.bu}}
             <div class="help-block with-errors"></div>
         </div>
     </div>
 
     <div class="form-group">
-    <label class="col-sm-5 control-label">Portfolio Manager<span class="mandatory-field"> *</span></label>
+    <label class="col-sm-5 control-label">Portfolio Manager</label>
         <div class="col-sm-7 controls">
-            <select id="portfolio_manager" class="js-example-basic-single">
-              <option value="------------"> ------------</option>
-              {% for element in portfolio_manager%}
-                <option value={{element.id}}> {{element.first_name}} {{element.last_name}} | {{element.employee__employee_assigned_id}}</option>
-              {% endfor %}
-            </select>
+            {{form.portfolio_manager}}
             <div class="help-block with-errors"></div>
         </div>
     </div>
 
     <div class="form-group">
-    <label class="col-sm-5 control-label">Total Planned Effort<span class="mandatory-field"> *</span></label>
+    <label class="col-sm-5 control-label">Revised Planned Effort</label>
         <div class="col-sm-7 controls">
-            <input type="number" class="form-control" id="planned_effort">
+            {{form.revisedEffort}}
             <div class="help-block with-errors"></div>
         </div>
     </div>
 
     <div class="form-group">
-    <label class="col-sm-5 control-label">Total Program Value<span class="mandatory-field"> *</span></label>
+    <label class="col-sm-5 control-label">Revised Program Value</label>
         <div class="col-sm-7 controls">
-            <input type="number" class="form-control" id="program_value">
+            {{form.revisedTotal}}
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Close the Program</label>
+        <div class="col-sm-7 controls">
+            {{form.closed}}
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -133,13 +127,16 @@
 <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
             <thead>
             <tr>
+                <th>CR ID</th>
+                <th>Program ID</th>
                 <th>Program Name</th>
                 <th>Program Type</th>
                 <th>Business Unit</th>
                 <th>Portfolio Manager</th>
-                <th>Program Total Value</th>
-                <th>Program Planned Effort</th>
+                <th>Revised Total Value</th>
+                <th>Revised Planned Effort</th>
                 <th>Status</th>
+                <th>Reason</th>
             </tr>
             </thead>
             <script>
@@ -158,21 +155,24 @@
             </script>
             {% for val in programs %}
             <tr>
+                <td>{{val.crId}}</td>
+            <td>{{val.program__programId}}</td>
             <td>{{val.program}}</td>
-            {% if val.internal == '1' %}
+            {% if val.program_type == '1' %}
                 <td>Internal</td>
-            {% elif val.internal == '0' %}
+            {% elif val.program_type == '0' %}
                 <td>External</td>
             {% endif %}
             <td>{{val.bu_id__name}}</td>
             <td>{{val.portfolio_manager_id__first_name}} {{portfolio_manager_id__last_name}}</td>
-            <td>$ {{val.totalValue}}</td>
-            <td>{{val.plannedEffort}}</td>
-            {% if val.active == 1 %}
-                <td>Open</td>
+            <td>$ {{val.revisedTotal}}</td>
+            <td>{{val.revisedEffort}}</td>
+            {% if val.approved == 1 %}
+                <td>Approved</td>
             {% elif val.active == 0 %}
-                <td>Closed</td>
+                <td>Open</td>
             {% endif %}
+                <td>{{val.reason}}</td>
         </tr>
             {% endfor %}
         </table>

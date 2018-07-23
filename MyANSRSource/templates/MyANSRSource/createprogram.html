@@ -142,9 +142,9 @@
             <tr>
                 <td>{{val.programId}}</td>
             <td>{{val.program}}</td>
-            {% if val.internal == '1' %}
+            {% if val.program_type == '1' %}
                 <td>Internal</td>
-            {% elif val.internal == '0' %}
+            {% elif val.program_type == '0' %}
                 <td>External</td>
             {% endif %}
             <td>{{val.bu_id__name}}</td>

@@ -317,7 +317,7 @@ class Program(models.Model):
                                         validators=[MinValueValidator(8)])
     remark = models.CharField(verbose_name="Project Rejection message", null=True, blank=True, default='Nothing',
                               max_length=100)
-    internal = models.CharField(verbose_name='Program Type', choices=PROGRAM_TYPE, max_length=20,
+    program_type = models.CharField(verbose_name='Program Type', choices=PROGRAM_TYPE, max_length=20,
                                       blank=True, null=True)
 
     def __unicode__(self):
@@ -691,9 +691,11 @@ class ProjectTeamMember(models.Model):
 class ProgramChangeInfo(models.Model):
     # project change Request Fields
     program = models.ForeignKey(Program, verbose_name="Program Name")
+    program_type = models.CharField(verbose_name='Program Type', choices=PROGRAM_TYPE, max_length=20,
+                                    blank=True, null=True)
     crId = models.CharField(default=None, blank=True, null=True,
                             max_length=100, verbose_name="Change Request ID")
-    reason = models.CharField(max_length=100, default=0, blank=True,
+    reason = models.CharField(max_length=100, blank=True,
                               null=True,
                               verbose_name="Reason for change")
     revisedEffort = models.IntegerField(default=0,
@@ -708,6 +710,8 @@ class ProgramChangeInfo(models.Model):
                                  verbose_name="Close the Project")
     closedOn = models.DateTimeField(default=None, blank=True, null=True)
     bu = models.ForeignKey(CompanyMaster.models.BusinessUnit, verbose_name="Business Unit", default=None,blank=True, null=True)
+    portfolio_manager = models.ForeignKey(User, verbose_name='Portfolio Manager',
+                                          related_name='program_chnage_portfolio_manager', default=35, null=True, blank=True)
     createdOn = models.DateTimeField(verbose_name="created Date",
                                      auto_now_add=True)
     updatedOn = models.DateTimeField(verbose_name="Updated Date",

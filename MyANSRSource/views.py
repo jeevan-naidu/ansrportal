@@ -40,7 +40,7 @@ from MyANSRSource.forms import LoginForm, ProjectBasicInfoForm, \
     ActivityForm, TimesheetFormset, ProjectFlagForm, \
     ChangeProjectBasicInfoForm, ChangeProjectTeamMemberForm, \
     MyRemainderForm, ChangeProjectForm, CloseProjectMilestoneForm, \
-    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm, CloseProjectMilestoneFormDelivery
+    changeProjectLeaderForm, BTGReportForm, UploadForm, RejectProjectForm, ModifyProjectInfoForm, CloseProjectMilestoneFormDelivery, ChangeProgramBasicInfoForm
 
 from CompanyMaster.models import Holiday, HRActivity, Practice, SubPractice
 from Grievances.models import Grievances
@@ -3721,7 +3721,7 @@ def CreateProgram(request):
                                                                                                           'programId',
                                                                                                           'portfolio_manager_id__first_name',
                                                                                                           'portfolio_manager_id__last_name',
-                                                                                                          'internal')
+                                                                                                          'program_type')
         except:
             context['programs'] = []
         return render(request, 'createprogram.html', context)
@@ -3756,13 +3756,13 @@ def ApproveProgram(request):
         context = {}
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
         context['programs'] = Program.objects.filter(active=False, closed=False, rejected=False, bu__in=business_unit_list).values('program', 'id',
-                                                                        'active',
+                                                                        'active', 'programId',
                                                                         'totalValue',
                                                                         'plannedEffort',
                                                                         'bu_id__name',
                                                                         'portfolio_manager_id__first_name',
                                                                         'portfolio_manager_id__last_name',
-                                                                        'internal')
+                                                                        'program_type')
         return render(request, 'approveprogram.html', context)
     if request.method == 'POST':
         context = {}
@@ -3788,10 +3788,19 @@ def ProgramChangeRequest(request):
         context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
         context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
                                                                                'employee__employee_assigned_id')
-        context['programs'] = Program.objects.filter(id=id).values('program', 'id', 'active', 'totalValue',
-                                                                   'plannedEffort',
-                                                                   'bu_id__name', 'portfolio_manager_id__first_name',
-                                                                   'portfolio_manager_id__last_name', 'internal')
+        context['programs'] = ProgramChangeInfo.objects.filter(id=id).values('program', 'program__programId', 'id', 'approved', 'revisedTotal',
+                                                                   'revisedEffort', 'reason', 'crId', 'bu',
+                                                                   'closed', 'portfolio_manager_id__first_name',
+                                                                   'portfolio_manager_id__last_name', 'program_type')
+        current_program = Program.objects.filter(id=id).values('program_type', 'id', 'totalValue', 'plannedEffort',
+                                                               'portfolio_manager', 'bu')[0]
+        current_program['revisedTotal'] = current_program['totalValue']
+        current_program['revisedEffort'] = current_program['plannedEffort']
+        context['form'] = ChangeProgramBasicInfoForm(
+            initial={'program_type': current_program['program_type'], 'bu': current_program['bu'],
+                     'portfolio_manager': current_program['portfolio_manager'], 'id': current_program['id'],
+                     'revisedTotal': current_program['revisedTotal'], 'revisedEffort':current_program['revisedEffort']})
+
         context['program_detail'] = 1
         return render(request, 'programchangerequest.html', context)
     else:
