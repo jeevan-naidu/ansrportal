@@ -23,6 +23,7 @@
                         <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
+                                <th><b>Program ID</b></th>
                                 <th><b>Program Name</b></th>
                                 <th><b>Program Type</b></th>
                                 <th><b>Business Unit</b></th>
@@ -34,23 +35,24 @@
                             </tr>
                           </thead>
                           <tbody>
-                        {% for program in programs %}
+                        {% for program in program_change_request %}
                              <tr>
                                  <td class="ws-mw">
-                                 <a id="{{program.id}}"
+                                 <a id="{{program.program.programId}}"
                                  href="#modal-container-detail" data-toggle="modal" title="Action"
                                 class="pull-left detail">
-                                                    {{program.program}}
+                                                    {{program.program.programId}}
                                                   </a></td>
-                                    {% if program.internal == '1' %}
+                                 <td class="ws-mw">{{program.program.program}}</td>
+                                    {% if program.program.program_type == '1' %}
                                         <td>Internal</td>
-                                    {% elif program.internal == '0' %}
+                                    {% elif program.program.program_type == '0' %}
                                         <td>External</td>
                                     {% endif %}
-                                 <td class="ws-mw">{{program.bu_id__name}}</td>
-                                 <td class="ws-mw">{{program.portfolio_manager_id__first_name}} {{program.portfolio_manager_id__last_name}}</td>
-                                 <td class="ws-mw">$ {{program.totalValue}}</td>
-                                 <td class="ws-mw">{{program.plannedEffort}}</td>
+                                 <td class="ws-mw">{{program.program.bu}}</td>
+                                 <td class="ws-mw">{{program.program.portfolio_manager.first_name}} {{program.program.portfolio_manager.last_name}}</td>
+                                 <td class="ws-mw">$ {{program.program.totalValue}}</td>
+                                 <td class="ws-mw">{{program.program.plannedEffort}}</td>
                                  <td class="ws-mw">
                                      <div class="checkbox checkbox-success radio-mod btn-xs">
                                 <input id="approve_{{program.id}}" type="checkbox" name="approve" class="approve" value="approved">
@@ -99,7 +101,7 @@
  {% endfor %}
 
                         </table>
-{%if programs%}
+{%if program_change_request%}
                     <div class="Lv-ApprLvSubmit">
                         <div class="margin-0-auto text-right">
                             <button type="submit" class="btn btn-danger btn-sm btn-ansr-orange submit">Submit</button>
@@ -204,7 +206,7 @@ $(".submit").on("click", function(){
 							function(isConfirm){
 								if (isConfirm) {
                                             $.ajax({
-                                                url:"{% url 'approveprogram' %}",
+                                                url:"{% url 'approveprogramchangerequest' %}",
                                                 data:{"approve": approve_list, "reject": reject_list, "feedback":feedbackval},
                                                 type:"post",
                                                 success: function(data){

@@ -3844,8 +3844,37 @@ def ProgramChangeRequest(request):
 
 @login_required
 def ApproveProgramChangeRequest(request):
-    context = {}
-    return render(request, 'approveprogramchangerequest.html', context)
+    if request.method == 'GET':
+        context = {}
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+        context['program_change_request'] = ProgramChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        return render(request, 'approveprogramchangerequest.html', context)
+    if request.method == 'POST':
+        context = {}
+        approve = request.POST.getlist('approve[]')
+        reject = request.POST.getlist('reject[]')
+        approve = approve if approve else []
+        reject = reject if reject else []
+        update_project_table = []
+        for val in reject:
+            update_project_table = \
+            ProgramChangeInfo.objects.filter(id=val).update(approved=2)
+            ProgramChangeInfo.objects.filter(id=val).values('program', 'reason', 'program__program')[0]
+        for val in approve:
+            ProgramChangeInfo.objects.filter(id=val).update(approved=1)
+            update_project_table = ProgramChangeInfo.objects.filter(id=val).values('revisedEffort',
+                                                                                     'revisedTotal',
+                                                                                     'program',
+                                                                                     'closed',
+                                                                                     'portfolio_manager', 'bu'
+                                                                                     )[0]
+            Program.objects.filter(id=update_project_table['program']).update(
+                plannedEffort=update_project_table['revisedEffort'],
+                totalValue=update_project_table['revisedTotal'],
+                closed=update_project_table['closed'],
+                portfolio_manager=update_project_table['portfolio_manager'],
+                bu=update_project_table['bu'])
+        return render(request, 'approveprogramchangerequest.html', context)
 
 @login_required
 def deleteProject(request):
