@@ -181,7 +181,14 @@ $("#submit").on('click', function(e) {
     data: {"program": program,"bu":bu,"portfolio_manager":portfolio_manager,"planned_effort":planned_effort,"program_value":program_value, "program_type":program_type},
     type: "POST",
     success: function(data){
-        sweetAlert("DONE...", "Program Created!");
+        sweetAlert({
+            title: "Done!",
+            text: "Program Created! Wait for the approval..",
+            type: "success"
+        }, function() {
+            window.onbeforeunload = null;
+            window.location = "/myansrsource/dashbaord";
+        });
     },
    });
 
