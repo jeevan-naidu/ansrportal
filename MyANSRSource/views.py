@@ -3746,16 +3746,22 @@ def CreateProgram(request):
                 plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
                 active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), program_type=internal)
         program_details.save()
-        program = Program.objects.get(id=program_details.id)
-        program.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
-        program.save()
-        # pci = ProgramChangeInfo()
-        # pci.program = request.POST.get('program')
-        # pci.crId = u"BL-{0}".format(program.id)
-        # pci.reason = 'Base Line data'
-        # pci.revisedEffort = int(request.POST.get('plannedEffort'))
-        # pci.revisedTotal = float(request.POST.get('totalValue'))
-        # pci.save()
+        program_id = Program.objects.get(id=program_details.id)
+        program_id.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
+        program_id.save()
+        pci = ProgramChangeInfo()
+        pci.program_id = program_details.id
+        pci.crId = u"BL-{0}".format(program_details.id)
+        pci.reason = 'Base Line data'
+        pci.bu = bu
+        if request.POST.get('program_type') == 'int':
+            pci.program_type = 1
+        if request.POST.get('program_type') == 'ext':
+            pci.program_type = 0
+        pci.portfolio_manager = portfolio_manager
+        pci.revisedEffort = int(request.POST.get('planned_effort'))
+        pci.revisedTotal = float(request.POST.get('program_value'))
+        pci.save()
         return render(request, 'createprogram.html', context)
 
 @login_required
