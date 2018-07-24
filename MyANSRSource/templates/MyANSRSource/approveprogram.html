@@ -148,10 +148,10 @@ $('document').ready(function(){
 <script>
 
       $(".detail").click(function(){
-        var project_id = this.id
+        var program_id = this.id
         $.ajax({
-            url:"{% url 'projectdetail' %}",
-            data: {"id": project_id},
+            url:"{% url 'programdetail' %}",
+            data: {"id": program_id},
             type: "get",
             success: function(data){
             $("#modal_body").html(data);

@@ -4180,6 +4180,13 @@ def project_detail(request):
     except Exception as e:
         return render(request, 'project_detail.html', {'project_detail': 'Nothing'})
 
+def program_detail(request):
+    program_id = request.GET.get('id')
+    try:
+        program_details = Program.objects.get(id=program_id)
+        return render(request, 'program_detail.html', {'program_detail': program_details})
+    except Exception as e:
+        return render(request, 'program_detail.html', {'program_detail': 'Nothing'})
 
 
 '''project Change Bu approval screen'''
