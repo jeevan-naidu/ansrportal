@@ -1,0 +1,43 @@
+{% load static from staticfiles %}
+
+<div class="LeaveDetails" >
+    {% if project_detail == 'Nothing' %}
+        <p>Sorry.. No Data Found</p>
+    {% else %}
+
+<table class=" table table-hover view_details" >
+    </tr>
+         <td style="width: 200px;" ><b> Program Name:</b></td>
+         <td>{{ program_detail.program }}</td>
+    </tr>
+    </tr>
+         <td style="width: 200px;" ><b> Program ID:</b></td>
+         <td>{{ program_detail.programId }}</td>
+    </tr>
+     <tr >
+         <td style="width: 200px;" ><b> Business Unit:</b></td>
+         <td>{{ program_detail.bu }}</td>
+    </tr>
+         <td style="width: 200px;" > <b>Portfolio Manager:</b></td>
+         <td>{{ program_detail.portfolio_manager }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Total Value:</b></td>
+         <td>{{ program_detail.totalValue }}</td>
+    </tr>
+         <td style="width: 200px;" ><b> Planned Effort:</b></td>
+         <td>{{ program_detail.plannedEffort }}</td>
+    {% if program_detail.program_type == '1' %}
+        </tr>
+             <td style="width: 200px;" > <b>Program Type:</b></td>
+             <td>Internal</td>
+        </tr>
+    {% elif program_detail.program_type == '0' %}
+        </tr>
+             <td style="width: 200px;" > <b>Program Type:</b></td>
+             <td>External</td>
+        </tr>
+    {% endif %}
+
+ </table>
+    {% endif %}
+</div>
