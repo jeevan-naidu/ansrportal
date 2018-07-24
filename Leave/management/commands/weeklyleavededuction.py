@@ -93,7 +93,7 @@ def weekly_leave_deduction():
     end_date = week_dates[1]
     dates = dates_to_check_leave(start_date, end_date)
     user_id_to_exclude = categorise_users()[2]
-    user_list = User.objects.filter(is_active=True, date_joined__lte=dates[4]).exclude(id__in=user_id_to_exclude)
+    user_list = User.objects.filter(is_active=True, date_joined__lt=dates[0]).exclude(id__in=user_id_to_exclude)
     holiday = Holiday.objects.all().values('date')
     # print str(date) + " short attendance raised started running"
     FMT = '%H:%M:%S'

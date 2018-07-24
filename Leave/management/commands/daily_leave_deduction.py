@@ -92,7 +92,25 @@ def daily_leave_deduction(year, month, day):
     halfDayOfficeStayTimeLimit = timedelta(hours=3, minutes=00, seconds=00)
     for user in user_list:
         leaves = []
-        for date in dates:
+        import copy
+        try:
+            join_date = datetime.date(user.date_joined)
+            day_diffrence = dates[0] - join_date
+            day_diffrence = abs(day_diffrence.days)
+            if join_date >= dates[0]:
+                new_dates = copy.copy(dates)
+                if day_diffrence == 4:
+                    del new_dates[0:5]
+                else:
+                    del new_dates[0:day_diffrence+2]
+            else :
+                new_dates = copy.copy(dates)
+        except:
+            print "Some issue for new employee", user
+            new_dates = copy.copy(dates)
+        print new_dates
+
+        for date in new_dates:
             hours_in_office = []
             leave_for_date = {}
             if date in [datedata['date'] for datedata in holiday] or date.weekday() >= 5:
