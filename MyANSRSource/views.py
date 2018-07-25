@@ -3720,16 +3720,9 @@ def CreateProgram(request):
         context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
         context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
                                                                                'employee__employee_assigned_id')
+        business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
         try:
-            context['programs'] = Program.objects.filter(portfolio_manager=request.user, active=1).values('program',
-                                                                                                          'active',
-                                                                                                          'totalValue',
-                                                                                                          'plannedEffort',
-                                                                                                          'bu_id__name',
-                                                                                                          'programId',
-                                                                                                          'portfolio_manager_id__first_name',
-                                                                                                          'portfolio_manager_id__last_name',
-                                                                                                          'program_type')
+            context['programs'] = Program.objects.filter(active=1).filter(Q(portfolio_manager=request.user) | Q(bu_id__in=business_unit_list))
         except:
             context['programs'] = []
         return render(request, 'createprogram.html', context)
@@ -3896,7 +3889,7 @@ def ProgramChangeRequest(request):
         pci.save()
         pci.crId = u"CR-{0}".format(pci.id)
         pci.save()
-        return render(request, 'programchangerequest.html', context)
+        return HttpResponseRedirect('/myansrsource/program/change_request')
 
 
 @login_required
@@ -3904,7 +3897,7 @@ def ApproveProgramChangeRequest(request):
     if request.method == 'GET':
         context = {}
         business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
-        context['program_change_request'] = ProgramChangeInfo.objects.filter(bu__in=business_unit_list, approved=0)
+        context['program_change_request'] = ProgramChangeInfo.objects.filter(bu__in=business_unit_list, approved=0).exclude(crId__startswith='BL')
         return render(request, 'approveprogramchangerequest.html', context)
     if request.method == 'POST':
         context = {}

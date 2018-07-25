@@ -23,13 +23,14 @@
                         <table class="table table-striped reimburse-table myansr-table" id="data-tables">
                           <thead>
                             <tr>
-                                <th><b>Program ID</b></th>
+                                <th><b>CR ID</b></th>
+                                <th><b>Porgram ID</b></th>
                                 <th><b>Program Name</b></th>
                                 <th><b>Program Type</b></th>
                                 <th><b>Business Unit</b></th>
                                 <th><b>Portfolio Manager</b></th>
-                                <th><b>Program Total Value</b></th>
-                                <th><b>Program Planned Effort</b></th>
+                                <th><b>Revised Effort</b></th>
+                                <th><b>Revised Total Value</b></th>
                                 <th><b>Action</b></th>
                                 <th><b>Remarks</b></th>
                             </tr>
@@ -38,21 +39,22 @@
                         {% for program in program_change_request %}
                              <tr>
                                  <td class="ws-mw">
-                                 <a id="{{program.program.programId}}"
+                                 <a id="{{program.crId}}"
                                  href="#modal-container-detail" data-toggle="modal" title="Action"
                                 class="pull-left detail">
-                                                    {{program.program.programId}}
+                                                    {{program.crId}}
                                                   </a></td>
-                                 <td class="ws-mw">{{program.program.program}}</td>
-                                    {% if program.program.program_type == '1' %}
+                                 <td class="ws-mw">{{program.program.programId}}</td>
+                                 <td class="ws-mw">{{program.program}}</td>
+                                    {% if program.program_type == '1' %}
                                         <td>Internal</td>
-                                    {% elif program.program.program_type == '0' %}
+                                    {% elif program.program_type == '0' %}
                                         <td>External</td>
                                     {% endif %}
-                                 <td class="ws-mw">{{program.program.bu}}</td>
-                                 <td class="ws-mw">{{program.program.portfolio_manager.first_name}} {{program.program.portfolio_manager.last_name}}</td>
-                                 <td class="ws-mw">$ {{program.program.totalValue}}</td>
-                                 <td class="ws-mw">{{program.program.plannedEffort}}</td>
+                                 <td class="ws-mw">{{program.bu}}</td>
+                                 <td class="ws-mw">{{program.portfolio_manager.first_name}} {{program.portfolio_manager.last_name}}</td>
+                                 <td class="ws-mw">$ {{program.revisedEffort}}</td>
+                                 <td class="ws-mw">{{program.revisedTotal}}</td>
                                  <td class="ws-mw">
                                      <div class="checkbox checkbox-success radio-mod btn-xs">
                                 <input id="approve_{{program.id}}" type="checkbox" name="approve" class="approve" value="approved">

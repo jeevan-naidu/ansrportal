@@ -147,8 +147,8 @@
             {% elif val.program_type == '0' %}
                 <td>External</td>
             {% endif %}
-            <td>{{val.bu_id__name}}</td>
-            <td>{{val.portfolio_manager_id__first_name}} {{portfolio_manager_id__last_name}}</td>
+            <td>{{val.bu.name}}</td>
+            <td>{{val.portfolio_manager.first_name}} {{val.portfolio_manager.last_name}}</td>
             <td>$ {{val.totalValue}}</td>
             <td>{{val.plannedEffort}}</td>
             {% if val.active == 1 %}
