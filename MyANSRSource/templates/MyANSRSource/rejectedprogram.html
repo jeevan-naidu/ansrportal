@@ -1,0 +1,258 @@
+{% extends 'master.html' %}
+{% load bootstrap3 %}
+{% load fontawesome %}
+{% load permissions %}
+{% load static from staticfiles %}
+{% block siteTitle %}Rejected Program{% endblock %}
+{% block pageTitle %}Rejected Program{% endblock %}
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head>
+{% block content  %}
+
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script>
+<link href="/static/css/site.min.css" rel="stylesheet">
+<link href="/static/plugins/dataTables/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/plugins/dataTables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/dataTables.bootstrap.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<style type="text/css">
+    #data-tables_filter{ display:none; }
+</style>
+
+{% if bu_queryset %}
+    {% if select_program == 1 %}
+        <div class="panel pb-15"><div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel widget">
+                    <div class="panel-heading vd_bg-grey">
+                        <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Programs </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <select id="program" class="js-example-basic-single" style="width:300px";>
+                                <option value="------------"> ------------</option>
+                                {% for element in bu_queryset%}
+                                    <option value={{element.id}}> {{element.program}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="ProgramDetail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div></div>
+    {% endif %}
+
+{% elif prtm_queryset %}
+    {% if select_program == 1 %}
+        <div class="panel pb-15"><div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel widget">
+                    <div class="panel-heading vd_bg-grey">
+                        <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Programs </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <select id="program" class="js-example-basic-single" style="width:300px";>
+                                <option value="------------"> ------------</option>
+                                {% for element in prtm_queryset%}
+                                    <option value={{element.id}}> {{element.program}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="ProgramDetail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div></div>
+    {% endif %}
+
+{% else %}
+
+<h3><b>No Rejected Programs</b></h3>
+
+{% endif %}
+
+{% if program_detail == 1 %}
+<div class="program_details">
+<div class="panel pb-15"><div class="panel-body">
+
+<form id="program_form" enctype="multipart/form-data" class="form-horizontal col-sm-9" enctype="multipart/form-data" data-toggle="validator">
+    {% csrf_token %}
+    {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+            </div>
+
+            {% endfor %}
+
+    {% endif %}
+
+    <input type="text" class="hidden" id="id" value="{{current_program.id}}">
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Program Name</label>
+        <div class="col-sm-7 controls">
+            <input type="text" class="form-control" id="program_name" value="{{current_program.program}}">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Program Type</label>
+        <div class="col-sm-7 controls">
+            {% if current_program.program_type %}
+                    {% if current_program.program_type == '1' %}
+                        <select id="program_type" class="js-example-basic-single">
+                            <option value='int' selected> Internal</option>
+                            <option value='ext'> External</option>
+                        </select>
+                    {% endif %}
+                    {% if current_program.program_type == '0' %}
+                        <select id="program_type" class="js-example-basic-single">
+                            <option value='int'> Internal</option>
+                            <option value='ext' selected> External</option>
+                        </select>
+                    {% endif %}
+
+            {% else %}
+                <select id="program_type" class="js-example-basic-single">
+                    <option value="------------"> ------------</option>
+                    <option value='int'> Internal</option>
+                    <option value='ext'> External</option>
+                </select>
+            {% endif %}
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Business Unit</label>
+        <div class="col-sm-7 controls">
+
+            {% if current_program.bu %}
+                <select id="bu" class="js-example-basic-single">
+                  <option value="------------"> ------------</option>
+                  {% for element in bu%}
+                    {% if element.name == current_program.bu.name|upper %}
+                        <option value={{element.id}} selected> {{element.name}}</option>
+                    {% else %}
+                        <option value={{element.id}}> {{element.name}}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+            {% endif %}
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Portfolio Manager</label>
+        <div class="col-sm-7 controls">
+            <select id="portfolio_manager" class="js-example-basic-single">
+              <option value="------------"> ------------</option>
+              {% for element in portfolio_manager%}
+                {% if element.id == current_program.portfolio_manager.id %}
+                        <option value={{element.id}} selected> {{element.first_name}} {{element.last_name}} | {{element.employee__employee_assigned_id}}</option></option>
+                    {% else %}
+                        <option value={{element.id}}> {{element.first_name}} {{element.last_name}} | {{element.employee__employee_assigned_id}}</option></option>
+                    {% endif %}
+
+                {% endfor %}
+            </select>
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Total Planned Effort</label>
+        <div class="col-sm-7 controls">
+            <input type="number" class="form-control" id="planned_effort" value="{{current_program.plannedEffort}}">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Total Program Value</label>
+        <div class="col-sm-7 controls">
+            <input type="number" class="form-control" id="program_value" value="{{current_program.totalValue}}">
+            <div class="help-block with-errors"></div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h3 class="col-sm-20 text-right"><input type="submit" id="submit" class="btn vd_bg-green vd_white width-10" value="Submit"/></h3>
+    </div>
+
+</form>
+
+</div></div>
+
+{% endif %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".js-example-basic-single").select2();
+
+$("#program").on('change', function() {
+  var program_id = this.value;
+
+  $.ajax({
+    url:'/myansrsource/program/rejected',
+    data: {"id": program_id},
+    type: "get",
+    success: function(data){
+        var content = $(data).find(".program_details").html();
+        $(".ProgramDetail").html(content);
+    },
+    });
+});
+
+});
+
+
+
+
+$("#submit").on('click', function(e) {
+  e.preventDefault();
+  var program = document.getElementById("program_name").value;
+  var bu = document.getElementById("bu").value;
+  var portfolio_manager = document.getElementById("portfolio_manager").value;
+  var planned_effort = document.getElementById("planned_effort").value;
+  var program_value = document.getElementById("program_value").value;
+  var program_type = document.getElementById("program_type").value;
+  var id = document.getElementById("id").value;
+
+  $.ajax({
+    url:'/myansrsource/program/rejected',
+    data: {"id":id,"program": program,"bu":bu,"portfolio_manager":portfolio_manager,"planned_effort":planned_effort,"program_value":program_value, "program_type":program_type},
+    type: "POST",
+    success: function(data){
+        sweetAlert({
+            title: "Done!",
+            text: "Program Saved! Wait for the approval..",
+            type: "success"
+        }, function() {
+            window.onbeforeunload = null;
+            window.location = "/myansrsource/dashboard";
+        });
+    },
+   });
+
+
+});
+
+</script>
+
+{% endblock %}
+

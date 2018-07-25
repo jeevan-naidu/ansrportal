@@ -3795,6 +3795,57 @@ def ApproveProgram(request):
         return render(request, 'approveprogram.html', context)
 
 @login_required
+def RejectedProgram(request):
+    if request.method == 'GET':
+        if request.GET.get('id'):
+            context = {}
+            id = request.GET.get('id')
+            context['bu'] = CompanyMaster.models.BusinessUnit.objects.filter(is_active=1).values('name', 'id')
+            context['portfolio_manager'] = User.objects.filter(is_active=1).values('id', 'first_name', 'last_name',
+                                                                                   'employee__employee_assigned_id')
+            context['current_program'] = Program.objects.get(id=id)
+            context['program_detail'] = 1
+            return render(request, 'rejectedprogram.html', context)
+        else:
+            context = {}
+            business_unit_list = CompanyMaster.models.BusinessUnit.objects.filter(new_bu_head=request.user)
+            portfolio_manager_list = Program.objects.filter(portfolio_manager=request.user)
+            prtm_project_list = []
+            for val in portfolio_manager_list:
+                prtm_project_list.append(val.id)
+            program_list = Program.objects.filter(id__in=prtm_project_list)
+            if business_unit_list:
+                context['bu_queryset'] = Program.objects.filter(bu__in=business_unit_list, rejected=True, active=False,
+                                                                closed=False)
+            if portfolio_manager_list:
+                context['prtm_queryset'] = Program.objects.filter(id__in=prtm_project_list, active=False, closed=False,
+                                                                  rejected=True)
+            context['select_program'] = 1
+            return render(request, 'rejectedprogram.html', context)
+    if request.method == 'POST':
+        context = {}
+        portfolio_manager = User.objects.get(id=request.POST.get('portfolio_manager'))
+        bu = CompanyMaster.models.BusinessUnit.objects.get(id=request.POST.get('bu'))
+        if request.POST.get('program_type') == 'int':
+            internal = 1
+        if request.POST.get('program_type') == 'ext':
+            internal = 0
+        program_details = Program.objects.get(id=request.POST.get('id'))
+        program_details.program = request.POST.get('program')
+        program_details.portfolio_manager = portfolio_manager
+        program_details.bu = bu
+        program_details.totalValue = request.POST.get('program_value')
+        program_details.plannedEffort = request.POST.get('planned_effort')
+        program_details.rejected = 0
+        program_details.program_type = internal
+        program_details.updatedOn = datetime.now()
+
+        program_details.save()
+
+        return render(request, 'rejectedprogram.html', context)
+
+
+@login_required
 def ProgramChangeRequest(request):
     if request.method == 'GET':
         if request.GET.get('id'):
