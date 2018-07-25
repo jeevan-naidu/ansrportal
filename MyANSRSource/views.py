@@ -3864,7 +3864,7 @@ def ProgramChangeRequest(request):
             return render(request, 'programchangerequest.html', context)
         else:
             context = {}
-            context['programs'] = Program.objects.filter(active=True, portfolio_manager = request.user).values('program', 'id')
+            context['programs'] = Program.objects.filter(active=True, closed=False , portfolio_manager = request.user).values('program', 'id')
             context['select_program'] = 1
             return render(request, 'programchangerequest.html', context)
     if request.method == 'POST':
@@ -3918,12 +3918,21 @@ def ApproveProgramChangeRequest(request):
                                                                                      'closed',
                                                                                      'portfolio_manager', 'bu'
                                                                                      )[0]
-            Program.objects.filter(id=update_project_table['program']).update(
-                plannedEffort=update_project_table['revisedEffort'],
-                totalValue=update_project_table['revisedTotal'],
-                closed=update_project_table['closed'],
-                portfolio_manager=update_project_table['portfolio_manager'],
-                bu=update_project_table['bu'])
+            if update_project_table['closed'] == True:
+                Program.objects.filter(id=update_project_table['program']).update(
+                    plannedEffort=update_project_table['revisedEffort'],
+                    totalValue=update_project_table['revisedTotal'],
+                    closed=update_project_table['closed'],
+                    active=0,
+                    portfolio_manager=update_project_table['portfolio_manager'],
+                    bu=update_project_table['bu'])
+            else:
+                Program.objects.filter(id=update_project_table['program']).update(
+                    plannedEffort=update_project_table['revisedEffort'],
+                    totalValue=update_project_table['revisedTotal'],
+                    closed=update_project_table['closed'],
+                    portfolio_manager=update_project_table['portfolio_manager'],
+                    bu=update_project_table['bu'])
         return render(request, 'approveprogramchangerequest.html', context)
 
 @login_required
