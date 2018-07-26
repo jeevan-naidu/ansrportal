@@ -21,9 +21,7 @@
     #data-tables_filter{ display:none; }
 </style>
 
-{% if change_request == 1 %}
-    <h3>Change request cannot be initiated as there is an active change request pending for approval</h3>
-{% endif %}
+
 
     {% if select_program == 1 %}
         <div class="panel pb-15"><div class="panel-body">
@@ -192,6 +190,13 @@
         </script>
 
     </div>
+
+    {% elif change_request == 1 %}
+
+        <div class="program_details">
+            <div class="panel pb-15"><div class="panel-body">
+                <h3>Change request cannot be initiated for this program as there is an active change request pending for approval</h3>
+            </div></div>
 
     {% endif %}
 
