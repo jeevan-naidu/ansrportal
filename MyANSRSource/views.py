@@ -3728,34 +3728,39 @@ def CreateProgram(request):
         return render(request, 'createprogram.html', context)
     if request.method == 'POST':
         context = {}
-        portfolio_manager = User.objects.get(id=request.POST.get('portfolio_manager'))
-        bu = CompanyMaster.models.BusinessUnit.objects.get(id=request.POST.get('bu'))
-        if request.POST.get('program_type') == 'int':
-            internal = 1
-        if request.POST.get('program_type') == 'ext':
-            internal = 0
-        program_details = Program(program=request.POST.get('program'), bu=bu,
-                portfolio_manager=portfolio_manager,
-                plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
-                active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), program_type=internal)
-        program_details.save()
-        program_id = Program.objects.get(id=program_details.id)
-        program_id.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
-        program_id.save()
-        pci = ProgramChangeInfo()
-        pci.program_id = program_details.id
-        pci.crId = u"BL-{0}".format(program_details.id)
-        pci.reason = 'Base Line data'
-        pci.bu = bu
-        if request.POST.get('program_type') == 'int':
-            pci.program_type = 1
-        if request.POST.get('program_type') == 'ext':
-            pci.program_type = 0
-        pci.portfolio_manager = portfolio_manager
-        pci.revisedEffort = int(request.POST.get('planned_effort'))
-        pci.revisedTotal = float(request.POST.get('program_value'))
-        pci.save()
-        return render(request, 'createprogram.html', context)
+        if request.POST.get('portfolio_manager') and request.POST.get('bu') and request.POST.get(
+                'program_type') and request.POST.get('planned_effort') and request.POST.get('program_value'):
+            portfolio_manager = User.objects.get(id=request.POST.get('portfolio_manager'))
+            bu = CompanyMaster.models.BusinessUnit.objects.get(id=request.POST.get('bu'))
+            if request.POST.get('program_type') == 'int':
+                internal = 1
+            if request.POST.get('program_type') == 'ext':
+                internal = 0
+            program_details = Program(program=request.POST.get('program'), bu=bu,
+                    portfolio_manager=portfolio_manager,
+                    plannedEffort=request.POST.get('planned_effort'), totalValue=request.POST.get('program_value'),
+                    active=0, rejected=0, closed=0, createdOn=datetime.now(), updatedOn=datetime.now(), program_type=internal)
+            program_details.save()
+            program_id = Program.objects.get(id=program_details.id)
+            program_id.programId = str(bu.name[0:3]) + '-' + str(datetime.now().year) + '-' + str(program_details.id)
+            program_id.save()
+            pci = ProgramChangeInfo()
+            pci.program_id = program_details.id
+            pci.crId = u"BL-{0}".format(program_details.id)
+            pci.reason = 'Base Line data'
+            pci.bu = bu
+            if request.POST.get('program_type') == 'int':
+                pci.program_type = 1
+            if request.POST.get('program_type') == 'ext':
+                pci.program_type = 0
+            pci.portfolio_manager = portfolio_manager
+            pci.revisedEffort = int(request.POST.get('planned_effort'))
+            pci.revisedTotal = float(request.POST.get('program_value'))
+            pci.save()
+            return render(request, 'createprogram.html', context)
+        else:
+            error = 1
+            return HttpResponse(error)
 
 @login_required
 def ApproveProgram(request):

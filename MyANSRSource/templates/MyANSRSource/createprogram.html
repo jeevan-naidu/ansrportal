@@ -41,7 +41,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Program Name<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <input type="text" class="form-control" id="program_name">
+            <input type="text" class="form-control" id="program_name" required>
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -49,8 +49,8 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Program Type<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <select id="program_type" class="js-example-basic-single">
-                <option value="------------"> ------------</option>
+            <select required id="program_type" class="js-example-basic-single">
+                <option value=""> ------------</option>
                 <option value='int'> Internal</option>
                 <option value='ext'> External</option>
             </select>
@@ -61,8 +61,8 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Business Unit<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <select id="bu" class="js-example-basic-single">
-              <option value="------------"> ------------</option>
+            <select required id="bu" class="js-example-basic-single">
+              <option value=""> ------------</option>
               {% for element in bu%}
                 <option value={{element.id}}> {{element.name}}</option>
               {% endfor %}
@@ -74,8 +74,8 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Portfolio Manager<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <select id="portfolio_manager" class="js-example-basic-single">
-              <option value="------------"> ------------</option>
+            <select required id="portfolio_manager" class="js-example-basic-single">
+              <option value=""> ------------</option>
               {% for element in portfolio_manager%}
                 <option value={{element.id}}> {{element.first_name}} {{element.last_name}} | {{element.employee__employee_assigned_id}}</option>
               {% endfor %}
@@ -87,7 +87,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Total Planned Effort<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <input type="number" class="form-control" id="planned_effort">
+            <input type="number" class="form-control" id="planned_effort" required>
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -95,7 +95,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Total Program Value<span class="mandatory-field"> *</span></label>
         <div class="col-sm-7 controls">
-            <input type="number" class="form-control" id="program_value">
+            <input type="number" class="form-control" id="program_value" required>
             <div class="help-block with-errors"></div>
         </div>
     </div>
@@ -181,14 +181,23 @@ $("#submit").on('click', function(e) {
     data: {"program": program,"bu":bu,"portfolio_manager":portfolio_manager,"planned_effort":planned_effort,"program_value":program_value, "program_type":program_type},
     type: "POST",
     success: function(data){
-        sweetAlert({
-            title: "Done!",
-            text: "Program Created! Wait for the approval..",
-            type: "success"
-        }, function() {
-            window.onbeforeunload = null;
-            window.location = "/myansrsource/dashboard";
-        });
+        <!--if(data == '1'){-->
+            <!--sweetAlert({-->
+                <!--title: "Sorry!",-->
+                <!--text: "Couldn't create program, Make sure all the mandatory fields are filled..",-->
+                <!--type: "warning"-->
+            <!--});-->
+        <!--}-->
+        <!--else{-->
+            sweetAlert({
+                title: "Done!",
+                text: "Program Created! Wait for the approval..",
+                type: "success"
+            }, function() {
+                window.onbeforeunload = null;
+                window.location = "/myansrsource/dashboard";
+            });
+        <!--}-->
     },
    });
 

@@ -748,6 +748,7 @@ class ChangeProgramBasicInfoForm(forms.ModelForm):
         self.fields['revisedTotal'].widget.attrs['class'] = "form-control Total"
         self.fields['closed'].widget.attrs['class'] = "form-control Closed"
         self.fields['closed'].widget.attrs['id'] = "closed"
+        self.fields['reason'].widget.attrs['required'] = True
         self.fields['bu'].queryset = \
             BusinessUnit.objects.filter(is_active=True).order_by('name')
         self.fields['bu'].widget.attrs['class'] = \
