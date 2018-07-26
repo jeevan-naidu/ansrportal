@@ -3864,7 +3864,7 @@ def ProgramChangeRequest(request):
                 initial={'program_type': current_program['program_type'], 'bu': current_program['bu'],
                          'portfolio_manager': current_program['portfolio_manager'], 'id': current_program['id'],
                          'revisedTotal': current_program['revisedTotal'], 'revisedEffort':current_program['revisedEffort']})
-            change_request = ProgramChangeInfo.objects.filter(program_id=id, approved=0)
+            change_request = ProgramChangeInfo.objects.filter(program_id=id, approved=0).exclude(crId__startswith='BL')
             if change_request:
                 context['change_request'] = 1
             else:
