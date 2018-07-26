@@ -21,175 +21,179 @@
     #data-tables_filter{ display:none; }
 </style>
 
-{% if select_program == 1 %}
-    <div class="panel pb-15"><div class="panel-body">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel widget">
-                <div class="panel-heading vd_bg-grey">
-                    <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Programs </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <select id="program" class="js-example-basic-single" style="width:300px";>
-                            <option value="------------"> ------------</option>
-                            {% for element in programs%}
-                                <option value={{element.id}}> {{element.program}}</option>
-                            {% endfor %}
-                        </select>
+{% if change_request == 1 %}
+    <h3>Change request cannot be initiated as there is an active change request pending for approval</h3>
+{% endif %}
+
+    {% if select_program == 1 %}
+        <div class="panel pb-15"><div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel widget">
+                    <div class="panel-heading vd_bg-grey">
+                        <h3 class="panel-title"> <span class="menu-icon"> <i class="fa fa-bar-chart-o"></i> </span> Programs </h3>
                     </div>
-                    <div class="ProgramDetail"></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <select id="program" class="js-example-basic-single" style="width:300px";>
+                                <option value="------------"> ------------</option>
+                                {% for element in programs%}
+                                    <option value={{element.id}}> {{element.program}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="ProgramDetail"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div></div>
-{% endif %}
-
-{% if program_detail == 1 %}
-<div class="program_details">
-<div class="panel pb-15"><div class="panel-body">
-
-<form id="program_change_request_form" method="post" enctype="multipart/form-data" class="form-horizontal col-sm-9"  data-toggle="validator">
-    {% csrf_token %}
-    {% if messages %}
-
-            {% for message in messages %}
-
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
-                <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
-            </div>
-
-            {% endfor %}
-
+        </div></div>
     {% endif %}
 
-            {{form.id}}
+    {% if program_detail == 1 %}
+    <div class="program_details">
+    <div class="panel pb-15"><div class="panel-body">
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Reason</label>
-        <div class="col-sm-7 controls">
-            {{form.reason}}
-            <div class="help-block with-errors"></div>
+    <form id="program_change_request_form" method="post" enctype="multipart/form-data" class="form-horizontal col-sm-9"  data-toggle="validator">
+        {% csrf_token %}
+        {% if messages %}
+
+                {% for message in messages %}
+
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="icon-cross"></i></button>
+                    <span class="vd_alert-icon"><i class="fa fa-exclamation-circle vd_red"></i></span><strong>{{message}}</strong>
+                </div>
+
+                {% endfor %}
+
+        {% endif %}
+
+                {{form.id}}
+
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Reason</label>
+            <div class="col-sm-7 controls">
+                {{form.reason}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Business Unit</label>
-        <div class="col-sm-7 controls">
-            {{form.bu}}
-            <div class="help-block with-errors"></div>
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Business Unit</label>
+            <div class="col-sm-7 controls">
+                {{form.bu}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Portfolio Manager</label>
-        <div class="col-sm-7 controls">
-            {{form.portfolio_manager}}
-            <div class="help-block with-errors"></div>
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Portfolio Manager</label>
+            <div class="col-sm-7 controls">
+                {{form.portfolio_manager}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Revised Planned Effort</label>
-        <div class="col-sm-7 controls">
-            {{form.revisedEffort}}
-            <div class="help-block with-errors"></div>
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Revised Planned Effort</label>
+            <div class="col-sm-7 controls">
+                {{form.revisedEffort}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Revised Program Value</label>
-        <div class="col-sm-7 controls">
-            {{form.revisedTotal}}
-            <div class="help-block with-errors"></div>
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Revised Program Value</label>
+            <div class="col-sm-7 controls">
+                {{form.revisedTotal}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-    <label class="col-sm-5 control-label">Close the Program</label>
-        <div class="col-sm-7 controls">
-            {{form.closed}}
-            <div class="help-block with-errors"></div>
+        <div class="form-group">
+        <label class="col-sm-5 control-label">Close the Program</label>
+            <div class="col-sm-7 controls">
+                {{form.closed}}
+                <div class="help-block with-errors"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <h3 class="col-sm-20 text-right"><input type="submit" id="submit" class="btn vd_bg-green vd_white width-10" value="Submit"/></h3>
-    </div>
+        <div class="form-group">
+            <h3 class="col-sm-20 text-right"><input type="submit" id="submit" class="btn vd_bg-green vd_white width-10" value="Submit"/></h3>
+        </div>
 
-</form>
+    </form>
 
-</div></div>
+    </div></div>
 
 
-<div class="panel pb-15"><div class="panel-body">
+    <div class="panel pb-15"><div class="panel-body">
 
-<table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
-            <thead>
-            <tr>
-                <th>CR ID</th>
-                <th>Program ID</th>
-                <th>Program Name</th>
-                <th>Program Type</th>
-                <th>Business Unit</th>
-                <th>Portfolio Manager</th>
-                <th>Revised Total Value</th>
-                <th>Revised Planned Effort</th>
-                <th>Status</th>
-                <th>Reason</th>
-            </tr>
-            </thead>
-            <script>
-                $(document).ready(function() {
-                    $('#example').DataTable( {
-                        dom: 'Bfrtip',
-                        lengthMenu: [
-                            [ 10, 25, 50, -1 ],
-                            [ '10 rows', '25 rows', '50 rows', 'Show all' ]
-                        ],
-                        buttons: ['pageLength',
-                            'copy', 'excel', 'pdf',
-                        ]
+    <table id="example" class="display nowrap" cellspacing="0" width="100%" class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>CR ID</th>
+                    <th>Program ID</th>
+                    <th>Program Name</th>
+                    <th>Program Type</th>
+                    <th>Business Unit</th>
+                    <th>Portfolio Manager</th>
+                    <th>Revised Total Value</th>
+                    <th>Revised Planned Effort</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                </tr>
+                </thead>
+                <script>
+                    $(document).ready(function() {
+                        $('#example').DataTable( {
+                            dom: 'Bfrtip',
+                            lengthMenu: [
+                                [ 10, 25, 50, -1 ],
+                                [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+                            ],
+                            buttons: ['pageLength',
+                                'copy', 'excel', 'pdf',
+                            ]
+                        } );
                     } );
-                } );
-            </script>
-            {% for val in programs %}
-            <tr>
-                <td>{{val.crId}}</td>
-            <td>{{val.program__programId}}</td>
-            <td>{{val.program}}</td>
-            {% if val.program_type == '1' %}
-                <td>Internal</td>
-            {% elif val.program_type == '0' %}
-                <td>External</td>
-            {% endif %}
-            <td>{{val.bu_id__name}}</td>
-            <td>{{val.portfolio_manager_id__first_name}} {{portfolio_manager_id__last_name}}</td>
-            <td>$ {{val.revisedTotal}}</td>
-            <td>{{val.revisedEffort}}</td>
-            {% if val.approved == 1 %}
-                <td>Approved</td>
-            {% elif val.active == 0 %}
-                <td>Open</td>
-            {% endif %}
-                <td>{{val.reason}}</td>
-        </tr>
-            {% endfor %}
-        </table>
+                </script>
+                {% for val in programs %}
+                <tr>
+                    <td>{{val.crId}}</td>
+                <td>{{val.program__programId}}</td>
+                <td>{{val.program}}</td>
+                {% if val.program_type == '1' %}
+                    <td>Internal</td>
+                {% elif val.program_type == '0' %}
+                    <td>External</td>
+                {% endif %}
+                <td>{{val.bu_id__name}}</td>
+                <td>{{val.portfolio_manager_id__first_name}} {{portfolio_manager_id__last_name}}</td>
+                <td>$ {{val.revisedTotal}}</td>
+                <td>{{val.revisedEffort}}</td>
+                {% if val.approved == 1 %}
+                    <td>Approved</td>
+                {% elif val.active == 0 %}
+                    <td>Open</td>
+                {% endif %}
+                    <td>{{val.reason}}</td>
+            </tr>
+                {% endfor %}
+            </table>
 
-</div></div>
+    </div></div>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-        $(".js-example-basic-single").select2();
-        });
-    </script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+            $(".js-example-basic-single").select2();
+            });
+        </script>
 
-</div>
+    </div>
 
-{% endif %}
+    {% endif %}
 
 <script type="text/javascript">
 $(document).ready(function() {

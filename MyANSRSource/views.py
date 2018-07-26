@@ -3859,8 +3859,11 @@ def ProgramChangeRequest(request):
                 initial={'program_type': current_program['program_type'], 'bu': current_program['bu'],
                          'portfolio_manager': current_program['portfolio_manager'], 'id': current_program['id'],
                          'revisedTotal': current_program['revisedTotal'], 'revisedEffort':current_program['revisedEffort']})
-
-            context['program_detail'] = 1
+            change_request = ProgramChangeInfo.objects.filter(program_id=id, approved=0)
+            if change_request:
+                context['change_request'] = 1
+            else:
+                context['program_detail'] = 1
             return render(request, 'programchangerequest.html', context)
         else:
             context = {}
