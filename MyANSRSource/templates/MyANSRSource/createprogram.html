@@ -181,14 +181,14 @@ $("#submit").on('click', function(e) {
     data: {"program": program,"bu":bu,"portfolio_manager":portfolio_manager,"planned_effort":planned_effort,"program_value":program_value, "program_type":program_type},
     type: "POST",
     success: function(data){
-        <!--if(data == '1'){-->
-            <!--sweetAlert({-->
-                <!--title: "Sorry!",-->
-                <!--text: "Couldn't create program, Make sure all the mandatory fields are filled..",-->
-                <!--type: "warning"-->
-            <!--});-->
-        <!--}-->
-        <!--else{-->
+        if(data == '1'){
+            sweetAlert({
+                title: "Sorry!",
+                text: "Couldn't create program, Make sure all the mandatory fields are filled..",
+                type: "warning"
+            });
+        }
+        else{
             sweetAlert({
                 title: "Done!",
                 text: "Program Created! Wait for the approval..",
@@ -197,7 +197,7 @@ $("#submit").on('click', function(e) {
                 window.onbeforeunload = null;
                 window.location = "/myansrsource/dashboard";
             });
-        <!--}-->
+        }
     },
    });
 
